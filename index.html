@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pigsfield — India's Best & Free Education</title>
 
-  <!-- Fonts (DON'T OMIT LINKS) -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&display=swap" rel="stylesheet" />
 
@@ -22,7 +21,7 @@
       --shadow2: 0 10px 26px rgba(2,6,23,.10);
       --radius: 22px;
 
-      --headerH: 92px; /* desktop estimate; mobile override below */
+      --headerH: 140px; /* desktop estimate; mobile override below */
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -62,7 +61,7 @@
       overscroll-behavior-y: contain;
       scroll-behavior: smooth;
       scroll-snap-type: y proximity; /* soft snap */
-      padding-top: var(--headerH); /* IMPORTANT: prevents sections hiding under sticky header */
+      padding-top: var(--headerH); /* prevents sections hiding under sticky header */
     }
 
     /* --- HEADER (GLASS) --- */
@@ -154,7 +153,7 @@
     /* --- SECTIONS (VERTICAL) --- */
     section.section{
       scroll-snap-align: start;
-      scroll-margin-top: var(--headerH); /* IMPORTANT: tab scrollIntoView won't hide under header */
+      scroll-margin-top: var(--headerH);
       min-height: calc(100vh - var(--headerH));
       padding: 22px 16px 34px;
       position: relative;
@@ -185,7 +184,6 @@
       line-height: 1.55;
     }
 
-    /* subtle section glow that changes per section */
     section.section::before{
       content:"";
       position:absolute;
@@ -205,7 +203,7 @@
       overflow-x: auto;
       overflow-y: hidden;
       padding: 10px 6px 18px;
-      scroll-behavior: auto; /* no auto-jump */
+      scroll-behavior: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
@@ -341,14 +339,14 @@
       color: rgba(2,6,23,.62);
     }
 
-    /* --- SECTION THEMES (colors change per section) --- */
+    /* --- SECTION THEMES --- */
     .theme-0{ --accent:#4f7cff; --accent2:#b36bff; }
     .theme-1{ --accent:#22c55e; --accent2:#4dd0e1; }
     .theme-2{ --accent:#ff7a18; --accent2:#ff4d8d; }
 
     /* --- MOBILE --- */
     @media (max-width: 768px){
-      :root{ --headerH: 112px; }
+      :root{ --headerH: 160px; }
       .header-inner{flex-direction:column; align-items:flex-start}
       .brand{min-width:unset}
       .tabs{width:100%; justify-content:flex-start}
@@ -368,33 +366,28 @@
   <div class="backdrop"></div>
 
   <header>
-  <nav style="
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-    font-family: 'Roboto', sans-serif;
-  ">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 22px;">🐽</span>
-      <span style="
-        font-size: 20px; 
-        font-weight: 900; 
-        letter-spacing: -0.5px; 
-        color: rgba(2,6,23,.92);
-      ">Pigsfield</span>
-    </div>
-    
-    <div style="display: flex; gap: 18px; padding-right: 4px;">
-      <a href="#" style="text-decoration: none; color: rgba(2,6,23,.82); font-weight: 700; font-size: 14px;">Home</a>
-      <a href="toolswithtutorials.html" style="text-decoration: none; color: rgba(2,6,23,.82); font-weight: 700; font-size: 14px;">Tools</a>
-    </div>
-  </nav>
+    <nav style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      font-family: 'Roboto', sans-serif;
+    ">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 22px;">🐽</span>
+        <span style="font-size: 20px; font-weight: 900; letter-spacing: -0.5px; color: rgba(2,6,23,.92);">Pigsfield</span>
+      </div>
+      
+      <div style="display: flex; gap: 18px; padding-right: 4px;">
+        <a href="#" style="text-decoration: none; color: rgba(2,6,23,.82); font-weight: 700; font-size: 14px;">Home</a>
+        <a href="toolswithtutorials.html" style="text-decoration: none; color: rgba(2,6,23,.82); font-weight: 700; font-size: 14px;">Tools</a>
+      </div>
+    </nav>
 
-  <div class="header-inner">
-    <div class="brand">
+    <div class="header-inner">
+      <div class="brand">
         <div class="logo">India's Best & Free Education</div>
         <div class="stats">Education &nbsp;·&nbsp; ₹0 Cost &nbsp;·&nbsp; LKG → PhD</div>
       </div>
@@ -405,9 +398,10 @@
         <button class="tab" data-target="sec-2" type="button"><span class="dot"></span>03. व्यावसायिक &amp; कौशल</button>
       </div>
     </div>
-  </nav>
+  </header>
     
-    <!-- SECTION 1 -->
+  <div id="app">
+    
     <section class="section theme-0" id="sec-0">
       <div class="wrap">
         <div class="section-head">
@@ -499,7 +493,6 @@
       </div>
     </section>
 
-    <!-- SECTION 2 -->
     <section class="section theme-1" id="sec-1">
       <div class="wrap">
         <div class="section-head">
@@ -593,8 +586,7 @@
       </div>
     </section>
 
-    <!-- SECTION 3 -->
-    <section class="section theme-2" id="sec-2">
+        <section class="section theme-2" id="sec-2">
       <div class="wrap">
         <div class="section-head">
           <h2>व्यावसायिक &amp; कौशल</h2>
@@ -681,266 +673,123 @@
           </div>
         </div>
       </div>
-      <div style="
-  max-width: 900px;
-  margin: 18px auto 40px;
-  padding: 18px;
-  border-radius: 22px;
-  background: rgba(255,255,255,.55);
-  border: 1px solid rgba(15,23,42,.08);
-  box-shadow: 0 10px 26px rgba(2,6,23,.10);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  font-family: Roboto, Arial, Helvetica, sans-serif;
-  color: rgba(2,6,23,.92);
-">
-
-  <div style="
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-bottom: 12px;
-  ">
-    <div>
-      <div style="
-        font-size: 18px;
-        font-weight: 900;
-        letter-spacing: -.2px;
-        margin-bottom: 6px;
-      ">
-        🐽 Pigsfield Search Suite
-      </div>
-
-      <div style="
-        font-size: 12.5px;
-        line-height: 1.55;
-        color: rgba(2,6,23,.62);
-        font-weight: 600;
-      ">
-        <b style="color: rgba(2,6,23,.82);">No Sign Up • Free • Secure • It don’t take your data</b><br/>
-        One box for AI answers + web search.
-      </div>
-    </div>
-  </div> <div style="
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  ">
+    </section>
 
     <div style="
+      max-width: 900px;
+      margin: 18px auto 40px;
+      padding: 18px;
       border-radius: 22px;
-      background: rgba(255,255,255,.62);
-      border: 1px solid rgba(255,255,255,.55);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(15,23,42,.08);
       box-shadow: 0 10px 26px rgba(2,6,23,.10);
-      padding: 16px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      position: relative;
-      overflow:hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      font-family: Roboto, Arial, Helvetica, sans-serif;
+      color: rgba(2,6,23,.92);
     ">
-      <div style="
-        position:absolute; inset:0;
-        background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0));
-        pointer-events:none;
-        opacity:.55;
-      "></div>
 
-      <div style="position:relative; z-index:1;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-          <div style="font-size:16px; font-weight:900; letter-spacing:-.2px;">
-            🤖🐽 Pigsfield AI
+      <div style="
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom: 12px;
+      ">
+        <div>
+          <div style="font-size: 18px; font-weight: 900; letter-spacing: -.2px; margin-bottom: 6px;">
+            🐽 Pigsfield Search Suite
           </div>
-          <span style="
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,.55);
-            border: 1px solid rgba(15,23,42,.10);
-            font-size: 11px;
-            font-weight: 900;
-            color: rgba(2,6,23,.70);
-            white-space:nowrap;
-          ">Powered by Duck.ai</span>
+          <div style="font-size: 12.5px; line-height: 1.55; color: rgba(2,6,23,.62); font-weight: 600;">
+            <b style="color: rgba(2,6,23,.82);">No Sign Up • Free • Secure • It don’t take your data</b><br/>
+            One box for AI answers + web search.
+          </div>
+        </div>
+      </div> 
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="
+          border-radius: 22px;
+          background: rgba(255,255,255,.62);
+          border: 1px solid rgba(255,255,255,.55);
+          box-shadow: 0 10px 26px rgba(2,6,23,.10);
+          padding: 16px;
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          position: relative;
+          overflow:hidden;
+        ">
+          <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)); pointer-events:none; opacity:.55;"></div>
+
+          <div style="position:relative; z-index:1;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+              <div style="font-size:16px; font-weight:900; letter-spacing:-.2px;">🤖🐽 Pigsfield AI</div>
+              <span style="display:inline-flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.55); border: 1px solid rgba(15,23,42,.10); font-size: 11px; font-weight: 900; color: rgba(2,6,23,.70); white-space:nowrap;">Powered by Duck.ai</span>
+            </div>
+
+            <div style="font-size: 12.5px; line-height: 1.55; color: rgba(2,6,23,.62); font-weight: 600; margin-bottom: 12px;">
+              Ask anything with AI — study help, explanations, notes, tools.
+            </div>
+
+            <form action="https://duck.ai/" method="GET" target="_blank" style="display:flex; gap:10px;">
+              <input type="text" name="q" placeholder="Ask anything with Pigsfield AI..." required style="flex:1; padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(15,23,42,.10); background: rgba(255,255,255,.65); outline:none; font-size: 13px; font-weight: 700; color: rgba(2,6,23,.88);" />
+              <button type="submit" style="padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: linear-gradient(135deg, #4f7cff, #b36bff); color: rgba(255,255,255,.95); font-weight: 900; cursor: pointer; white-space:nowrap;">Ask AI →</button>
+            </form>
+
+            <div style="margin-top:10px; font-size:12px; color: rgba(2,6,23,.55); font-weight:700;">
+              Example: free study tools • exams help • explain this website
+            </div>
+          </div>
         </div>
 
         <div style="
-          font-size: 12.5px;
-          line-height: 1.55;
-          color: rgba(2,6,23,.62);
-          font-weight: 600;
-          margin-bottom: 12px;
+          border-radius: 22px;
+          background: rgba(255,255,255,.62);
+          border: 1px solid rgba(255,255,255,.55);
+          box-shadow: 0 10px 26px rgba(2,6,23,.10);
+          padding: 16px;
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          position: relative;
+          overflow:hidden;
         ">
-          Ask anything with AI — study help, explanations, notes, tools.
-        </div>
+          <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)); pointer-events:none; opacity:.55;"></div>
 
-        <form action="https://duck.ai/" method="GET" target="_blank" style="display:flex; gap:10px;">
-          <input
-            type="text"
-            name="q"
-            placeholder="Ask anything with Pigsfield AI..."
-            required
-            style="
-              flex:1;
-              padding: 12px 14px;
-              border-radius: 999px;
-              border: 1px solid rgba(15,23,42,.10);
-              background: rgba(255,255,255,.65);
-              outline:none;
-              font-size: 13px;
-              font-weight: 700;
-              color: rgba(2,6,23,.88);
-            "
-          />
-          <button type="submit"
-            style="
-              padding: 12px 14px;
-              border-radius: 999px;
-              border: 1px solid rgba(255,255,255,.35);
-              background: linear-gradient(135deg, #4f7cff, #b36bff);
-              color: rgba(255,255,255,.95);
-              font-weight: 900;
-              cursor: pointer;
-              white-space:nowrap;
-            "
-          >Ask AI →</button>
-        </form>
+          <div style="position:relative; z-index:1;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+              <div style="font-size:16px; font-weight:900; letter-spacing:-.2px;">🔎🐽 Pigsfield Search</div>
+              <span style="display:inline-flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.55); border: 1px solid rgba(15,23,42,.10); font-size: 11px; font-weight: 900; color: rgba(2,6,23,.70); white-space:nowrap;">Powered by DuckDuckGo</span>
+            </div>
 
-        <div style="margin-top:10px; font-size:12px; color: rgba(2,6,23,.55); font-weight:700;">
-          Example: free study tools • exams help • explain this website
-        </div>
-      </div>
-    </div>
+            <div style="font-size: 12.5px; line-height: 1.55; color: rgba(2,6,23,.62); font-weight: 600; margin-bottom: 12px;">
+              Search the web, or search inside Pigsfield pages.
+            </div>
 
-    <div style="
-      border-radius: 22px;
-      background: rgba(255,255,255,.62);
-      border: 1px solid rgba(255,255,255,.55);
-      box-shadow: 0 10px 26px rgba(2,6,23,.10);
-      padding: 16px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      position: relative;
-      overflow:hidden;
-    ">
-      <div style="
-        position:absolute; inset:0;
-        background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0));
-        pointer-events:none;
-        opacity:.55;
-      "></div>
+            <form action="https://duckduckgo.com/" method="GET" target="_blank" style="display:flex; gap:10px;">
+              <input type="text" id="pigsfield_query" name="q" placeholder="Search anything..." required style="flex:1; padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(15,23,42,.10); background: rgba(255,255,255,.65); outline:none; font-size: 13px; font-weight: 700; color: rgba(2,6,23,.88);" />
+              <button type="submit" style="padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(15,23,42,.10); background: rgba(255,255,255,.60); color: rgba(2,6,23,.88); font-weight: 900; cursor:pointer; white-space:nowrap;">Search Web →</button>
+            </form>
 
-      <div style="position:relative; z-index:1;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-          <div style="font-size:16px; font-weight:900; letter-spacing:-.2px;">
-            🔎🐽 Pigsfield Search
+            <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+              <a href="#" onclick="var q=document.getElementById('pigsfield_query').value.trim(); if(!q){alert('Type something first'); return false;} window.open('https://duckduckgo.com/?q=' + encodeURIComponent('sites.google.com/view/pigsfield ' + q),'_blank'); return false;" style="text-decoration:none; border: 1px solid rgba(255,255,255,.35); background: linear-gradient(135deg, #22c55e, #4dd0e1); color: rgba(255,255,255,.95); border-radius: 999px; padding: 10px 12px; font-weight: 900; display:inline-block; box-shadow: 0 10px 22px rgba(2,6,23,.10); white-space:nowrap;">Search Pigsfield →</a>
+              <span style="font-size:12px; color: rgba(2,6,23,.55); font-weight: 700; display:inline-flex; align-items:center;">Tip: type query then tap Search Pigsfield</span>
+            </div>
           </div>
-          <span style="
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,.55);
-            border: 1px solid rgba(15,23,42,.10);
-            font-size: 11px;
-            font-weight: 900;
-            color: rgba(2,6,23,.70);
-            white-space:nowrap;
-          ">Powered by DuckDuckGo</span>
-        </div>
-
-        <div style="
-          font-size: 12.5px;
-          line-height: 1.55;
-          color: rgba(2,6,23,.62);
-          font-weight: 600;
-          margin-bottom: 12px;
-        ">
-          Search the web, or search inside Pigsfield pages.
-        </div>
-
-        <form action="https://duckduckgo.com/" method="GET" target="_blank" style="display:flex; gap:10px;">
-          <input
-            type="text"
-            id="pigsfield_query"
-            name="q"
-            placeholder="Search anything..."
-            required
-            style="
-              flex:1;
-              padding: 12px 14px;
-              border-radius: 999px;
-              border: 1px solid rgba(15,23,42,.10);
-              background: rgba(255,255,255,.65);
-              outline:none;
-              font-size: 13px;
-              font-weight: 700;
-              color: rgba(2,6,23,.88);
-            "
-          />
-          <button type="submit"
-            style="
-              padding: 12px 14px;
-              border-radius: 999px;
-              border: 1px solid rgba(15,23,42,.10);
-              background: rgba(255,255,255,.60);
-              color: rgba(2,6,23,.88);
-              font-weight: 900;
-              cursor:pointer;
-              white-space:nowrap;
-            "
-          >Search Web →</button>
-        </form>
-
-        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-          <a
-            href="#"
-            onclick="var q=document.getElementById('pigsfield_query').value.trim(); if(!q){alert('Type something first'); return false;} window.open('https://duckduckgo.com/?q=' + encodeURIComponent('sites.google.com/view/pigsfield ' + q),'_blank'); return false;"
-            style="
-              text-decoration:none;
-              border: 1px solid rgba(255,255,255,.35);
-              background: linear-gradient(135deg, #22c55e, #4dd0e1);
-              color: rgba(255,255,255,.95);
-              border-radius: 999px;
-              padding: 10px 12px;
-              font-weight: 900;
-              display:inline-block;
-              box-shadow: 0 10px 22px rgba(2,6,23,.10);
-              white-space:nowrap;
-            "
-          >Search Pigsfield →</a>
-
-          <span style="
-            font-size:12px;
-            color: rgba(2,6,23,.55);
-            font-weight: 700;
-            display:inline-flex;
-            align-items:center;
-          ">Tip: type query then tap Search Pigsfield</span>
         </div>
       </div>
+
+      <style>
+        @media (max-width: 780px){
+          div[style*="grid-template-columns: 1fr 1fr"]{ grid-template-columns: 1fr !important; }
+        }
+      </style>
     </div>
-
-  </div>
-
-  <div style="height:0; margin:0; padding:0;"></div>
-  <style>
-    @media (max-width: 780px){
-      /* inline component responsiveness */
-      div[style*="grid-template-columns: 1fr 1fr"]{ grid-template-columns: 1fr !important; }
-    }
-  </style>
-</div>
-
-  </div>
-  
-  <script>
+  </div> <script>
 (() => {
   const app = document.getElementById('app');
+  if (!app) return; // Failsafe
+
   const header = document.querySelector('header');
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const sections = tabs
@@ -951,20 +800,18 @@
   let programmaticTimer = null;
 
   function setHeaderHeightVar(){
-    // Real header height can change due to wrapping (esp. mobile)
     const h = Math.ceil(header.getBoundingClientRect().height);
     document.documentElement.style.setProperty('--headerH', h + 'px');
+    return h;
   }
 
   function setActive(targetId){
     tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.target === targetId));
   }
 
-  // 1) Keep --headerH accurate
-  setHeaderHeightVar();
+  const initialHeaderH = setHeaderHeightVar();
   window.addEventListener('resize', setHeaderHeightVar, { passive: true });
 
-  // 2) Click -> smooth scroll inside #app, avoid flicker during snap
   tabs.forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.target;
@@ -972,9 +819,8 @@
       if (!el) return;
 
       programmatic = true;
-      setActive(id); // immediate visual feedback
+      setActive(id);
 
-      // Smooth scroll within the inner scroller
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       clearTimeout(programmaticTimer);
@@ -982,11 +828,10 @@
     });
   });
 
-  // 3) Observer: highlights the section that is actually in view (root is #app)
+  // FIXED: IntersectionObserver rootMargin requires a static string, not a function
   const obs = new IntersectionObserver((entries) => {
     if (programmatic) return;
 
-    // pick the entry closest to the top (and intersecting)
     const visible = entries
       .filter(e => e.isIntersecting)
       .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
@@ -994,17 +839,12 @@
     if (visible?.target?.id) setActive(visible.target.id);
   }, {
     root: app,
-    // Top margin accounts for sticky header; bottom margin prevents late switching
-    rootMargin: () => {
-      const h = Math.ceil(header.getBoundingClientRect().height);
-      return `-${h + 6}px 0px -55% 0px`;
-    },
+    rootMargin: `-${initialHeaderH + 6}px 0px -55% 0px`,
     threshold: [0.15, 0.25, 0.35]
   });
 
   sections.forEach(sec => obs.observe(sec));
 
-  // 4) Safety: if user scrolls manually, quickly unlock programmatic mode
   app.addEventListener('scroll', () => {
     if (!programmatic) return;
     clearTimeout(programmaticTimer);
