@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pigsfield — Tools with Tutorial</title>
+  <title>Pigsfield — India's Best & Free Education</title>
 
   <!-- Fonts (DON'T OMIT LINKS) -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -15,14 +15,14 @@
       --muted:#475569;
 
       /* dynamic per-section */
-      --accent:#4f7cff;
-      --accent2:#b36bff;
+      --accent:#5b7cfa;
+      --accent2:#b16cff;
 
       --glass: rgba(255,255,255,.62);
       --shadow2: 0 10px 26px rgba(2,6,23,.10);
       --radius: 22px;
 
-      --headerH: 96px; /* mobile override below */
+      --headerH: 92px; /* desktop estimate; mobile override below */
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -34,14 +34,14 @@
       color: var(--text);
     }
 
-    /* --- BACKDROP (same as Education page) --- */
+    /* --- BACKDROP --- */
     .backdrop{
       position:fixed; inset:0;
       z-index:-2;
       background:
-        radial-gradient(900px 650px at 18% 16%, rgba(79,124,255,.24), transparent 55%),
-        radial-gradient(900px 650px at 82% 22%, rgba(179,107,255,.18), transparent 60%),
-        radial-gradient(900px 650px at 70% 85%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 650px at 18% 16%, rgba(91,124,250,.26), transparent 55%),
+        radial-gradient(900px 650px at 82% 22%, rgba(177,108,255,.22), transparent 60%),
+        radial-gradient(900px 650px at 70% 85%, rgba(34,197,94,.16), transparent 60%),
         linear-gradient(180deg, #fbfbfe, #f4f6ff);
     }
     .backdrop::after{
@@ -55,14 +55,14 @@
       opacity:.85;
     }
 
-    /* --- APP SCROLLER (like 1st code) --- */
+    /* --- APP SCROLLER --- */
     #app{
       height: 100vh;
       overflow-y: auto;
       overscroll-behavior-y: contain;
       scroll-behavior: smooth;
       scroll-snap-type: y proximity; /* soft snap */
-      padding-top: var(--headerH); /* prevents hiding under sticky header */
+      padding-top: var(--headerH); /* IMPORTANT: prevents sections hiding under sticky header */
     }
 
     /* --- HEADER (GLASS) --- */
@@ -93,21 +93,18 @@
       display:flex;
       flex-direction:column;
       gap:4px;
-      min-width: 240px;
+      min-width: 220px;
     }
     .brand .logo{
       font-size: 18px;
-      font-weight: 900;
-      letter-spacing: -.25px;
+      font-weight: 800;
+      letter-spacing: -.3px;
       line-height: 1.1;
-      display:flex;
-      align-items:center;
-      gap:10px;
     }
     .brand .stats{
       font-size: 12px;
       color: rgba(2,6,23,.62);
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .tabs{
@@ -131,7 +128,7 @@
       border-radius: 999px;
       background: transparent;
       color: rgba(2,6,23,.64);
-      font-weight: 800;
+      font-weight: 700;
       font-size: 13px;
       white-space: nowrap;
       transition: background .2s ease, color .2s ease, transform .2s ease;
@@ -154,14 +151,13 @@
       vertical-align: middle;
     }
 
-    /* --- SECTIONS (VERTICAL, like 1st) --- */
+    /* --- SECTIONS (VERTICAL) --- */
     section.section{
       scroll-snap-align: start;
-      scroll-margin-top: var(--headerH);
+      scroll-margin-top: var(--headerH); /* IMPORTANT: tab scrollIntoView won't hide under header */
       min-height: calc(100vh - var(--headerH));
       padding: 22px 16px 34px;
       position: relative;
-      overflow:hidden;
     }
 
     .wrap{max-width:1100px;margin:0 auto}
@@ -184,7 +180,7 @@
     .section-head p{
       max-width: 520px;
       color: rgba(2,6,23,.62);
-      font-weight: 700;
+      font-weight: 600;
       font-size: 14px;
       line-height: 1.55;
     }
@@ -212,18 +208,15 @@
       scroll-behavior: auto; /* no auto-jump */
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      cursor: grab;
-      user-select:none;
     }
-    .rail:active{cursor: grabbing}
     .rail::-webkit-scrollbar{display:none}
 
     .card{
-      width: 330px;
-      min-width: 330px;
+      width: 340px;
+      min-width: 340px;
       height: clamp(420px, 62vh, 560px);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 18px 18px 16px;
       background: var(--glass);
       border: 1px solid rgba(255,255,255,.55);
       box-shadow: var(--shadow2);
@@ -244,66 +237,75 @@
       opacity:.55;
     }
 
-    .card-header{
+    .card-inner{
+      position:relative;
+      z-index:1;
+      height:100%;
       display:flex;
-      align-items:center;
-      gap:12px;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .card-tag{
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--accent) 78%, rgba(2,6,23,.25));
+      margin-bottom: 10px;
+    }
+
+    .card-title{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.25px;
       padding-bottom: 12px;
       margin-bottom: 12px;
       border-bottom: 1px solid rgba(15,23,42,.10);
-      position:relative;
-      z-index:1;
-    }
-    .card-emoji{font-size:26px; line-height:1}
-    .card-title{
-      font-size:16px;
-      font-weight:900;
-      letter-spacing:-.2px;
       color: rgba(2,6,23,.92);
     }
 
-    .card-desc{
-      position:relative;
-      z-index:1;
-      font-size: 13px;
-      color: rgba(2,6,23,.62);
-      line-height: 1.55;
-      font-weight: 650;
-      flex: 1;
+    .scroll{
       overflow:auto;
       padding-right: 2px;
     }
-    .card-desc::-webkit-scrollbar{width:6px}
-    .card-desc::-webkit-scrollbar-thumb{
+    .scroll::-webkit-scrollbar{width:6px}
+    .scroll::-webkit-scrollbar-thumb{
       background: rgba(2,6,23,.18);
       border-radius:999px;
     }
 
-    .card-actions{
-      position:relative;
-      z-index:1;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(15,23,42,.14);
+    .res-item{margin-bottom:18px}
+    .res-item:last-child{margin-bottom:0}
+
+    .res-name{
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(2,6,23,.92);
+      margin-bottom: 6px;
+    }
+    .res-desc{
+      font-size: 13px;
+      color: rgba(2,6,23,.62);
+      line-height: 1.55;
+      margin-bottom: 10px;
+      font-weight: 600;
     }
 
+    .btn-group{display:flex; gap:8px; flex-wrap:wrap}
     .btn{
       text-decoration:none;
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding: 9px 12px;
+      gap:8px;
+      padding: 8px 12px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
       border: 1px solid rgba(15,23,42,.10);
       transition: transform .15s ease, box-shadow .15s ease;
       user-select:none;
       line-height:1;
-      white-space:nowrap;
     }
     .btn:hover{
       transform: translateY(-1px);
@@ -319,18 +321,34 @@
       background: rgba(255,255,255,.55);
     }
 
-    /* --- SECTION THEMES (7) --- */
+    .end-card{
+      justify-content:center;
+      text-align:center;
+      background: rgba(255,255,255,.42);
+      border: 1px dashed rgba(15,23,42,.16);
+    }
+    .end-card h3{
+      font-family: "Fraunces", serif;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -.3px;
+      margin-bottom: 6px;
+      color: rgba(2,6,23,.92);
+    }
+    .end-card p{
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(2,6,23,.62);
+    }
+
+    /* --- SECTION THEMES (colors change per section) --- */
     .theme-0{ --accent:#4f7cff; --accent2:#b36bff; }
     .theme-1{ --accent:#22c55e; --accent2:#4dd0e1; }
     .theme-2{ --accent:#ff7a18; --accent2:#ff4d8d; }
-    .theme-3{ --accent:#f59e0b; --accent2:#f97316; }
-    .theme-4{ --accent:#a855f7; --accent2:#ec4899; }
-    .theme-5{ --accent:#14b8a6; --accent2:#60a5fa; }
-    .theme-6{ --accent:#ef4444; --accent2:#f59e0b; }
 
     /* --- MOBILE --- */
     @media (max-width: 768px){
-      :root{ --headerH: 118px; }
+      :root{ --headerH: 112px; }
       .header-inner{flex-direction:column; align-items:flex-start}
       .brand{min-width:unset}
       .tabs{width:100%; justify-content:flex-start}
@@ -352,250 +370,373 @@
   <header>
     <div class="header-inner">
       <div class="brand">
-        <div class="logo">🛠️ Tools with Tutorials</div>
-        <div class="stats">50+ Tools &nbsp;·&nbsp; 7 Categories &nbsp;·&nbsp; 100% Free</div>
+        <div class="logo">India's Best & Free Education</div>
+        <div class="stats">Education &nbsp;·&nbsp; ₹0 Cost &nbsp;·&nbsp; LKG → PhD</div>
       </div>
 
-      <div class="tabs" role="tablist" aria-label="Tools Categories">
-        <button class="tab active" data-target="sec-0" type="button"><span class="dot"></span>01. AI & ML</button>
-        <button class="tab" data-target="sec-1" type="button"><span class="dot"></span>02. Dev & Design</button>
-        <button class="tab" data-target="sec-2" type="button"><span class="dot"></span>03. Privacy & Web</button>
-        <button class="tab" data-target="sec-3" type="button"><span class="dot"></span>04. Civic & Security</button>
-        <button class="tab" data-target="sec-4" type="button"><span class="dot"></span>05. Files & Remote</button>
-        <button class="tab" data-target="sec-5" type="button"><span class="dot"></span>06. Creativity</button>
-        <button class="tab" data-target="sec-6" type="button"><span class="dot"></span>07. Research</button>
+      <div class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab active" data-target="sec-0" type="button"><span class="dot"></span>01. स्कूली शिक्षा</button>
+        <button class="tab" data-target="sec-1" type="button"><span class="dot"></span>02. उच्च शिक्षा</button>
+        <button class="tab" data-target="sec-2" type="button"><span class="dot"></span>03. व्यावसायिक &amp; कौशल</button>
       </div>
     </div>
   </header>
 
-  <!-- MAIN вертикल SCROLLER -->
   <div id="app">
-
-    <!-- SEC 0 -->
+    <!-- SECTION 1 -->
     <section class="section theme-0" id="sec-0">
       <div class="wrap">
         <div class="section-head">
-          <h2>AI & ML</h2>
-          <p>Best AI tools + direct tutorials. Cards horizontally swipe, tabs jump sections.</p>
+          <h2>स्कूली शिक्षा</h2>
         </div>
 
-        <div class="rail" aria-label="AI & ML cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">💬</div><div class="card-title">ChatGPT</div></div><div class="card-desc">लॉजिक समझने, कोडिंग करने, और जनरल सवालों के जवाब के लिए दुनिया का सबसे पॉपुलर AI।</div><div class="card-actions"><a href="https://chat.openai.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.openai.chatgpt" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+chatgpt+full+tutorial+course" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🧠</div><div class="card-title">Claude AI</div></div><div class="card-desc">लॉजिक, कोडिंग और बड़े डॉक्यूमेंट्स एनालाइज करने में मास्टर। जवाब नेचुरल और कम रोबोटिक।</div><div class="card-actions"><a href="https://claude.ai/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.anthropic.claude" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=claude+ai+full+tutorial+use+cases" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">✨</div><div class="card-title">Google Gemini</div></div><div class="card-desc">रियल-टाइम वेब सर्च और गूगल के ईकोसिस्टम (Docs, Drive, Gmail) के साथ इंटीग्रेट AI।</div><div class="card-actions"><a href="https://gemini.google.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.google.android.apps.bard" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+google+gemini+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📒</div><div class="card-title">NotebookLM</div></div><div class="card-desc">अपने PDF या नोट्स अपलोड करो — यह सिर्फ उसी डेटा के आधार पर जवाब देता है (बिना हैलुसिनेशन)।</div><div class="card-actions"><a href="https://notebooklm.google.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+notebooklm+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🧪</div><div class="card-title">Google AI Studio</div></div><div class="card-desc">डेवलपर्स के लिए गूगल का प्लेग्राउंड — बिना लिमिट के Gemini के एडवांस्ड मॉडल्स टेस्ट करो।</div><div class="card-actions"><a href="https://aistudio.google.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+ai+studio+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🇮🇳</div><div class="card-title">Sarvam AI</div></div><div class="card-desc">खास तौर पर भारतीय भाषाओं (हिंदी, तमिल आदि) और वॉइस-बेस्ड AI मॉडल्स पर फोकस करने वाला इंडिक AI।</div><div class="card-actions"><a href="https://www.sarvam.ai/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=sarvam+ai+tutorial+india" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🐍</div><div class="card-title">Google Colab</div></div><div class="card-desc">ब्राउज़र में ही Python और Machine Learning कोड रन करने का फ्री क्लाउड टूल।</div><div class="card-actions"><a href="https://colab.research.google.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+colab+tutorial+for+beginners" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🧩</div><div class="card-title">Visual Blocks</div></div><div class="card-desc">मशीन लर्निंग मॉडल्स को विज़ुअली (नो-कोड) जोड़कर देखने का गूगल का टूल।</div><div class="card-actions"><a href="https://visualblocks.withgoogle.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+visual+blocks+for+ml+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🖐️</div><div class="card-title">MediaPipe Studio</div></div><div class="card-desc">AI विज़न मॉडल्स (फेस ट्रैकिंग, हैंड ट्रैकिंग) को ब्राउज़र में टेस्ट करने का गूगल टूल।</div><div class="card-actions"><a href="https://mediapipe-studio.webapps.google.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+mediapipe+studio+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔓</div><div class="card-title">Uncensored Chat</div></div><div class="card-desc">कॉरपोरेट फिल्टर-फ्री AI मॉडल्स — ब्रूटली ऑनेस्ट जवाब देते हैं।</div><div class="card-actions"><a href="https://uncensored.chat" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+uncensored+ai+models" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔮</div><div class="card-title">Opal</div></div><div class="card-desc">गूगल का एक्सपेरिमेंटल एआई प्रोजेक्ट।</div><div class="card-actions"><a href="https://opal.google" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+opal+ai+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
+        <div class="rail" aria-label="स्कूली शिक्षा cards">
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Primary</div>
+              <div class="card-title">LKG से 5वीं</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">RSCERT (Class 1–5 Books)</div>
+                  <div class="res-desc">राजस्थान बोर्ड की आधिकारिक मुफ्त डिजिटल पाठ्यपुस्तकें।</div>
+                  <div class="btn-group">
+                    <a href="https://rajshaladarpan.rajasthan.gov.in/ShalaSamvad/Home/FreeTextBooks.aspx" target="_blank" rel="noopener" class="btn btn-fill">पोर्टल खोलें</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">e-Pathshala (NCERT)</div>
+                  <div class="res-desc">NCERT की कक्षा 1 से 12 तक की डिजिटल किताबें।</div>
+                  <div class="btn-group">
+                    <a href="https://epathshala.nic.in/epathshala.php?ln=en" target="_blank" rel="noopener" class="btn btn-ghost">वेबसाइट देखें</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Middle School</div>
+              <div class="card-title">6वीं से 8वीं</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">DIKSHA</div>
+                  <div class="res-desc">स्कूली शिक्षा का 'Google'। सभी राज्यों और NCERT का कंटेंट।</div>
+                  <div class="btn-group">
+                    <a href="https://diksha.gov.in" target="_blank" rel="noopener" class="btn btn-fill">DIKSHA पर जाएं</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">PM e-VIDYA & Manodarpan</div>
+                  <div class="res-desc">एकीकृत डिजिटल शिक्षा और छात्रों के मानसिक स्वास्थ्य की पहल।</div>
+                  <div class="btn-group">
+                    <a href="https://pmevidya.education.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">e-VIDYA</a>
+                    <a href="https://manodarpan.education.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">Manodarpan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Secondary</div>
+              <div class="card-title">9वीं से 12वीं</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">BSER Books & NIOS</div>
+                  <div class="res-desc">राजस्थान बोर्ड की किताबें और ओपन स्कूलिंग के लिए ऑनलाइन पढ़ाई।</div>
+                  <div class="btn-group">
+                    <a href="https://rajeduboard.rajasthan.gov.in/books/index.htm" target="_blank" rel="noopener" class="btn btn-ghost">BSER</a>
+                    <a href="https://nios.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">NIOS</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">SATHEE — Free Coaching</div>
+                  <div class="res-desc">IIT-JEE, NEET की तैयारी के लिए फ्री कोचिंग और मॉक टेस्ट।</div>
+                  <div class="btn-group">
+                    <a href="https://sathee.prutor.ai" target="_blank" rel="noopener" class="btn btn-fill">तैयारी शुरू करें</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card end-card">
+            <div class="card-inner">
+              <h3>पढ़ो, आगे बढ़ो!</h3>
+              <p>support us at UPI: zeroisinf@ibl</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SEC 1 -->
+    <!-- SECTION 2 -->
     <section class="section theme-1" id="sec-1">
       <div class="wrap">
         <div class="section-head">
-          <h2>Dev & Design</h2>
-          <p>Build, code, design — everything with quick tutorials.</p>
+          <h2>उच्च शिक्षा</h2>
         </div>
 
-        <div class="rail" aria-label="Dev & Design cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">⚡</div><div class="card-title">v0.app</div></div><div class="card-desc">Vercel का AI टूल जो टेक्स्ट प्रॉम्प्ट से शानदार UI और React/Tailwind कोड जनरेट कर देता है।</div><div class="card-actions"><a href="https://v0.app/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=v0+vercel+app+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🤖</div><div class="card-title">OpenAI Codex</div></div><div class="card-desc">नेचुरल लैंग्वेज को वर्कING कोड में बदलने वाला AI (GitHub Copilot इसी तकनीक पर चलता है)।</div><div class="card-actions"><a href="https://openai.com/codex/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=openai+codex+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📱</div><div class="card-title">FlutterFlow</div></div><div class="card-desc">बिना कोड लिखे हाई-क्वालिटी नेटिव ऐप्स बनाने का सबसे तगड़ा नो-कोड प्लेटफॉर्म।</div><div class="card-actions"><a href="https://flutterflow.io" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=flutterflow+full+tutorial+playlist" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🖱️</div><div class="card-title">Cursor IDE</div></div><div class="card-desc">AI-पावर्ड कोड एडिटर। जो काम घंटों लेता है, वो मिनटों में लिख देता है।</div><div class="card-actions"><a href="https://cursor.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=cursor+ai+code+editor+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🎨</div><div class="card-title">Figma</div></div><div class="card-desc">ऐप या वेबसाइट का UI/UX डिज़ाइन और प्रोटोटाइप बनाने का इंडस्ट्री स्टैंडर्ड टूल।</div><div class="card-actions"><a href="https://figma.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.figma.mirror" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=figma+ui+ux+tutorial+for+beginners" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔥</div><div class="card-title">Firebase Studio</div></div><div class="card-desc">गूगल का बैकएंड और डेटाबेस मैनेजMENT टूल — ऐप्स को लाइव करने के लिए।</div><div class="card-actions"><a href="https://firebase.studio" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=firebase+database+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📊</div><div class="card-title">Google AppSheet</div></div><div class="card-desc">स्प्रेडशीट के डेटा को डायरेक्ट ऐप में बदलने का गूगल का नो-कोड टूल।</div><div class="card-actions"><a href="https://about.appsheet.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.appsheet.whitelabel.guid_26465446_4cba_4eb3_a210_8fbe84e015ba" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=google+appsheet+tutorial+full" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">⚙️</div><div class="card-title">Bolt.new</div></div><div class="card-desc">ब्राउज़र में ही फुल-स्टैक वेब ऐप्स लिखने, रन करने और डिप्लॉय करने का AI टूल।</div><div class="card-actions"><a href="https://bolt.new" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=bolt.new+ai+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔄</div><div class="card-title">Appilix</div></div><div class="card-desc">वेबसाइट को डायरेक्ट मोबाइल ऐप में कन्वर्ट करने का बिल्डर।</div><div class="card-actions"><a href="https://appilix.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=appilix+website+to+app+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🌀</div><div class="card-title">VibeDream</div></div><div class="card-desc">सॉफ्टवेयर जेनरेट करने वाला AI टूल — AI App Builder।</div><div class="card-actions"><a href="https://vibedream.ai" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=vibedream+ai+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📮📮</div><div class="card-title">Postman API</div></div><div class="card-desc">API (दो सॉफ्टवेयर के बीच का ब्रिज) को टेस्ट और बिल्ड करने का प्रफेशनल टूल।</div><div class="card-actions"><a href="https://www.postman.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=postman+api+testing+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🎯</div><div class="card-title">DartPad</div></div><div class="card-desc">डार्ट लैंग्वेज (जिसपर Flutter चलता है) को डायरेक्ट ब्राउज़र में टेस्ट करने के लिए।</div><div class="card-actions"><a href="https://dart.dev" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=dartpad+flutter+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📲</div><div class="card-title">Pydroid 3</div></div><div class="card-desc">फोन पर ही Python कोडिंग और ML मॉडल रन करने का बेस्ट ऑफलाइन IDE।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=ru.iiec.pydroid3" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=pydroid+3+tutorial+for+beginners" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🐧</div><div class="card-title">Install WSL</div></div><div class="card-desc">विंडोज के अंदर असली Linux चलाने का Microsoft ऑफिशियल गाइड।</div><div class="card-actions"><a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+install+and+use+wsl+2" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🌐</div><div class="card-title">Google Sites</div></div><div class="card-desc">बिना कोडिंग के फ्री में बेसिक वेबसाइट्स या पोर्टफोलियो बनाने का टूल।</div><div class="card-actions"><a href="https://sites.google.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+sites+tutorial+portfolio" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
+        <div class="rail" aria-label="उच्च शिक्षा cards">
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Bachelors</div>
+              <div class="card-title">Undergraduate (UG)</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">SWAYAM & SWAYAM PRABHA</div>
+                  <div class="res-desc">फ्री यूनिवर्सिटी कोर्सेस (MOOCs) और 24x7 DTH एजुकेशनल चैनल्स।</div>
+                  <div class="btn-group">
+                    <a href="https://swayam.gov.in" target="_blank" rel="noopener" class="btn btn-fill">SWAYAM</a>
+                    <a href="https://swayamprabha.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">PRABHA</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">NPTEL & CEC</div>
+                  <div class="res-desc">इंजीनियरिंग, साइंस और UG के लिए IIT के वीडियो लेक्चर्स।</div>
+                  <div class="btn-group">
+                    <a href="https://nptel.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">NPTEL</a>
+                    <a href="https://cec.nic.in" target="_blank" rel="noopener" class="btn btn-ghost">CEC</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Masters</div>
+              <div class="card-title">PG & Distance</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">e-PG Pathshala</div>
+                  <div class="res-desc">PG छात्रों के लिए 70+ विषयों में हाई-क्वालिटी ई-कंटेंट।</div>
+                  <div class="btn-group">
+                    <a href="https://epgp.inflibnet.ac.in" target="_blank" rel="noopener" class="btn btn-fill">ई-कंटेंट देखें</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">eGyanKosh (IGNOU)</div>
+                  <div class="res-desc">ओपन और डिस्टेंस लर्निंग के तहत डिग्री/डिप्लोमा सामग्री।</div>
+                  <div class="btn-group">
+                    <a href="https://egyankosh.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">रिपॉजिटरी</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Doctorate</div>
+              <div class="card-title">PhD & Research</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">Bodhan.ai & I-STEM</div>
+                  <div class="res-desc">AI रिसर्च प्लेटफॉर्म और महंगे लैब उपकरणों की ऑनलाइन बुकिंग।</div>
+                  <div class="btn-group">
+                    <a href="https://research.bodhan.ai/#/" target="_blank" rel="noopener" class="btn btn-fill">Bodhan</a>
+                    <a href="https://istem.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">I-STEM</a>
+                  </div>
+                </div>
+
+                <div class="res-item">
+                  <div class="res-name">Shodhganga & ShodhShuddhi</div>
+                  <div class="res-desc">PhD थीसिस का भंडार और Plagiarism चेकर।</div>
+                  <div class="btn-group">
+                    <a href="https://shodhganga.inflibnet.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">Theses</a>
+                    <a href="https://pds.inflibnet.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">Plagiarism</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card end-card">
+            <div class="card-inner">
+              <h3>ऊंचा उड़ो!</h3>
+              <p>University पढ़ाई भी free है</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SEC 2 -->
+    <!-- SECTION 3 -->
     <section class="section theme-2" id="sec-2">
       <div class="wrap">
         <div class="section-head">
-          <h2>Privacy & Web</h2>
-          <p>Privacy tools, browsers, and web utilities.</p>
+          <h2>व्यावसायिक &amp; कौशल</h2>
         </div>
 
-        <div class="rail" aria-label="Privacy & Web cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">💾</div><div class="card-title">GetIntoPC</div></div><div class="card-desc">विंडोज़ के भारी प्रीमियम सॉफ्टवेयर (डेवलपमेंट, ग्राफ़िक्स) फ्री में डाउनलोड करने की सबसे बड़ी वेबसाइट।</div><div class="card-actions"><a href="https://getintopc.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+download+from+getintopc+safely" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🎮</div><div class="card-title">Modyolo</div></div><div class="card-desc">प्रीमियम और मॉडिफाई किए गए Android गेम्स और ऐप्स (Mod APKs) सुरक्षित तरीके से डाउनलोड।</div><div class="card-actions"><a href="https://modyolo.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+download+from+modyolo" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🧅</div><div class="card-title">Tor Browser</div></div><div class="card-desc">इंटरनेट पर पूरी तरह एनोनिमस रहने के लिए। डेटा को अलग-अलग सर्वर्स से बाउंस कराता है।</div><div class="card-actions"><a href="https://www.torproject.org/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=org.torproject.torbrowser" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=tor+browser+tutorial+for+beginners" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🦁</div><div class="card-title">Brave</div></div><div class="card-desc">Chrome जैसा, लेकिन इन-बिल्ट तगड़े ऐड-ब्लॉकर और ट्रैकर-ब्लॉकर के साथ।</div><div class="card-actions"><a href="https://brave.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=brave+browser+best+settings+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔒</div><div class="card-title">Ulaa</div></div><div class="card-desc">Zoho का प्राइवेसी-फोकस्ड ब्राउज़र। Work, Personal और Kids जैसे अलग मोड्स।</div><div class="card-actions"><a href="https://ulaa.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.zoho.ulaa" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=ulaa+browser+review+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">☄️</div><div class="card-title">Comet Browser</div></div><div class="card-desc">हल्का ब्राउज़र जो फास्ट डाउनलोडिंग और रेस्ट्रिक्शन्स बायपास करने के काम आता है।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=ai.perplexity.comet" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=comet+browser+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">▶️</div><div class="card-title">YT ReVanced</div></div><div class="card-desc">YouTube का ओपन-सोर्स वर्ज़न — ऐड्स ब्लॉक, बैकग्राउंड प्ले, स्पॉन्सर स्किप, डिस्लाइक वापस।</div><div class="card-actions"><a href="https://revanced.app/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=youtube+revanced+install+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🦭</div><div class="card-title">Seal</div></div><div class="card-desc">डाउनलोडिंग का असली किंग — yt-dlp पर चलता है, ज़ीरो ऐड्स, किसी भी साइट से मैक्सिमम क्वालिटी।</div><div class="card-actions"><a href="https://github.com/JunkFood02/Seal" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=seal+video+downloader+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📥</div><div class="card-title">Snaptube</div></div><div class="card-desc">YouTube, Instagram आदि से वीडियो/ऑडियो डाउनलोड करने का पुराना जुगाड़ (ऐड्स आते हैं)।</div><div class="card-actions"><a href="https://www.snaptubeapp.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+snaptube" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-        </div>
-      </div>
-    </section>
+        <div class="rail" aria-label="व्यावसायिक & कौशल cards">
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Teacher Training</div>
+              <div class="card-title">शिक्षक प्रशिक्षण</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">D.El.Ed (Diploma in Elementary Ed.)</div>
+                  <div class="res-desc">प्राथमिक शिक्षक बनने के लिए डिप्लोमा कोर्स की अध्ययन सामग्री।</div>
+                  <div class="btn-group">
+                    <a href="https://nios.ac.in/dled/dledstudy.aspx" target="_blank" rel="noopener" class="btn btn-fill">NIOS Material</a>
+                    <a href="https://youtube.com/@lokmestudies/videos" target="_blank" rel="noopener" class="btn btn-ghost">Lokme YT</a>
+                    <a href="https://t.me/lokmestudies" target="_blank" rel="noopener" class="btn btn-ghost">Telegram</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- SEC 3 -->
-    <section class="section theme-3" id="sec-3">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Civic & Security</h2>
-          <p>Government + security + public utility tools.</p>
-        </div>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Tech & Skills</div>
+              <div class="card-title">तकनीकी एवं कौशल</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">IIT Projects</div>
+                  <div class="res-desc">Spoken Tutorials, V-Labs, e-Yantra, FOSSEE — सॉफ्टवेयर, रोबोटिक्स, प्रैक्टिकल लैब।</div>
+                  <div class="btn-group">
+                    <a href="https://spoken-tutorial.org" target="_blank" rel="noopener" class="btn btn-ghost">Tutorials</a>
+                    <a href="https://vlab.co.in" target="_blank" rel="noopener" class="btn btn-ghost">V-Labs</a>
+                    <a href="https://e-yantra.org" target="_blank" rel="noopener" class="btn btn-ghost">e-Yantra</a>
+                    <a href="https://fossee.in" target="_blank" rel="noopener" class="btn btn-fill">FOSSEE</a>
+                  </div>
+                </div>
 
-        <div class="rail" aria-label="Civic & Security cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">📜</div><div class="card-title">RTI Online</div></div><div class="card-desc">सिस्टम से सीधे सवाल पूछने और सरकारी कागज़ निकलवाने का सबसे बड़ा कानूनी हथियार।</div><div class="card-actions"><a href="https://rtionline.gov.in" target="_blank" rel="noopener" class="btn btn-fill">🌐 Center</a><a href="https://rti.rajasthan.gov.in" target="_blank" rel="noopener" class="btn btn-fill">🌐 Raj.</a><a href="https://www.youtube.com/results?search_query=how+to+file+rti+online+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🗳️</div><div class="card-title">MyNeta</div></div><div class="card-desc">नेताओं के क्रिमिनल रिकॉर्ड्स, संपत्ति और एफिडेविट चेक करने का डेटाबेस।</div><div class="card-actions"><a href="https://www.myneta.info" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+myneta+info" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🩸</div><div class="card-title">e-Raktkosh</div></div><div class="card-desc">देशभर के ब्लड बैंक्स में खून की रियल-टाइम अवेलेबिलिटी चेक करने का सरकारी पोर्टल।</div><div class="card-actions"><a href="https://eraktkosh.mohfw.gov.in" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.cdac.eraktkosh" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=eraktkosh+blood+bank+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔐</div><div class="card-title">Have I Been Pwned</div></div><div class="card-desc">तुम्हारा ईमेल या पासवर्ड हैकर्स के पास लीक तो नहीं हो गया — तुरंत चेक करो।</div><div class="card-actions"><a href="https://haveibeenpwned.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=haveibeenpwned+tutorial+check+email+hack" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📂</div><div class="card-title">DigiLocker</div></div><div class="card-desc">मार्कशीट्स, आधार, ड्राइविंग लाइसेंस डिजिटली और कानूनी रूप से स्टोर करने के लिए।</div><div class="card-actions"><a href="https://www.digilocker.gov.in/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.digilocker.android" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+digilocker+app" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-        </div>
-      </div>
-    </section>
+                <div class="res-item">
+                  <div class="res-name">Skill India & FutureSkills</div>
+                  <div class="res-desc">रोजगार, ITI ट्रेनिंग, अपरेंटिसशिप और AI जैसी नई तकनीकें।</div>
+                  <div class="btn-group">
+                    <a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">SIDH</a>
+                    <a href="https://futureskillsprime.in" target="_blank" rel="noopener" class="btn btn-ghost">FutureSkills</a>
+                    <a href="https://bharatskills.gov.in" target="_blank" rel="noopener" class="btn btn-ghost">Bharat Skills</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- SEC 4 -->
-    <section class="section theme-4" id="sec-4">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Files & Remote</h2>
-          <p>Cloud, PDFs, file managers, and remote desktop.</p>
-        </div>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-tag">Universal</div>
+              <div class="card-title">सार्वभौमिक संसाधन</div>
+              <div class="scroll">
+                <div class="res-item">
+                  <div class="res-name">NDL — National Digital Library</div>
+                  <div class="res-desc">भारत की सबसे बड़ी डिजिटल लाइब्रेरी, सभी आयु वर्गों के लिए।</div>
+                  <div class="btn-group">
+                    <a href="https://ndl.iitkgp.ac.in" target="_blank" rel="noopener" class="btn btn-fill">लाइब्रेरी खोलें</a>
+                  </div>
+                </div>
 
-        <div class="rail" aria-label="Files & Remote cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">☁️</div><div class="card-title">Drive / Docs</div></div><div class="card-desc">क्लाउड स्टोरेज, वर्ड प्रोसेसिंग और क्विक आइडियाज नोट करने का डिफ़ॉल्ट गूगल ईकोसिस्टम।</div><div class="card-actions"><a href="https://drive.google.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=google+drive+docs+full+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📁</div><div class="card-title">CX File Explorer</div></div><div class="card-desc">पावरफुल फाइल मैनेजर। फोन से कंप्यूटर या क्लाउड ड्राइव्स (FTP, SMB) को एक्सेस करो।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=com.cxinventor.file.explorer" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=cx+file+explorer+smb+ftp+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📄</div><div class="card-title">PDF24 Tools</div></div><div class="card-desc">PDF का Swiss Army Knife — 100% फ्री, बिना वॉटरमार्क के मर्ज, स्प्लिट, रिसाइज सब।</div><div class="card-actions"><a href="https://tools.pdf24.org/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+pdf24+tools" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🖥️</div><div class="card-title">Windows App</div></div><div class="card-desc">फोन से दूर रखे Windows PC या Microsoft Cloud PC को कंट्रोल करने के लिए।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=com.microsoft.windows365.test" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=microsoft+windows+app+android+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🖱️</div><div class="card-title">Remote Desktop</div></div><div class="card-desc">फोन से किसी भी कंप्यूटर की स्क्रीन कंट्रोल करने के लिए गूगल का फ्री टूल।</div><div class="card-actions"><a href="https://remotedesktop.google.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.google.chromeremotedesktop" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=chrome+remote+desktop+setup+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-        </div>
-      </div>
-    </section>
+                <div class="res-item">
+                  <div class="res-name">VIDWAN & Shodhgangotri</div>
+                  <div class="res-desc">एक्सपर्ट्स का डेटाबेस और चल रहे रिसर्च की सिनोप्सिस।</div>
+                  <div class="btn-group">
+                    <a href="https://vidwan.inflibnet.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">VIDWAN</a>
+                    <a href="https://shodhgangotri.inflibnet.ac.in" target="_blank" rel="noopener" class="btn btn-ghost">Synopses</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- SEC 5 -->
-    <section class="section theme-5" id="sec-5">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Creativity</h2>
-          <p>Video, music, photo tools with tutorials.</p>
-        </div>
-
-        <div class="rail" aria-label="Creativity cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">🎬</div><div class="card-title">VideoCompress AI</div></div><div class="card-desc">AI की मदद से वीडियो की क्वालिटी गिराए बिना उसका साइज (MB) कम करने का टूल।</div><div class="card-actions"><a href="https://videocompress.ai/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=videocompress.ai+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🎵</div><div class="card-title">Suno (AI Music)</div></div><div class="card-desc">टेक्स्ट में बताओ कैसा गाना चाहिए — वोकल्स और म्यूजिक के साथ स्टूडियो-क्वालिटी गाना तैयार।</div><div class="card-actions"><a href="https://suno.com/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.suno.app" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+suno+ai+music+generator" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📹</div><div class="card-title">YT Create</div></div><div class="card-desc">YouTube का अपना फ्री वीडियो एडिटर — Shorts और Reels के लिए बेहतरीन।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.creator" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=youtube+create+app+video+editing+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📸</div><div class="card-title">Snapseed</div></div><div class="card-desc">गूगल का फ्री प्रो-लेवल फोटो एडिटर — RAW एडिटिंग, कर्व्स और बहुत कुछ।</div><div class="card-actions"><a href="https://play.google.com/store/apps/details?id=com.niksoftware.snapseed" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=snapseed+photo+editing+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">✂️</div><div class="card-title">Remove.bg</div></div><div class="card-desc">इमेजेस से बैकग्राउंड हटाने के लिए एकदम क्लीन और सटीक AI टूल।</div><div class="card-actions"><a href="https://www.remove.bg" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=bg.remove.android" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=remove.bg+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">✨</div><div class="card-title">Pixelcut</div></div><div class="card-desc">प्रोडक्ट फोटोग्राफी और सोशल मीडिया के लिए AI-पावर्ड इमेज एडिटिंग ऐप।</div><div class="card-actions"><a href="https://www.pixelcut.ai" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.circular.pixelcut" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=pixelcut+app+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🖼️</div><div class="card-title">Freepik</div></div><div class="card-desc">All-in-One AI Creative Suite — डिज़ाइन, वेक्टर्स और इमेजेस के लिए।</div><div class="card-actions"><a href="https://www.freepik.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.freepik.app" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+freepik+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SEC 6 -->
-    <section class="section theme-6" id="sec-6">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Research</h2>
-          <p>Learning & research utilities, communities, and tracking.</p>
-        </div>
-
-        <div class="rail" aria-label="Research cards">
-          <div class="card"><div class="card-header"><div class="card-emoji">📖</div><div class="card-title">Library Genesis</div></div><div class="card-desc">दुनिया की लगभग हर पेड किताब और रिसर्च पेपर फ्री में डाउनलोड करने का सबसे बड़ा शैडो लाइब्रेरी।</div><div class="card-actions"><a href="https://libgen.li" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+libgen+library+genesis" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔭</div><div class="card-title">Veritasium</div></div><div class="card-desc">डीप साइंस और लॉजिक को डिकोड करने वाले दुनिया के बेस्ट एजुकेशन YouTubers में से एक।</div><div class="card-actions"><a href="https://www.veritasium.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/@veritasium" target="_blank" rel="noopener" class="btn btn-ghost">▶ YouTube</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🗂️</div><div class="card-title">Miro</div></div><div class="card-desc">आइडियाज, फ्लोचार्ट और माइंड-मैप्स बनाने के लिए Infinite Whiteboard टूल।</div><div class="card-actions"><a href="https://miro.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.realtimeboard" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=miro+whiteboard+tutorial+for+beginners" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">✈️</div><div class="card-title">Telegram</div></div><div class="card-desc">भारी फाइल्स भेजना, ओपन-सोर्स कम्युनिटी चैनल्स और सीक्रेट चैट्स — बेस्ट मैसेंजर।</div><div class="card-actions"><a href="https://web.telegram.org/" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=telegram+advanced+features+tutorial" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🚀</div><div class="card-title">Product Hunt</div></div><div class="card-desc">दुनिया भर में रोज़ लॉन्च होने वाले नए ऐप्स और स्टार्टअप्स खोजने की जगह।</div><div class="card-actions"><a href="https://www.producthunt.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.producthunt.app" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+use+product+hunt" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📊</div><div class="card-title">SocialBlade</div></div><div class="card-desc">किसी भी YouTube या Instagram अकाउंट के analytics और असली ग्रोth ट्रैक करने की साइट।</div><div class="card-actions"><a href="https://socialblade.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=how+to+use+social+blade+analytics" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">🔬</div><div class="card-title">IndiaBioscience</div></div><div class="card-desc">भारत में Life Sciences और Research कम्युनिटी का हब — Science outreach और educational resources।</div><div class="card-actions"><a href="https://indiabioscience.org" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://www.youtube.com/results?search_query=IndiaBioscience+webinars" target="_blank" rel="noopener" class="btn btn-ghost">▶ YouTube</a></div></div>
-          <div class="card"><div class="card-header"><div class="card-emoji">📱</div><div class="card-title">91mobiles</div></div><div class="card-desc">मोबाइल और गैजेट रिसर्च के लिए भारत की सबसे बड़ी टेक वेबसाइट — specs compare करो।</div><div class="card-actions"><a href="https://www.91mobiles.com" target="_blank" rel="noopener" class="btn btn-fill">🌐 Web</a><a href="https://play.google.com/store/apps/details?id=com.ninetyonemobiles.b2c" target="_blank" rel="noopener" class="btn btn-fill">📱 App</a><a href="https://www.youtube.com/results?search_query=how+to+compare+phones+on+91mobiles" target="_blank" rel="noopener" class="btn btn-ghost">▶ Tutorial</a></div></div>
+          <div class="card end-card">
+            <div class="card-inner">
+              <h3>हुनर दिखाओ!</h3>
+              <p>Skill और रोज़गार, साथ साथ</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <div style="height:24px;"></div>
+    <div style="height: 24px;"></div>
   </div>
 
+<a href="toolswithtutorial.html">
+  
   <script>
-    const app = document.getElementById('app');
-    const tabs = Array.from(document.querySelectorAll('.tab'));
-    const sections = Array.from(document.querySelectorAll('section.section'));
+(() => {
+  const app = document.getElementById('app');
+  const header = document.querySelector('header');
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const sections = tabs
+    .map(btn => document.getElementById(btn.dataset.target))
+    .filter(Boolean);
 
-    function setActiveById(id){
-      tabs.forEach(t => t.classList.toggle('active', t.dataset.target === id));
-    }
+  let programmatic = false;
+  let programmaticTimer = null;
 
-    // Tab click -> scroll to section
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = document.getElementById(btn.dataset.target);
-        if (!target) return;
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+  function setHeaderHeightVar(){
+    // Real header height can change due to wrapping (esp. mobile)
+    const h = Math.ceil(header.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--headerH', h + 'px');
+  }
+
+  function setActive(targetId){
+    tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.target === targetId));
+  }
+
+  // 1) Keep --headerH accurate
+  setHeaderHeightVar();
+  window.addEventListener('resize', setHeaderHeightVar, { passive: true });
+
+  // 2) Click -> smooth scroll inside #app, avoid flicker during snap
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      programmatic = true;
+      setActive(id); // immediate visual feedback
+
+      // Smooth scroll within the inner scroller
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      clearTimeout(programmaticTimer);
+      programmaticTimer = setTimeout(() => { programmatic = false; }, 450);
     });
+  });
 
-    // Highlight tabs based on visible section (NO auto tab scroll)
-    const io = new IntersectionObserver((entries) => {
-      let best = null;
-      for (const e of entries){
-        if (!best || e.intersectionRatio > best.intersectionRatio) best = e;
-      }
-      if (!best || !best.isIntersecting) return;
-      setActiveById(best.target.id);
-    }, { root: app, threshold: [0.35, 0.5, 0.65] });
+  // 3) Observer: highlights the section that is actually in view (root is #app)
+  const obs = new IntersectionObserver((entries) => {
+    if (programmatic) return;
 
-    sections.forEach(s => io.observe(s));
+    // pick the entry closest to the top (and intersecting)
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
 
-    /* --- OPTIONAL: rail wheel -> horizontal scroll like your old code --- */
-    document.querySelectorAll(".rail").forEach(rail=>{
-      rail.addEventListener("wheel",(e)=>{
-        // keep page vertical scroll working when user uses trackpad over rail?
-        // We mimic your earlier behavior: wheel -> horizontal.
-        e.preventDefault();
-        rail.scrollLeft += e.deltaY;
-      },{passive:false});
-    });
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, {
+    root: app,
+    // Top margin accounts for sticky header; bottom margin prevents late switching
+    rootMargin: () => {
+      const h = Math.ceil(header.getBoundingClientRect().height);
+      return `-${h + 6}px 0px -55% 0px`;
+    },
+    threshold: [0.15, 0.25, 0.35]
+  });
 
-    /* --- DRAG SCROLL (DESKTOP) --- */
-    document.querySelectorAll(".rail").forEach(slider=>{
-      let isDown=false;
-      let startX=0;
-      let scrollLeft=0;
+  sections.forEach(sec => obs.observe(sec));
 
-      slider.addEventListener("mousedown",(e)=>{
-        isDown=true;
-        startX=e.pageX-slider.offsetLeft;
-        scrollLeft=slider.scrollLeft;
-        slider.style.cursor="grabbing";
-      });
-
-      slider.addEventListener("mouseleave",()=>{
-        isDown=false;
-        slider.style.cursor="grab";
-      });
-
-      slider.addEventListener("mouseup",()=>{
-        isDown=false;
-        slider.style.cursor="grab";
-      });
-
-      slider.addEventListener("mousemove",(e)=>{
-        if(!isDown) return;
-        e.preventDefault();
-        const x=e.pageX-slider.offsetLeft;
-        const walk=(x-startX)*1.4;
-        slider.scrollLeft=scrollLeft-walk;
-      });
-    });
-  </script>
+  // 4) Safety: if user scrolls manually, quickly unlock programmatic mode
+  app.addEventListener('scroll', () => {
+    if (!programmatic) return;
+    clearTimeout(programmaticTimer);
+    programmaticTimer = setTimeout(() => { programmatic = false; }, 120);
+  }, { passive: true });
+})();
+</script>
 </body>
 </html>
