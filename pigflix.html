@@ -136,7 +136,6 @@
       padding: 10px 12px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; transition: 0.2s ease; border: 1px solid transparent;
     }
     .btn-primary { background: var(--accent); color: #111; }
-    .btn-secondary { background: transparent; color: #fff; border-color: var(--border); }
     .btn:hover { transform: translateY(-1px); }
     .coming-soon {
       min-height: 44vh; display: grid; place-items: center; border: 1px dashed rgba(255,255,255,0.18);
@@ -182,7 +181,7 @@
         <div class="hero-kicker">OTT-style learning hub • Verified links • Easy browsing</div>
         <h1>Pigflix</h1>
         <p>
-          Browse curated videos, web series, shows, and interactive tools in a cleaner Netflix-inspired layout. Top level is split into Videos and Interactives, then into subjects, with content ordered by age suitability.
+          Browse curated videos, web series, shows, and apps and games in a cleaner Netflix-inspired layout. Top level is split into Videos and Apps &amp; Games, then into subjects, with content ordered by age suitability.
         </p>
       </div>
     </section>
@@ -190,7 +189,7 @@
     <main class="content">
       <section class="class-panel active" id="class-1-5">
         <div class="nav-level-1" role="tablist" aria-label="Main content tabs">
-          <button class="tab-btn active" data-tab="interactives">Interactives</button>
+          <button class="tab-btn active" data-tab="interactives">Apps &amp; Games</button>
           <button class="tab-btn" data-tab="videos">Videos</button>
         </div>
 
@@ -231,58 +230,58 @@
     const data = {
       interactives: [
         { subject: 'Maths', description: 'Ordered from younger to older. Great for number sense, fractions, geometry, and multiplication fluency.', items: [
-          {title:'PBS Kids Math Games', type:'Interactive', age:'Class 1+', vibe:'Games', desc:'Simple, playful web games for number sense, patterns, and beginner problem solving.', url:'https://pbskids.org/games/math', action:'Play'},
-          {title:'Prodigy Math', type:'Interactive', age:'Class 2+', vibe:'RPG game', desc:'Game-style maths practice that feels like playing while building arithmetic fluency.', url:'https://play.prodigygame.com/explore/math', action:'Play'},
-          {title:'Times Tables Rock Stars', type:'Interactive', age:'Class 3+', vibe:'Skill game', desc:'Fast multiplication fluency practice in a game-like format.', url:'https://play.ttrockstars.com/', action:'Play'},
-          {title:'Mathletics India', type:'Interactive', age:'Class 3+', vibe:'Interactive practice', desc:'Structured maths practice and games with a polished child-friendly interface.', url:'https://www.mathletics.com/in/', action:'Open'},
-          {title:'DragonBox Big Numbers', type:'Interactive', age:'Class 3+', vibe:'Logic app', desc:'Playful place-value and big-number understanding through intuitive mechanics.', url:'https://dragonbox.com/products/big-numbers', action:'Open'},
-          {title:'DragonBox Elements / Geometry', type:'Interactive', age:'Class 4+', vibe:'Geometry game', desc:'Fun geometry thinking through puzzle-like play.', url:'https://dragonbox.com/products/elements', action:'Open'},
-          {title:'DragonBox Products', type:'Interactive', age:'Class 4+', vibe:'Game collection', desc:'Browse more visual maths and logic apps from DragonBox.', url:'https://dragonbox.com/products', action:'Open'},
-          {title:'Slice Fractions', type:'Interactive', age:'Class 4+', vibe:'Logic game', desc:'Excellent visual introduction to part-whole understanding and fractions.', url:'https://play.google.com/store/apps/details?hl=en_IN&id=air.com.ululab.SliceFractions', action:'Open'},
-          {title:'Slice Fractions 2', type:'Interactive', age:'Class 4+', vibe:'Logic game', desc:'A stronger follow-up for deeper fractions thinking.', url:'https://play.google.com/store/apps/details?hl=en_IN&id=com.ululab.SliceFractions2', action:'Open'},
-          {title:"BYJU'S BODMAS Rule", type:'Interactive', age:'Class 5+', vibe:'Concept page', desc:'Quick BODMAS reference and worked examples for order of operations.', url:'https://byjus.com/maths/bodmas-rule/', action:'Open'},
-          {title:"BYJU'S BODMAS Questions", type:'Interactive', age:'Class 5+', vibe:'Practice page', desc:'Extra BODMAS examples and worked questions.', url:'https://byjus.com/maths/bodmas-rule-questions/', action:'Open'}
+          {title:'PBS Kids Math Games', type:'Apps & Games', age:'Class 1+', vibe:'Games', desc:'Simple, playful web games for number sense, patterns, and beginner problem solving.', url:'https://pbskids.org/games/math', action:'Play'},
+          {title:'Prodigy Math', type:'Apps & Games', age:'Class 2+', vibe:'RPG game', desc:'Game-style maths practice that feels like playing while building arithmetic fluency.', url:'https://play.prodigygame.com/explore/math', action:'Play'},
+          {title:'Times Tables Rock Stars', type:'Apps & Games', age:'Class 3+', vibe:'Skill game', desc:'Fast multiplication fluency practice in a game-like format.', url:'https://play.ttrockstars.com/', action:'Play'},
+          {title:'Mathletics India', type:'Apps & Games', age:'Class 3+', vibe:'Interactive practice', desc:'Structured maths practice and games with a polished child-friendly interface.', url:'https://www.mathletics.com/in/', action:'Open'},
+          {title:'DragonBox Big Numbers', type:'Apps & Games', age:'Class 3+', vibe:'Logic app', desc:'Playful place-value and big-number understanding through intuitive mechanics.', url:'https://dragonbox.com/products/big-numbers', action:'Open'},
+          {title:'DragonBox Elements / Geometry', type:'Apps & Games', age:'Class 4+', vibe:'Geometry game', desc:'Fun geometry thinking through puzzle-like play.', url:'https://dragonbox.com/products/elements', action:'Open'},
+          {title:'DragonBox Products', type:'Apps & Games', age:'Class 4+', vibe:'Game collection', desc:'Browse more visual maths and logic apps from DragonBox.', url:'https://dragonbox.com/products', action:'Open'},
+          {title:'Slice Fractions', type:'Apps & Games', age:'Class 4+', vibe:'Logic game', desc:'Excellent visual introduction to part-whole understanding and fractions.', url:'https://play.google.com/store/apps/details?hl=en_IN&id=air.com.ululab.SliceFractions', action:'Open'},
+          {title:'Slice Fractions 2', type:'Apps & Games', age:'Class 4+', vibe:'Logic game', desc:'A stronger follow-up for deeper fractions thinking.', url:'https://play.google.com/store/apps/details?hl=en_IN&id=com.ululab.SliceFractions2', action:'Open'},
+          {title:"BYJU'S BODMAS Rule", type:'Apps & Games', age:'Class 5+', vibe:'Concept page', desc:'Quick BODMAS reference and worked examples for order of operations.', url:'https://byjus.com/maths/bodmas-rule/', action:'Open'},
+          {title:"BYJU'S BODMAS Questions", type:'Apps & Games', age:'Class 5+', vibe:'Practice page', desc:'Extra BODMAS examples and worked questions.', url:'https://byjus.com/maths/bodmas-rule-questions/', action:'Open'}
         ]},
         { subject: 'English', description: 'Early reading to stronger reading, library access, grammar support, and revision tools.', items: [
-          {title:'Starfall Learn to Read', type:'Interactive', age:'Class 1+', vibe:'Reading web app', desc:'A long-standing favourite for early reading and phonics practice.', url:'https://www.starfall.com/h/learn-to-read/', action:'Play'},
-          {title:'Duolingo ABC', type:'Interactive', age:'Class 1+', vibe:'Reading app', desc:'Gentle reading practice with simple, polished activities.', url:'https://www.duolingo.com/abc', action:'Play'},
-          {title:'ABCmouse', type:'Interactive', age:'Class 1+', vibe:'Learning platform', desc:'Broad early-learning app with reading-friendly content.', url:'https://www.abcmouse.com/', action:'Open'},
-          {title:'ABCmouse Games', type:'Interactive', age:'Class 1+', vibe:'Games', desc:'Quick entry to playable ABCmouse activities.', url:'https://www.abcmouse.com/games', action:'Play'},
-          {title:'Epic! Books', type:'Interactive', age:'Class 2+', vibe:'Digital library', desc:'A large library of children’s books, many with read-aloud support.', url:'https://www.getepic.com/in/', action:'Read'},
-          {title:'Reading Eggs', type:'Interactive', age:'Class 2+', vibe:'Reading platform', desc:'Guided reading, phonics, and comprehension in a gamified format.', url:'https://readingeggs.com/', action:'Open'},
-          {title:'BrainPOP Jr.', type:'Interactive', age:'Class 3+', vibe:'Interactive lessons', desc:'Reading, writing, grammar, and topic videos in a kid-friendly format.', url:'https://jr.brainpop.com/', action:'Open'},
-          {title:'British Council LearnEnglish Kids', type:'Interactive', age:'Class 3+', vibe:'Activities', desc:'Games, stories, songs, and grammar practice from a trusted source.', url:'https://learnenglishkids.britishcouncil.org/', action:'Open'},
-          {title:'Quizlet India', type:'Interactive', age:'Class 5+', vibe:'Flashcards', desc:'Useful for vocabulary, grammar terms, and custom revision sets.', url:'https://quizlet.com/in', action:'Study'},
-          {title:'Quizlet Live', type:'Interactive', age:'Class 5+', vibe:'Group game', desc:'Fast interactive revision format for terms and language recall.', url:'https://quizlet.com/live', action:'Play'}
+          {title:'Starfall Learn to Read', type:'Apps & Games', age:'Class 1+', vibe:'Reading web app', desc:'A long-standing favourite for early reading and phonics practice.', url:'https://www.starfall.com/h/learn-to-read/', action:'Play'},
+          {title:'Duolingo ABC', type:'Apps & Games', age:'Class 1+', vibe:'Reading app', desc:'Gentle reading practice with simple, polished activities.', url:'https://www.duolingo.com/abc', action:'Play'},
+          {title:'ABCmouse', type:'Apps & Games', age:'Class 1+', vibe:'Learning platform', desc:'Broad early-learning app with reading-friendly content.', url:'https://www.abcmouse.com/', action:'Open'},
+          {title:'ABCmouse Games', type:'Apps & Games', age:'Class 1+', vibe:'Games', desc:'Quick entry to playable ABCmouse activities.', url:'https://www.abcmouse.com/games', action:'Play'},
+          {title:'Epic! Books', type:'Apps & Games', age:'Class 2+', vibe:'Digital library', desc:'A large library of children’s books, many with read-aloud support.', url:'https://www.getepic.com/in/', action:'Read'},
+          {title:'Reading Eggs', type:'Apps & Games', age:'Class 2+', vibe:'Reading platform', desc:'Guided reading, phonics, and comprehension in a gamified format.', url:'https://readingeggs.com/', action:'Open'},
+          {title:'BrainPOP Jr.', type:'Apps & Games', age:'Class 3+', vibe:'Interactive lessons', desc:'Reading, writing, grammar, and topic videos in a kid-friendly format.', url:'https://jr.brainpop.com/', action:'Open'},
+          {title:'British Council LearnEnglish Kids', type:'Apps & Games', age:'Class 3+', vibe:'Activities', desc:'Games, stories, songs, and grammar practice from a trusted source.', url:'https://learnenglishkids.britishcouncil.org/', action:'Open'},
+          {title:'Quizlet India', type:'Apps & Games', age:'Class 5+', vibe:'Flashcards', desc:'Useful for vocabulary, grammar terms, and custom revision sets.', url:'https://quizlet.com/in', action:'Study'},
+          {title:'Quizlet Live', type:'Apps & Games', age:'Class 5+', vibe:'Group game', desc:'Fast interactive revision format for terms and language recall.', url:'https://quizlet.com/live', action:'Play'}
         ]},
         { subject: 'Hindi', description: 'Hindi reading fluency, story reading, and vocabulary support.', items: [
-          {title:'Read Along by Google', type:'Interactive', age:'Class 1+', vibe:'Reading tool', desc:'Speech-based reading support that listens and helps while kids read aloud.', url:'https://readalong.google.com/', action:'Read'},
-          {title:'StoryWeaver Hindi Stories', type:'Interactive', age:'Class 1+', vibe:'Story library', desc:'Free Hindi stories for gradual reading practice.', url:'https://storyweaver.org.in/hi/stories', action:'Read'},
-          {title:'Quizlet India', type:'Interactive', age:'Class 5+', vibe:'Flashcards', desc:'Useful for custom Hindi vocabulary and revision sets.', url:'https://quizlet.com/in', action:'Study'}
+          {title:'Read Along by Google', type:'Apps & Games', age:'Class 1+', vibe:'Reading tool', desc:'Speech-based reading support that listens and helps while kids read aloud.', url:'https://readalong.google.com/', action:'Read'},
+          {title:'StoryWeaver Hindi Stories', type:'Apps & Games', age:'Class 1+', vibe:'Story library', desc:'Free Hindi stories for gradual reading practice.', url:'https://storyweaver.org.in/hi/stories', action:'Read'},
+          {title:'Quizlet India', type:'Apps & Games', age:'Class 5+', vibe:'Flashcards', desc:'Useful for custom Hindi vocabulary and revision sets.', url:'https://quizlet.com/in', action:'Study'}
         ]},
         { subject: 'EVS / Science / Geography', description: 'Games and tools for nature, environment, social studies, maps, and science exploration.', items: [
-          {title:'PBS Kids Games', type:'Interactive', age:'Class 1+', vibe:'Games', desc:'A broad set of beginner science-friendly and curiosity-friendly games.', url:'https://pbskids.org/games', action:'Play'},
-          {title:'Wild Kratts Games', type:'Interactive', age:'Class 1+', vibe:'Games', desc:'Interactive animal and habitat exploration tied to the show.', url:'https://www.wildkratts.com/play-learn-wild-kratts/wild-kratts-games/', action:'Play'},
-          {title:'Seek by iNaturalist', type:'Interactive', age:'Class 2+', vibe:'Nature explorer', desc:'Real-world plant and animal identification for outdoor learning.', url:'https://www.inaturalist.org/pages/seek_app', action:'Explore'},
-          {title:'Google Earth Web', type:'Interactive', age:'Class 3+', vibe:'Explore the world', desc:'A superb way to explore maps, mountains, rivers, cities, and the planet visually.', url:'https://earth.google.com/web', action:'Explore'},
-          {title:'BrainPOP Jr. Social Studies', type:'Interactive', age:'Class 4+', vibe:'Interactive topics', desc:'Good for beginner geography, community, and social-studies concepts.', url:'https://jr.brainpop.com/subject/social-studies/', action:'Open'},
-          {title:'Tinkercad Circuits', type:'Interactive', age:'Class 5+', vibe:'Electronics simulator', desc:'A fun next step for older kids into circuits and practical tinkering.', url:'https://www.tinkercad.com/circuits', action:'Build'}
+          {title:'PBS Kids Games', type:'Apps & Games', age:'Class 1+', vibe:'Games', desc:'A broad set of beginner science-friendly and curiosity-friendly games.', url:'https://pbskids.org/games', action:'Play'},
+          {title:'Wild Kratts Games', type:'Apps & Games', age:'Class 1+', vibe:'Games', desc:'Interactive animal and habitat exploration tied to the show.', url:'https://www.wildkratts.com/play-learn-wild-kratts/wild-kratts-games/', action:'Play'},
+          {title:'Seek by iNaturalist', type:'Apps & Games', age:'Class 2+', vibe:'Nature explorer', desc:'Real-world plant and animal identification for outdoor learning.', url:'https://www.inaturalist.org/pages/seek_app', action:'Explore'},
+          {title:'Google Earth Web', type:'Apps & Games', age:'Class 3+', vibe:'Explore the world', desc:'A superb way to explore maps, mountains, rivers, cities, and the planet visually.', url:'https://earth.google.com/web', action:'Explore'},
+          {title:'BrainPOP Jr. Social Studies', type:'Apps & Games', age:'Class 4+', vibe:'Interactive topics', desc:'Good for beginner geography, community, and social-studies concepts.', url:'https://jr.brainpop.com/subject/social-studies/', action:'Open'},
+          {title:'Tinkercad Circuits', type:'Apps & Games', age:'Class 5+', vibe:'Electronics simulator', desc:'A fun next step for older kids into circuits and practical tinkering.', url:'https://www.tinkercad.com/circuits', action:'Build'}
         ]},
         { subject: 'Computer / Coding / Logic', description: 'A younger-to-older pathway into coding, logic, making, and guided digital creativity.', items: [
-          {title:'ScratchJr Home', type:'Interactive', age:'Class 1+', vibe:'Beginner coding', desc:'Best first step into coding and sequencing for younger children.', url:'https://www.scratchjr.org/', action:'Open'},
-          {title:'ScratchJr Learn', type:'Interactive', age:'Class 1+', vibe:'Learning page', desc:'Intro guides and examples for getting started with ScratchJr.', url:'https://www.scratchjr.org/learn', action:'Learn'},
-          {title:'Code.org Course C (2025)', type:'Interactive', age:'Class 3+', vibe:'Coding course', desc:'Friendly block-based logic and sequencing for younger coders.', url:'https://studio.code.org/courses/coursec-2025/units/1', action:'Start'},
-          {title:'Scratch Editor', type:'Interactive', age:'Class 3+', vibe:'Create projects', desc:'Make animations, simple games, and stories while learning logic.', url:'https://scratch.mit.edu/projects/editor/?tutorial=getting-started', action:'Create'},
-          {title:'Scratch Learning Library', type:'Interactive', age:'Class 3+', vibe:'Ideas & tutorials', desc:'Browse project ideas and guided starter activities.', url:'https://scratchfoundation.org/learn/learning-library', action:'Browse'},
-          {title:'Code.org Course D (2025)', type:'Interactive', age:'Class 4+', vibe:'Coding course', desc:'A stronger next step into loops, events, and logic building.', url:'https://studio.code.org/courses/coursed-2025/units/1', action:'Start'},
-          {title:'Code.org Express Course', type:'Interactive', age:'Class 5+', vibe:'Fast-track coding', desc:'Flexible self-paced coding path for older primary learners.', url:'https://studio.code.org/courses/express-2025/units/1', action:'Start'},
-          {title:'Tinkercad', type:'Interactive', age:'Class 4+', vibe:'Design & making', desc:'3D design and simple maker-style experimentation.', url:'https://www.tinkercad.com/', action:'Create'},
-          {title:'Tinkercad Learn', type:'Interactive', age:'Class 4+', vibe:'Guides', desc:'Structured starter guidance for using Tinkercad tools.', url:'https://www.tinkercad.com/learn', action:'Learn'}
+          {title:'ScratchJr Home', type:'Apps & Games', age:'Class 1+', vibe:'Beginner coding', desc:'Best first step into coding and sequencing for younger children.', url:'https://www.scratchjr.org/', action:'Open'},
+          {title:'ScratchJr Learn', type:'Apps & Games', age:'Class 1+', vibe:'Learning page', desc:'Intro guides and examples for getting started with ScratchJr.', url:'https://www.scratchjr.org/learn', action:'Learn'},
+          {title:'Code.org Course C (2025)', type:'Apps & Games', age:'Class 3+', vibe:'Coding course', desc:'Friendly block-based logic and sequencing for younger coders.', url:'https://studio.code.org/courses/coursec-2025/units/1', action:'Start'},
+          {title:'Scratch Editor', type:'Apps & Games', age:'Class 3+', vibe:'Create projects', desc:'Make animations, simple games, and stories while learning logic.', url:'https://scratch.mit.edu/projects/editor/?tutorial=getting-started', action:'Create'},
+          {title:'Scratch Learning Library', type:'Apps & Games', age:'Class 3+', vibe:'Ideas & tutorials', desc:'Browse project ideas and guided starter activities.', url:'https://scratchfoundation.org/learn/learning-library', action:'Browse'},
+          {title:'Code.org Course D (2025)', type:'Apps & Games', age:'Class 4+', vibe:'Coding course', desc:'A stronger next step into loops, events, and logic building.', url:'https://studio.code.org/courses/coursed-2025/units/1', action:'Start'},
+          {title:'Code.org Express Course', type:'Apps & Games', age:'Class 5+', vibe:'Fast-track coding', desc:'Flexible self-paced coding path for older primary learners.', url:'https://studio.code.org/courses/express-2025/units/1', action:'Start'},
+          {title:'Tinkercad', type:'Apps & Games', age:'Class 4+', vibe:'Design & making', desc:'3D design and simple maker-style experimentation.', url:'https://www.tinkercad.com/', action:'Create'},
+          {title:'Tinkercad Learn', type:'Apps & Games', age:'Class 4+', vibe:'Guides', desc:'Structured starter guidance for using Tinkercad tools.', url:'https://www.tinkercad.com/learn', action:'Learn'}
         ]},
         { subject: 'Mixed / Creative / Open-ended', description: 'Creative, open-ended tools that don’t fit neatly into one subject.', items: [
-          {title:'Toca Boca World', type:'Interactive', age:'Class 4+', vibe:'Creative sandbox', desc:'Open-ended world play that supports storytelling and imaginative social play.', url:'https://www.tocaboca.com/toca-boca-world', action:'Play'},
-          {title:'StoryWeaver Stories', type:'Interactive', age:'Class 2+', vibe:'Story library', desc:'A broad library of children’s stories beyond just Hindi.', url:'https://storyweaver.org.in/en/stories', action:'Read'},
-          {title:'Quizlet India', type:'Interactive', age:'Class 5+', vibe:'Flashcards', desc:'Flexible review tool for almost any topic.', url:'https://quizlet.com/in', action:'Study'}
+          {title:'Toca Boca World', type:'Apps & Games', age:'Class 4+', vibe:'Creative sandbox', desc:'Open-ended world play that supports storytelling and imaginative social play.', url:'https://www.tocaboca.com/toca-boca-world', action:'Play'},
+          {title:'StoryWeaver Stories', type:'Apps & Games', age:'Class 2+', vibe:'Story library', desc:'A broad library of children’s stories beyond just Hindi.', url:'https://storyweaver.org.in/en/stories', action:'Read'},
+          {title:'Quizlet India', type:'Apps & Games', age:'Class 5+', vibe:'Flashcards', desc:'Flexible review tool for almost any topic.', url:'https://quizlet.com/in', action:'Study'}
         ]}
       ],
       videos: [
@@ -386,7 +385,6 @@
           </div>
           <div class="tile-actions">
             <a class="btn btn-primary" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.action}</a>
-            <a class="btn btn-secondary" href="${item.url}" target="_blank" rel="noopener noreferrer">Open Link</a>
           </div>
         </div>
       `;
