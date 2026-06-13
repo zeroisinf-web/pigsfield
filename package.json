@@ -1,0 +1,9 @@
+{
+  "name": "pigsfield",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pigsfield — static educational website. No build step required; the site is served directly from the repository root.",
+  "scripts": {
+    "build": "echo \"Pigsfield is a 100% static site — nothing to build. Set Cloudflare 'Build output directory' to / (root).\""
+  }
+}
