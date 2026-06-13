@@ -150,8 +150,7 @@
       d.setAttribute("role", "listitem");
       d.innerHTML = `<span class="ico" style="background:${PF.appMeta[id].color}">${PF.appIcon(id)}</span>
         <span class="lbl">${esc(PF.t("appNames." + id))}</span>`;
-      d.addEventListener("dblclick", () => PF.openApp(id));
-      d.addEventListener("click", () => { if (isMobile()) PF.openApp(id); });
+      d.addEventListener("click", () => PF.openApp(id));
       d.addEventListener("keydown", (e) => { if (e.key === "Enter") PF.openApp(id); });
       wrap.appendChild(d);
     }
