@@ -26,6 +26,22 @@ English ⇄ हिन्दी switch, light/dark mode, global search, favourite
    and the four GitHub `A` records for the apex domain (185.199.108.153 / .109 / .110 / .111).
    A `CNAME` file containing `pigsfield.com` is already included.
 
+## ☁️ Host on Cloudflare Pages (free)
+
+Pigsfield is a **static site — there is no build step**. The npm error
+(`Could not read package.json … npm run build`) just means Cloudflare was told to
+build something that doesn't need building. Fix it in the dashboard:
+
+**Cloudflare Pages → your project → Settings → Builds & deployments → Build configuration → Edit:**
+- **Framework preset:** `None`
+- **Build command:** *leave empty* (delete `npm run build`)
+- **Build output directory:** `/`  ← the repo root, where `index.html` lives
+
+Save and **Retry deployment**. That's it.
+
+> A no-op `package.json` is also included, so even if you keep `npm run build` the
+> build will now succeed — but you must still set **Build output directory = `/`**.
+
 ## ✏️ How to edit / add resources (no coding needed)
 
 All content lives in **plain data files** in [`js/data/`](js/data/):
