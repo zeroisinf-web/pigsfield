@@ -1,0 +1,12 @@
+{
+  "name": "Pigsfield — Every Free but Best Educational Resource",
+  "short_name": "Pigsfield",
+  "description": "Education is your Right, It must be free. Gateway to every free but best educational resource — Nursery to PhD.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#17141a",
+  "theme_color": "#e84f7d",
+  "icons": [
+    { "src": "assets/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

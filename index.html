@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pigsfield — Every Free but Best Educational Resource</title>
+<meta name="description" content="Education is your Right, It must be free. Pigsfield is your gateway to Every Free but Best Educational Resource — Nursery to PhD, Teacher Training, Skills, Tools, Competitive Exams, PigBang OTT and Government Accountability.">
+<meta name="theme-color" content="#e84f7d">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="manifest" href="manifest.json">
+<meta property="og:title" content="Pigsfield — pigsfield.com">
+<meta property="og:description" content="Education is your Right, It must be free. So we are your gateway to Every Free but Best Educational Resource.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Google Sans is used where available; DM Sans (its closest free match) + Noto Devanagari are the hosted fallback -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/v4.css">
+</head>
+<body data-theme="light" data-lang="en">
+
+<!-- ======================= BOOT SPLASH ======================= -->
+<div id="boot" aria-hidden="true">
+  <div class="boot-logo" id="boot-logo"></div>
+  <div class="boot-name">Pigsfield</div>
+  <div class="boot-tag" data-i18n="tagline">Education is your Right, It must be free.</div>
+  <div class="boot-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- ======================= DESKTOP ======================= -->
+<div id="desktop">
+  <div id="wallpaper-art" aria-hidden="true"></div>
+  <div id="desk-quote">
+    <div class="dq-line1" data-i18n="quote1">Education is your Right, It must be free.</div>
+    <div class="dq-line2" data-i18n="quote2">So we are your gateway to Every Free but Best Educational Resource.</div>
+  </div>
+  <div id="desk-icons" role="list"></div>
+  <div id="windows-layer"></div>
+</div>
+
+<!-- ======================= START MENU ======================= -->
+<div id="start-menu" class="flyout" hidden>
+  <div class="start-search-wrap">
+    <input id="start-search" type="search" autocomplete="off" data-i18n-ph="searchPh" placeholder="Search every free resource…">
+  </div>
+  <div class="start-section-title" data-i18n="pinned">Pinned</div>
+  <div id="start-apps" class="start-grid"></div>
+  <div class="start-section-title" data-i18n="recentlyUsed">Recently used</div>
+  <div id="start-favs" class="start-favs"></div>
+  <div class="start-footer">
+    <div class="start-user">
+      <span class="start-user-logo"></span>
+      <div>
+        <b>Pigsfield</b>
+        <small>pigsfield.com</small>
+      </div>
+    </div>
+    <div class="start-actions">
+      <button class="chipbtn" id="start-donate">💗 <span data-i18n="donate">Donate</span></button>
+      <button class="chipbtn" id="start-feedback">✉ <span data-i18n="feedback">Feedback</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= AI-POWERED SEARCH PANEL ======================= -->
+<div id="search-panel" class="flyout" hidden>
+  <div class="sp-head">
+    <input id="global-search" type="search" autocomplete="off" data-i18n-ph="searchPh" placeholder="Search resources, or ask Pigsfield AI…">
+    <button id="sp-ask" class="sp-ask" title="Ask Pigsfield AI">✨ <span data-i18n="askAi">Ask AI</span></button>
+  </div>
+  <div class="sp-toolbar">
+    <button id="sp-attach" class="sp-tool" title="Attach image / audio / video / PDF / code">📎</button>
+    <input id="sp-file" type="file" multiple hidden
+      accept="image/*,audio/*,video/*,application/pdf,text/*,.js,.ts,.py,.java,.c,.cpp,.cs,.html,.css,.json,.md,.csv,.xml">
+    <button id="sp-img" class="sp-tool sp-toggle" title="Generate an image">🎨 <span data-i18n="image">Image</span></button>
+    <button id="sp-filemode" class="sp-tool sp-toggle" title="Generate a downloadable file">📄 <span data-i18n="file">File</span></button>
+    <button id="sp-clear" class="sp-tool" title="Clear chat" hidden>🗑</button>
+    <button id="sp-key" class="sp-tool" title="AI settings / API key">⚙</button>
+    <span class="sp-tabs">
+      <button id="sp-tab-res" class="sp-tabbtn on" data-i18n="tabResources">Resources</button>
+      <button id="sp-tab-ai" class="sp-tabbtn" data-i18n="tabAi">Pigsfield AI</button>
+    </span>
+  </div>
+  <div id="sp-attach-row" class="sp-attach-row" hidden></div>
+  <div id="search-hint" data-i18n="searchHint">Type to search across all apps — every resource, every link.</div>
+  <div id="search-results" role="listbox"></div>
+  <div id="ai-view" hidden></div>
+</div>
+
+<!-- ======================= DONATE WIDGET ======================= -->
+<div id="donate-widget" class="flyout widget" hidden>
+  <div class="widget-head">
+    <span class="widget-pig"></span>
+    <div>
+      <b data-i18n="donateTitle">Support Pigsfield</b>
+      <small data-i18n="donateSub">Donate us so that we can keep doing this</small>
+    </div>
+  </div>
+  <div class="upi-row">
+    <span class="upi-label">UPI</span>
+    <code id="upi-id">zeroisinf@ibl</code>
+    <button class="chipbtn" id="copy-upi" data-i18n="copy">Copy</button>
+  </div>
+  <a class="bigbtn" id="upi-link" href="upi://pay?pa=zeroisinf@ibl&pn=Pigsfield&cu=INR">📲 <span data-i18n="openUpi">Open UPI app & donate</span></a>
+  <div class="widget-note" data-i18n="donateNote">Every rupee keeps free education flowing for millions. Thank you! 🐷💗</div>
+</div>
+
+<!-- ======================= FEEDBACK WIDGET ======================= -->
+<div id="feedback-widget" class="flyout widget" hidden>
+  <div class="widget-head">
+    <span class="widget-pig alt"></span>
+    <div>
+      <b data-i18n="fbTitle">Feedback / Join us</b>
+      <small data-i18n="fbSub">Tell us what to add, fix — or join the mission</small>
+    </div>
+  </div>
+  <div class="upi-row">
+    <span class="upi-label">@</span>
+    <code id="fb-email">zeroisinf@gmail.com</code>
+    <button class="chipbtn" id="copy-email" data-i18n="copy">Copy</button>
+  </div>
+  <a class="bigbtn" href="mailto:zeroisinf@gmail.com?subject=Pigsfield%20Feedback">✉ <span data-i18n="writeEmail">Write an email</span></a>
+  <div class="widget-note" data-i18n="fbNote">Volunteers welcome — this platform is built by people like you.</div>
+</div>
+
+<!-- ======================= TASKBAR ======================= -->
+<nav id="taskbar">
+  <div class="tb-center">
+    <button class="tb-btn" id="tb-start" title="Start" aria-label="Start"></button>
+    <div id="tb-searchbox" role="button" tabindex="0">
+      <span class="tb-search-ico">🔍</span>
+      <span data-i18n="searchPhShort">Search resources</span>
+    </div>
+    <div id="tb-apps"></div>
+  </div>
+  <div class="tb-tray">
+    <button class="tb-redbtn" id="tb-donate" title="UPI: zeroisinf@ibl">💗 <span data-i18n="donateSupport">Donate &amp; Support</span></button>
+    <button class="tb-redbtn" id="tb-feedback" title="zeroisinf@gmail.com">✉ <span data-i18n="feedbackJoin">Feedback &amp; Join</span></button>
+    <button class="tb-tray-btn" id="tb-lang" title="English / हिन्दी">EN</button>
+    <button class="tb-tray-btn" id="tb-theme" title="Light / Dark">☀</button>
+    <div id="tb-clock"><span id="tb-time">--:--</span><span id="tb-date"></span></div>
+  </div>
+</nav>
+
+<div id="toast" hidden></div>
+
+<script src="js/i18n.js"></script>
+<script src="js/core.js"></script>
+<script src="js/usage.js"></script>
+<script src="js/data/about.js"></script>
+<script src="js/data/school.js"></script>
+<script src="js/data/teach.js"></script>
+<script src="js/data/tools.js"></script>
+<script src="js/data/exams.js"></script>
+<script src="js/data/pigbang.js"></script>
+<script src="js/data/govt.js"></script>
+<script src="js/apps.js"></script>
+<script src="js/exams.js"></script>
+<script src="js/pigbang.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/desktop.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

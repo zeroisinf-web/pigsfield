@@ -1,0 +1,20 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="36%" r="70%">
+      <stop offset="0" stop-color="#dad8dd"/><stop offset=".55" stop-color="#aeabb3"/><stop offset="1" stop-color="#827f88"/>
+    </radialGradient>
+    <clipPath id="c"><path d="M32 13 C42 13 50 15 54 20 C57 25 57 39 54 44 C50 50 42 53 32 53 C22 53 14 50 10 44 C7 39 7 25 10 20 C14 15 22 13 32 13 Z"/></clipPath>
+  </defs>
+  <path d="M32 13 C42 13 50 15 54 20 C57 25 57 39 54 44 C50 50 42 53 32 53 C22 53 14 50 10 44 C7 39 7 25 10 20 C14 15 22 13 32 13 Z" fill="url(#g)" stroke="#5f5b66" stroke-width="2.6"/>
+  <g clip-path="url(#c)" stroke="#ffffff" stroke-opacity=".55" stroke-width=".9" fill="none">
+    <path d="M32 12 C31 28 31 38 32 54"/>
+    <path d="M23 13 C18 28 18 40 25 53"/><path d="M41 13 C46 28 46 40 39 53"/>
+    <path d="M15 17 C11 30 12 42 20 51"/><path d="M49 17 C53 30 52 42 44 51"/>
+    <path d="M9 23 C24 19 40 19 55 23"/><path d="M8 32 C24 30 40 30 56 32"/>
+    <path d="M9 41 C24 46 40 46 55 41"/><path d="M14 48 C24 51 40 51 50 48"/>
+  </g>
+  <ellipse cx="24" cy="34" rx="6.2" ry="9.2" fill="#4f4c56"/>
+  <ellipse cx="24" cy="33.4" rx="5.1" ry="8.1" fill="#fbfbfc"/>
+  <ellipse cx="40" cy="34" rx="6.2" ry="9.2" fill="#4f4c56"/>
+  <ellipse cx="40" cy="33.4" rx="5.1" ry="8.1" fill="#fbfbfc"/>
+</svg>
