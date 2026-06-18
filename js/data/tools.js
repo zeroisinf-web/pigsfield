@@ -11,7 +11,7 @@ window.PF_DATA.tools = {
      "items": [
       {
        "title": "ChatGPT",
-       "desc": "लॉजिक समझने, कोडिंग करने, और जनरल सवालों के जवाब के लिए दुनिया का सबसे पॉपुलर AI।",
+       "desc": "लॉजिक समझने, कोडिंग करने, और जनरल सवालों के जवाब के लिए दुनिया का सबसे[...]",
        "links": [
         {
          "label": "Web",
@@ -36,7 +36,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Claude AI",
-       "desc": "लॉजिक, कोडिंग और बड़े डॉक्यूमेंट्स एनालाइज करने में मास्टर। जवाब नेचुरल और कम रोबोटिक।",
+       "desc": "लॉजिक, कोडिंग और बड़े डॉक्यूमेंट्स एनालाइज करने में मास्टर। जवाब ने[...]",
        "links": [
         {
          "label": "Web",
@@ -61,7 +61,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Claude Artifacts",
-       "desc": "Claude के अंदर ही UI डिज़ाइन, कोड, और इंटरैक्टिव ऐप्स जनरेट करने का फ्रंटएंड टूल।",
+       "desc": "Claude के अंदर ही UI डिज़ाइन, कोड, और इंटरैक्टिव ऐप्स जनरेट करने का फ्रंटएं[...]",
        "links": [
         {
          "label": "Web",
@@ -103,8 +103,26 @@ window.PF_DATA.tools = {
        ]
       },
       {
+       "title": "chat.z.ai",
+       "desc": "💰 100% फ्री AI — GLM 5.2 मॉडल जो ChatGPT, Claude और Gemini जैसी पेड AI से मुकाबला करता है। लॉजिक, कोडिंग, विश्लेषण सब कुछ बिना पेमेंट के।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://chat.z.ai/"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=chat+z+ai+tutorial+how+to+use"
+         ]
+        }
+       ]
+      },
+      {
        "title": "Google AI Studio",
-       "desc": "डेवलपर्स के लिए गूगल का प्लेग्राउंड — बिना लिमिट के Gemini के एडवांस्ड मॉडल्स टेस्ट करो।",
+       "desc": "डेवलपर्स के लिए गूगल का प्लेग्राउंड — बिना लिमिट के Gemini के एडवांस्ड म[...]",
        "links": [
         {
          "label": "Web",
@@ -122,7 +140,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Be AI Updated (YouTube)",
-       "desc": "AI और टेक्नोलॉजी पर बेस्ट YouTube क्रिएटर्स: @asliengineering, @primeventurepartners, @gkcs, @dwarkeshpatel, @machinelearningstreettalk, @wolframresearch, @varunmayya, @cuttingedgeschool।",
+       "desc": "AI और टेक्नोलॉजी पर बेस्ट YouTube क्रिएटर्स: @asliengineering, @primeventurepartners, @gkcs, @dwarkeshpatel, @machinelearni[...]",
        "links": [
         {
          "label": "Tutorial",
@@ -141,7 +159,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "NotebookLM",
-       "desc": "अपने PDF या नोट्स अपलोड करो — यह सिर्फ उसी डेटा के आधार पर जवाब देता है (बिना हैलुसिनेशन)।",
+       "desc": "अपने PDF या नोट्स अपलोड करो — यह सिर्फ उसी डेटा के आधार पर जवाब देता है ([...]",
        "links": [
         {
          "label": "Web",
@@ -159,7 +177,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Google DeepMind",
-       "desc": "गूगल की AI रिसर्च लैब — AlphaFold, Gemini और दुनिया के सबसे एडवांस्ड AI मॉडल्स यहीं से आते हैं।",
+       "desc": "गूगल की AI रिसर्च लैब — AlphaFold, Gemini और दुनिया के सबसे एडवांस्ड AI मॉडल्स यहीं[...]",
        "links": [
         {
          "label": "Web",
@@ -201,7 +219,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Google Flow",
-       "desc": "AI से सिनेमैटिक वीडियो और फिल्म सीन जनरेट करने वाला गूगल का फिल्ममेकिंग टूल।",
+       "desc": "AI से सिनेमैटिक वीडियो और फिल्म सीन जनरेट करने वाला गूगल का फिल्ममेकि[...]",
        "links": [
         {
          "label": "Web",
@@ -237,7 +255,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Sarvam AI",
-       "desc": "खास तौर पर भारतीय भाषाओं (हिंदी, तमिल आदि) और वॉइस-बेस्ड AI मॉडल्स पर फोकस करने वाला इंडिक AI।",
+       "desc": "खास तौर पर भारतीय भाषाओं (हिंदी, तमिल आदि) और वॉइस-बेस्ड AI मॉडल्स पर फो[...]",
        "links": [
         {
          "label": "Web",
@@ -296,7 +314,7 @@ window.PF_DATA.tools = {
      "items": [
       {
        "title": "GetIntoPC",
-       "desc": "विंडोज़ के भारी प्रीमियम सॉफ्टवेयर (डेवलपमेंट, ग्राफ़िक्स) फ्री में डाउनलोड करने की सबसे बड़ी वेबसाइट।",
+       "desc": "विंडोज़ के भारी प्रीमियम सॉफ्टवेयर (डेवलपमेंट, ग्राफ़िक्स) फ्री में[...]",
        "links": [
         {
          "label": "Web",
@@ -314,7 +332,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Modyolo",
-       "desc": "प्रीमियम और मॉडिफाई किए गए Android गेम्स और ऐप्स (Mod APKs) सुरक्षित तरीके से डाउनलोड।",
+       "desc": "प्रीमियम और मॉडिफाई किए गए Android गेम्स और ऐप्स (Mod APKs) सुरक्षित तरीके से ड[...]",
        "links": [
         {
          "label": "Web",
@@ -332,7 +350,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Tor Browser",
-       "desc": "इंटरनेट पर पूरी तरह एनोनिमस रहने के लिए। डेटा को अलग-अलग सर्वर्स से बाउंस कराता है।",
+       "desc": "इंटरनेट पर पूरी तरह एनोनिमस रहने के लिए। डेटा को अलग-अलग सर्वर्स से ब[...]",
        "links": [
         {
          "label": "Web",
@@ -398,7 +416,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "YT ReVanced",
-       "desc": "YouTube का ओपन-सोर्स वर्ज़न — ऐड्स ब्लॉक, बैकग्राउंड प्ले, स्पॉन्सर स्किप, डिस्लाइक वापस।",
+       "desc": "YouTube का ओपन-सोर्स वर्ज़न — ऐड्स ब्लॉक, बैकग्राउंड प्ले, स्पॉन्सर स्किप[...]",
        "links": [
         {
          "label": "Web",
@@ -416,7 +434,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Seal",
-       "desc": "डाउनलोडिंग का असली किंग — yt-dlp पर चलता है, ज़ीरो ऐड्स, किसी भी साइट से मैक्सिमम क्वालिटी।",
+       "desc": "डाउनलोडिंग का असली किंग — yt-dlp पर चलता है, ज़ीरो ऐड्स, किसी भी साइट से मै[...]",
        "links": [
         {
          "label": "Web",
@@ -434,12 +452,12 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Snaptube",
-       "desc": "YouTube, Instagram आदि से वीडियो/ऑडियो डाउनलोड करने का पुराना जुगाड़ (ऐड्स आते हैं)।",
+       "desc": "YouTube, Instagram आदि से वीडियो/ऑडियो डाउनलोड करने का पुराना जुगाड़ (ऐड्स आते ह[...]",
        "links": [
         {
          "label": "Web",
          "urls": [
-          "https://www.snaptubeapp.com/"
+          "https://www.snaptube.com/"
          ]
         },
         {
@@ -451,8 +469,26 @@ window.PF_DATA.tools = {
        ]
       },
       {
+       "title": "Stacher",
+       "desc": "🎬 किसी भी YouTube चैनल के सभी वीडियो एक ही बार में डाउनलोड करो। सोशल मीडिया (TikTok, Instagram, YouTube) से वीडियो और इमेज भी डाउनलोड करें।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://stacher.io/"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=how+to+use+stacher+media+downloader"
+         ]
+        }
+       ]
+      },
+      {
        "title": "e-Raktkosh",
-       "desc": "देशभर के ब्लड बैंक्स में खून की रियल-टाइम अवेलेबिलिटी चेक करने का सरकारी पोर्टल।",
+       "desc": "देशभर के ब्लड बैंक्स में खून की रियल-टाइम अवेलेबिलिटी चेक करने का सर[...]",
        "links": [
         {
          "label": "Web",
@@ -476,7 +512,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Have I Been Pwned",
-       "desc": "तुम्हारा ईमेल या पासवर्ड हैकर्स के पास लीक तो नहीं हो गया — तुरंत चेक करो।",
+       "desc": "तुम्हारा ईमेल या पासवर्ड हैकर्स के पास लीक तो नहीं हो गया — तुरंत चेक[...]",
        "links": [
         {
          "label": "Web",
@@ -499,7 +535,7 @@ window.PF_DATA.tools = {
      "items": [
       {
        "title": "DigiLocker",
-       "desc": "मार्कशीट्स, आधार, ड्राइविंग लाइसेंस डिजिटली और कानूनी रूप से स्टोर करने के लिए।",
+       "desc": "मार्कशीट्स, आधार, ड्राइविंग लाइसेंस डिजिटली और कानूनी रूप से स्टोर [...]",
        "links": [
         {
          "label": "Web",
@@ -523,7 +559,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Drive / Docs",
-       "desc": "क्लाउड स्टोरेज, वर्ड प्रोसेसिंग और क्विक आइडियाज नोट करने का डिफ़ॉल्ट गूगल ईकोसिस्टम।",
+       "desc": "क्लाउड स्टोरेज, वर्ड प्रोसेसिंग और क्विक आइडियाज नोट करने का डिफ़ॉल[...]",
        "links": [
         {
          "label": "Web",
@@ -541,7 +577,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "CX File Explorer",
-       "desc": "पावरफुल फाइल मैनेजर। फोन से कंप्यूटर या क्लाउड ड्राइव्स (FTP, SMB) को एक्सेस करो।",
+       "desc": "पावरफुल फाइल मैनेजर। फोन से कंप्यूटर या क्लाउड ड्राइव्स (FTP, SMB) को एक्[...]",
        "links": [
         {
          "label": "App",
@@ -595,7 +631,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Remote Desktop",
-       "desc": "फोन से किसी भी कंप्यूटर की स्क्रीन कंट्रोल करने के लिए गूगल का फ्री टूल।",
+       "desc": "फोन से किसी भी कंप्यूटर की स्क्रीन कंट्रोल करने के लिए गूगल का फ्री ट[...]",
        "links": [
         {
          "label": "Web",
@@ -619,7 +655,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Albo",
-       "desc": "यूनिवर्सल सेव-फॉर-लेटर ऐप — कोई भी लिंक, वीडियो या आर्टिकल एक जगह सेव करो।",
+       "desc": "यूनिवर्सल सेव-फॉर-लेटर ऐप — कोई भी लिंक, वीडियो या आर्टिकल एक जगह सेव [...]",
        "links": [
         {
          "label": "App",
@@ -642,7 +678,7 @@ window.PF_DATA.tools = {
      "items": [
       {
        "title": "VideoCompress AI",
-       "desc": "AI की मदद से वीडियो की क्वालिटी गिराए बिना उसका साइज (MB) कम करने का टूल।",
+       "desc": "AI की मदद से वीडियो की क्वालिटी गिराए बिना उसका साइज (MB) कम करने का टूल।",[...]",
        "links": [
         {
          "label": "Web",
@@ -660,7 +696,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Suno (AI Music)",
-       "desc": "टेक्स्ट में बताओ कैसा गाना चाहिए — वोकल्स और म्यूजिक के साथ स्टूडियो-क्वालिटी गाना तैयार।",
+       "desc": "टेक्स्ट में बताओ कैसा गाना चाहिए — वोकल्स और म्यूजिक के साथ स्टूडिय[...]",
        "links": [
         {
          "label": "Web",
@@ -750,7 +786,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Pixelcut",
-       "desc": "प्रोडक्ट फोटोग्राफी और सोशल मीडिया के लिए AI-पावर्ड इमेज एडिटिंग ऐप।",
+       "desc": "प्रोडक्ट फोटोग्राफी और सोशल मीडिया के लिए AI-पावर्ड इमेज एडिटिंग ऐप।"[...]",
        "links": [
         {
          "label": "Web",
@@ -839,7 +875,7 @@ window.PF_DATA.tools = {
      "items": [
       {
        "title": "Library Genesis",
-       "desc": "दुनिया की लगभग हर पेड किताब और रिसर्च पेपर फ्री में डाउनलोड करने का सबसे बड़ा शैडो लाइब्रेरी।",
+       "desc": "दुनिया की लगभग हर पेड किताब और रिसर्च पेपर फ्री में डाउनलोड करने का स[...]",
        "links": [
         {
          "label": "Web",
@@ -875,7 +911,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Veritasium",
-       "desc": "डीप साइंस और लॉजिक को डिकोड करने वाले दुनिया के बेस्ट एजुकेशन YouTubers में से एक।",
+       "desc": "डीप साइंस और लॉजिक को डिकोड करने वाले दुनिया के बेस्ट एजुकेशन YouTubers मे[...]",
        "links": [
         {
          "label": "Web",
@@ -893,7 +929,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Telegram",
-       "desc": "भारी फाइल्स भेजना, ओपन-सोर्स कम्युनिटी चैनल्स और सीक्रेट चैट्स — बेस्ट मैसेंजर।",
+       "desc": "भारी फाइल्स भेजना, ओपन-सोर्स कम्युनिटी चैनल्स और सीक्रेट चैट्स — बे[...]",
        "links": [
         {
          "label": "Web",
@@ -917,7 +953,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "Product Hunt",
-       "desc": "दुनिया भर में रोज़ लॉन्च होने वाले नए ऐप्स और स्टार्टअप्स खोजने की जगह।",
+       "desc": "दुनिया भर में रोज़ लॉन्च होने वाले नए ऐप्स और स्टार्टअप्स खोजने की ज[...]",
        "links": [
         {
          "label": "Web",
@@ -959,7 +995,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "91mobiles",
-       "desc": "मोबाइल और गैजेट रिसर्च के लिए भारत की सबसे बड़ी टेक वेबसाइट — specs compare करो।",
+       "desc": "मोबाइल और गैजेट रिसर्च के लिए भारत की सबसे बड़ी टेक वेबसाइट — specs compare क[...]",
        "links": [
         {
          "label": "Web",
@@ -997,473 +1033,10 @@ window.PF_DATA.tools = {
          ]
         }
        ]
-      },
-      {
-       "title": "Visual Blocks",
-       "desc": "मशीन लर्निंग मॉडल्स को विज़ुअली (नो-कोड) जोड़कर देखने का गूगल का टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://visualblocks.withgoogle.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+visual+blocks+for+ml+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "MediaPipe Studio",
-       "desc": "AI विज़न मॉडल्स (फेस ट्रैकिंग, हैंड ट्रैकिंग) को ब्राउज़र में टेस्ट करने का गूगल टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://mediapipe-studio.webapps.google.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+mediapipe+studio+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Lovable",
-       "desc": "बिना कोडिंग के फुल स्टैक वेब ऐप्स बनाने का AI प्लेटफॉर्म।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://lovable.dev/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=lovable+ai+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Framer",
-       "desc": "बिना कोड लिखे 3D वेबसाइट्स, शानदार एनिमेशन और इंटरैक्शन के साथ बनाने का टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.framer.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=framer+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Webflow",
-       "desc": "बिना कोडिंग के डायनामिक और प्रोफेशनल वेबसाइट्स बनाने का ड्रैग-एंड-ड्रॉप नो-कोड वेबसाइट बिल्डर।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://webflow.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=webflow+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Windsurf",
-       "desc": "एक पावरफुल AI कोडिंग टूल और एडिटर जो कोड जनरेट, डिबग और वेब डेवलपमेंट को तेज़ करता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.windsurf.dev/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=windsurf+ai+editor+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Replit",
-       "desc": "ब्राउज़र में ही 50+ भाषाओं में कोडिंग, होस्टिंग और AI के साथ ऐप्स बनाने का ऑनलाइन IDE।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://replit.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=replit+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "GitHub Copilot",
-       "desc": "डेवलपर्स के लिए AI पेयर प्रोग्रामर जो कोड सजेशन देता है, एरर्स फिक्स करता है और कोडिंग स्पीड बढ़ाता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://github.com/features/copilot"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=github+copilot+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Git",
-       "desc": "कोड में किए गए बदलावों को ट्रैक करने और डेवलपर्स के बीच सहयोग के लिए वर्ज़न कंट्रोल सिस्टम।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://git-scm.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=git+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Supabase",
-       "desc": "Firebase का ओपन-सोर्स विकल्प। Postgres डेटाबेस, ऑथेंटिकेशन और रियल-टाइम API के साथ ऐप्स का बैकएंड बनाने के लिए।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://supabase.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=supabase+tutorial+in+hindi"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Cursor IDE",
-       "desc": "AI-पावर्ड कोड एडिटर। जो काम घंटों लेता है, वो मिनटों में लिख देता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://cursor.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=cursor+ai+code+editor+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "VS Code",
-       "desc": "Microsoft का फ्री, ओपन-सोर्स कोड एडिटर — दुनिया भर के डेवलपर्स की पहली पसंद।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://code.visualstudio.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=vs+code+tutorial+for+beginners"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Miro",
-       "desc": "आइडियाज, फ्लोचार्ट और माइंड-मैप्स बनाने के लिए Infinite Whiteboard टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://miro.com"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.realtimeboard"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=miro+whiteboard+tutorial+for+beginners"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Figma",
-       "desc": "ऐप या वेबसाइट का UI/UX डिज़ाइन और प्रोटोटाइप बनाने का इंडस्ट्री स्टैंडर्ड टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://figma.com"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.figma.mirror"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=figma+ui+ux+tutorial+for+beginners"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google Stitch",
-       "desc": "टेक्स्ट प्रॉम्प्ट से UI डिज़ाइन और फ्रंटएंड कोड जनरेट करने वाला गूगल का एक्सपेरिमेंटल टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://stitch.withgoogle.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+stitch+ui+design+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "v0.app",
-       "desc": "Vercel का AI टूल जो टेक्स्ट प्रॉम्प्ट से शानदार UI और React/Tailwind कोड जनरेट कर देता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://v0.app/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=v0+vercel+app+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Firebase Studio",
-       "desc": "गूगल का बैकएंड और डेटाबेस मैनेजमेंट टूल — ऐप्स को लाइव करने के लिए।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://firebase.studio"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=firebase+database+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Postman API",
-       "desc": "API (दो सॉफ्टवेयर के बीच का ब्रिज) को टेस्ट और बिल्ड करने का प्रफेशनल टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.postman.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=postman+api+testing+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "DartPad",
-       "desc": "डार्ट लैंग्वेज (जिसपर Flutter चलता है) को डायरेक्ट ब्राउज़र में टेस्ट करने के लिए।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://dart.dev"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=dartpad+flutter+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Install WSL",
-       "desc": "विंडोज के अंदर असली Linux चलाने का Microsoft ऑफिशियल गाइड।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://learn.microsoft.com/en-us/windows/wsl/install"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+install+and+use+wsl+2"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Pydroid 3",
-       "desc": "फोन पर ही Python कोडिंग और ML मॉडल रन करने का बेस्ट ऑफलाइन IDE।",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=ru.iiec.pydroid3"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=pydroid+3+tutorial+for+beginners"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "FlutterFlow",
-       "desc": "बिना कोड लिखे हाई-क्वालिटी नेटिव ऐप्स बनाने का सबसे तगड़ा नो-कोड प्लेटफॉर्म।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://flutterflow.io"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=flutterflow+full+tutorial+playlist"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Appilix",
-       "desc": "वेबसाइट को डायरेक्ट मोबाइल ऐप में कन्वर्ट करने का बिल्डर।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://appilix.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=appilix+website+to+app+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Bolt.new",
-       "desc": "ब्राउज़र में ही फुल-स्टैक वेब ऐप्स लिखने, रन करने और डिप्लॉय करने का AI टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://bolt.new"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=bolt.new+ai+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "VibeDream",
-       "desc": "सॉफ्टवेयर जेनरेट करने वाला AI टूल — AI App Builder।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://vibedream.ai"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=vibedream+ai+tutorial"
-         ]
-        }
-       ]
       }
      ]
     }
-   ],
-   "id": "tools"
+   ]
   }
  ]
 };
