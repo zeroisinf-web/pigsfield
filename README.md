@@ -12,7 +12,7 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 - Competitive-exam roadmaps, mock tests and subject collections
 - PigBang educational media with lazy, privacy-enhanced YouTube playback
 - Expandable RTI, grievance, legal-aid and government-accountability categories
-- An always-available, no-key AI Studio for answers, images, documents, browser voice previews, caption videos and browser-made music
+- An always-available AI Studio with no visitor login or model download for answers, images, documents, browser voice previews, caption videos and browser-made music
 - Browser-powered, in-page Hindi translation where supported, light/dark themes, search, saved resources and native original-source links
 - Persistent AI Studio, Donate and Feedback controls
 - A responsive depth-and-motion layer with a reduced-motion-safe flat mode
@@ -22,13 +22,15 @@ The catalog is **free-first**, not a promise that every third-party resource is 
 
 ## Run locally
 
-This is a dependency-free static site. Serve the repository root instead of opening files directly so service workers and embeds behave as they will in production:
+The interface is dependency-free. Serve the repository root instead of opening files directly so service workers and embeds behave as they will in production:
 
 ```bash
 python -m http.server 8741
 ```
 
 Then open `http://localhost:8741`.
+
+This static preview does not provide `/api/ai`; hosted text generation needs the deployed Cloudflare Worker and its `AI` binding.
 
 Run the repository checks with:
 
@@ -37,14 +39,14 @@ npm run build
 npm test
 ```
 
-## Deploy on GitHub Pages
+## Deploy from GitHub with Cloudflare Workers
 
 1. Push this folder to the repository's `main` branch.
-2. In GitHub, open **Settings → Pages**.
-3. Select **GitHub Actions** as the source. The included workflow validates and publishes the site.
-4. For the custom domain, enter `pigsfield.com`. The included `CNAME` file already matches it.
+2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
+3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
+4. Keep the Workers AI binding named `AI` and the rate-limit binding named `AI_RATE_LIMITER`; the browser-facing endpoint is the same-origin `/api/ai` route.
 
-The site uses relative asset paths, so it also works in a project-page subdirectory. Canonical and social metadata intentionally point to the production domain.
+The static interface uses relative asset paths, but hosted text generation requires the Cloudflare Worker and its bindings. Canonical and social metadata intentionally point to the production domain.
 
 ## Edit resources
 
@@ -65,13 +67,13 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 
 ## AI Studio boundaries
 
-Pigsfield does not ask for or store an API key. The studio loads only when its persistent dock button is opened and offers exactly three selectable text models under their original names:
+Pigsfield does not ask visitors for an account or API key. The studio loads only when its persistent dock button is opened and offers exactly three selectable hosted reasoning models under their original names:
 
-- `gpt-oss-20b` â€” cloud inference through Pollinations' `openai-fast` route, with no login or visitor-supplied key. Prompts leave the device and provider availability, retention and rate limits apply.
-- `Qwen3.5-2B-q4f16_1-MLC` â€” on-device inference through WebLLM and WebGPU. First use downloads about 1.1 GB of model data and needs about 2.3 GB of GPU memory.
-- `DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC` â€” on-device inference through WebLLM and WebGPU. First use downloads about 4.3 GB of model data and needs about 5.2 GB of GPU memory.
+- `gpt-oss-120b` — OpenAI's open-weight reasoning model through Cloudflare Workers AI.
+- `gemma-4-26b-a4b-it` — Google's Gemma instruction model through Cloudflare Workers AI.
+- `glm-4.7-flash` — Z.ai's reasoning model through Cloudflare Workers AI.
 
-Local choices are unavailable when the browser or device does not support WebGPU; the studio does not silently substitute another model. Their model files come from the WebLLM/MLC distribution path, while prompts and generated text are processed on the device. Image prompts still use the named Pollinations image service. Voice preview, music synthesis and final document or caption-video assembly use browser capabilities, although any text or storyboard request follows the selected text model's cloud-or-device boundary. Do not enter personal, confidential or high-stakes information into a cloud model, and verify all generated work before using it.
+Text prompts are sent to the same-origin `/api/ai` route, which calls the selected model through a server-side Cloudflare Workers AI binding. No model files are downloaded to the browser and no provider credential is exposed there. A random local client identifier supports the short per-visitor rate limit; shared free capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview, music synthesis and final document or caption-video assembly use browser capabilities, while text and storyboard requests use the selected hosted model. Generated images, documents, caption videos, storyboards and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
 ## Accessibility and privacy
 

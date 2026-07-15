@@ -3,38 +3,30 @@
 
   const PF = (window.PF = window.PF || {});
   const MAX_PROMPT_LENGTH = 1800;
-  const TEXT_ENDPOINT = "https://text.pollinations.ai/openai";
+  const TEXT_ENDPOINT = new URL("/api/ai", window.location.origin).href;
   const IMAGE_ENDPOINT = "https://image.pollinations.ai/prompt/";
-  const WEBLLM_MODULE = "https://esm.run/@mlc-ai/web-llm@0.2.84";
-  const AI_STUDIO_SCRIPT_URL = document.currentScript && document.currentScript.src
-    ? document.currentScript.src
-    : new URL("js/ai-studio.js", document.baseURI).href;
-  const WEBLLM_WORKER_URL = new URL("ai-worker.js", AI_STUDIO_SCRIPT_URL).href;
-  const DEFAULT_TEXT_MODEL = "gpt-oss-20b";
-  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v2";
+  const DEFAULT_TEXT_MODEL = "gpt-oss-120b";
+  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v3";
+  const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const TEXT_MODELS = Object.freeze({
-    "gpt-oss-20b": Object.freeze({
-      id: "gpt-oss-20b",
-      engine: "pollinations",
-      route: "openai-fast",
-      status: "Anonymous cloud reasoning · no download"
+    "gpt-oss-120b": Object.freeze({
+      id: "gpt-oss-120b",
+      engine: "workers-ai",
+      status: "Cloudflare-hosted reasoning · no download"
     }),
-    "Qwen3.5-2B-q4f16_1-MLC": Object.freeze({
-      id: "Qwen3.5-2B-q4f16_1-MLC",
-      engine: "webllm",
-      memory: "~2.3 GB GPU memory",
-      status: "On device · ~1.1 GB first-use download · WebGPU"
+    "gemma-4-26b-a4b-it": Object.freeze({
+      id: "gemma-4-26b-a4b-it",
+      engine: "workers-ai",
+      status: "Cloudflare-hosted reasoning · no download"
     }),
-    "DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC": Object.freeze({
-      id: "DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC",
-      engine: "webllm",
-      memory: "~5.2 GB GPU memory",
-      status: "On device · ~4.3 GB first-use download · WebGPU"
+    "glm-4.7-flash": Object.freeze({
+      id: "glm-4.7-flash",
+      engine: "workers-ai",
+      status: "Cloudflare-hosted reasoning · no download"
     })
   });
   const IMAGE_MODEL = "sana";
-  const DEEP_REASONING_INSTRUCTION = "Reason carefully before answering. Check assumptions, explain the useful reasoning in a clear structure, and end with a concise conclusion. Never expose hidden chain-of-thought or invent citations.";
-  const PROVIDER_NOTE = "Cloud text and image prompts go to Pollinations. On-device text models stay in this browser after their model files download. No API key is stored. Avoid personal or sensitive information and verify important output.";
+  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare Workers AI endpoint; image prompts go to Pollinations. No provider key is stored in this page. Avoid personal or sensitive information and verify important output.";
   const trackedUrls = new Set();
   const outputUrls = new WeakMap();
   const STUDIO_MODES = ["ask", "image", "document", "voice", "video", "music"];
@@ -48,14 +40,9 @@
     "video-form", "video-prompt", "video-duration", "video-canvas", "video-form-prompt-count",
     "music-form", "music-prompt", "music-mood", "music-duration", "music-form-prompt-count"
   ].concat(STUDIO_MODES.flatMap((mode) => ["creator-tab-" + mode, "creator-panel-" + mode]));
-  let webLLMModulePromise = null;
-  let webLLMEngine = null;
-  let webLLMModelId = "";
-  let webLLMWorker = null;
-  const confirmedLocalModels = new Set();
   const STUDIO_MARKUP = `
     <div data-ai-studio-root>
-      <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No keys.</strong> Cloud modes send prompts to Pollinations; device models stay here. Avoid private data and verify important output.</span></div>
+      <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No login or model download.</strong> Text uses Pigsfield's Cloudflare AI endpoint; images use Pollinations. Avoid private data.</span></div>
       <div class="creator-layout">
         <div class="ai-command-bar" id="ai-function-model-bar">
           <div class="creator-tabs" role="tablist" aria-label="Choose an AI function">
@@ -67,9 +54,9 @@
             <button class="creator-tab" type="button" role="tab" data-mode="music" aria-selected="false" title="Music"><span class="creator-tab-icon" aria-hidden="true">🎵</span><span class="creator-tab-label">Music</span></button>
           </div>
           <label class="ai-model-picker" for="ai-text-model"><span aria-hidden="true">◈</span><span class="sr-only">Deep reasoning model</span><select id="ai-text-model" name="text-model" aria-describedby="ai-model-status">
-            <option value="gpt-oss-20b">gpt-oss-20b</option>
-            <option value="Qwen3.5-2B-q4f16_1-MLC">Qwen3.5-2B-q4f16_1-MLC</option>
-            <option value="DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC">DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC</option>
+            <option value="gpt-oss-120b">gpt-oss-120b</option>
+            <option value="gemma-4-26b-a4b-it">gemma-4-26b-a4b-it</option>
+            <option value="glm-4.7-flash">glm-4.7-flash</option>
           </select></label>
         </div>
         <p class="ai-model-status" id="ai-model-status" role="status" aria-live="polite"></p>
@@ -181,13 +168,8 @@
     const status = queryWithin(root, "#ai-model-status");
     if (!select) return;
 
-    const hasWebGPU = "gpu" in navigator;
-    Array.from(select.options).forEach((option) => {
-      const model = TEXT_MODELS[normalizeTextModel(option.value)];
-      option.disabled = model.engine === "webllm" && !hasWebGPU;
-    });
     const stored = storedTextModel();
-    select.value = TEXT_MODELS[stored].engine === "webllm" && !hasWebGPU ? DEFAULT_TEXT_MODEL : stored;
+    select.value = stored;
     const update = () => {
       const key = normalizeTextModel(select.value);
       const model = TEXT_MODELS[key];
@@ -198,9 +180,8 @@
       select.closest(".ai-model-picker")?.classList.toggle("is-disabled", !textBacked);
       if (status) {
         status.textContent = textBacked
-          ? model.id + " · " + model.status + (model.memory ? " · " + model.memory : "")
+          ? model.id + " · " + model.status
           : modeEngineStatus(mode);
-        if (textBacked && !hasWebGPU) status.textContent += " · device models disabled: WebGPU unavailable";
       }
       persistTextModel(key);
     };
@@ -214,7 +195,7 @@
 
   function textModelNote(result) {
     const resolved = cleanText(result && result.model, 120) || DEFAULT_TEXT_MODEL;
-    return resolved + (result && result.engine === "webllm" ? " · on-device WebLLM" : " · Pollinations anonymous cloud");
+    return resolved + " · Cloudflare Workers AI";
   }
 
   function resolveMountTarget(target) {
@@ -312,10 +293,8 @@
     const note = mode === "browser-speech"
       ? "Speech playback uses a voice installed or supplied by your browser or operating system."
       : mode === "cloud"
-        ? "This prompt is sent to the named Pollinations cloud model. Do not include private data."
-        : mode === "device-model"
-          ? "The model runs on this device. First use may download and cache its model files."
-          : "This creation is being made locally in your browser. Your prompt does not leave this device.";
+        ? "This prompt is sent to the named cloud provider. Do not include private data."
+        : "This creation is being made locally in your browser. Your prompt does not leave this device.";
     output.appendChild(element("p", "progress-note", note));
   }
 
@@ -394,135 +373,53 @@
     return cleanText(output);
   }
 
-  async function requestPollinationsText(prompt, systemPrompt, model) {
+  function aiClientId() {
+    try {
+      let value = window.localStorage.getItem(AI_CLIENT_STORAGE_KEY);
+      if (!/^[a-z0-9-]{12,80}$/i.test(value || "")) {
+        value = window.crypto && typeof window.crypto.randomUUID === "function"
+          ? window.crypto.randomUUID()
+          : "pf-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+        window.localStorage.setItem(AI_CLIENT_STORAGE_KEY, value);
+      }
+      return value;
+    } catch (_) {
+      return "anonymous";
+    }
+  }
+
+  async function requestHostedText(prompt, task, model, details) {
     const response = await timedFetch(TEXT_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json, text/plain;q=0.9" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-Pigsfield-Client": aiClientId()
+      },
       body: JSON.stringify({
-        model: model.route,
-        stream: false,
-        reasoning_effort: "high",
-        safe: true,
-        messages: [
-          { role: "system", content: systemPrompt + " " + DEEP_REASONING_INSTRUCTION },
-          { role: "user", content: prompt }
-        ]
+        model: model.id,
+        task: task,
+        prompt: prompt,
+        format: details && details.format
       })
     }, 100000);
     const raw = await response.text();
-    if (!response.ok) throw providerError(response, raw);
-
     let data = null;
     try { data = JSON.parse(raw); } catch (_) {}
-    const text = data == null ? raw : (
-      contentText(data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) ||
-      contentText(data.message && data.message.content) ||
-      contentText(data.output_text) ||
-      contentText(data.output) ||
-      contentText(data.text) ||
-      (typeof data === "string" ? data : "")
-    );
+    if (!response.ok) throw providerError(response, data && data.error || raw);
+    const text = data == null ? raw : contentText(data.text);
     const cleaned = finalAnswerText(text);
     if (!cleaned) throw new StudioError("The provider returned an empty result.", 502, "provider");
     return {
       text: cleaned,
       model: cleanText(data && data.model, 120) || model.id,
-      engine: "pollinations"
+      engine: "workers-ai"
     };
   }
 
-  async function loadWebLLMModule() {
-    if (!webLLMModulePromise) {
-      webLLMModulePromise = import(WEBLLM_MODULE).catch(() => {
-        webLLMModulePromise = null;
-        throw new StudioError("The on-device AI runtime could not load. Check the connection or choose gpt-oss-20b.", 0, "network");
-      });
-    }
-    return webLLMModulePromise;
-  }
-
-  async function unloadWebLLMEngine() {
-    if (webLLMEngine) {
-      try {
-        if (typeof webLLMEngine.unload === "function") await webLLMEngine.unload();
-      } catch (_) {}
-    }
-    if (webLLMWorker) webLLMWorker.terminate();
-    webLLMEngine = null;
-    webLLMModelId = "";
-    webLLMWorker = null;
-  }
-
-  function confirmLocalModelLoad(model) {
-    if (confirmedLocalModels.has(model.id)) return true;
-    const approved = window.confirm(
-      "Download " + model.id + " for private on-device use?\n\n" +
-      model.status + " · " + model.memory + ". The browser will cache the model files."
-    );
-    if (approved) confirmedLocalModels.add(model.id);
-    return approved;
-  }
-
-  async function ensureWebLLMEngine(model) {
-    if (!("gpu" in navigator)) {
-      throw new StudioError("This browser does not provide WebGPU. Choose gpt-oss-20b or use a current desktop browser with WebGPU.", 0, "unsupported");
-    }
-    if (webLLMEngine && webLLMModelId === model.id) return webLLMEngine;
-    if (!confirmLocalModelLoad(model)) {
-      throw new StudioError("On-device model download cancelled. Choose gpt-oss-20b to continue without a model download.", 0, "cancelled");
-    }
-    await unloadWebLLMEngine();
-    const webllm = await loadWebLLMModule();
-    if (!webllm || typeof webllm.CreateWebWorkerMLCEngine !== "function" || typeof Worker !== "function") {
-      throw new StudioError("The on-device AI runtime is unavailable. Choose gpt-oss-20b.", 0, "unsupported");
-    }
-
-    setModelStatus(model.id + " · preparing on-device model…");
-    try {
-      webLLMWorker = new Worker(WEBLLM_WORKER_URL, { type: "module", name: "pigsfield-webllm" });
-      webLLMEngine = await webllm.CreateWebWorkerMLCEngine(webLLMWorker, model.id, {
-        initProgressCallback(report) {
-          const percent = Number.isFinite(report && report.progress) ? Math.round(report.progress * 100) + "% · " : "";
-          const detail = cleanText(report && report.text, 120) || "loading model files";
-          setModelStatus(model.id + " · " + percent + detail);
-        }
-      });
-      webLLMModelId = model.id;
-      setModelStatus(model.id + " · ready on this device");
-      return webLLMEngine;
-    } catch (_) {
-      await unloadWebLLMEngine();
-      throw new StudioError("This device could not load " + model.id + ". It needs " + model.memory + "; choose gpt-oss-20b or a smaller device model.", 0, "unsupported");
-    }
-  }
-
-  async function requestWebLLMText(prompt, systemPrompt, model) {
-    const engine = await ensureWebLLMEngine(model);
-    let response;
-    try {
-      response = await engine.chat.completions.create({
-        messages: [
-          { role: "system", content: systemPrompt + " " + DEEP_REASONING_INSTRUCTION },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.6,
-        top_p: 0.95,
-        max_tokens: 900
-      });
-    } catch (_) {
-      throw new StudioError(model.id + " could not finish this request. Shorten the prompt, close memory-heavy tabs, or choose gpt-oss-20b.", 0, "provider");
-    }
-    const text = contentText(response && response.choices && response.choices[0] && response.choices[0].message && response.choices[0].message.content);
-    const cleaned = finalAnswerText(text);
-    if (!cleaned) throw new StudioError("The on-device model returned no final answer.", 0, "provider");
-    return { text: cleaned, model: model.id, engine: "webllm" };
-  }
-
-  async function requestText(prompt, systemPrompt, model) {
+  async function requestText(prompt, task, model, details) {
     const selected = model && TEXT_MODELS[normalizeTextModel(model.id)] || TEXT_MODELS[DEFAULT_TEXT_MODEL];
-    return selected.engine === "webllm"
-      ? requestWebLLMText(prompt, systemPrompt, selected)
-      : requestPollinationsText(prompt, systemPrompt, selected);
+    return requestHostedText(prompt, task, selected, details);
   }
 
   function triggerDownload(url, filename) {
@@ -592,7 +489,7 @@
 
   function creationBoundary(form, mode) {
     if (mode !== "text") return mode;
-    return selectedTextModelFor(form).engine === "webllm" ? "device-model" : "cloud";
+    return "cloud";
   }
 
   function setBusy(form, busy) {
@@ -740,8 +637,7 @@
 
   async function createAnswer(context) {
     const model = selectedTextModelFor(context.form);
-    const answer = await requestText(context.prompt,
-      "You are Pigsfield's free educational assistant for learners in India. Answer in the user's language, explain clearly, use practical examples, distinguish facts from uncertainty, and never invent citations. Be inclusive and concise. Return plain text with readable line breaks.", model);
+    const answer = await requestText(context.prompt, "tutor", model);
     renderTextAnswer(context.output, answer);
   }
 
@@ -772,11 +668,7 @@
   async function createDocument(context) {
     const format = normalizeDocumentFormat(formValue(context.form, "format", "md"));
     const model = selectedTextModelFor(context.form);
-    const formatInstruction = format === "md"
-      ? "Write polished Markdown with a title, short introduction, useful headings, and a practical conclusion."
-      : "Write polished plain text with clear headings and no Markdown or HTML symbols.";
-    const result = await requestText(context.prompt,
-      "You create accurate, inclusive educational documents for Pigsfield. " + formatInstruction + " Return only the document itself, with no commentary about the task. Do not invent sources or statistics.", model);
+    const result = await requestText(context.prompt, "document", model, { format: format });
     const text = result.text;
     const title = cleanText(context.prompt.replace(/[\r\n]+/g, " "), 72) || "Pigsfield document";
     const file = documentFile(text, format, title);
@@ -1224,8 +1116,7 @@
   async function createVideo(context) {
     const duration = selectedDuration(context.form, 12, 6, 24);
     const model = selectedTextModelFor(context.form);
-    const textResult = await requestText(context.prompt,
-      "Create a safe, factual, silent social-video storyboard for an educational audience. Return JSON only, exactly: {\"title\":\"short title\",\"scenes\":[{\"caption\":\"one concise on-screen message\",\"visual\":\"simple visual direction\"}]}. Include exactly four scenes, each caption under 22 words. Do not use Markdown, quotations, URLs, unverifiable statistics, or copyrighted characters.", model);
+    const textResult = await requestText(context.prompt, "video", model);
     const story = parseStoryboard(textResult.text, context.prompt);
     const canvas = context.form.closest(".creator-panel") && context.form.closest(".creator-panel").querySelector("#video-canvas");
     const result = videoResultShell(context.output, story, duration, textResult);
@@ -1526,7 +1417,7 @@
       maxPromptLength: MAX_PROMPT_LENGTH,
       textModels: Object.keys(TEXT_MODELS),
       defaultTextModel: DEFAULT_TEXT_MODEL,
-      webLLMVersion: "0.2.84",
+      textProvider: "cloudflare-workers-ai",
       imageModel: IMAGE_MODEL,
     });
 
@@ -1599,15 +1490,10 @@
     maxPromptLength: MAX_PROMPT_LENGTH,
     textModels: Object.keys(TEXT_MODELS),
     defaultTextModel: DEFAULT_TEXT_MODEL,
-    webLLMVersion: "0.2.84",
     imageModel: IMAGE_MODEL,
   });
   window.addEventListener("beforeunload", () => {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    if (webLLMWorker) webLLMWorker.terminate();
-    webLLMWorker = null;
-    webLLMEngine = null;
-    webLLMModelId = "";
     trackedUrls.forEach((url) => URL.revokeObjectURL(url));
     trackedUrls.clear();
   });

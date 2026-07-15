@@ -1,0 +1,15 @@
+.git/
+.github/
+.wrangler/
+node_modules/
+worker/
+tests/
+tools/
+.assetsignore
+.gitignore
+CNAME
+LICENSE
+README.md
+SEO-GROWTH.md
+package.json
+wrangler.jsonc

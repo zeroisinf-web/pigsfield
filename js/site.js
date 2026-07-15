@@ -509,7 +509,6 @@
     if (reason) reason.textContent = translationFailureReason(error);
     if (guidance) guidance.textContent = browserTranslationGuidance();
     showDialog(qs("#translation-help-dialog"));
-    PF.toast("Hindi translation is unavailable here. Browser instructions are open.");
   }
 
   async function ensureNativeTranslator() {
@@ -909,10 +908,17 @@
   PF.toast = function (message) {
     const toast = qs("#site-toast");
     if (!toast) return;
-    toast.textContent = message;
+    toast.textContent = String(message || "").trim();
+    if (!toast.textContent) {
+      toast.classList.remove("show");
+      return;
+    }
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+      toast.textContent = "";
+    }, 2600);
   };
 
   PF.copy = async function (text, success = "Copied") {

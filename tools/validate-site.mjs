@@ -387,10 +387,7 @@ function parseJavaScript(files) {
   for (const file of files) {
     const source = fs.readFileSync(file, "utf8");
     try {
-      const parseableSource = path.basename(file) === "ai-worker.js"
-        ? source.replace(/^\s*import\s+\{[^}]+\}\s+from\s+["'][^"']+["'];?\s*/u, "")
-        : source;
-      new vm.Script(parseableSource, { filename: relative(file) });
+      new vm.Script(source, { filename: relative(file) });
     } catch (error) {
       fail(file, `JavaScript syntax error: ${error.message}`);
     }
@@ -745,25 +742,51 @@ function checkExperienceContracts() {
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  const expectedModels = ["gpt-oss-20b", "Qwen3.5-2B-q4f16_1-MLC", "DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC"];
+  const expectedModels = ["gpt-oss-120b", "gemma-4-26b-a4b-it", "glm-4.7-flash"];
   const modelSelect = ai.match(/<select\s+id=["']ai-text-model["'][^>]*>([\s\S]*?)<\/select>/)?.[1] || "";
   const modelOptions = [...modelSelect.matchAll(/<option\s+value=["']([^"']+)["']/g)].map((match) => match[1]);
   check(/class=["']ai-command-bar["'][^>]*id=["']ai-function-model-bar["']/.test(ai), aiFile, "AI functions and model chooser must share one compact command bar");
   check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly three original model names");
   expectedModels.forEach((model) => check(ai.includes(`id: "${model}"`), aiFile, `missing real text model ${model}`));
   check(!/(?:TEXT_PROFILES|responseProfiles?|\bQuick\b|\bBalanced\b)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
-  check(/route:\s*["']openai-fast["']/.test(ai) && /reasoning_effort:\s*["']high["']/.test(ai), aiFile, "gpt-oss-20b must use the anonymous high-reasoning route");
-  check(/CreateWebWorkerMLCEngine\(webLLMWorker,\s*model\.id/.test(ai) && /new Worker\(WEBLLM_WORKER_URL,\s*\{\s*type:\s*["']module["']/.test(ai), aiFile, "on-device inference must run in a dedicated module worker");
-  check(/window\.confirm\([\s\S]{0,300}model\.status[\s\S]{0,100}model\.memory/.test(ai), aiFile, "large on-device model downloads need explicit confirmation and memory disclosure");
-  check(/option\.disabled\s*=\s*model\.engine\s*===\s*["']webllm["']\s*&&\s*!hasWebGPU/.test(ai), aiFile, "on-device models must be disabled when WebGPU is unavailable");
-  check(/~1\.1 GB first-use download/.test(ai) && /~2\.3 GB GPU memory/.test(ai) && /~4\.3 GB first-use download/.test(ai) && /~5\.2 GB GPU memory/.test(ai), aiFile, "local model download and GPU-memory requirements must stay visible");
+  check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
+  check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
+  check((ai.match(/engine:\s*["']workers-ai["']/g) || []).length >= expectedModels.length, aiFile, "all selectable text models must use Workers AI");
+  check(/No login or model download\./.test(ai), aiFile, "AI Studio must explain that visitors do not log in or download a model");
+  check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
+  check(/downloadBlob\(/.test(ai) && /link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
+  check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
   check(/IMAGE_MODEL\s*=\s*["']sana["']/.test(ai), aiFile, "anonymous image model must be explicit");
 
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
-  check(fs.existsSync(aiWorkerFile), aiWorkerFile, "missing WebLLM module worker");
-  if (fs.existsSync(aiWorkerFile)) {
-    const worker = fs.readFileSync(aiWorkerFile, "utf8");
-    check(/@mlc-ai\/web-llm@0\.2\.84/.test(worker) && /new WebWorkerMLCEngineHandler\(\)/.test(worker), aiWorkerFile, "WebLLM worker must use the pinned official handler");
+  check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
+
+  const workerFile = path.join(ROOT, "worker", "index.mjs");
+  check(fs.existsSync(workerFile), workerFile, "missing Cloudflare Worker entry point");
+  if (fs.existsSync(workerFile)) {
+    const worker = fs.readFileSync(workerFile, "utf8");
+    const workerModels = [
+      "@cf/openai/gpt-oss-120b",
+      "@cf/google/gemma-4-26b-a4b-it",
+      "@cf/zai-org/glm-4.7-flash"
+    ];
+    workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Workers AI model mapping ${model}`));
+    check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
+    check(/sameOriginRequest\(request\)/.test(worker), workerFile, "AI endpoint must reject cross-origin requests");
+    check(/MAX_PROMPT_LENGTH\s*=\s*1800/.test(worker), workerFile, "server-side prompt limit must match the studio");
+    check(/env\.AI_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must apply the per-visitor rate limit");
+    check(/env\.AI\.run\(model\.id,/.test(worker), workerFile, "selected models must run through the Workers AI binding");
+    check(/return env\.ASSETS\.fetch\(request\)/.test(worker), workerFile, "non-API requests must fall back to static assets");
+  }
+
+  const wranglerFile = path.join(ROOT, "wrangler.jsonc");
+  check(fs.existsSync(wranglerFile), wranglerFile, "missing Cloudflare Worker configuration");
+  if (fs.existsSync(wranglerFile)) {
+    const wrangler = fs.readFileSync(wranglerFile, "utf8");
+    check(/["']main["']\s*:\s*["']worker\/index\.mjs["']/.test(wrangler), wranglerFile, "Wrangler main must point to the AI Worker");
+    check(/["']binding["']\s*:\s*["']ASSETS["'][\s\S]{0,180}["']run_worker_first["']\s*:\s*\[["']\/api\/\*["']\]/.test(wrangler), wranglerFile, "static assets must route /api/* through the Worker first");
+    check(/["']ai["']\s*:\s*\{[\s\S]{0,100}["']binding["']\s*:\s*["']AI["']/.test(wrangler), wranglerFile, "Wrangler must bind Workers AI as AI");
+    check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*12[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short AI rate limit");
   }
 }
 
