@@ -3,6 +3,7 @@ const PRODUCTION_HOME = `${PRODUCTION_ORIGIN}/`;
 const HTTP_HOME = "http://pigsfield.com/";
 const ROBOTS_URL = `${PRODUCTION_ORIGIN}/robots.txt`;
 const SITEMAP_URL = `${PRODUCTION_ORIGIN}/sitemap.xml`;
+const TOOLS_URL = `${PRODUCTION_ORIGIN}/tools/`;
 
 const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_ATTEMPTS = 4;
@@ -290,12 +291,26 @@ async function checkPermanentHttpsRedirect() {
   console.log(`[pass] ${HTTP_HOME} permanently redirects to ${PRODUCTION_HOME}`);
 }
 
+async function checkToolsRoute() {
+  const response = await fetchWithRetry(TOOLS_URL);
+  const contentType = response.headers.get("content-type") || "";
+  const body = await readTextLimited(response, 2 * 1024 * 1024);
+  if (!/text\/html/i.test(contentType)) {
+    throw new Error(`${TOOLS_URL} must return HTML; received Content-Type: ${contentType || "(missing)"}`);
+  }
+  if (!/<main\b[^>]*\bid=["']main-content["']/i.test(body)) {
+    throw new Error(`${TOOLS_URL} returned HTTP 200 but not the Pigsfield Tools page`);
+  }
+  console.log(`[pass] ${TOOLS_URL} returned the Pigsfield Tools page with HTTP 200`);
+}
+
 async function main() {
   console.log(`Checking the deployed Pigsfield crawl surface at ${PRODUCTION_HOME}`);
 
   const results = await Promise.allSettled([
     checkCrawlSurface(),
     checkPermanentHttpsRedirect(),
+    checkToolsRoute(),
   ]);
   const failures = results
     .filter((result) => result.status === "rejected")

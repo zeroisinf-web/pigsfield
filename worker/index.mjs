@@ -1,15 +1,13 @@
 const MODELS = Object.freeze({
-  "gpt-oss-120b": Object.freeze({
+  "gpt-oss": Object.freeze({
     id: "@cf/openai/gpt-oss-120b",
-    name: "gpt-oss-120b"
+    name: "gpt-oss-120b",
+    thirdParty: false
   }),
-  "gemma-4-26b-a4b-it": Object.freeze({
-    id: "@cf/google/gemma-4-26b-a4b-it",
-    name: "gemma-4-26b-a4b-it"
-  }),
-  "glm-4.7-flash": Object.freeze({
-    id: "@cf/zai-org/glm-4.7-flash",
-    name: "glm-4.7-flash"
+  "gpt-5.4-mini": Object.freeze({
+    id: "openai/gpt-5.4-mini",
+    name: "gpt-5.4-mini",
+    thirdParty: true
   })
 });
 
@@ -50,6 +48,11 @@ function clientKey(request) {
   return /^[a-z0-9-]{12,80}$/i.test(supplied) ? supplied : "anonymous";
 }
 
+function edgeKey(request) {
+  const value = request.headers.get("CF-Connecting-IP") || "unknown";
+  return /^[0-9a-f:.]{3,64}$/i.test(value) ? value : "unknown";
+}
+
 function taskInstruction(task, format) {
   if (task === "document") {
     const formatInstruction = format === "md"
@@ -57,12 +60,6 @@ function taskInstruction(task, format) {
       : "Write polished plain text with clear headings and no Markdown or HTML symbols.";
     return BASE_INSTRUCTION + " Create an accurate educational document. " + formatInstruction +
       " Return only the document itself, with no commentary about the task.";
-  }
-  if (task === "video") {
-    return BASE_INSTRUCTION +
-      " Create a safe, factual, silent educational-video storyboard. Return JSON only, exactly shaped as " +
-      "{\"title\":\"short title\",\"scenes\":[{\"caption\":\"one concise on-screen message\",\"visual\":\"simple visual direction\"}]}. " +
-      "Include exactly four scenes, each caption under 22 words. Do not use Markdown, URLs, unverifiable statistics, or copyrighted characters.";
   }
   return BASE_INSTRUCTION + " Give a readable answer with useful line breaks and a concise conclusion.";
 }
@@ -114,7 +111,7 @@ async function handleAI(request, env) {
   }
 
   const model = MODELS[String(body && body.model || "")];
-  const task = ["tutor", "document", "video"].includes(body && body.task) ? body.task : "";
+  const task = ["tutor", "document"].includes(body && body.task) ? body.task : "";
   const prompt = String(body && body.prompt || "").trim();
   const format = ["md", "txt", "html"].includes(body && body.format) ? body.format : "txt";
   if (!model) return json({ error: "Choose one of the available Pigsfield models." }, 400);
@@ -124,26 +121,39 @@ async function handleAI(request, env) {
 
   if (env.AI_RATE_LIMITER && typeof env.AI_RATE_LIMITER.limit === "function") {
     const limit = await env.AI_RATE_LIMITER.limit({ key: clientKey(request) });
-    if (!limit.success) return json({ error: "The free per-visitor limit is busy. Wait one minute and try again." }, 429);
+    if (!limit.success) return json({ error: "The shared per-visitor limit is busy. Wait one minute and try again." }, 429);
+  }
+  if (env.AI_IP_RATE_LIMITER && typeof env.AI_IP_RATE_LIMITER.limit === "function") {
+    const limit = await env.AI_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
+    if (!limit.success) return json({ error: "The shared network limit is busy. Wait one minute and try again." }, 429);
   }
   if (!env.AI || typeof env.AI.run !== "function") return json({ error: "AI capacity is not configured." }, 503);
 
   try {
-    const result = await env.AI.run(model.id, {
+    const input = {
       messages: [
         { role: "system", content: taskInstruction(task, format) },
         { role: "user", content: prompt }
       ],
-      stream: false,
-      max_tokens: task === "video" ? 700 : 900,
-      temperature: task === "video" ? 0.35 : 0.55,
-      top_p: 0.9
+      stream: false
+    };
+    if (model.thirdParty) input.max_completion_tokens = 900;
+    else {
+      input.max_tokens = 900;
+      input.temperature = 0.55;
+      input.top_p = 0.9;
+    }
+    const result = await env.AI.run(model.id, input, {
+      gateway: { id: "default", collectLog: false }
     });
     const text = finalText(outputText(result));
     if (!text) return json({ error: "The model returned no usable answer." }, 502);
-    return json({ text, model: model.name, engine: "cloudflare-workers-ai" });
+    return json({ text, model: model.name, engine: model.thirdParty ? "cloudflare-ai-gateway" : "cloudflare-workers-ai" });
   } catch (_) {
-    return json({ error: "Shared free AI capacity is temporarily unavailable. Please try again shortly." }, 503);
+    const message = model.thirdParty
+      ? "GPT-5.4 mini is unavailable. The site owner must enable Cloudflare Unified Billing credits for this model."
+      : "Shared AI capacity is temporarily unavailable. Please try again shortly.";
+    return json({ error: message }, 503);
   }
 }
 

@@ -616,6 +616,13 @@ function checkBrandContracts() {
 }
 
 function checkPerformanceContracts() {
+  const assetsIgnoreFile = path.join(ROOT, ".assetsignore");
+  check(fs.existsSync(assetsIgnoreFile), assetsIgnoreFile, "missing Cloudflare static-asset exclusion list");
+  if (fs.existsSync(assetsIgnoreFile)) {
+    const assetsIgnore = fs.readFileSync(assetsIgnoreFile, "utf8");
+    check(!/^tools\/\s*$/m.test(assetsIgnore), assetsIgnoreFile, "tools/ must not be excluded wholesale because it contains the public /tools/ page");
+    check(/^tools\/validate-site\.mjs\s*$/m.test(assetsIgnore) && /^tools\/check-production\.mjs\s*$/m.test(assetsIgnore), assetsIgnoreFile, "only the non-public tool scripts should be excluded from static assets");
+  }
   const file = path.join(ROOT, "sw.js");
   check(fs.existsSync(file), file, "missing service worker");
   if (!fs.existsSync(file)) return;
@@ -719,6 +726,7 @@ function checkExperienceContracts() {
   const catalog = fs.readFileSync(catalogFile, "utf8");
   check(/collapsibleGroups/.test(catalog) && /data-catalog-group/.test(catalog), catalogFile, "catalog does not support category-level expand and collapse");
   check(/class=["']catalog-groups["'][^>]*data-accordion-scope/.test(catalog), catalogFile, "nested catalog categories need an independent accordion scope");
+  check(/directSections/.test(catalog) && /catalog-direct-section/.test(catalog), catalogFile, "catalog does not support a titled section with its groups shown directly");
   check(!/(?:Expand all|Collapse all|catalog-expand|data-expand-groups|details\[0\]\.open\s*=\s*true)/i.test(catalog), catalogFile, "catalogs must start closed and cannot bypass one-open behavior");
   const examsFile = path.join(ROOT, "js", "exams-page.js");
   const exams = fs.readFileSync(examsFile, "utf8");
@@ -739,24 +747,54 @@ function checkExperienceContracts() {
     const file = path.join(ROOT, route, "index.html");
     check(/data-collapsible-groups=["']true["']/.test(fs.readFileSync(file, "utf8")), file, "category collapse is not enabled on this catalog");
   }
+  const rightsFile = path.join(ROOT, "rights", "index.html");
+  check(/data-direct-sections=["']true["']/.test(fs.readFileSync(rightsFile, "utf8")), rightsFile, "government-accountability tiers must render directly below their static section title");
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  const expectedModels = ["gpt-oss-120b", "gemma-4-26b-a4b-it", "glm-4.7-flash"];
+  const expectedModels = ["gpt-oss", "gpt-5.4-mini"];
   const modelSelect = ai.match(/<select\s+id=["']ai-text-model["'][^>]*>([\s\S]*?)<\/select>/)?.[1] || "";
   const modelOptions = [...modelSelect.matchAll(/<option\s+value=["']([^"']+)["']/g)].map((match) => match[1]);
+  const functionButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bcreator-tab\b[^"']*["'][^>]*>/g)]
+    .map((match) => parseAttributes(match[0])["data-mode"])
+    .filter(Boolean);
   check(/class=["']ai-command-bar["'][^>]*id=["']ai-function-model-bar["']/.test(ai), aiFile, "AI functions and model chooser must share one compact command bar");
-  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly three original model names");
+  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly gpt-oss and gpt-5.4-mini");
   expectedModels.forEach((model) => check(ai.includes(`id: "${model}"`), aiFile, `missing real text model ${model}`));
+  check(JSON.stringify(functionButtons) === JSON.stringify(["ask", "image", "document", "voice", "music"]), aiFile, "AI Studio must expose only Tutor, Image, Document, Voice and Music");
+  check(!/data-(?:mode|panel)=["']video["']/.test(ai), aiFile, "the non-working Video mode must stay removed");
+  check(/function\s+(?:removeUnsupportedModes|setupCapabilityModes)\s*\(/.test(ai), aiFile, "browser-only AI functions need capability gating before they are shown");
+  check(/speechSynthesis/.test(ai) && /SpeechSynthesisUtterance/.test(ai), aiFile, "Voice must be gated by browser speech-synthesis support");
+  check(/OfflineAudioContext|webkitOfflineAudioContext/.test(ai), aiFile, "Music must be gated by browser offline-audio support");
   check(!/(?:TEXT_PROFILES|responseProfiles?|\bQuick\b|\bBalanced\b)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
   check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
   check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
-  check((ai.match(/engine:\s*["']workers-ai["']/g) || []).length >= expectedModels.length, aiFile, "all selectable text models must use Workers AI");
+  check(/engine:\s*["']workers-ai["']/.test(ai), aiFile, "gpt-oss must identify its Workers AI engine");
+  check(/engine:\s*["'](?:ai-gateway|cloudflare-ai-gateway)["']/.test(ai), aiFile, "GPT-5.4 mini must identify its Cloudflare AI Gateway engine");
   check(/No login or model download\./.test(ai), aiFile, "AI Studio must explain that visitors do not log in or download a model");
   check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
   check(/downloadBlob\(/.test(ai) && /link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
   check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
   check(/IMAGE_MODEL\s*=\s*["']sana["']/.test(ai), aiFile, "anonymous image model must be explicit");
+  const externalAiLinks = [
+    "https://artificialanalysis.ai/leaderboards/models",
+    "https://gemini.google.com/app",
+    "https://chatgpt.com/",
+    "https://claude.ai/",
+    "https://z.ai/"
+  ];
+  const studioAnchors = [...ai.matchAll(/<a\b[^>]*>/g)].map((match) => match[0]);
+  externalAiLinks.forEach((url) => {
+    const tag = studioAnchors.find((anchor) => parseAttributes(anchor).href === url);
+    check(Boolean(tag), aiFile, `AI Studio is missing the external website link ${url}`);
+    if (tag) {
+      const attributes = parseAttributes(tag);
+      check(attributes.target === "_blank", aiFile, `${url} must preserve native new-tab behavior`);
+      check((attributes.rel || "").split(/\s+/).includes("noopener") && (attributes.rel || "").split(/\s+/).includes("noreferrer"), aiFile, `${url} must isolate the external tab`);
+    }
+  });
+  check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
+  check(/unified billing\|credits/i.test(ai), aiFile, "AI Studio must preserve the actionable GPT-5.4 mini billing setup error");
 
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
@@ -767,14 +805,16 @@ function checkExperienceContracts() {
     const worker = fs.readFileSync(workerFile, "utf8");
     const workerModels = [
       "@cf/openai/gpt-oss-120b",
-      "@cf/google/gemma-4-26b-a4b-it",
-      "@cf/zai-org/glm-4.7-flash"
+      "openai/gpt-5.4-mini"
     ];
-    workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Workers AI model mapping ${model}`));
+    workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
+    check(!/(?:gemma-4-26b-a4b-it|glm-4\.7-flash)/.test(worker), workerFile, "removed text-model mappings must not return");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
     check(/sameOriginRequest\(request\)/.test(worker), workerFile, "AI endpoint must reject cross-origin requests");
     check(/MAX_PROMPT_LENGTH\s*=\s*1800/.test(worker), workerFile, "server-side prompt limit must match the studio");
+    check(/\[["']tutor["'],\s*["']document["']\]\.includes/.test(worker) && !/["']video["']/.test(worker.match(/const task\s*=[\s\S]{0,160}/)?.[0] || ""), workerFile, "Worker must accept only Tutor and Document text tasks");
     check(/env\.AI_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must apply the per-visitor rate limit");
+    check(/env\.AI_IP_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must also rate-limit by the trusted Cloudflare edge address");
     check(/env\.AI\.run\(model\.id,/.test(worker), workerFile, "selected models must run through the Workers AI binding");
     check(/return env\.ASSETS\.fetch\(request\)/.test(worker), workerFile, "non-API requests must fall back to static assets");
   }
@@ -786,7 +826,8 @@ function checkExperienceContracts() {
     check(/["']main["']\s*:\s*["']worker\/index\.mjs["']/.test(wrangler), wranglerFile, "Wrangler main must point to the AI Worker");
     check(/["']binding["']\s*:\s*["']ASSETS["'][\s\S]{0,180}["']run_worker_first["']\s*:\s*\[["']\/api\/\*["']\]/.test(wrangler), wranglerFile, "static assets must route /api/* through the Worker first");
     check(/["']ai["']\s*:\s*\{[\s\S]{0,100}["']binding["']\s*:\s*["']AI["']/.test(wrangler), wranglerFile, "Wrangler must bind Workers AI as AI");
-    check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*12[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short AI rate limit");
+    check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*8[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short per-client AI rate limit");
+    check(/["']name["']\s*:\s*["']AI_IP_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*24[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the trusted edge-address AI rate limit");
   }
 }
 

@@ -5,44 +5,45 @@
   const MAX_PROMPT_LENGTH = 1800;
   const TEXT_ENDPOINT = new URL("/api/ai", window.location.origin).href;
   const IMAGE_ENDPOINT = "https://image.pollinations.ai/prompt/";
-  const DEFAULT_TEXT_MODEL = "gpt-oss-120b";
-  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v3";
+  const DEFAULT_TEXT_MODEL = "gpt-oss";
+  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v4";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const TEXT_MODELS = Object.freeze({
-    "gpt-oss-120b": Object.freeze({
-      id: "gpt-oss-120b",
+    "gpt-oss": Object.freeze({
+      id: "gpt-oss",
       engine: "workers-ai",
-      status: "Cloudflare-hosted reasoning · no download"
+      status: "gpt-oss-120b · Cloudflare Workers AI"
     }),
-    "gemma-4-26b-a4b-it": Object.freeze({
-      id: "gemma-4-26b-a4b-it",
-      engine: "workers-ai",
-      status: "Cloudflare-hosted reasoning · no download"
-    }),
-    "glm-4.7-flash": Object.freeze({
-      id: "glm-4.7-flash",
-      engine: "workers-ai",
-      status: "Cloudflare-hosted reasoning · no download"
+    "gpt-5.4-mini": Object.freeze({
+      id: "gpt-5.4-mini",
+      engine: "cloudflare-ai-gateway",
+      status: "gpt-5.4-mini · OpenAI through Cloudflare"
     })
   });
   const IMAGE_MODEL = "sana";
-  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare Workers AI endpoint; image prompts go to Pollinations. No provider key is stored in this page. Avoid personal or sensitive information and verify important output.";
+  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare AI endpoint; image prompts go to Pollinations. No provider key is stored in this page. Avoid personal or sensitive information and verify important output.";
   const trackedUrls = new Set();
   const outputUrls = new WeakMap();
-  const STUDIO_MODES = ["ask", "image", "document", "voice", "video", "music"];
-  const TEXT_BACKED_MODES = new Set(["ask", "document", "video"]);
+  const STUDIO_MODES = ["ask", "image", "document", "voice", "music"];
+  const TEXT_BACKED_MODES = new Set(["ask", "document"]);
   const STUDIO_RESERVED_IDS = [
     "ai-function-model-bar", "ai-text-model", "ai-model-status",
     "ask-form", "ask-prompt", "ask-form-prompt-count",
     "image-form", "image-prompt", "image-form-prompt-count",
     "document-form", "document-prompt", "document-format", "document-form-prompt-count",
     "voice-form", "voice-prompt", "voice-choice", "voice-form-prompt-count",
-    "video-form", "video-prompt", "video-duration", "video-canvas", "video-form-prompt-count",
     "music-form", "music-prompt", "music-mood", "music-duration", "music-form-prompt-count"
   ].concat(STUDIO_MODES.flatMap((mode) => ["creator-tab-" + mode, "creator-panel-" + mode]));
   const STUDIO_MARKUP = `
     <div data-ai-studio-root>
       <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No login or model download.</strong> Text uses Pigsfield's Cloudflare AI endpoint; images use Pollinations. Avoid private data.</span></div>
+      <nav class="ai-web-links" aria-label="Open leading AI websites and model comparisons">
+        <a class="ai-web-link" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" aria-label="Artificial Analysis model leaderboard" title="Artificial Analysis"><span class="ai-brand-mark analysis-mark" aria-hidden="true">▥</span><span class="sr-only">Artificial Analysis</span></a>
+        <a class="ai-web-link" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" aria-label="Open Google Gemini" title="Google Gemini"><span class="ai-brand-mark gemini-mark" aria-hidden="true">✦</span><span class="sr-only">Gemini</span></a>
+        <a class="ai-web-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" aria-label="Open ChatGPT" title="ChatGPT"><span class="ai-brand-mark chatgpt-mark" aria-hidden="true">◎</span><span class="sr-only">ChatGPT</span></a>
+        <a class="ai-web-link" href="https://claude.ai/" target="_blank" rel="noopener noreferrer" aria-label="Open Claude" title="Claude"><span class="ai-brand-mark claude-mark" aria-hidden="true">✺</span><span class="sr-only">Claude</span></a>
+        <a class="ai-web-link" href="https://z.ai/" target="_blank" rel="noopener noreferrer" aria-label="Open Z.ai" title="Z.ai"><span class="ai-brand-mark zai-mark" aria-hidden="true">Z</span><span class="sr-only">Z.ai</span></a>
+      </nav>
       <div class="creator-layout">
         <div class="ai-command-bar" id="ai-function-model-bar">
           <div class="creator-tabs" role="tablist" aria-label="Choose an AI function">
@@ -50,13 +51,11 @@
             <button class="creator-tab" type="button" role="tab" data-mode="image" aria-selected="false" title="Image"><span class="creator-tab-icon" aria-hidden="true">🎨</span><span class="creator-tab-label">Image</span></button>
             <button class="creator-tab" type="button" role="tab" data-mode="document" aria-selected="false" title="Document"><span class="creator-tab-icon" aria-hidden="true">📄</span><span class="creator-tab-label">Document</span></button>
             <button class="creator-tab" type="button" role="tab" data-mode="voice" aria-selected="false" title="Voice"><span class="creator-tab-icon" aria-hidden="true">🔊</span><span class="creator-tab-label">Voice</span></button>
-            <button class="creator-tab" type="button" role="tab" data-mode="video" aria-selected="false" title="Video"><span class="creator-tab-icon" aria-hidden="true">🎬</span><span class="creator-tab-label">Video</span></button>
             <button class="creator-tab" type="button" role="tab" data-mode="music" aria-selected="false" title="Music"><span class="creator-tab-icon" aria-hidden="true">🎵</span><span class="creator-tab-label">Music</span></button>
           </div>
           <label class="ai-model-picker" for="ai-text-model"><span aria-hidden="true">◈</span><span class="sr-only">Deep reasoning model</span><select id="ai-text-model" name="text-model" aria-describedby="ai-model-status">
-            <option value="gpt-oss-120b">gpt-oss-120b</option>
-            <option value="gemma-4-26b-a4b-it">gemma-4-26b-a4b-it</option>
-            <option value="glm-4.7-flash">glm-4.7-flash</option>
+            <option value="gpt-oss">gpt-oss-120b</option>
+            <option value="gpt-5.4-mini">gpt-5.4-mini</option>
           </select></label>
         </div>
         <p class="ai-model-status" id="ai-model-status" role="status" aria-live="polite"></p>
@@ -80,11 +79,6 @@
             <h2><span aria-hidden="true">🔊</span> Voice</h2><p>Browser voice · on device</p>
             <form id="voice-form"><div class="field"><label for="voice-prompt">Text</label><textarea id="voice-prompt" name="prompt" maxlength="1200" required placeholder="Read this revision note clearly…"></textarea></div><div class="field"><label for="voice-choice">Voice</label><select id="voice-choice" name="voice"><option value="">Automatic browser voice</option></select></div><button class="button brand" type="submit">🔊 Play</button></form>
             <div class="creator-output" aria-live="polite"></div>
-          </section>
-          <section class="creator-panel" data-panel="video" role="tabpanel" hidden>
-            <h2><span aria-hidden="true">🎬</span> Video</h2><p>AI captions · browser-rendered WebM</p>
-            <form id="video-form"><div class="field"><label for="video-prompt">Topic</label><textarea id="video-prompt" name="prompt" maxlength="1200" required placeholder="Explain the water cycle in four short scenes."></textarea></div><div class="field"><label for="video-duration">Length</label><select id="video-duration" name="duration"><option value="8">8 seconds</option><option value="12">12 seconds</option><option value="16">16 seconds</option></select></div><button class="button brand" type="submit">🎬 Render</button></form>
-            <div class="creator-output" aria-live="polite"></div><canvas class="video-canvas" id="video-canvas" width="1280" height="720" hidden></canvas>
           </section>
           <section class="creator-panel" data-panel="music" role="tabpanel" hidden>
             <h2><span aria-hidden="true">🎵</span> Music</h2><p>Browser synth · on device</p>
@@ -180,7 +174,7 @@
       select.closest(".ai-model-picker")?.classList.toggle("is-disabled", !textBacked);
       if (status) {
         status.textContent = textBacked
-          ? model.id + " · " + model.status
+          ? model.status
           : modeEngineStatus(mode);
       }
       persistTextModel(key);
@@ -195,7 +189,10 @@
 
   function textModelNote(result) {
     const resolved = cleanText(result && result.model, 120) || DEFAULT_TEXT_MODEL;
-    return resolved + " · Cloudflare Workers AI";
+    const provider = result && result.engine === "cloudflare-ai-gateway"
+      ? "OpenAI through Cloudflare"
+      : "Cloudflare Workers AI";
+    return resolved + " · " + provider;
   }
 
   function resolveMountTarget(target) {
@@ -302,19 +299,22 @@
     if (error && error.code === "prompt") return error.message;
     if (error && error.code === "unsupported") return error.message;
     if (error && (error.code === "timeout" || error.name === "AbortError")) {
-      return "The free generator took too long to respond. Shared capacity can be busy; please wait a moment and try again.";
+      return "The generator took too long to respond. Shared capacity can be busy; please wait a moment and try again.";
     }
     if (error && error.status === 429) {
-      return "The anonymous free-service rate limit has been reached. Wait a minute, shorten the prompt, and try again—no API key is needed.";
+      return "The anonymous shared-service rate limit has been reached. Wait a minute, shorten the prompt, and try again—no API key is needed.";
     }
     if (error && (error.status === 401 || error.status === 403)) {
-      return "The free provider refused this request. No API key should be entered here; try a simpler, non-sensitive prompt in a moment.";
+      return "The provider refused this request. No API key should be entered here; try a simpler, non-sensitive prompt in a moment.";
     }
     if (error && (error.status === 400 || error.status === 413 || error.status === 422)) {
       return "The provider could not process this prompt. Shorten it, remove unusual symbols, and try again.";
     }
+    if (error && error.code === "provider" && error.status >= 500 && /unified billing|credits/i.test(error.message || "")) {
+      return cleanText(error.message, 260);
+    }
     if (error && error.status >= 500) {
-      return "The shared free provider is temporarily unavailable. Your work was not saved here; please try again shortly.";
+      return "The shared provider is temporarily unavailable. Your work was not saved here; please try again shortly.";
     }
     if (usesNetwork && error && (error.code === "network" || error instanceof TypeError)) {
       return "The anonymous generator could not be reached. Check your connection and any privacy, ad-blocking, or cross-origin restrictions, then try again.";
@@ -413,7 +413,7 @@
     return {
       text: cleaned,
       model: cleanText(data && data.model, 120) || model.id,
-      engine: "workers-ai"
+      engine: cleanText(data && data.engine, 80) || model.engine
     };
   }
 
@@ -457,7 +457,8 @@
       if (!response.ok) throw providerError(response, "Image download failed.");
       const blob = await response.blob();
       if (!blob.size) throw new StudioError("The image file was empty.", 502, "provider");
-      downloadBlob(blob, filename);
+      const extension = blob.type === "image/jpeg" ? ".jpg" : blob.type === "image/webp" ? ".webp" : ".png";
+      downloadBlob(blob, filename.replace(/\.[a-z0-9]+$/i, extension));
     } catch (_) {
       const opened = window.open(url, "_blank", "noopener");
       showNote(output, opened
@@ -625,6 +626,18 @@
     return activate;
   }
 
+  function removeUnsupportedModes(scope) {
+    const supported = {
+      voice: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
+      music: "OfflineAudioContext" in window || "webkitOfflineAudioContext" in window
+    };
+    Object.entries(supported).forEach(([mode, available]) => {
+      if (available) return;
+      queryWithin(scope, `.creator-tab[data-mode="${mode}"]`)?.remove();
+      queryWithin(scope, `.creator-panel[data-panel="${mode}"]`)?.remove();
+    });
+  }
+
   function renderTextAnswer(output, result) {
     const shell = beginOutput(output, "Experimental AI answer");
     shell.appendChild(element("h3", "", "Answer"));
@@ -720,7 +733,7 @@
     const actions = element("div", "output-actions");
     actions.appendChild(actionLink("Open full image", url));
     const download = actionButton("Download image", function () {
-      downloadRemoteImage(url, safeSlug(context.prompt) + ".png", download, context.output);
+      downloadRemoteImage(url, safeSlug(context.prompt) + ".jpg", download, context.output);
     }, "button small secondary");
     actions.appendChild(download);
     shell.appendChild(actions);
@@ -804,56 +817,6 @@
     play();
   }
 
-  function parseStoryboard(raw, prompt) {
-    let parsed = null;
-    const withoutFences = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-    const firstBrace = withoutFences.indexOf("{");
-    const lastBrace = withoutFences.lastIndexOf("}");
-    try {
-      parsed = JSON.parse(firstBrace >= 0 && lastBrace > firstBrace ? withoutFences.slice(firstBrace, lastBrace + 1) : withoutFences);
-    } catch (_) {}
-
-    let candidates = [];
-    if (parsed && Array.isArray(parsed.scenes)) candidates = parsed.scenes;
-    if (!candidates.length) {
-      const lines = withoutFences
-        .replace(/([.!?])\s+/g, "$1\n")
-        .split(/\r?\n/)
-        .map((line) => line.replace(/^\s*(?:[-*•]|\d+[.):]|scene\s*\d+\s*[:.-]?)\s*/i, "").trim())
-        .filter((line) => line.length > 4 && !/^[{}\[\],]+$/.test(line));
-      candidates = lines.map((line) => ({ caption: line, visual: "Simple animated shapes and bold, readable typography" }));
-    }
-    if (!candidates.length) candidates = [{ caption: cleanText(raw, 180), visual: "Simple animated shapes and bold typography" }];
-
-    const scenes = [];
-    for (let index = 0; index < 4; index += 1) {
-      const source = candidates[index] || candidates[index % candidates.length] || {};
-      const caption = typeof source === "string" ? source : (source.caption || source.text || source.narration || source.title || "");
-      const visual = typeof source === "object" && source ? (source.visual || source.direction || source.image || "") : "";
-      scenes.push({
-        caption: cleanText(caption || ("Part " + (index + 1) + ": " + prompt), 190),
-        visual: cleanText(visual || "Simple animated shapes and bold, readable typography", 130)
-      });
-    }
-    return {
-      title: cleanText(parsed && parsed.title ? parsed.title : prompt.replace(/[\r\n]+/g, " "), 80) || "Pigsfield story",
-      scenes: scenes
-    };
-  }
-
-  function clock(seconds) {
-    const rounded = Math.max(0, Math.round(seconds));
-    return Math.floor(rounded / 60) + ":" + String(rounded % 60).padStart(2, "0");
-  }
-
-  function storyboardText(story, duration) {
-    const sceneLength = duration / story.scenes.length;
-    const blocks = story.scenes.map((scene, index) => {
-      return "SCENE " + (index + 1) + " (" + clock(index * sceneLength) + "–" + clock((index + 1) * sceneLength) + ")\nCaption: " + scene.caption + "\nVisual: " + scene.visual;
-    });
-    return story.title.toUpperCase() + "\n\n" + blocks.join("\n\n");
-  }
-
   function hashString(value) {
     let hash = 2166136261;
     const text = String(value || "");
@@ -862,295 +825,6 @@
       hash = Math.imul(hash, 16777619);
     }
     return hash >>> 0;
-  }
-
-  function splitLongWord(context, word, maxWidth) {
-    if (context.measureText(word).width <= maxWidth) return [word];
-    const pieces = [];
-    let current = "";
-    Array.from(word).forEach((character) => {
-      const candidate = current + character;
-      if (current && context.measureText(candidate).width > maxWidth) {
-        pieces.push(current);
-        current = character;
-      } else current = candidate;
-    });
-    if (current) pieces.push(current);
-    return pieces;
-  }
-
-  function canvasLines(context, text, maxWidth, maximumLines) {
-    const words = String(text || "").split(/\s+/).filter(Boolean).flatMap((word) => splitLongWord(context, word, maxWidth));
-    const lines = [];
-    let line = "";
-    words.forEach((word) => {
-      const candidate = line ? line + " " + word : word;
-      if (line && context.measureText(candidate).width > maxWidth) {
-        lines.push(line);
-        line = word;
-      } else line = candidate;
-    });
-    if (line) lines.push(line);
-    if (lines.length > maximumLines) {
-      lines.length = maximumLines;
-      let last = lines[maximumLines - 1];
-      while (last && context.measureText(last + "…").width > maxWidth) last = last.slice(0, -1);
-      lines[maximumLines - 1] = last.trimEnd() + "…";
-    }
-    return lines;
-  }
-
-  function roundedRect(context, x, y, width, height, radius) {
-    const r = Math.min(radius, width / 2, height / 2);
-    context.beginPath();
-    context.moveTo(x + r, y);
-    context.arcTo(x + width, y, x + width, y + height, r);
-    context.arcTo(x + width, y + height, x, y + height, r);
-    context.arcTo(x, y + height, x, y, r);
-    context.arcTo(x, y, x + width, y, r);
-    context.closePath();
-  }
-
-  function drawStoryFrame(canvas, story, duration, elapsed) {
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    const width = canvas.width;
-    const height = canvas.height;
-    const safeElapsed = Math.max(0, Math.min(duration - 0.001, elapsed));
-    const sceneDuration = duration / story.scenes.length;
-    const sceneIndex = Math.min(story.scenes.length - 1, Math.floor(safeElapsed / sceneDuration));
-    const local = (safeElapsed - sceneIndex * sceneDuration) / sceneDuration;
-    const scene = story.scenes[sceneIndex];
-    const seed = hashString(story.title + sceneIndex);
-    const hue = seed % 360;
-
-    const gradient = context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "hsl(" + hue + " 46% 16%)");
-    gradient.addColorStop(0.55, "hsl(" + ((hue + 35) % 360) + " 52% 23%)");
-    gradient.addColorStop(1, "hsl(" + ((hue + 78) % 360) + " 50% 12%)");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, height);
-
-    context.save();
-    context.globalAlpha = 0.13;
-    for (let index = 0; index < 7; index += 1) {
-      const radius = 70 + ((seed >>> (index % 12)) % 150);
-      const x = ((seed * (index + 3)) % width + local * width * (index % 2 ? -0.16 : 0.16) + width) % width;
-      const y = ((seed * (index + 7)) % height + Math.sin(local * Math.PI * 2 + index) * 55 + height) % height;
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2);
-      context.fillStyle = index % 2 ? "#ff9d2e" : "#74d7ac";
-      context.fill();
-    }
-    context.restore();
-
-    context.fillStyle = "#ff9933";
-    context.fillRect(0, 0, width / 3, 9);
-    context.fillStyle = "#f7f3e8";
-    context.fillRect(width / 3, 0, width / 3, 9);
-    context.fillStyle = "#138808";
-    context.fillRect((width / 3) * 2, 0, width / 3, 9);
-
-    const fade = Math.max(0.18, Math.min(1, local * 5, (1 - local) * 5));
-    context.save();
-    context.globalAlpha = fade;
-    context.translate(0, (1 - Math.min(1, local * 4)) * 24);
-    context.fillStyle = "rgba(255,255,255,.78)";
-    context.font = "700 25px system-ui, sans-serif";
-    context.fillText(story.title, 84, 94, width - 300);
-    context.textAlign = "right";
-    context.fillText("SCENE " + (sceneIndex + 1) + " / 4", width - 84, 94);
-    context.textAlign = "left";
-
-    roundedRect(context, 70, 145, width - 140, 390, 34);
-    context.fillStyle = "rgba(4,14,11,.48)";
-    context.fill();
-    context.strokeStyle = "rgba(255,255,255,.16)";
-    context.lineWidth = 2;
-    context.stroke();
-
-    context.fillStyle = "#ffffff";
-    context.font = "750 64px system-ui, sans-serif";
-    const lines = canvasLines(context, scene.caption, width - 250, 4);
-    const lineHeight = 78;
-    const startY = 235 + Math.max(0, (3 - lines.length) * 28);
-    lines.forEach((line, index) => context.fillText(line, 125, startY + index * lineHeight));
-
-    context.fillStyle = "rgba(255,255,255,.72)";
-    context.font = "400 25px system-ui, sans-serif";
-    const visual = canvasLines(context, scene.visual, width - 250, 2);
-    visual.forEach((line, index) => context.fillText(line, 125, 485 + index * 33));
-    context.restore();
-
-    context.fillStyle = "rgba(255,255,255,.74)";
-    context.font = "600 22px system-ui, sans-serif";
-    context.fillText("Pigsfield • made in your browser", 84, height - 58);
-    const progressWidth = (width - 168) * Math.min(1, safeElapsed / duration);
-    context.fillStyle = "rgba(255,255,255,.24)";
-    context.fillRect(84, height - 35, width - 168, 5);
-    context.fillStyle = "#ffb55c";
-    context.fillRect(84, height - 35, progressWidth, 5);
-  }
-
-  function drawVideoPlaceholder(canvas) {
-    canvas.width = 1280;
-    canvas.height = 720;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    const gradient = context.createLinearGradient(0, 0, 1280, 720);
-    gradient.addColorStop(0, "#102d25");
-    gradient.addColorStop(1, "#0b1713");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, 1280, 720);
-    context.fillStyle = "rgba(255,255,255,.92)";
-    context.font = "750 58px system-ui, sans-serif";
-    context.fillText("Your four-scene video starts here", 105, 325);
-    context.fillStyle = "rgba(255,255,255,.65)";
-    context.font = "400 28px system-ui, sans-serif";
-    context.fillText("Write a prompt, then create a downloadable WebM.", 108, 382);
-  }
-
-  function videoRecordingSupported(canvas) {
-    return Boolean(window.MediaRecorder && canvas && typeof canvas.captureStream === "function" && canvas.getContext("2d"));
-  }
-
-  function preferredVideoMime() {
-    const choices = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
-    if (!window.MediaRecorder || typeof window.MediaRecorder.isTypeSupported !== "function") return "";
-    return choices.find((type) => window.MediaRecorder.isTypeSupported(type)) || "";
-  }
-
-  function recordStoryboard(canvas, story, duration, onProgress) {
-    return new Promise((resolve, reject) => {
-      let stream;
-      let recorder;
-      let frameTimer;
-      let stopTimer;
-      let settled = false;
-      const chunks = [];
-      try {
-        canvas.width = 1280;
-        canvas.height = 720;
-        drawStoryFrame(canvas, story, duration, 0);
-        stream = canvas.captureStream(30);
-        const mimeType = preferredVideoMime();
-        recorder = mimeType
-          ? new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 3500000 })
-          : new MediaRecorder(stream, { videoBitsPerSecond: 3500000 });
-      } catch (error) {
-        if (stream) stream.getTracks().forEach((track) => track.stop());
-        reject(new StudioError(error.message || "Video recording is not supported.", 0, "unsupported"));
-        return;
-      }
-
-      const cleanup = () => {
-        window.clearInterval(frameTimer);
-        window.clearTimeout(stopTimer);
-        if (stream) stream.getTracks().forEach((track) => track.stop());
-      };
-      recorder.addEventListener("dataavailable", (event) => {
-        if (event.data && event.data.size) chunks.push(event.data);
-      });
-      recorder.addEventListener("error", (event) => {
-        if (settled) return;
-        settled = true;
-        cleanup();
-        reject(new StudioError((event.error && event.error.message) || "The browser stopped recording.", 0, "unsupported"));
-      });
-      recorder.addEventListener("stop", () => {
-        if (settled) return;
-        settled = true;
-        cleanup();
-        const blob = new Blob(chunks, { type: recorder.mimeType || "video/webm" });
-        if (!blob.size) reject(new StudioError("The browser produced an empty video.", 0, "unsupported"));
-        else resolve(blob);
-      });
-
-      try {
-        recorder.start(250);
-      } catch (error) {
-        settled = true;
-        cleanup();
-        reject(new StudioError(error.message || "Video recording could not start.", 0, "unsupported"));
-        return;
-      }
-      const started = performance.now();
-      let lastScene = -1;
-      frameTimer = window.setInterval(() => {
-        const elapsed = Math.min(duration, (performance.now() - started) / 1000);
-        drawStoryFrame(canvas, story, duration, elapsed);
-        const scene = Math.min(4, Math.floor(elapsed / (duration / 4)) + 1);
-        if (scene !== lastScene) {
-          lastScene = scene;
-          onProgress(scene, elapsed);
-        }
-      }, 1000 / 30);
-      stopTimer = window.setTimeout(() => {
-        drawStoryFrame(canvas, story, duration, duration - 0.001);
-        if (recorder.state !== "inactive") recorder.stop();
-      }, duration * 1000 + 120);
-    });
-  }
-
-  function videoResultShell(output, story, duration, textResult) {
-    const text = storyboardText(story, duration);
-    const shell = beginOutput(output, "Experimental AI video");
-    shell.appendChild(element("h3", "", story.title));
-    const summary = element("p", "", "A four-scene caption video and its editable storyboard.");
-    shell.appendChild(summary);
-    const preview = element("pre");
-    preview.textContent = text;
-    shell.appendChild(preview);
-    shell.appendChild(element("p", "progress-note ai-model-used", textModelNote(textResult) + " The video itself is rendered locally in this browser."));
-    const actions = element("div", "output-actions");
-    actions.appendChild(actionButton("Download storyboard", () => {
-      downloadBlob(new Blob([text], { type: "text/plain;charset=utf-8" }), safeSlug(story.title) + "-storyboard.txt");
-    }));
-    shell.appendChild(actions);
-    const status = element("p", "progress-note");
-    status.setAttribute("role", "status");
-    shell.appendChild(status);
-    return { shell: shell, preview: preview, actions: actions, status: status };
-  }
-
-  async function createVideo(context) {
-    const duration = selectedDuration(context.form, 12, 6, 24);
-    const model = selectedTextModelFor(context.form);
-    const textResult = await requestText(context.prompt, "video", model);
-    const story = parseStoryboard(textResult.text, context.prompt);
-    const canvas = context.form.closest(".creator-panel") && context.form.closest(".creator-panel").querySelector("#video-canvas");
-    const result = videoResultShell(context.output, story, duration, textResult);
-    if (canvas) {
-      canvas.hidden = false;
-      canvas.setAttribute("role", "img");
-      canvas.setAttribute("aria-label", "Preview of the four-scene caption video");
-      drawStoryFrame(canvas, story, duration, 0);
-    }
-    if (!videoRecordingSupported(canvas)) {
-      result.status.textContent = "This browser cannot record a canvas video. The complete storyboard fallback is ready to download.";
-      return;
-    }
-
-    result.status.textContent = "Recording the video locally… keep this tab open for about " + duration + " seconds.";
-    try {
-      const blob = await recordStoryboard(canvas, story, duration, (scene) => {
-        result.status.textContent = "Recording locally: scene " + scene + " of 4. Keep this tab open.";
-      });
-      const url = objectUrlFor(context.output, blob);
-      const video = document.createElement("video");
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = "metadata";
-      video.src = url;
-      video.className = "video-canvas";
-      result.shell.insertBefore(video, result.preview);
-      result.actions.insertBefore(actionButton("Download .webm", () => {
-        downloadBlob(blob, safeSlug(story.title) + ".webm");
-      }, "button small secondary"), result.actions.firstChild);
-      result.status.textContent = "The WebM was rendered entirely in your browser. It has no audio; edit or add licensed audio before publishing if needed.";
-    } catch (error) {
-      result.status.textContent = friendlyError(error, false) + " The storyboard fallback remains available.";
-    }
   }
 
   function mulberry32(seed) {
@@ -1410,6 +1084,7 @@
   function init(scope) {
     const layout = studioLayoutWithin(scope || document);
     if (!layout) return null;
+    removeUnsupportedModes(layout);
     const activate = setupTabs(layout);
     PF.aiStudio = Object.assign(PF.aiStudio || {}, {
       activate: activate,
@@ -1417,7 +1092,7 @@
       maxPromptLength: MAX_PROMPT_LENGTH,
       textModels: Object.keys(TEXT_MODELS),
       defaultTextModel: DEFAULT_TEXT_MODEL,
-      textProvider: "cloudflare-workers-ai",
+      textProvider: "cloudflare-ai",
       imageModel: IMAGE_MODEL,
     });
 
@@ -1426,14 +1101,7 @@
     bindForm(layout, "image-form", "Creating a safe image…", "cloud", createImage);
     bindForm(layout, "document-form", "Drafting with the selected model…", "text", createDocument);
     bindForm(layout, "voice-form", "Preparing a browser voice…", "browser-speech", createVoice);
-    bindForm(layout, "video-form", "Writing with the selected model…", "text", createVideo);
     bindForm(layout, "music-form", "Composing and rendering locally…", "local", createMusic);
-
-    const canvas = queryWithin(layout, "#video-canvas");
-    if (canvas && canvas.dataset.aiStudioCanvasReady !== "true") {
-      drawVideoPlaceholder(canvas);
-      canvas.dataset.aiStudioCanvasReady = "true";
-    }
     populateSpeechVoices(layout);
     ensureSpeechVoicesListener();
     if (PF.applyLanguageTo) PF.applyLanguageTo(layout);

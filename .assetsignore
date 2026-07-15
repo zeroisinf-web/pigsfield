@@ -4,7 +4,8 @@
 node_modules/
 worker/
 tests/
-tools/
+tools/check-production.mjs
+tools/validate-site.mjs
 .assetsignore
 .gitignore
 CNAME

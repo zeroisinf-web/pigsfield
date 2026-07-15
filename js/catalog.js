@@ -13,6 +13,7 @@
   const countTarget = document.querySelector("#catalog-count");
   const filterTarget = document.querySelector("#catalog-filters");
   const collapsibleGroups = root.dataset.collapsibleGroups === "true";
+  const directSections = root.dataset.directSections === "true";
   const blockedHosts = new Set([
     "cineby.at", "www.cineby.at", "themoviebox.org", "www.themoviebox.org",
     "yarrlist.net", "www.yarrlist.net", "kisskh.nl", "www.kisskh.nl",
@@ -299,6 +300,17 @@
   }
 
   function buildSections() {
+    if (directSections) {
+      sectionsTarget.innerHTML = (data.sections || []).map((section, index) => `
+        <section class="catalog-direct-section" data-section-index="${index}">
+          <h2 class="catalog-direct-title">${PF.escapeHtml(displaySectionTitle(section.title) || "Curated pathway")}</h2>
+          <div class="section-content"></div>
+        </section>`).join("");
+      sectionsTarget.querySelectorAll(".catalog-direct-section").forEach((section) => {
+        renderSection(section, Number(section.dataset.sectionIndex));
+      });
+      return;
+    }
     sectionsTarget.innerHTML = (data.sections || []).map((section, index) => {
       const count = sectionEntries(index).length;
       return `<details class="catalog-section" data-section-index="${index}">
@@ -367,7 +379,7 @@
     if (!entry) return;
     const details = sectionsTarget.querySelector(`[data-section-index="${entry.sectionIndex}"]`);
     if (!details) return;
-    details.open = true;
+    if (details instanceof HTMLDetailsElement) details.open = true;
     renderSection(details, entry.sectionIndex);
     requestAnimationFrame(() => {
       const group = sectionsTarget.querySelector(`details.catalog-group[data-section-index="${entry.sectionIndex}"][data-group-index="${entry.groupIndex}"]`);

@@ -12,7 +12,7 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 - Competitive-exam roadmaps, mock tests and subject collections
 - PigBang educational media with lazy, privacy-enhanced YouTube playback
 - Expandable RTI, grievance, legal-aid and government-accountability categories
-- An always-available AI Studio with no visitor login or model download for answers, images, documents, browser voice previews, caption videos and browser-made music
+- An always-available AI Studio with no visitor login or model download for tutoring, images, documents, capability-gated browser voice previews and browser-made music
 - Browser-powered, in-page Hindi translation where supported, light/dark themes, search, saved resources and native original-source links
 - Persistent AI Studio, Donate and Feedback controls
 - A responsive depth-and-motion layer with a reduced-motion-safe flat mode
@@ -44,7 +44,8 @@ npm test
 1. Push this folder to the repository's `main` branch.
 2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
 3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
-4. Keep the Workers AI binding named `AI` and the rate-limit binding named `AI_RATE_LIMITER`; the browser-facing endpoint is the same-origin `/api/ai` route.
+4. Keep the AI binding named `AI` and the rate-limit bindings named `AI_RATE_LIMITER` and `AI_IP_RATE_LIMITER`; the browser-facing endpoint is the same-origin `/api/ai` route.
+5. Enable Cloudflare AI Gateway Unified Billing and add account credits before offering `gpt-5.4-mini`. That model is a paid third-party model even though visitors use Pigsfield without a login or provider key.
 
 The static interface uses relative asset paths, but hosted text generation requires the Cloudflare Worker and its bindings. Canonical and social metadata intentionally point to the production domain.
 
@@ -67,13 +68,14 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 
 ## AI Studio boundaries
 
-Pigsfield does not ask visitors for an account or API key. The studio loads only when its persistent dock button is opened and offers exactly three selectable hosted reasoning models under their original names:
+Pigsfield does not ask visitors for an account or API key. The studio loads only when its persistent dock button is opened and offers exactly two selectable hosted models:
 
-- `gpt-oss-120b` — OpenAI's open-weight reasoning model through Cloudflare Workers AI.
-- `gemma-4-26b-a4b-it` — Google's Gemma instruction model through Cloudflare Workers AI.
-- `glm-4.7-flash` — Z.ai's reasoning model through Cloudflare Workers AI.
+- `gpt-oss` — the Pigsfield selector name for OpenAI's `gpt-oss-120b`, served by Cloudflare Workers AI as `@cf/openai/gpt-oss-120b`.
+- `gpt-5.4-mini` — OpenAI's hosted model, served through Cloudflare's third-party model catalog as `openai/gpt-5.4-mini`. Cloudflare Unified Billing and account credits are required on the deployment.
 
-Text prompts are sent to the same-origin `/api/ai` route, which calls the selected model through a server-side Cloudflare Workers AI binding. No model files are downloaded to the browser and no provider credential is exposed there. A random local client identifier supports the short per-visitor rate limit; shared free capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview, music synthesis and final document or caption-video assembly use browser capabilities, while text and storyboard requests use the selected hosted model. Generated images, documents, caption videos, storyboards and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
+Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no provider credential is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
+
+The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models), [Gemini](https://gemini.google.com/app), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) and [Z.ai](https://z.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 
 ## Accessibility and privacy
 
