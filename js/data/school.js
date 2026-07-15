@@ -2030,7 +2030,7 @@ window.PF_DATA.school = {
       },
       {
        "title": "Zotero",
-       "desc": "Best Free Reference Manager — Collect, organize, cite, share — 100% Free, Browser extension",
+       "desc": "Open-source reference manager for collecting, organizing and citing research, with browser extensions and optional paid storage",
        "links": [
         {
          "label": "Web",

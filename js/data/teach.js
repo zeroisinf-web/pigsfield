@@ -899,7 +899,7 @@ window.PF_DATA.teach = {
       },
       {
        "title": "freeCodeCamp",
-       "desc": "HTML, CSS, JS, Python — 100% Free, project-based. Web Dev, Python, Data Science, Free Certifications",
+       "desc": "Free project-based lessons in HTML, CSS, JavaScript, Python, web development and data science, with certificates",
        "links": [
         {
          "label": "Web",

@@ -1,9 +1,14 @@
 {
   "name": "pigsfield",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Pigsfield — static educational website. No build step required; the site is served directly from the repository root.",
+  "description": "Pigsfield — a free-first learning, skills and citizen-resource map for India.",
   "scripts": {
-    "build": "echo \"Pigsfield is a 100% static site — nothing to build. Set Cloudflare 'Build output directory' to / (root).\""
+    "build": "node tools/validate-site.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check:production": "node tools/check-production.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

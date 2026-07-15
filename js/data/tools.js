@@ -4,7 +4,7 @@ window.PF_DATA = window.PF_DATA || {};
 window.PF_DATA.tools = {
  "sections": [
   {
-   "title": "🛠️ Pigsfield — Tools with Tutorials | 71 Tools · 6 Categories · 100% Free",
+   "title": "🛠️ Pigsfield — Tools with Tutorials | 50 Free-First Tools · 6 Categories",
    "groups": [
     {
      "title": "AI & ML — Best AI tools + direct tutorials",
@@ -104,7 +104,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "chat.z.ai",
-       "desc": "💰 100% फ्री AI — GLM 5.2 मॉडल जो ChatGPT, Claude और Gemini जैसी पेड AI से मुकाबला करता है।",
+       "desc": "💰 मुफ़्त उपयोग विकल्प वाला AI चैट टूल — सुविधाएँ और सीमाएँ प्रदाता पर जाँचें।",
        "links": [
         {
          "label": "Web",
@@ -595,7 +595,7 @@ window.PF_DATA.tools = {
       },
       {
        "title": "PDF24 Tools",
-       "desc": "PDF का Swiss Army Knife — 100% फ्री, बिना वॉटरमार्क के मर्ज, स्प्लिट, रिसाइज सब।",
+       "desc": "PDF मर्ज, स्प्लिट और रिसाइज के लिए मुफ़्त विकल्पों वाला टूल — उपयोग से पहले वर्तमान सीमाएँ जाँचें।",
        "links": [
         {
          "label": "Web",

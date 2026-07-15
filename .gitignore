@@ -1,5 +1,4 @@
 node_modules/
-.wrangler/
-wrangler.jsonc
-package-lock.json
-bun.lockb
+.DS_Store
+Thumbs.db
+*.log

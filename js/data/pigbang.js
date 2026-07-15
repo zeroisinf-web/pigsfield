@@ -412,19 +412,6 @@ window.PF_DATA.pigbang = {
       "6-8",
       "9-12"
      ],
-     "subject": "Logic, Problem Solving",
-     "name": "Detective Conan",
-     "desc": "A brilliant teenage detective is transformed into a child by a mysterious organization and solves cases while seeking a cure.",
-     "urls": [
-      "https://animesalt.in/episode/detective-conan-1x1"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "6-8",
-      "9-12"
-     ],
      "subject": "Physics, Rocket Engineering",
      "name": "Space Gen: Chandrayaan",
      "desc": "A gripping, accurate breakdown of the physics, structural engineering, and sheer grit behind India's historic lunar south pole landing.",
@@ -892,48 +879,6 @@ window.PF_DATA.pigbang = {
       "9-12",
       "UG"
      ],
-     "subject": "General Science, Physics",
-     "name": "Dr. Stone",
-     "desc": "Senku Ishigami uses science to rebuild civilization after humanity is petrified in stone.",
-     "urls": [
-      "https://animesalt.ac/episode/dr-stone-1x1/"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "6-8",
-      "9-12",
-      "UG"
-     ],
-     "subject": "Physical Education, Sports",
-     "name": "Haikyu!!",
-     "desc": "Shoyo Hinata and his high school volleyball team strive to reach the top.",
-     "urls": [
-      "https://animesalt.ac/series/haikyu/"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "6-8",
-      "9-12",
-      "UG"
-     ],
-     "subject": "Literature, Folklore",
-     "name": "One Piece",
-     "desc": "Epic pirate adventure anime following Monkey D. Luffy and his crew in search of the ultimate treasure.",
-     "urls": [
-      "https://animesalt.ac/series/one-piece/"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "6-8",
-      "9-12",
-      "UG"
-     ],
      "subject": "Space Science, Rocket Engineering",
      "name": "Mission Mangal",
      "desc": "Cinematic look at the orbital mechanics, launch windows, and creative engineering shortcuts used by ISRO to reach Mars on a budget.",
@@ -1196,58 +1141,6 @@ window.PF_DATA.pigbang = {
       "https://www.netflix.com/title/81252357"
      ],
      "price": "Paid"
-    },
-    {
-     "classes": [
-      "9-12",
-      "UG"
-     ],
-     "subject": "Folklore, Mythology",
-     "name": "Jujutsu Kaisen",
-     "desc": "Dark fantasy anime following a high school student who joins a secret organization of Jujutsu Sorcerers to eliminate curses.",
-     "urls": [
-      "https://animesalt.ac/series/jujutsu-kaisen/"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "9-12",
-      "UG"
-     ],
-     "subject": "Psychology, Ethics",
-     "name": "Takopi's Original Sin",
-     "desc": "Carefree alien Takopi meets the sad Earthling Shizuka and tries to bring her happiness.",
-     "urls": [
-      "https://animesalt.ac/series/takopis-original-sin/"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "9-12",
-      "UG"
-     ],
-     "subject": "Physical Education, Psychology",
-     "name": "100 Meters",
-     "desc": "A track star naturally gifted in the 100-meter dash meets a determined transfer student, sparking a lifelong rivalry.",
-     "urls": [
-      "https://hianimes.se/watch/100-meters-episode-1-so2z8q"
-     ],
-     "price": "Free"
-    },
-    {
-     "classes": [
-      "9-12",
-      "UG"
-     ],
-     "subject": "Physics, Logic",
-     "name": "Steins;Gate",
-     "desc": "A self-proclaimed mad scientist discovers a method of time travel, leading to unforeseen consequences.",
-     "urls": [
-      "https://hianimes.se/watch/steinsgate-episode-1-episode-1-k4ypch"
-     ],
-     "price": "Free"
     },
     {
      "classes": [
@@ -2515,7 +2408,7 @@ window.PF_DATA.pigbang = {
      "name": "Race to Nowhere",
      "desc": "The cost of over-testing and high-pressure schooling. Essential parent/teacher watch.",
      "urls": [
-      "https://www.cineby.at/movie/65103?play=true"
+      "https://rocofilms.com/films/race-to-nowhere/"
      ],
      "price": "Paid"
     },
@@ -2577,10 +2470,9 @@ window.PF_DATA.pigbang = {
      "name": "Love, Death & Robots",
      "desc": "An adult animated anthology series exploring science fiction, fantasy, horror, and comedy through various short stories.",
      "urls": [
-      "https://themoviebox.org/moviesDetail/love-death-and-robots-hindi-g4Yff0x0Xt5",
-      "https://kisskh.nl/Drama/Love-Death-Robots-Season-1/Episode-1?id=2422&ep=56083&a=False&page=0&pageSize=100"
+      "https://www.netflix.com/title/80174608"
      ],
-     "price": "Free"
+     "price": "Paid"
     },
     {
      "classes": [
@@ -2888,13 +2780,7 @@ window.PF_DATA.pigbang = {
      ],
      "price": "Free"
     }
-   ],
-   "note": {
-    "text": "Free or Paid\n[You can search paid ones on cineby.at themoviebox.org yarrlist.net]\n(use Brave Browser for secured browsing)",
-    "urls": [
-     "https://www.cineby.at/"
-    ]
-   }
+   ]
   },
   {
    "id": "channels",

@@ -1,12 +1,23 @@
 {
-  "name": "Pigsfield — Every Free but Best Educational Resource",
+  "name": "Pigsfield — India's Open Learning Map",
   "short_name": "Pigsfield",
-  "description": "Education is your Right, It must be free. Gateway to every free but best educational resource — Nursery to PhD.",
-  "start_url": "./index.html",
+  "description": "An open, free-first map that puts education, skills, exams, tools and government-accountability resources in your pocket.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#17141a",
-  "theme_color": "#e84f7d",
+  "background_color": "#f4f1e8",
+  "theme_color": "#126b58",
+  "lang": "en-IN",
+  "categories": ["education", "productivity", "utilities"],
   "icons": [
-    { "src": "assets/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {"src": "assets/pigsfield-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "assets/pigsfield-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ],
+  "shortcuts": [
+    {"name": "Learn", "url": "./learn/"},
+    {"name": "Competitive exams", "url": "./exams/"},
+    {"name": "PigBang", "url": "./watch/"},
+    {"name": "Make Government Accountable", "url": "./rights/"}
   ]
 }
