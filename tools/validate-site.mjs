@@ -595,6 +595,25 @@ function checkBrandContracts() {
   const site = fs.readFileSync(siteFile, "utf8");
   check((site.match(/assets\/pigsfield-logo-ui\.webp/g) || []).length >= 2, siteFile, "shared header and footer must use the optimized Pigsfield UI logo");
   check(!/<img\b[^>]*src=["'][^"']*assets\/pigsfield-logo\.png/i.test(site), siteFile, "the full-resolution Pigsfield PNG must not be used as a visible header or footer image");
+  const officialSocialUrls = [
+    "https://www.facebook.com/61579505132769/",
+    "https://www.youtube.com/@pigsfield",
+    "https://www.instagram.com/pigsfield",
+    "https://x.com/pigsfield",
+    "https://in.linkedin.com/in/priyadarshan-meghwal-431656210"
+  ];
+  const siteAnchors = [...site.matchAll(/<a\b[^>]*>/g)].map((match) => parseAttributes(match[0]));
+  check(/Our Official Social Media Handles/.test(site) && /class=["']footer-social["']/.test(site), siteFile, "shared footer must identify the official social-media section");
+  officialSocialUrls.forEach((url) => {
+    const anchor = siteAnchors.find((attributes) => attributes.href === url);
+    check(Boolean(anchor), siteFile, `shared footer is missing official social link ${url}`);
+    if (anchor) {
+      check(anchor.target === "_blank", siteFile, `${url} must preserve native new-tab behavior`);
+      check((anchor.rel || "").split(/\s+/).includes("noopener") && (anchor.rel || "").split(/\s+/).includes("noreferrer"), siteFile, `${url} must isolate its external tab`);
+      check(Boolean(anchor["aria-label"]), siteFile, `${url} needs an accessible platform label`);
+    }
+    check(home.includes(`"${url}"`), homeFile, `Organization sameAs is missing the exact official handle ${url}`);
+  });
 
   const visibleHtmlFiles = [
     ...walk(ROOT, (file) => path.basename(file).toLowerCase() === "index.html"),
@@ -838,15 +857,26 @@ function checkYouTubeContract() {
   const source = fs.readFileSync(file, "utf8");
   const required = [
     [/youtube-nocookie\.com\/embed\//, "player must use YouTube's privacy-enhanced embed host"],
+    [/url\.searchParams\.set\(["']controls["'],\s*["']1["']\)/, "player must keep YouTube navigation controls enabled"],
+    [/url\.searchParams\.set\(["']listType["'],\s*["']playlist["']\)/, "playlist embeds must identify the complete playlist type"],
     [/iframe\.referrerPolicy\s*=\s*["']strict-origin-when-cross-origin["']/, "iframe must preserve a strict-origin referrer for error 153"],
     [/url\.searchParams\.set\(["']widget_referrer["']/, "embed URL must include widget_referrer"],
     [/url\.searchParams\.set\(["']origin["']/, "embed URL must identify its origin"],
     [/\b153\s*:/, "player must provide a useful error-153 fallback message"],
     [/sourceLink\.href\s*=\s*media\.original/, "fallback must retain the original YouTube URL"],
-    [/document\.createElement\(["']iframe["']\)/, "player must create its iframe only after interaction"]
+    [/document\.createElement\(["']iframe["']\)/, "player must create its iframe only after interaction"],
+    [/Complete playlist/, "player must expose a visible companion playlist queue"],
+    [/\.getPlaylist\(\)/, "player must read the complete playable queue from the IFrame API"],
+    [/\.getPlaylistIndex\(\)/, "player must track the active playlist item"],
+    [/\.playVideoAt\(index\)/, "playlist queue items must navigate the inbuilt player"]
   ];
   for (const [pattern, message] of required) check(pattern.test(source), file, message);
   check(!/iframe\.referrerPolicy\s*=\s*["']no-referrer["']/.test(source), file, "player must not suppress the referrer required by YouTube");
+  const cssFile = path.join(ROOT, "css", "site.css");
+  const css = fs.readFileSync(cssFile, "utf8");
+  check(/\.player-stage\.has-playlist\s*\{[^}]*display:\s*grid/i.test(css), cssFile, "desktop playlist player must show a companion queue");
+  check(/@media\s*\(max-width:\s*52rem\)[\s\S]*?\.player-stage\.has-playlist\s*\{[^}]*display:\s*block/i.test(css), cssFile, "mobile playlist player must stack its queue below the video");
+  check(/\.player-frame\s*\{[^}]*min-height:\s*200px/i.test(css), cssFile, "mobile YouTube player must meet the documented 200px minimum height");
 }
 
 const htmlFiles = walk(ROOT, (file) => path.basename(file).toLowerCase() === "index.html");
@@ -887,6 +917,6 @@ if (errors.length) {
   console.log("✓ Brand: original logo PNGs are hash-preserved; optimized icons and WebP UI logos are used in the interface");
   console.log("✓ Performance: service worker precaches only the navigation shell and leaves AI, catalogs and media on demand");
   console.log("✓ CSS: dimensional layer parses cleanly and respects reduced motion");
-  console.log("✓ YouTube: lazy privacy-enhanced player, original-link fallback and error-153 referrer contract");
+  console.log("✓ YouTube: lazy privacy-enhanced player, complete playlist queue, original-link fallback and error-153 contract");
   console.log(`\nPigsfield validation passed (${assertionCount} checks).`);
 }

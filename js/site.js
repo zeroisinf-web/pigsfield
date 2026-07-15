@@ -786,6 +786,16 @@
               <span>Pigsfield</span>
             </a>
             <p>Education within reach: learn freely, build skills and make government accountable. A volunteer-led, free-first discovery platform built for people across India.</p>
+            <nav class="footer-social" aria-labelledby="official-social-title" translate="no">
+              <h2 class="footer-title" id="official-social-title">Our Official Social Media Handles</h2>
+              <ul class="footer-social-list">
+                <li><a href="https://www.facebook.com/61579505132769/" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Facebook"><span class="social-mark facebook-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.6 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.5 1.6-1.5H17V5c-.4-.1-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.8v8h3.3Z"/></svg></span><span>Facebook</span></a></li>
+                <li><a href="https://www.youtube.com/@pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on YouTube"><span class="social-mark youtube-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9.5 7.8 7 4.2-7 4.2V7.8Z"/></svg></span><span>YouTube</span></a></li>
+                <li><a href="https://www.instagram.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Instagram"><span class="social-mark instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4.4"/><circle cx="12" cy="12" r="3.5"/><circle class="social-dot" cx="17.4" cy="6.8" r="1"/></svg></span><span>Instagram</span></a></li>
+                <li><a href="https://x.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on X"><span class="social-mark x-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.24 2.25h3.31l-7.23 8.26 8.51 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z"/></svg></span><span>X</span></a></li>
+                <li><a href="https://in.linkedin.com/in/priyadarshan-meghwal-431656210" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on LinkedIn"><span class="social-mark linkedin-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.4 8.2H3.2V21h3.2V8.2ZM4.8 3a1.9 1.9 0 1 0 0 3.8A1.9 1.9 0 0 0 4.8 3ZM20.8 13.7c0-3.9-2.1-5.8-4.9-5.8-2.3 0-3.3 1.2-3.9 2.1V8.2H8.8V21H12v-6.3c0-1.7.3-3.3 2.4-3.3 2 0 2.1 1.9 2.1 3.4V21h3.2l1.1-7.3Z"/></svg></span><span>LinkedIn</span></a></li>
+              </ul>
+            </nav>
           </div>
           <div>
             <div class="footer-title">Explore</div>

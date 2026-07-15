@@ -51,7 +51,8 @@
       };
     }
 
-    if ((parsed.pathname === "/playlist" || segments[1] === "videoseries") && PLAYLIST_ID.test(playlistId)) {
+    const officialPlaylistEmbed = segments[0] === "embed" && !segments[1] && parsed.searchParams.get("listType") === "playlist";
+    if ((parsed.pathname === "/playlist" || segments[1] === "videoseries" || officialPlaylistEmbed) && PLAYLIST_ID.test(playlistId)) {
       return { kind: "playlist", playlistId, start, index, original: parsed.href };
     }
 
@@ -68,16 +69,17 @@
   }
 
   function embedUrl(media) {
-    const path = media.kind === "video" ? media.videoId : "videoseries";
-    const url = new URL(`https://www.youtube-nocookie.com/embed/${path}`);
+    const embed = media.kind === "video"
+      ? `https://www.youtube-nocookie.com/embed/${media.videoId}`
+      : "https://www.youtube-nocookie.com/embed/videoseries";
+    const url = new URL(embed);
     url.searchParams.set("autoplay", "1");
+    url.searchParams.set("controls", "1");
     url.searchParams.set("playsinline", "1");
     url.searchParams.set("enablejsapi", "1");
     url.searchParams.set("rel", "0");
-    if (media.kind === "playlist") {
+    if (media.playlistId) {
       url.searchParams.set("listType", "playlist");
-      url.searchParams.set("list", media.playlistId);
-    } else if (media.playlistId) {
       url.searchParams.set("list", media.playlistId);
     }
     if (media.start) url.searchParams.set("start", String(media.start));
@@ -102,22 +104,34 @@
       const script = document.createElement("script");
       script.src = "https://www.youtube.com/iframe_api";
       script.async = true;
-      script.onerror = () => reject(new Error("YouTube Player API unavailable"));
+      script.onerror = () => {
+        apiPromise = null;
+        reject(new Error("YouTube Player API unavailable"));
+      };
       document.head.appendChild(script);
       setTimeout(() => {
         if (window.YT && window.YT.Player) resolve(window.YT);
-      }, 4000);
+        else {
+          apiPromise = null;
+          reject(new Error("YouTube Player API timed out"));
+        }
+      }, 8000);
     });
     return apiPromise;
   }
 
   let dialog;
+  let playerStage;
   let frameHost;
   let errorBox;
   let sourceLink;
   let titleTarget;
+  let playlistPanel;
+  let playlistList;
+  let playlistCount;
   let activePlayer = null;
   let activeIframe = null;
+  let activePlaylistSignature = "";
 
   function ensureDialog() {
     if (dialog) return dialog;
@@ -129,21 +143,122 @@
         <strong id="player-title">Pigsfield player</strong>
         <button class="icon-button player-close" type="button" aria-label="Close video">×</button>
       </div>
-      <div class="player-frame" id="player-frame"></div>
+      <div class="player-stage" id="player-stage">
+        <div class="player-frame" id="player-frame"></div>
+        <aside class="player-playlist" id="player-playlist" aria-labelledby="player-playlist-title" hidden>
+          <div class="player-playlist-head">
+            <span><strong id="player-playlist-title">Complete playlist</strong><small id="player-playlist-count"></small></span>
+            <span aria-hidden="true">☷</span>
+          </div>
+          <ol class="player-playlist-list" id="player-playlist-list" aria-label="Playlist videos"></ol>
+        </aside>
+      </div>
       <div class="player-error" id="player-error" role="status" hidden></div>
       <div class="player-fallback">
         <span>If playback is blocked by the owner, age settings or a privacy extension, use the original source.</span>
-        <a class="button small ghost" id="player-source" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+        <a class="button small ghost" id="player-source" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
       </div>`;
     document.body.appendChild(dialog);
+    playerStage = dialog.querySelector("#player-stage");
     frameHost = dialog.querySelector("#player-frame");
     errorBox = dialog.querySelector("#player-error");
     sourceLink = dialog.querySelector("#player-source");
     titleTarget = dialog.querySelector("#player-title");
+    playlistPanel = dialog.querySelector("#player-playlist");
+    playlistList = dialog.querySelector("#player-playlist-list");
+    playlistCount = dialog.querySelector("#player-playlist-count");
     dialog.querySelector(".player-close").addEventListener("click", close);
+    playlistList.addEventListener("click", (event) => {
+      const button = event.target.closest && event.target.closest("button[data-playlist-index]");
+      if (!button || !playlistList.contains(button) || !activePlayer || typeof activePlayer.playVideoAt !== "function") return;
+      const index = Number(button.dataset.playlistIndex);
+      if (!Number.isInteger(index) || index < 0) return;
+      activePlayer.playVideoAt(index);
+    });
     dialog.addEventListener("cancel", () => close());
     dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });
     return dialog;
+  }
+
+  function resetPlaylist() {
+    activePlaylistSignature = "";
+    if (playlistList) playlistList.textContent = "";
+    if (playlistCount) playlistCount.textContent = "";
+    if (playlistPanel) playlistPanel.hidden = true;
+    if (playerStage) playerStage.classList.remove("has-playlist");
+    if (dialog) dialog.classList.remove("has-playlist");
+  }
+
+  function updatePlaylistSelection(index, title) {
+    if (!playlistList) return;
+    playlistList.querySelectorAll("button[data-playlist-index]").forEach((button) => {
+      const active = Number(button.dataset.playlistIndex) === index;
+      button.classList.toggle("active", active);
+      if (active) button.setAttribute("aria-current", "true");
+      else button.removeAttribute("aria-current");
+      const name = button.querySelector(".player-playlist-name");
+      if (name) name.textContent = active && title ? title : name.dataset.defaultLabel;
+    });
+  }
+
+  function renderPlaylist(ids, currentIndex, currentTitle) {
+    if (!playlistList || !playlistPanel || !playerStage) return;
+    const playable = Array.isArray(ids) ? ids.filter((id) => VIDEO_ID.test(String(id || ""))) : [];
+    if (!playable.length) {
+      resetPlaylist();
+      return;
+    }
+
+    const signature = playable.join("|");
+    if (signature !== activePlaylistSignature) {
+      const fragment = document.createDocumentFragment();
+      playable.forEach((videoId, index) => {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        const image = document.createElement("img");
+        const copy = document.createElement("span");
+        const name = document.createElement("span");
+        const id = document.createElement("small");
+        button.type = "button";
+        button.className = "player-playlist-item";
+        button.dataset.playlistIndex = String(index);
+        button.setAttribute("aria-label", `Play playlist video ${index + 1}`);
+        image.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        image.referrerPolicy = "strict-origin-when-cross-origin";
+        copy.className = "player-playlist-copy";
+        name.className = "player-playlist-name";
+        name.dataset.defaultLabel = `Video ${index + 1}`;
+        name.textContent = name.dataset.defaultLabel;
+        id.textContent = videoId;
+        copy.append(name, id);
+        button.append(image, copy);
+        item.appendChild(button);
+        fragment.appendChild(item);
+      });
+      playlistList.textContent = "";
+      playlistList.appendChild(fragment);
+      activePlaylistSignature = signature;
+    }
+
+    playlistCount.textContent = `${playable.length} playable ${playable.length === 1 ? "video" : "videos"}`;
+    playlistPanel.hidden = false;
+    playerStage.classList.add("has-playlist");
+    dialog.classList.add("has-playlist");
+    updatePlaylistSelection(currentIndex, currentTitle);
+  }
+
+  function refreshPlaylist(player) {
+    if (!player || typeof player.getPlaylist !== "function") return;
+    let ids = [];
+    let index = 0;
+    let title = "";
+    try { ids = player.getPlaylist() || []; } catch (_) {}
+    try { index = Math.max(0, Number(player.getPlaylistIndex()) || 0); } catch (_) {}
+    try { title = String((player.getVideoData() || {}).title || "").trim(); } catch (_) {}
+    renderPlaylist(ids, index, title);
   }
 
   function close() {
@@ -156,6 +271,7 @@
     }
     activeIframe = null;
     if (frameHost) frameHost.textContent = "";
+    resetPlaylist();
     if (dialog && dialog.open) dialog.close();
   }
 
@@ -207,8 +323,12 @@
       activePlayer = new YT.Player(iframe, {
         events: {
           onError: (event) => playerError(Number(event.data)),
-          onReady: () => {
+          onReady: (event) => {
             if (activeIframe === iframe) iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            refreshPlaylist(event.target);
+          },
+          onStateChange: (event) => {
+            if (activeIframe === iframe) refreshPlaylist(event.target);
           }
         }
       });

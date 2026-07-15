@@ -52,7 +52,8 @@ test("parses video start time, playlist context and index", () => {
 test("parses playlist and embedded videoseries URLs", () => {
   const urls = [
     "https://www.youtube.com/playlist?list=PL1234567890ABC",
-    "https://www.youtube-nocookie.com/embed/videoseries?list=PL1234567890ABC"
+    "https://www.youtube-nocookie.com/embed/videoseries?list=PL1234567890ABC",
+    "https://www.youtube-nocookie.com/embed/?listType=playlist&list=PL1234567890ABC"
   ];
 
   for (const url of urls) {
@@ -96,6 +97,7 @@ test("builds privacy-enhanced embeds with origin and widget referrer", () => {
   assert.equal(url.origin, "https://www.youtube-nocookie.com");
   assert.equal(url.pathname, "/embed/dQw4w9WgXcQ");
   assert.equal(url.searchParams.get("autoplay"), "1");
+  assert.equal(url.searchParams.get("controls"), "1");
   assert.equal(url.searchParams.get("playsinline"), "1");
   assert.equal(url.searchParams.get("enablejsapi"), "1");
   assert.equal(url.searchParams.get("start"), "45");
@@ -110,4 +112,20 @@ test("builds playlist embeds without inventing a video ID", () => {
   assert.equal(url.searchParams.get("listType"), "playlist");
   assert.equal(url.searchParams.get("list"), "PL1234567890ABC");
   assert.equal(url.searchParams.get("index"), "3");
+});
+
+test("keeps the complete playlist context beside a selected video", () => {
+  const media = parse("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL1234567890ABC&index=7");
+  const url = new URL(embedUrl(media));
+  assert.equal(url.pathname, "/embed/dQw4w9WgXcQ");
+  assert.equal(url.searchParams.get("listType"), "playlist");
+  assert.equal(url.searchParams.get("list"), "PL1234567890ABC");
+  assert.equal(url.searchParams.get("index"), "7");
+});
+
+test("renders and controls a companion queue from the official iframe API", () => {
+  assert.match(playerSource, /Complete playlist/);
+  assert.match(playerSource, /\.getPlaylist\(\)/);
+  assert.match(playerSource, /\.getPlaylistIndex\(\)/);
+  assert.match(playerSource, /\.playVideoAt\(index\)/);
 });
