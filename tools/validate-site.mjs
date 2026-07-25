@@ -689,7 +689,7 @@ function checkExperienceContracts() {
   check(/function\s+isGenericResourceHost\([^)]+\)[\s\S]{0,300}youtube\\\.com[\s\S]{0,200}play\\\.google\\\.com/.test(site), siteFile, "generic video and app hosts must not replace content identity");
   check(/const\s+organizationHosts\s*=\s*\[\.\.\.new Set\(hosts\.filter\([\s\S]{0,120}!isGenericResourceHost\(host\)[\s\S]{0,80}\.sort\(\)/.test(site), siteFile, "organization hosts must be generic-host-free and URL-order independent");
   check(/const\s+organizationSearchable\s*=\s*`\$\{title\}\s+\$\{organizationHosts\.join\(["']\s["']\)\}`[\s\S]{0,180}candidate\.match\.test\(organizationSearchable\)/.test(site), siteFile, "organization matching must use title and canonical non-generic hosts");
-  const identityResolver = site.match(/function\s+resolveResourceIdentity\([^)]*\)\s*\{([\s\S]*?)\n  \}\n\n  PF\.resourceIdentityFor/)?.[1] || "";
+  const identityResolver = site.match(/function\s+resolveResourceIdentity\([^)]*\)\s*\{([\s\S]*?)\r?\n  \}\r?\n\r?\n  PF\.resourceIdentityFor/)?.[1] || "";
   check(identityResolver.length > 0, siteFile, "resource identity resolver could not be inspected");
   check(!/\b(?:description|desc|context|subject|entry\.id|itemIndex|sectionIndex|groupIndex)\b/.test(identityResolver), siteFile, "prose or card position must not alter organization identity and symbols");
   check(/RESOURCE_TOPIC_SYMBOLS\.find\([\s\S]{0,100}pattern\.test\(title\.toLowerCase\(\)\)/.test(identityResolver), siteFile, "logical fallback symbols must be derived from the canonical resource title");
@@ -702,7 +702,20 @@ function checkExperienceContracts() {
   check(/document\.addEventListener\(["']click["'],\s*handleSummaryActivation\)/.test(site), siteFile, "summary activation must be delegated for dynamically rendered accordions");
 
   const homeFile = path.join(ROOT, "index.html");
-  check(/href=["']watch\/["'][^>]*data-pigbang-link/.test(fs.readFileSync(homeFile, "utf8")), homeFile, "homepage PigBang destination must stay highlighted");
+  const home = fs.readFileSync(homeFile, "utf8");
+  check(/href=["']watch\/["'][^>]*data-pigbang-link/.test(home), homeFile, "homepage PigBang destination must stay highlighted");
+  check(/id=["']monthly-visitors["'][^>]*aria-live=["']polite["']/.test(home), homeFile, "homepage needs an honest live monthly visitor status");
+  check(/data-monthly-visitor-count/.test(home) && /Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
+  check(/href=["']https:\/\/youtu\.be\/2k7OOZZlNrg\?si=vMCzk67HAuWQx-g1["'][^>]*target=["']_blank["'][^>]*rel=["']noopener noreferrer["'][^>]*data-home-video/.test(home), homeFile, "homepage tutorial must keep its exact native YouTube link");
+  check(!/src=["']js\/player\.js["']/.test(home) && /src=["']js\/home\.js["']/.test(home), homeFile, "homepage must keep the player lazy and load only its small dedicated runtime");
+  check(!/first-of-its-kind/i.test(home), homeFile, "homepage introduction must not make an unsupported first-of-its-kind claim");
+
+  const homeRuntimeFile = path.join(ROOT, "js", "home.js");
+  const homeRuntime = fs.readFileSync(homeRuntimeFile, "utf8");
+  check(/fetch\(["']\/api\/visitors["'][\s\S]{0,180}method:\s*["']POST["']/.test(homeRuntime), homeRuntimeFile, "homepage visitor count must use the live same-origin endpoint");
+  check(/Number\.isSafeInteger\(count\)[\s\S]{0,80}count\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
+  check(/dataset\.state\s*=\s*["']unavailable["']/.test(homeRuntime), homeRuntimeFile, "homepage must hide the count when its service is unavailable");
+  check(/event\.button\s*!==\s*0/.test(homeRuntime) && /script\.src\s*=\s*["']js\/player\.js["']/.test(homeRuntime) && /player\.play\(guide\.href/.test(homeRuntime), homeRuntimeFile, "plain tutorial activation must lazy-load the inbuilt player while modified clicks stay native");
 
   const watchPageFile = path.join(ROOT, "watch", "index.html");
   const watchPage = fs.readFileSync(watchPageFile, "utf8");
@@ -829,6 +842,13 @@ function checkExperienceContracts() {
     workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
     check(!/(?:gemma-4-26b-a4b-it|glm-4\.7-flash)/.test(worker), workerFile, "removed text-model mappings must not return");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
+    check(/url\.pathname\s*===\s*["']\/api\/visitors["']/.test(worker), workerFile, "Worker must own the /api/visitors route");
+    check(/class\s+MonthlyVisitorCounter\b/.test(worker), workerFile, "monthly visitor total needs strongly coordinated Durable Object storage");
+    check(/VISITOR_COOKIE\s*=\s*["']pf_visitor_month["']/.test(worker) && /HttpOnly;\s*SameSite=Lax/.test(worker), workerFile, "visitor deduplication cookie must contain only the month and stay HTTP-only");
+    check(/definition:\s*["']Best-effort browser check-ins/.test(worker), workerFile, "visitor endpoint must describe the total honestly");
+    check(/automatedRequest\(request\)/.test(worker), workerFile, "visitor total must exclude recognizable automated requests");
+    check(/env\.VISITOR_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "visitor increments need a separate abuse limit");
+    check(!/(?:visitor|counter)[\s\S]{0,180}(?:storage\.put|INSERT)[\s\S]{0,80}(?:CF-Connecting-IP|User-Agent)/i.test(worker), workerFile, "visitor storage must not retain raw addresses or browser agents");
     check(/sameOriginRequest\(request\)/.test(worker), workerFile, "AI endpoint must reject cross-origin requests");
     check(/MAX_PROMPT_LENGTH\s*=\s*1800/.test(worker), workerFile, "server-side prompt limit must match the studio");
     check(/\[["']tutor["'],\s*["']document["']\]\.includes/.test(worker) && !/["']video["']/.test(worker.match(/const task\s*=[\s\S]{0,160}/)?.[0] || ""), workerFile, "Worker must accept only Tutor and Document text tasks");
@@ -845,8 +865,11 @@ function checkExperienceContracts() {
     check(/["']main["']\s*:\s*["']worker\/index\.mjs["']/.test(wrangler), wranglerFile, "Wrangler main must point to the AI Worker");
     check(/["']binding["']\s*:\s*["']ASSETS["'][\s\S]{0,180}["']run_worker_first["']\s*:\s*\[["']\/api\/\*["']\]/.test(wrangler), wranglerFile, "static assets must route /api/* through the Worker first");
     check(/["']ai["']\s*:\s*\{[\s\S]{0,100}["']binding["']\s*:\s*["']AI["']/.test(wrangler), wranglerFile, "Wrangler must bind Workers AI as AI");
+    check(/["']name["']\s*:\s*["']VISITOR_COUNTER["'][\s\S]{0,100}["']class_name["']\s*:\s*["']MonthlyVisitorCounter["']/.test(wrangler), wranglerFile, "Wrangler must bind the monthly visitor Durable Object");
+    check(/["']MonthlyVisitorCounter["']\s*:\s*\{[\s\S]{0,100}["']type["']\s*:\s*["']durable-object["'][\s\S]{0,100}["']storage["']\s*:\s*["']sqlite["']/.test(wrangler), wranglerFile, "visitor Durable Object must use declarative SQLite storage");
     check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*8[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short per-client AI rate limit");
     check(/["']name["']\s*:\s*["']AI_IP_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*24[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the trusted edge-address AI rate limit");
+    check(/["']name["']\s*:\s*["']VISITOR_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*60[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the visitor counter abuse limit");
   }
 }
 

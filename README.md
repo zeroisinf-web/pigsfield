@@ -15,6 +15,7 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 - An always-available AI Studio with no visitor login or model download for tutoring, images, documents, capability-gated browser voice previews and browser-made music
 - Browser-powered, in-page Hindi translation where supported, light/dark themes, search, saved resources and native original-source links
 - Persistent AI Studio, Donate and Feedback controls
+- A best-effort monthly browser check-in total backed by a privacy-light Cloudflare Durable Object
 - A responsive depth-and-motion layer with a reduced-motion-safe flat mode
 - About, editorial policy, accessibility, privacy and contribution pages
 
@@ -44,7 +45,7 @@ npm test
 1. Push this folder to the repository's `main` branch.
 2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
 3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
-4. Keep the AI binding named `AI` and the rate-limit bindings named `AI_RATE_LIMITER` and `AI_IP_RATE_LIMITER`; the browser-facing endpoint is the same-origin `/api/ai` route.
+4. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER` and `VISITOR_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
 5. Enable Cloudflare AI Gateway Unified Billing and add account credits before offering `gpt-5.4-mini`. That model is a paid third-party model even though visitors use Pigsfield without a login or provider key.
 
 The static interface uses relative asset paths, but hosted text generation requires the Cloudflare Worker and its bindings. Canonical and social metadata intentionally point to the production domain.
@@ -74,6 +75,8 @@ Pigsfield does not ask visitors for an account or API key. The studio loads only
 - `gpt-5.4-mini` — OpenAI's hosted model, served through Cloudflare's third-party model catalog as `openai/gpt-5.4-mini`. Cloudflare Unified Billing and account credits are required on the deployment.
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no provider credential is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
+
+The homepage calls `/api/visitors` only to show a best-effort monthly browser check-in total. A first-party, HTTP-only cookie stores the current India calendar month so the same browser is usually counted once. The Durable Object stores only the total and its start time; it does not store per-visitor identifiers.
 
 The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models), [Gemini](https://gemini.google.com/app), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) and [Z.ai](https://z.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 

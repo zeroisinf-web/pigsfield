@@ -14,6 +14,20 @@
   "ai": {
     "binding": "AI"
   },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "VISITOR_COUNTER",
+        "class_name": "MonthlyVisitorCounter"
+      }
+    ]
+  },
+  "exports": {
+    "MonthlyVisitorCounter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
   "ratelimits": [
     {
       "name": "AI_RATE_LIMITER",
@@ -28,6 +42,14 @@
       "namespace_id": "2026071502",
       "simple": {
         "limit": 24,
+        "period": 60
+      }
+    },
+    {
+      "name": "VISITOR_RATE_LIMITER",
+      "namespace_id": "2026072501",
+      "simple": {
+        "limit": 60,
         "period": 60
       }
     }

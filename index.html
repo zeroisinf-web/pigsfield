@@ -27,6 +27,7 @@
   <meta name="twitter:description" content="Explore free-first learning, skills, exams, tools, educational media and citizen-rights resources organized for people in India.">
   <link rel="stylesheet" href="css/site.css">
   <script defer src="js/site.js"></script>
+  <script defer src="js/home.js"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -86,29 +87,42 @@
   <header data-site-header></header>
 
   <main id="main-content">
+    <section class="home-start" aria-label="Monthly visitors and website guide">
+      <div class="container home-start-inner">
+        <div class="visitor-signal" id="monthly-visitors" aria-live="polite">
+          <span class="visitor-pulse" aria-hidden="true"></span>
+          <span class="visitor-copy">
+            <span><strong data-monthly-visitor-count>—</strong> <span data-monthly-visitor-label>visitor check-ins this month</span></span>
+            <small>Best-effort, usually one check-in per browser. No account or visitor profile.</small>
+          </span>
+        </div>
+      </div>
+    </section>
     <section class="home-hero">
       <div class="container hero-grid">
         <div>
-          <span class="eyebrow">Your right · Your learning · In your pocket</span>
-          <h1>Education must be within <em>everyone’s reach.</em></h1>
-          <p class="hero-lede">Education should be excellent and free wherever possible, because it is your right. Pigsfield is your gateway to the full learning journey—bringing education, skills, exams, tools and citizen knowledge into your pocket.</p>
-          <p class="hero-support">We are proud to pursue a first-of-its-kind mission for India: one open, organized map for the whole education ecosystem.</p>
-          <p class="hindi-line" lang="hi">बेहतरीन शिक्षा हर व्यक्ति की पहुँच में होनी चाहिए—क्योंकि शिक्षा आपका अधिकार है।</p>
+          <span class="eyebrow">Free-first · Direct to source · No Pigsfield account</span>
+          <h1>Education within <em>everyone’s reach.</em></h1>
+          <p class="hero-lede">Pigsfield organizes learning, skills, exams, tools, educational media and public-accountability resources for people in India. Browse for free, then open the original source. Some providers may charge or require an account.</p>
           <form class="hero-search" id="hero-search-form" role="search">
             <label class="sr-only" for="hero-search">Search every Pigsfield resource</label>
             <input id="hero-search" type="search" placeholder="What do you want to learn or solve?" autocomplete="off">
             <button class="button brand" type="submit">Search the map <span aria-hidden="true">→</span></button>
           </form>
         </div>
-        <aside class="hero-proof" aria-label="Pigsfield catalog at a glance">
-          <span class="proof-number">880+</span>
-          <span class="proof-label">curated entries and pathways</span>
-          <p>Direct links to original providers. No account is needed to browse, save or open them.</p>
-          <ul class="proof-list">
-            <li>Nursery → school → university → research</li>
-            <li>Teaching → skills → tools → competitive exams</li>
-            <li>Educational media → citizen accountability</li>
-          </ul>
+        <aside class="hero-guide-card" aria-label="Website tutorial">
+          <a class="hero-guide-link" href="https://youtu.be/2k7OOZZlNrg?si=vMCzk67HAuWQx-g1" target="_blank" rel="noopener noreferrer" data-home-video data-title="How to use Pigsfield">
+            <span class="guide-visual" aria-hidden="true">
+              <span class="guide-orbit guide-orbit-one"></span>
+              <span class="guide-orbit guide-orbit-two"></span>
+              <span class="home-guide-mark"><svg viewBox="0 0 24 24"><path d="m9.5 7.8 7 4.2-7 4.2V7.8Z"/></svg></span>
+            </span>
+            <span class="guide-copy">
+              <span class="section-kicker">Quick guide</span>
+              <strong>How to use Pigsfield</strong>
+              <small>Watch here. The original YouTube link stays available.</small>
+            </span>
+          </a>
         </aside>
       </div>
     </section>

@@ -14,6 +14,7 @@ const MODELS = Object.freeze({
 const MAX_PROMPT_LENGTH = 1800;
 const MAX_BODY_BYTES = 12 * 1024;
 const MAX_OUTPUT_CHARACTERS = 24_000;
+const VISITOR_COOKIE = "pf_visitor_month";
 const BASE_INSTRUCTION = [
   "You are Pigsfield's free educational assistant for learners in India.",
   "Answer in the user's language, explain clearly, use practical examples, and distinguish facts from uncertainty.",
@@ -21,14 +22,15 @@ const BASE_INSTRUCTION = [
   "Reason carefully, but return only the useful answer and never reveal hidden chain-of-thought."
 ].join(" ");
 
-function json(payload, status = 200) {
+function json(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store, max-age=0",
       "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "strict-origin-when-cross-origin"
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      ...extraHeaders
     }
   });
 }
@@ -51,6 +53,105 @@ function clientKey(request) {
 function edgeKey(request) {
   const value = request.headers.get("CF-Connecting-IP") || "unknown";
   return /^[0-9a-f:.]{3,64}$/i.test(value) ? value : "unknown";
+}
+
+function indiaMonth(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit"
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  return /^\d{4}$/.test(year) && /^\d{2}$/.test(month) ? `${year}-${month}` : date.toISOString().slice(0, 7);
+}
+
+function cookieValue(request, name) {
+  const cookies = String(request.headers.get("Cookie") || "").split(";");
+  for (const cookie of cookies) {
+    const separator = cookie.indexOf("=");
+    if (separator < 0) continue;
+    if (cookie.slice(0, separator).trim() !== name) continue;
+    return decodeURIComponent(cookie.slice(separator + 1).trim());
+  }
+  return "";
+}
+
+function visitorCookie(month) {
+  return `${VISITOR_COOKIE}=${encodeURIComponent(month)}; Path=/; Max-Age=2764800; Secure; HttpOnly; SameSite=Lax`;
+}
+
+function automatedRequest(request) {
+  if (request.cf?.botManagement?.verifiedBot) return true;
+  const agent = String(request.headers.get("User-Agent") || "");
+  return /bot\b|crawler|spider|headless|preview|facebookexternalhit|slurp|bingpreview/i.test(agent);
+}
+
+async function counterResponse(stub, increment) {
+  const response = await stub.fetch(new Request(`https://counter.internal/${increment ? "increment" : "count"}`, {
+    method: increment ? "POST" : "GET"
+  }));
+  if (!response.ok) throw new Error("Counter storage unavailable");
+  const payload = await response.json();
+  const count = Number(payload && payload.count);
+  if (!Number.isSafeInteger(count) || count < 0) throw new Error("Invalid counter response");
+  return {
+    count,
+    startedAt: typeof payload.startedAt === "string" ? payload.startedAt : null
+  };
+}
+
+async function handleVisitors(request, env) {
+  if (!["GET", "POST"].includes(request.method)) return json({ error: "Use GET or POST for visitor-count requests." }, 405);
+  if (request.method === "POST" && !sameOriginRequest(request)) {
+    return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
+  }
+  if (!env.VISITOR_COUNTER || typeof env.VISITOR_COUNTER.getByName !== "function") {
+    return json({ error: "Visitor count is not configured." }, 503);
+  }
+
+  const month = indiaMonth();
+  const alreadyCounted = cookieValue(request, VISITOR_COOKIE) === month;
+  let increment = request.method === "POST" && !alreadyCounted && !automatedRequest(request);
+
+  if (increment && env.VISITOR_RATE_LIMITER && typeof env.VISITOR_RATE_LIMITER.limit === "function") {
+    const limit = await env.VISITOR_RATE_LIMITER.limit({ key: edgeKey(request) });
+    increment = Boolean(limit.success);
+  }
+
+  try {
+    const result = await counterResponse(env.VISITOR_COUNTER.getByName(`pigsfield-visitors-${month}`), increment);
+    const headers = increment ? { "Set-Cookie": visitorCookie(month) } : {};
+    return json({
+      count: result.count,
+      month,
+      startedAt: result.startedAt,
+      counted: increment,
+      definition: "Best-effort browser check-ins; usually one per browser each India calendar month."
+    }, 200, headers);
+  } catch (_) {
+    return json({ error: "Visitor count is temporarily unavailable." }, 503);
+  }
+}
+
+class MonthlyVisitorCounter {
+  constructor(state) {
+    this.state = state;
+  }
+
+  async fetch(request) {
+    if (!["GET", "POST"].includes(request.method)) return json({ error: "Method not allowed." }, 405);
+    let count = Number(await this.state.storage.get("count")) || 0;
+    let startedAt = await this.state.storage.get("startedAt") || null;
+
+    if (request.method === "POST" && new URL(request.url).pathname === "/increment") {
+      count += 1;
+      if (!startedAt) startedAt = new Date().toISOString();
+      await this.state.storage.put({ count, startedAt });
+    }
+
+    return json({ count, startedAt });
+  }
 }
 
 function taskInstruction(task, format) {
@@ -161,9 +262,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/ai") return handleAI(request, env);
+    if (url.pathname === "/api/visitors") return handleVisitors(request, env);
     if (url.pathname.startsWith("/api/")) return json({ error: "API route not found." }, 404);
     return env.ASSETS.fetch(request);
   }
 };
 
-export { MODELS, handleAI, outputText };
+export { MODELS, MonthlyVisitorCounter, handleAI, handleVisitors, indiaMonth, outputText };

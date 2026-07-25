@@ -1,4 +1,4 @@
-const CACHE = "pigsfield-v15";
+const CACHE = "pigsfield-v16";
 const CORE = [
   "./",
   "./404.html",
