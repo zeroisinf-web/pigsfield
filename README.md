@@ -69,17 +69,15 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 
 ## AI Studio boundaries
 
-Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly three selectable models hosted by Cloudflare Workers AI:
+Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly one selectable model hosted by Cloudflare Workers AI:
 
-- `glm-4.7-flash` — Z.ai's multilingual reasoning model, served as `@cf/zai-org/glm-4.7-flash`. Visitors need no login or additional provider key.
 - `gemma-4-26b-a4b-it` — Google's efficient reasoning model, served as `@cf/google/gemma-4-26b-a4b-it`. Visitors need no login or additional provider key.
-- `gpt-oss-120b` — OpenAI's reasoning model, served as `@cf/openai/gpt-oss-120b`. Visitors need no login or additional provider key.
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
 The homepage calls `/api/visitors` only to show a best-effort monthly browser check-in total. A first-party, HTTP-only cookie stores the current India calendar month so the same browser is usually counted once. The Durable Object stores only the total and its start time; it does not store per-visitor identifiers.
 
-The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models), [Gemini](https://gemini.google.com/app), [ChatGPT](https://chatgpt.com/), [Claude](https://claude.ai/) and [Z.ai](https://z.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
+The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models) and [Qwen Chat](https://chat.qwen.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 
 ## Accessibility and privacy
 

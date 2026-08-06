@@ -828,14 +828,14 @@ function checkExperienceContracts() {
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  const expectedModels = ["glm-4.7-flash", "gemma-4-26b-a4b-it", "gpt-oss-120b"];
+  const expectedModels = ["gemma-4-26b-a4b-it"];
   const modelSelect = ai.match(/<select\s+id=["']ai-text-model["'][^>]*>([\s\S]*?)<\/select>/)?.[1] || "";
   const modelOptions = [...modelSelect.matchAll(/<option\s+value=["']([^"']+)["']/g)].map((match) => match[1]);
   const functionButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bcreator-tab\b[^"']*["'][^>]*>/g)]
     .map((match) => parseAttributes(match[0])["data-mode"])
     .filter(Boolean);
   check(/class=["']ai-command-bar["'][^>]*id=["']ai-function-model-bar["']/.test(ai), aiFile, "AI functions and model chooser must share one compact command bar");
-  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly GLM 4.7 Flash, Gemma 4 26B and gpt-oss-120b");
+  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly Gemma 4 26B A4B");
   expectedModels.forEach((model) => check(ai.includes(`id: "${model}"`), aiFile, `missing real text model ${model}`));
   check(JSON.stringify(functionButtons) === JSON.stringify(["ask", "image", "document", "voice", "music"]), aiFile, "AI Studio must expose only Tutor, Image, Document, Voice and Music");
   check(!/data-(?:mode|panel)=["']video["']/.test(ai), aiFile, "the non-working Video mode must stay removed");
@@ -849,16 +849,14 @@ function checkExperienceContracts() {
   check(modelEngines.length === expectedModels.length && modelEngines.every((engine) => engine === "workers-ai"), aiFile, "every text model must identify Cloudflare Workers AI as its engine");
   check(/No visitor login or additional provider key\./.test(ai), aiFile, "AI Studio must explain that text models require no visitor login or additional provider key");
   check(!/(?:gpt-5\.4-mini|cloudflare-ai-gateway|Unified Billing)/i.test(ai), aiFile, "stale third-party model and billing claims must stay removed");
+  check(!/(?:glm-4\.7-flash|gpt-oss-120b|qwen3\.6-27b|qwen3-30b-a3b-fp8)/i.test(ai), aiFile, "removed or unavailable model labels must not appear in AI Studio");
   check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
   check(/downloadBlob\(/.test(ai) && /link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
   check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
   check(/IMAGE_MODEL\s*=\s*["']sana["']/.test(ai), aiFile, "anonymous image model must be explicit");
   const externalAiLinks = [
     "https://artificialanalysis.ai/leaderboards/models",
-    "https://gemini.google.com/app",
-    "https://chatgpt.com/",
-    "https://claude.ai/",
-    "https://z.ai/"
+    "https://chat.qwen.ai/"
   ];
   const studioAnchors = [...ai.matchAll(/<a\b[^>]*>/g)].map((match) => match[0]);
   externalAiLinks.forEach((url) => {
@@ -870,6 +868,12 @@ function checkExperienceContracts() {
       check((attributes.rel || "").split(/\s+/).includes("noopener") && (attributes.rel || "").split(/\s+/).includes("noreferrer"), aiFile, `${url} must isolate the external tab`);
     }
   });
+  check(studioAnchors.length === externalAiLinks.length, aiFile, "AI Studio shortcut row must contain only Artificial Analysis and Qwen Chat");
+  ["assets/artificial-analysis-symbol.png", "assets/qwen-symbol.png"].forEach((relativePath) => {
+    const assetFile = path.join(ROOT, ...relativePath.split("/"));
+    check(fs.existsSync(assetFile), assetFile, `missing local official brand symbol ${relativePath}`);
+    check(ai.includes(`src="/${relativePath}"`), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
+  });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
@@ -879,13 +883,12 @@ function checkExperienceContracts() {
   if (fs.existsSync(workerFile)) {
     const worker = fs.readFileSync(workerFile, "utf8");
     const workerModels = [
-      "@cf/zai-org/glm-4.7-flash",
-      "@cf/google/gemma-4-26b-a4b-it",
-      "@cf/openai/gpt-oss-120b"
+      "@cf/google/gemma-4-26b-a4b-it"
     ];
     workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
-    check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 2, workerFile, "GLM and Gemma must use max_completion_tokens");
-    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 1, workerFile, "gpt-oss-120b must use max_tokens");
+    check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 1, workerFile, "Gemma must use max_completion_tokens");
+    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 0, workerFile, "removed model token fields must stay absent");
+    check(!/(?:@cf\/zai-org\/glm-4\.7-flash|@cf\/openai\/gpt-oss-120b|@cf\/qwen\/qwen3-30b-a3b-fp8|qwen3\.6-27b)/i.test(worker), workerFile, "removed or unavailable model mappings must stay absent");
     check(/input\[model\.tokenField\]\s*=\s*900/.test(worker), workerFile, "the selected model must control its token field");
     check(!/(?:gpt-5\.4-mini|openai\/gpt-5\.4-mini|thirdParty|cloudflare-ai-gateway|Unified Billing)/i.test(worker), workerFile, "stale third-party model and billing paths must stay removed");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");

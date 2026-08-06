@@ -1,18 +1,8 @@
 const MODELS = Object.freeze({
-  "glm-4.7-flash": Object.freeze({
-    id: "@cf/zai-org/glm-4.7-flash",
-    name: "glm-4.7-flash",
-    tokenField: "max_completion_tokens"
-  }),
   "gemma-4-26b-a4b-it": Object.freeze({
     id: "@cf/google/gemma-4-26b-a4b-it",
     name: "gemma-4-26b-a4b-it",
     tokenField: "max_completion_tokens"
-  }),
-  "gpt-oss-120b": Object.freeze({
-    id: "@cf/openai/gpt-oss-120b",
-    name: "gpt-oss-120b",
-    tokenField: "max_tokens"
   })
 });
 

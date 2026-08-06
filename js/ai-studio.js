@@ -5,28 +5,18 @@
   const MAX_PROMPT_LENGTH = 1800;
   const TEXT_ENDPOINT = new URL("/api/ai", window.location.origin).href;
   const IMAGE_ENDPOINT = "https://image.pollinations.ai/prompt/";
-  const DEFAULT_TEXT_MODEL = "glm-4.7-flash";
+  const DEFAULT_TEXT_MODEL = "gemma-4-26b-a4b-it";
   const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v5";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const TEXT_MODELS = Object.freeze({
-    "glm-4.7-flash": Object.freeze({
-      id: "glm-4.7-flash",
-      engine: "workers-ai",
-      status: "glm-4.7-flash · Cloudflare Workers AI · no visitor login or additional provider key"
-    }),
     "gemma-4-26b-a4b-it": Object.freeze({
       id: "gemma-4-26b-a4b-it",
       engine: "workers-ai",
-      status: "gemma-4-26b-a4b-it · Cloudflare Workers AI · no visitor login or additional provider key"
-    }),
-    "gpt-oss-120b": Object.freeze({
-      id: "gpt-oss-120b",
-      engine: "workers-ai",
-      status: "gpt-oss-120b · Cloudflare Workers AI · no visitor login or additional provider key"
+      status: "Gemma 4 26B A4B · Cloudflare Workers AI · no visitor login or additional provider key"
     })
   });
   const IMAGE_MODEL = "sana";
-  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare AI endpoint; image prompts go to Pollinations. No visitor login or additional provider key is required for the text models. Avoid personal or sensitive information and verify important output.";
+  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare AI endpoint; image prompts go to Pollinations. No visitor login or additional provider key is required for the text model. Avoid personal or sensitive information and verify important output.";
   const trackedUrls = new Set();
   const outputUrls = new WeakMap();
   const STUDIO_MODES = ["ask", "image", "document", "voice", "music"];
@@ -42,12 +32,9 @@
   const STUDIO_MARKUP = `
     <div data-ai-studio-root>
       <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No visitor login or additional provider key.</strong> Text uses Pigsfield's Cloudflare AI endpoint with no model download; images use Pollinations. Avoid private data.</span></div>
-      <nav class="ai-web-links" aria-label="Open leading AI websites and model comparisons">
-        <a class="ai-web-link" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" aria-label="Artificial Analysis model leaderboard" title="Artificial Analysis"><span class="ai-brand-mark analysis-mark" aria-hidden="true">▥</span><span class="sr-only">Artificial Analysis</span></a>
-        <a class="ai-web-link" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" aria-label="Open Google Gemini" title="Google Gemini"><span class="ai-brand-mark gemini-mark" aria-hidden="true">✦</span><span class="sr-only">Gemini</span></a>
-        <a class="ai-web-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" aria-label="Open ChatGPT" title="ChatGPT"><span class="ai-brand-mark chatgpt-mark" aria-hidden="true">◎</span><span class="sr-only">ChatGPT</span></a>
-        <a class="ai-web-link" href="https://claude.ai/" target="_blank" rel="noopener noreferrer" aria-label="Open Claude" title="Claude"><span class="ai-brand-mark claude-mark" aria-hidden="true">✺</span><span class="sr-only">Claude</span></a>
-        <a class="ai-web-link" href="https://z.ai/" target="_blank" rel="noopener noreferrer" aria-label="Open Z.ai" title="Z.ai"><span class="ai-brand-mark zai-mark" aria-hidden="true">Z</span><span class="sr-only">Z.ai</span></a>
+      <nav class="ai-web-links" aria-label="Open AI rankings and Qwen Chat">
+        <a class="ai-web-link" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" aria-label="Open Artificial Analysis model rankings" title="Artificial Analysis"><img class="ai-brand-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="53" height="53" aria-hidden="true"><span class="sr-only">Artificial Analysis</span></a>
+        <a class="ai-web-link" href="https://chat.qwen.ai/" target="_blank" rel="noopener noreferrer" aria-label="Open Qwen Chat" title="Qwen Chat"><img class="ai-brand-logo" src="/assets/qwen-symbol.png" alt="" width="80" height="80" aria-hidden="true"><span class="sr-only">Qwen Chat</span></a>
       </nav>
       <div class="creator-layout">
         <div class="ai-command-bar" id="ai-function-model-bar">
@@ -59,9 +46,7 @@
             <button class="creator-tab" type="button" role="tab" data-mode="music" aria-selected="false" title="Music"><span class="creator-tab-icon" aria-hidden="true">🎵</span><span class="creator-tab-label">Music</span></button>
           </div>
           <label class="ai-model-picker" for="ai-text-model"><span aria-hidden="true">◈</span><span class="sr-only">Deep reasoning model</span><select id="ai-text-model" name="text-model" aria-describedby="ai-model-status">
-            <option value="glm-4.7-flash">glm-4.7-flash</option>
-            <option value="gemma-4-26b-a4b-it">gemma-4-26b-a4b-it</option>
-            <option value="gpt-oss-120b">gpt-oss-120b</option>
+            <option value="gemma-4-26b-a4b-it">Gemma 4 26B A4B</option>
           </select></label>
         </div>
         <p class="ai-model-status" id="ai-model-status" role="status" aria-live="polite"></p>
