@@ -18,11 +18,6 @@
 
   const STUDIO_MARKUP = `
     <div data-ai-studio-root class="ai-studio-v2">
-      <div class="ai-privacy">
-        <span aria-hidden="true">🛡️</span>
-        <span><strong>Free AI Studio</strong> · Text uses Cloudflare Workers AI (Gemma 4 26B); images use Pollinations. No login required.</span>
-      </div>
-
       <div class="ai-launchpad" aria-label="External AI Launchpad">
         <div class="ai-launchpad-header">
           <span class="ai-launchpad-title">⚡ Quick AI Launchpad</span>
