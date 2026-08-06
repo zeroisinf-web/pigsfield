@@ -2292,7 +2292,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship, Intellectual Property, Coding",
      "name": "The Playlist",
@@ -2306,7 +2306,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Operations Research, Data Modeling",
      "name": "Moneyball",
@@ -2320,7 +2320,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Product Launch, Marketing, Entrepreneurship",
      "name": "Steve Jobs (2015)",
@@ -2334,7 +2334,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Sports",
      "name": "Marty Supreme",
@@ -2348,7 +2348,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Sales Optimization, Career Grit",
      "name": "The Pursuit of Happyness",
@@ -2362,7 +2362,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Entrepreneurship",
      "name": "The Startup Kids",
@@ -2376,7 +2376,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Entrepreneurship",
      "name": "General Magic",
@@ -2390,7 +2390,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Venture Capital",
      "name": "Something Ventured",
@@ -2648,7 +2648,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Startup Equity, Venture Capital",
      "name": "Silicon Valley",
@@ -2662,7 +2662,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Startup Fraud, Corporate Hype",
      "name": "The Dropout",
@@ -2676,7 +2676,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Corporate Fraud, Finance",
      "name": "Bad Boy Billionaires",
@@ -2690,7 +2690,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business Ethics, Finance",
      "name": "WeCrashed",
@@ -2704,7 +2704,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Economics",
      "name": "The Big Short",
@@ -2718,7 +2718,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Corporate History",
      "name": "Scam 1992",
@@ -2731,7 +2731,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Motivation, Life Skills",
      "name": "Aspirants",
@@ -2744,7 +2744,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship, Team Dynamics",
      "name": "TVF Pitchers",
@@ -3606,7 +3606,7 @@ window.PF_DATA.pigbang = {
       "6-8",
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Negotiation",
      "name": "Shark Tank US",
@@ -3619,7 +3619,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "6-8",
       "9-12",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Culinary Arts, Cooking",
      "name": "Your Food Lab",
@@ -3794,7 +3794,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Indian Startups, Interviews",
      "name": "The Ranveer Show",
@@ -3807,7 +3807,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Investing",
      "name": "CA Rachana Phadke",
@@ -3821,7 +3821,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Personal Finance, Financial Literacy",
      "name": "Finance with Sharan",
@@ -3834,7 +3834,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Web Development, Coding",
      "name": "Fireship",
@@ -3847,7 +3847,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business Strategy, Corporate History",
      "name": "MagnatesMedia",
@@ -3860,7 +3860,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship, Business",
      "name": "Figuring Out with Raj Shamani",
@@ -3874,7 +3874,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business Strategy, Economics",
      "name": "Think School",
@@ -3888,7 +3888,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Personal Finance, Careers",
      "name": "Warikoo",
@@ -4259,7 +4259,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Markets",
      "name": "Bloomberg Markets",
@@ -4272,7 +4272,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business Strategy, Leadership",
      "name": "Harvard Business Review",
@@ -4285,7 +4285,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Financial Markets, Economics",
      "name": "Patrick Boyle",
@@ -4298,7 +4298,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Markets",
      "name": "Varsity Live",
@@ -4310,7 +4310,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Economics",
      "name": "Investopedia Videos",
@@ -4322,7 +4322,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Career Prep, Financial Literacy",
      "name": "Cubicles",
@@ -4334,7 +4334,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Professional Skills, Career Prep",
      "name": "Wscuvetech & Skillopedia",
@@ -4346,7 +4346,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Agriculture, Economics",
      "name": "DD Kisan",
@@ -4357,7 +4357,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Agriculture",
      "name": "Discover Agriculture",
@@ -4368,7 +4368,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Automotive Mechanics, Vocational",
      "name": "HiTech Auto",
@@ -4379,7 +4379,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Agriculture",
      "name": "Krishi Jagran (Hindi)",
@@ -4391,7 +4391,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Carpentry, Trade Skills",
      "name": "Handy Hudh",
@@ -6096,7 +6096,7 @@ window.PF_DATA.pigbang = {
       "6-8",
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "English, Grammar",
      "name": "British Council LearnEnglish",
@@ -6110,7 +6110,7 @@ window.PF_DATA.pigbang = {
       "6-8",
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Graphic Design",
      "name": "Canva",
@@ -6124,7 +6124,7 @@ window.PF_DATA.pigbang = {
       "6-8",
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding",
      "name": "Codecademy",
@@ -6137,7 +6137,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "6-8",
       "9-12",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Web Development",
      "name": "Grid Garden",
@@ -6150,7 +6150,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "6-8",
       "9-12",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Web Development",
      "name": "Flexbox Froggy",
@@ -6435,7 +6435,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Economics, Personal Finance",
      "name": "Spent",
@@ -6448,7 +6448,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Web Development",
      "name": "CSS Battle",
@@ -6461,7 +6461,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "SQL, Coding",
      "name": "SQL Murder Mystery",
@@ -6474,7 +6474,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Entrepreneurship",
      "name": "Big Ambitions",
@@ -6487,7 +6487,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding",
      "name": "CodinGame",
@@ -6500,7 +6500,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Personal Finance",
      "name": "Cashflow Classic",
@@ -6513,7 +6513,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Economics, Business",
      "name": "SimCompanies",
@@ -6526,7 +6526,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "3D Modeling, Digital Art",
      "name": "Blender",
@@ -6539,7 +6539,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "UI/UX Design",
      "name": "Figma",
@@ -6552,7 +6552,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "9-12",
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Web Development",
      "name": "W3Schools",
@@ -7181,7 +7181,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Blockchain",
      "name": "CryptoZombies",
@@ -7194,7 +7194,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Management",
      "name": "Virtonomics",
@@ -7207,7 +7207,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Markets",
      "name": "MarketWatch Virtual Exchange",
@@ -7220,7 +7220,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Economics",
      "name": "Harvard Business Review",
@@ -7233,7 +7233,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Personal Finance",
      "name": "SEBI Investor Education",
@@ -7246,7 +7246,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Software Engineering",
      "name": "LeetCode",
@@ -7259,7 +7259,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship",
      "name": "TiE",
@@ -7272,7 +7272,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Algorithms",
      "name": "HackerRank",
@@ -7285,7 +7285,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance",
      "name": "NISM",
@@ -7298,7 +7298,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance",
      "name": "NSE Academy",
@@ -7311,7 +7311,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Public Speaking, Leadership",
      "name": "Toastmasters International",
@@ -7324,7 +7324,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship",
      "name": "YC Library",
@@ -7337,7 +7337,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance, Markets",
      "name": "Zerodha Varsity",
@@ -7350,7 +7350,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Graphic Design, Video Editing",
      "name": "Adobe Learn",
@@ -7363,7 +7363,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Business, Management",
      "name": "IIMBx",
@@ -7376,7 +7376,7 @@ window.PF_DATA.pigbang = {
      "classes": [
       "UG",
       "PG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Entrepreneurship",
      "name": "Y Combinator Startup School",
@@ -7388,7 +7388,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, Web Development",
      "name": "Scrimba",
@@ -7400,7 +7400,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Coding, JavaScript",
      "name": "Bitburner",
@@ -7412,7 +7412,7 @@ window.PF_DATA.pigbang = {
     {
      "classes": [
       "UG",
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Finance",
      "name": "Investopedia",
@@ -7423,7 +7423,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills"
+      "Vocational & Business"
      ],
      "subject": "Agriculture, General",
      "name": "Kisan Suvidha",
@@ -7434,7 +7434,7 @@ window.PF_DATA.pigbang = {
     },
     {
      "classes": [
-      "Vocational & Skills",
+      "Vocational & Business",
       "Teacher Training"
      ],
      "subject": "Entrepreneurship",

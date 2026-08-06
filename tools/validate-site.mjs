@@ -39,7 +39,7 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }]
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
-const DATA_MINIMUMS = { school: 100, teach: 40, tools: 45, govt: 40, pigbang: 500 };
+const DATA_MINIMUMS = { school: 171, teach: 24, tools: 45, govt: 40, pigbang: 500 };
 const BANNED_DOMAIN_PATTERNS = [
   /\banimesalt(?:\.in|\.ac)?\b/i,
   /\bhianimes?(?:\.se|\.to|\.tv)?\b/i,
@@ -443,6 +443,22 @@ function validateData() {
     validateUrlTree(data[name], path.join(ROOT, "js", "data", `${name}.js`), `PF_DATA.${name}`);
   }
 
+  if (data.school && data.teach) {
+    const learningIds = (data.school.sections || []).map((section) => section && section.id);
+    const phdIndex = learningIds.indexOf("phd");
+    const teacherIndex = learningIds.indexOf("tt");
+    check(groupedItemCount(data.school) === 171, path.join(ROOT, "js", "data", "school.js"), "Nursery to PhD must contain exactly 171 resources after Teacher Training moves");
+    check(groupedItemCount(data.teach) === 24, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 24 resources");
+    check(phdIndex >= 0 && teacherIndex === phdIndex + 1, path.join(ROOT, "js", "data", "school.js"), "Teacher Training must appear immediately after PhD");
+    const teacherTraining = data.school.sections[teacherIndex];
+    const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");
+    check(Boolean(teacherTraining && teacherTraining.highlight && teacherTraining.note), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must retain its highlighted education note");
+    check(teacherTraining?.resourceIdSection === 1, path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy section-1 resource IDs");
+    check(teacherTraining?.saveKey === "teach", path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy teach: saved-item identity");
+    check(vocational?.resourceIdSection === 2, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must preserve its legacy section-2 resource IDs");
+    check(!(data.teach.sections || []).some((section) => section && section.id === "tt"), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must not remain inside Vocational & Business");
+  }
+
   if (data.pigbang) {
     const count = (data.pigbang.tabs || []).reduce((sum, tab) => sum + (tab.items || []).length, 0);
     check(count >= DATA_MINIMUMS.pigbang, path.join(ROOT, "js", "data", "pigbang.js"), `expected at least ${DATA_MINIMUMS.pigbang} media items, found ${count}`);
@@ -670,18 +686,36 @@ function checkExperienceContracts() {
   const site = fs.readFileSync(siteFile, "utf8");
   check(/data-open-ai[\s\S]{0,400}data-open-donate[\s\S]{0,300}data-open-feedback/.test(site), siteFile, "AI Studio must stay beside Donate and Feedback in the persistent dock");
   check(/loadScript\(["']js\/ai-studio\.js["']\)/.test(site), siteFile, "global AI Studio must lazy-load from every page");
-  check(/window\.Translator\.availability\(TRANSLATOR_OPTIONS\)/.test(site), siteFile, "Hindi control must check the browser's Translator API");
-  check(/window\.Translator\.create\(\{[\s\S]{0,500}downloadprogress/.test(site), siteFile, "Hindi control must create and monitor the browser's language model");
+  check(/function\s+createNativeTranslatorFromClick[\s\S]{0,500}window\.Translator\.create\(\{[\s\S]{0,500}downloadprogress/.test(site), siteFile, "Hindi control must create and monitor the browser's language model directly from the click path");
+  check(!/Translator\.availability\(/.test(site), siteFile, "native Translator creation must not lose user activation by awaiting availability first");
   check(/translatorInstance\.translate\(/.test(site), siteFile, "visible content must be translated in place by the browser model");
   check(/sourceLanguage:\s*["']en["'][\s\S]{0,80}targetLanguage:\s*["']hi["']/.test(site), siteFile, "browser translation must request English to Hindi");
+  check(/TRANSLATION_ENDPOINT\s*=\s*["']\/api\/translate["']/.test(site) && /fetch\(TRANSLATION_ENDPOINT,[\s\S]{0,300}credentials:\s*["']same-origin["']/.test(site), siteFile, "mobile fallback must use only the same-origin translation endpoint");
+  check(/referrerPolicy:\s*["']no-referrer["']/.test(site), siteFile, "translation fallback must not disclose the current page URL as a referrer");
+  check(/SERVER_TRANSLATION_TIMEOUT_MS\s*=\s*22000/.test(site) && /new AbortController\(\)/.test(site) && /window\.setTimeout\(\(\)\s*=>\s*controller\.abort\(\),\s*SERVER_TRANSLATION_TIMEOUT_MS\)/.test(site) && /signal:\s*controller\.signal/.test(site) && /finally\s*\{\s*window\.clearTimeout\(timeoutId\)/.test(site), siteFile, "every server translation batch needs a cleared AbortController timeout");
+  check(/SERVER_TRANSLATION_MAX_ITEMS\s*=\s*48/.test(site) && /SERVER_TRANSLATION_MAX_CHARACTERS\s*=\s*10000/.test(site), siteFile, "server translation must batch visible strings within bounded request limits");
+  check(/JSON\.stringify\(\{\s*text:\s*texts\s*\}\)/.test(site), siteFile, "server translation must send only the visible text batch");
+  check(/LANGUAGE_STORAGE_KEY\s*=\s*["']pf-language["']/.test(site) && /savedLanguage\(\)\s*===\s*["']hi["'][\s\S]{0,80}restoreSavedHindi\(\)/.test(site), siteFile, "Hindi preference must survive same-site page loads");
+  check(/catch\s*\([^)]*\)\s*\{[\s\S]{0,180}translationProvider\s*=\s*["']server["']/.test(site), siteFile, "native creation or translation failure must switch to the server fallback");
   check(/new MutationObserver\(/.test(site) && /PF\.applyLanguageTo\s*=/.test(site), siteFile, "dynamic content must join in-page translation");
+  check(/function\s+translationIsCurrent\(generation\)[\s\S]{0,120}language\s*===\s*["']hi["'][\s\S]{0,100}generation\s*===\s*translationGeneration/.test(site), siteFile, "translation work needs a generation and language guard");
+  check(/function\s+requestServerTranslations\(texts,\s*generation\)[\s\S]{0,120}!translationIsCurrent\(generation\)[\s\S]{0,1000}if\s*\(!translationIsCurrent\(generation\)\)\s*return\s+null/.test(site), siteFile, "stale translation requests must stop before fetch and response use");
+  check(/for\s*\(const batch of batches\)[\s\S]{0,180}!translationIsCurrent\(generation\)[\s\S]{0,220}requestServerTranslations\(batch,\s*generation\)[\s\S]{0,180}!translationIsCurrent\(generation\)[\s\S]{0,160}translationCache\.set/.test(site), siteFile, "stale server jobs must stop before every batch, request and cache write");
+  check(/const handled\s*=\s*job\.catch\([\s\S]{0,180}translationIsCurrent\(generation\)[\s\S]{0,100}handleTranslationFailure\(error\)/.test(site) && /return handled\.finally\([\s\S]{0,260}queuedTranslationJobs\s*=\s*Math\.max[\s\S]{0,500}refreshTranslationBusy\(\)/.test(site), siteFile, "server failures and timeouts must restore English and unlock the language control");
   check(/\\u0900-\\u097F/.test(site), siteFile, "existing Hindi text must not be sent back through the English-to-Hindi translator");
-  check(/translatorInstance\.destroy\(\)[\s\S]{0,120}translatorInstance\s*=\s*null/.test(site), siteFile, "a failed browser translator must be discarded before retry");
+  check(/function\s+destroyNativeTranslator[\s\S]{0,260}translatorInstance\.destroy\(\)[\s\S]{0,120}translatorInstance\s*=\s*null/.test(site), siteFile, "a failed browser translator must be discarded before server fallback");
   check(/Android\|Mobile[\s\S]{0,900}open the browser menu \(⋮ or …\)/.test(site), siteFile, "mobile Chrome needs browser-menu translation guidance");
-  check(/id=["']translation-help-dialog["']/.test(site) && /A website cannot press or open privileged browser-toolbar controls/.test(site), siteFile, "unsupported browsers need honest in-site translation guidance");
+  check(/id=["']translation-help-dialog["']/.test(site) && /Neither this browser's on-device translator nor Pigsfield's same-origin Hindi service/.test(site) && /A website cannot press or open privileged browser-toolbar controls/.test(site), siteFile, "browser-menu guidance must honestly follow failure of both built-in translation paths");
   check(!/translate\.google\.|Google Translate|location\.(?:assign|replace)\([^)]*translat/i.test(site), siteFile, "language control must not open an external translation website");
   check(!/const\s+HI(?:_|\s*=)/.test(site), siteFile, "hand-maintained translation dictionaries should not remain in runtime code");
-  check(/Make Government Accountable/.test(site), siteFile, "government-accountability destination label is missing");
+  for (const documentName of ["README.md", "privacy/index.html", "accessibility/index.html"]) {
+    const documentFile = path.join(ROOT, documentName);
+    const documentText = fs.readFileSync(documentFile, "utf8");
+    check(/loaded translatable[\s\S]{0,180}(?:labels|accessible labels)[\s\S]{0,120}(?:titles|placeholders)/i.test(documentText), documentFile, "translation disclosure must cover loaded interface labels, titles and placeholders");
+    check(/text typed by the visitor[\s\S]{0,40}never/i.test(documentText), documentFile, "translation disclosure must state that visitor-typed text is never included");
+  }
+  check(/Make Govt Accountable/.test(site), siteFile, "government-accountability destination label is missing");
+  check(/Nursery to PhD[\s\S]{0,160}PigBang[\s\S]{0,160}Competitive Exams[\s\S]{0,160}Vocational & Business[\s\S]{0,160}Digital Tools[\s\S]{0,160}Make Govt Accountable/.test(site), siteFile, "primary destinations must keep the requested names and order");
   check(/key\s*===\s*["']watch["']\s*\?\s*["'] data-pigbang-link/.test(site), siteFile, "shared PigBang navigation links must stay highlighted");
   check(/item\.kind\s*===\s*["']pigbang["'][\s\S]{0,80}data-pigbang-link/.test(site), siteFile, "PigBang search results must stay highlighted");
   check(/item\.section\s*===\s*["']PigBang["'][\s\S]{0,80}data-pigbang-item/.test(site), siteFile, "saved PigBang resources must stay highlighted");
@@ -704,6 +738,7 @@ function checkExperienceContracts() {
   const homeFile = path.join(ROOT, "index.html");
   const home = fs.readFileSync(homeFile, "utf8");
   check(/href=["']watch\/["'][^>]*data-pigbang-link/.test(home), homeFile, "homepage PigBang destination must stay highlighted");
+  check(!/id=["']hero-search-form["']|class=["']trust-strip["']|class=["']how-grid["']|One system\. Six connected pillars\./.test(home), homeFile, "removed homepage search, principle strip and explanatory blocks must stay removed");
   check(/id=["']monthly-visitors["'][^>]*aria-live=["']polite["']/.test(home), homeFile, "homepage needs an honest live monthly visitor status");
   check(/data-monthly-visitor-count/.test(home) && /Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
   check(/href=["']https:\/\/youtu\.be\/2k7OOZZlNrg\?si=vMCzk67HAuWQx-g1["'][^>]*target=["']_blank["'][^>]*rel=["']noopener noreferrer["'][^>]*data-home-video/.test(home), homeFile, "homepage tutorial must keep its exact native YouTube link");
@@ -759,10 +794,17 @@ function checkExperienceContracts() {
   check(/collapsibleGroups/.test(catalog) && /data-catalog-group/.test(catalog), catalogFile, "catalog does not support category-level expand and collapse");
   check(/class=["']catalog-groups["'][^>]*data-accordion-scope/.test(catalog), catalogFile, "nested catalog categories need an independent accordion scope");
   check(/directSections/.test(catalog) && /catalog-direct-section/.test(catalog), catalogFile, "catalog does not support a titled section with its groups shown directly");
+  check(/function resourceIdFor\([\s\S]*?section\.resourceIdSection \|\| sectionIndex \+ 1/.test(catalog), catalogFile, "catalog resource IDs must honor preserved section metadata");
+  check(/const saveId = `\$\{section\.saveKey \|\| key\}:\$\{id\}`/.test(catalog) && /entriesBySaveId\.set\(saveId, entry\)/.test(catalog) && /const saveId = entry\.saveId/.test(catalog), catalogFile, "catalog cards must honor preserved saved-item namespaces");
+  check(/function redirectLegacyTeacherTrainingHash\([\s\S]*?key !== ["']teach["'][\s\S]*?PF\.path\(["']learn["']\)[\s\S]*?target\.origin !== location\.origin[\s\S]*?location\.replace\(target\.href\)/.test(catalog), catalogFile, "legacy Teacher Training hashes must redirect safely from skills to learn");
+  check(/const headingTag = directSections \? ["']h3["'] : ["']h2["']/.test(catalog) && /<h2 class=["']catalog-direct-title["']>/.test(catalog), catalogFile, "direct catalog groups must nest H3 headings beneath their H2 section title");
+  check(/document\.readyState === ["']loading["'][\s\S]*?DOMContentLoaded["'], revealHash, \{ once: true \}/.test(catalog), catalogFile, "initial catalog deep links must reveal after shared accordion initialization");
   check(!/(?:Expand all|Collapse all|catalog-expand|data-expand-groups|details\[0\]\.open\s*=\s*true)/i.test(catalog), catalogFile, "catalogs must start closed and cannot bypass one-open behavior");
+  check(/function genericSearchEntries\([\s\S]*?`\$\{item\.title\}-\$\{section\.resourceIdSection\s*\|\|\s*(?:sectionIndex\s*\+\s*1|1\s*\+\s*sectionIndex)\}-/.test(site), siteFile, "global search resource URLs must honor preserved section metadata");
   const examsFile = path.join(ROOT, "js", "exams-page.js");
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
+  check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
   const accordionPages = [
     ["index.html", /class=["']faq-list["'][^>]*data-accordion-scope/],
@@ -779,19 +821,21 @@ function checkExperienceContracts() {
     const file = path.join(ROOT, route, "index.html");
     check(/data-collapsible-groups=["']true["']/.test(fs.readFileSync(file, "utf8")), file, "category collapse is not enabled on this catalog");
   }
-  const rightsFile = path.join(ROOT, "rights", "index.html");
-  check(/data-direct-sections=["']true["']/.test(fs.readFileSync(rightsFile, "utf8")), rightsFile, "government-accountability tiers must render directly below their static section title");
+  for (const route of ["skills", "tools", "rights"]) {
+    const file = path.join(ROOT, route, "index.html");
+    check(/data-direct-sections=["']true["']/.test(fs.readFileSync(file, "utf8")), file, "catalog sections must render directly on this route");
+  }
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  const expectedModels = ["gpt-oss", "gpt-5.4-mini"];
+  const expectedModels = ["glm-4.7-flash", "gemma-4-26b-a4b-it", "gpt-oss-120b"];
   const modelSelect = ai.match(/<select\s+id=["']ai-text-model["'][^>]*>([\s\S]*?)<\/select>/)?.[1] || "";
   const modelOptions = [...modelSelect.matchAll(/<option\s+value=["']([^"']+)["']/g)].map((match) => match[1]);
   const functionButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bcreator-tab\b[^"']*["'][^>]*>/g)]
     .map((match) => parseAttributes(match[0])["data-mode"])
     .filter(Boolean);
   check(/class=["']ai-command-bar["'][^>]*id=["']ai-function-model-bar["']/.test(ai), aiFile, "AI functions and model chooser must share one compact command bar");
-  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly gpt-oss and gpt-5.4-mini");
+  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly GLM 4.7 Flash, Gemma 4 26B and gpt-oss-120b");
   expectedModels.forEach((model) => check(ai.includes(`id: "${model}"`), aiFile, `missing real text model ${model}`));
   check(JSON.stringify(functionButtons) === JSON.stringify(["ask", "image", "document", "voice", "music"]), aiFile, "AI Studio must expose only Tutor, Image, Document, Voice and Music");
   check(!/data-(?:mode|panel)=["']video["']/.test(ai), aiFile, "the non-working Video mode must stay removed");
@@ -801,9 +845,10 @@ function checkExperienceContracts() {
   check(!/(?:TEXT_PROFILES|responseProfiles?|\bQuick\b|\bBalanced\b)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
   check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
   check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
-  check(/engine:\s*["']workers-ai["']/.test(ai), aiFile, "gpt-oss must identify its Workers AI engine");
-  check(/engine:\s*["'](?:ai-gateway|cloudflare-ai-gateway)["']/.test(ai), aiFile, "GPT-5.4 mini must identify its Cloudflare AI Gateway engine");
-  check(/No login or model download\./.test(ai), aiFile, "AI Studio must explain that visitors do not log in or download a model");
+  const modelEngines = [...ai.matchAll(/engine:\s*["']([^"']+)["']/g)].map((match) => match[1]);
+  check(modelEngines.length === expectedModels.length && modelEngines.every((engine) => engine === "workers-ai"), aiFile, "every text model must identify Cloudflare Workers AI as its engine");
+  check(/No visitor login or additional provider key\./.test(ai), aiFile, "AI Studio must explain that text models require no visitor login or additional provider key");
+  check(!/(?:gpt-5\.4-mini|cloudflare-ai-gateway|Unified Billing)/i.test(ai), aiFile, "stale third-party model and billing claims must stay removed");
   check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
   check(/downloadBlob\(/.test(ai) && /link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
   check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
@@ -826,8 +871,6 @@ function checkExperienceContracts() {
     }
   });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
-  check(/unified billing\|credits/i.test(ai), aiFile, "AI Studio must preserve the actionable GPT-5.4 mini billing setup error");
-
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
 
@@ -836,12 +879,23 @@ function checkExperienceContracts() {
   if (fs.existsSync(workerFile)) {
     const worker = fs.readFileSync(workerFile, "utf8");
     const workerModels = [
-      "@cf/openai/gpt-oss-120b",
-      "openai/gpt-5.4-mini"
+      "@cf/zai-org/glm-4.7-flash",
+      "@cf/google/gemma-4-26b-a4b-it",
+      "@cf/openai/gpt-oss-120b"
     ];
     workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
-    check(!/(?:gemma-4-26b-a4b-it|glm-4\.7-flash)/.test(worker), workerFile, "removed text-model mappings must not return");
+    check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 2, workerFile, "GLM and Gemma must use max_completion_tokens");
+    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 1, workerFile, "gpt-oss-120b must use max_tokens");
+    check(/input\[model\.tokenField\]\s*=\s*900/.test(worker), workerFile, "the selected model must control its token field");
+    check(!/(?:gpt-5\.4-mini|openai\/gpt-5\.4-mini|thirdParty|cloudflare-ai-gateway|Unified Billing)/i.test(worker), workerFile, "stale third-party model and billing paths must stay removed");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
+    check(/url\.pathname\s*===\s*["']\/api\/translate["']/.test(worker), workerFile, "Worker must own the same-origin /api/translate route");
+    check(/TRANSLATION_MODEL\s*=\s*["']@cf\/ai4bharat\/indictrans2-en-indic-1B["']/.test(worker), workerFile, "Hindi fallback must use the exact Cloudflare AI4Bharat model");
+    check(/env\.AI\.run\(TRANSLATION_MODEL,\s*\{\s*text:\s*texts,\s*target_language:\s*["']hin_Deva["']/.test(worker), workerFile, "Hindi fallback must use the exact aligned array input contract");
+    check(/result\s*&&\s*result\.translations[\s\S]{0,260}Array\.isArray\(translations\)[\s\S]{0,160}translations\.length\s*===\s*texts\.length/.test(worker), workerFile, "Hindi fallback must reject unaligned model output");
+    check(/translations\.every\([\s\S]{0,180}value\.trim\(\)[\s\S]{0,180}MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS/.test(worker) && /outputCharacters\s*>\s*MAX_TRANSLATION_OUTPUT_CHARACTERS/.test(worker), workerFile, "Hindi fallback must reject blank and oversized model output");
+    check(/MAX_TRANSLATION_ITEMS\s*=\s*48/.test(worker) && /MAX_TRANSLATION_CHARACTERS\s*=\s*10_000/.test(worker), workerFile, "Hindi translation request arrays need explicit count and size bounds");
+    check(/request\.body\.getReader\(\)[\s\S]{0,500}bytes\s*>\s*MAX_BODY_BYTES/.test(worker), workerFile, "AI request bodies must be bounded while streaming, including when Content-Length is missing");
     check(/url\.pathname\s*===\s*["']\/api\/visitors["']/.test(worker), workerFile, "Worker must own the /api/visitors route");
     check(/class\s+MonthlyVisitorCounter\b/.test(worker), workerFile, "monthly visitor total needs strongly coordinated Durable Object storage");
     check(/VISITOR_COOKIE\s*=\s*["']pf_visitor_month["']/.test(worker) && /HttpOnly;\s*SameSite=Lax/.test(worker), workerFile, "visitor deduplication cookie must contain only the month and stay HTTP-only");
@@ -854,6 +908,10 @@ function checkExperienceContracts() {
     check(/\[["']tutor["'],\s*["']document["']\]\.includes/.test(worker) && !/["']video["']/.test(worker.match(/const task\s*=[\s\S]{0,160}/)?.[0] || ""), workerFile, "Worker must accept only Tutor and Document text tasks");
     check(/env\.AI_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must apply the per-visitor rate limit");
     check(/env\.AI_IP_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must also rate-limit by the trusted Cloudflare edge address");
+    check(/env\.TRANSLATION_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "translation endpoint must apply its separate per-client rate limit");
+    check(/env\.TRANSLATION_IP_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "translation endpoint must apply its separate trusted-address rate limit");
+    const translateHandler = worker.match(/async function handleTranslate[\s\S]*?\n\}/)?.[0] || "";
+    check(/applyTranslationRateLimits\(request,\s*env\)/.test(translateHandler) && !/applyAIRateLimits\(/.test(translateHandler), workerFile, "translation must not consume AI Studio's lower rate-limit budget");
     check(/env\.AI\.run\(model\.id,/.test(worker), workerFile, "selected models must run through the Workers AI binding");
     check(/return env\.ASSETS\.fetch\(request\)/.test(worker), workerFile, "non-API requests must fall back to static assets");
   }
@@ -869,6 +927,10 @@ function checkExperienceContracts() {
     check(/["']MonthlyVisitorCounter["']\s*:\s*\{[\s\S]{0,100}["']type["']\s*:\s*["']durable-object["'][\s\S]{0,100}["']storage["']\s*:\s*["']sqlite["']/.test(wrangler), wranglerFile, "visitor Durable Object must use declarative SQLite storage");
     check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*8[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short per-client AI rate limit");
     check(/["']name["']\s*:\s*["']AI_IP_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*24[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the trusted edge-address AI rate limit");
+    check(/["']name["']\s*:\s*["']TRANSLATION_RATE_LIMITER["'][\s\S]{0,220}["']namespace_id["']\s*:\s*["']2026080601["'][\s\S]{0,120}["']limit["']\s*:\s*32[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the separate per-client translation rate limit");
+    check(/["']name["']\s*:\s*["']TRANSLATION_IP_RATE_LIMITER["'][\s\S]{0,220}["']namespace_id["']\s*:\s*["']2026080602["'][\s\S]{0,120}["']limit["']\s*:\s*96[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the separate translation network rate limit");
+    const limiterNamespaces = [...wrangler.matchAll(/["']namespace_id["']\s*:\s*["']([^"']+)["']/g)].map((match) => match[1]);
+    check(new Set(limiterNamespaces).size === limiterNamespaces.length, wranglerFile, "every rate-limit binding must use a unique namespace ID");
     check(/["']name["']\s*:\s*["']VISITOR_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*60[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the visitor counter abuse limit");
   }
 }
@@ -934,7 +996,7 @@ if (errors.length) {
   console.log(`✓ HTML: ${htmlFiles.length} indexable routes, a noindex 404 document and ${localReferenceCount} valid local references`);
   console.log(`✓ SEO: ${htmlFiles.length} unique route titles/descriptions, complete social metadata, valid JSON-LD, robots.txt and canonical sitemap coverage`);
   console.log(`✓ JavaScript: ${javascriptFiles.length} script files parse cleanly`);
-  console.log(`✓ Catalog data: ${dataCounts.school} learning, ${dataCounts.teach} skills, ${dataCounts.tools} tools, ${dataCounts.govt} rights, ${dataCounts.pigbang} media entries`);
+  console.log(`✓ Catalog data: ${dataCounts.school} Nursery-to-PhD and Teacher Training, ${dataCounts.teach} Vocational & Business, ${dataCounts.tools} Digital Tools, ${dataCounts.govt} accountability, ${dataCounts.pigbang} PigBang entries`);
   console.log("✓ Content safety: no blocked legacy claims or media domains");
   console.log("✓ Experience: persistent AI, native source links, deterministic symbols, browser translation and sticky single-open accordions");
   console.log("✓ Brand: original logo PNGs are hash-preserved; optimized icons and WebP UI logos are used in the interface");

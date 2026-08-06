@@ -1365,6 +1365,28 @@ summary::-webkit-details-marker { display: none; }
 .faq-item > summary:focus-visible,
 .exam-panel > summary:focus-visible { outline-offset: -4px; }
 
+.catalog-section-highlight {
+  border: 2px solid color-mix(in srgb, var(--saffron) 82%, var(--line));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--saffron) 15%, transparent), transparent 55%),
+    var(--paper-strong);
+  box-shadow: 0 1px 0 var(--depth-highlight) inset, 0 12px 30px color-mix(in srgb, var(--saffron) 18%, transparent);
+}
+.catalog-section-highlight > summary {
+  background: linear-gradient(110deg, color-mix(in srgb, var(--saffron) 19%, var(--surface-top)), transparent 72%);
+}
+.catalog-section-highlight > summary::after { border-color: color-mix(in srgb, var(--saffron) 72%, var(--line)); }
+.catalog-section-note {
+  display: block;
+  max-width: 48rem;
+  margin: 0.38rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+.catalog-direct-section.catalog-section-highlight { padding: 1rem; border-radius: var(--radius); }
+
 .resource-card { overflow: clip; }
 .resource-visual {
   background:

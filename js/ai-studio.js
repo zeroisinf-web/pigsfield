@@ -5,23 +5,28 @@
   const MAX_PROMPT_LENGTH = 1800;
   const TEXT_ENDPOINT = new URL("/api/ai", window.location.origin).href;
   const IMAGE_ENDPOINT = "https://image.pollinations.ai/prompt/";
-  const DEFAULT_TEXT_MODEL = "gpt-oss";
-  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v4";
+  const DEFAULT_TEXT_MODEL = "glm-4.7-flash";
+  const TEXT_MODEL_STORAGE_KEY = "pigsfield-ai-text-model-v5";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const TEXT_MODELS = Object.freeze({
-    "gpt-oss": Object.freeze({
-      id: "gpt-oss",
+    "glm-4.7-flash": Object.freeze({
+      id: "glm-4.7-flash",
       engine: "workers-ai",
-      status: "gpt-oss-120b · Cloudflare Workers AI"
+      status: "glm-4.7-flash · Cloudflare Workers AI · no visitor login or additional provider key"
     }),
-    "gpt-5.4-mini": Object.freeze({
-      id: "gpt-5.4-mini",
-      engine: "cloudflare-ai-gateway",
-      status: "gpt-5.4-mini · OpenAI through Cloudflare"
+    "gemma-4-26b-a4b-it": Object.freeze({
+      id: "gemma-4-26b-a4b-it",
+      engine: "workers-ai",
+      status: "gemma-4-26b-a4b-it · Cloudflare Workers AI · no visitor login or additional provider key"
+    }),
+    "gpt-oss-120b": Object.freeze({
+      id: "gpt-oss-120b",
+      engine: "workers-ai",
+      status: "gpt-oss-120b · Cloudflare Workers AI · no visitor login or additional provider key"
     })
   });
   const IMAGE_MODEL = "sana";
-  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare AI endpoint; image prompts go to Pollinations. No provider key is stored in this page. Avoid personal or sensitive information and verify important output.";
+  const PROVIDER_NOTE = "Text prompts go to Pigsfield's Cloudflare AI endpoint; image prompts go to Pollinations. No visitor login or additional provider key is required for the text models. Avoid personal or sensitive information and verify important output.";
   const trackedUrls = new Set();
   const outputUrls = new WeakMap();
   const STUDIO_MODES = ["ask", "image", "document", "voice", "music"];
@@ -36,7 +41,7 @@
   ].concat(STUDIO_MODES.flatMap((mode) => ["creator-tab-" + mode, "creator-panel-" + mode]));
   const STUDIO_MARKUP = `
     <div data-ai-studio-root>
-      <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No login or model download.</strong> Text uses Pigsfield's Cloudflare AI endpoint; images use Pollinations. Avoid private data.</span></div>
+      <div class="ai-privacy"><span aria-hidden="true">🛡️</span><span><strong>No visitor login or additional provider key.</strong> Text uses Pigsfield's Cloudflare AI endpoint with no model download; images use Pollinations. Avoid private data.</span></div>
       <nav class="ai-web-links" aria-label="Open leading AI websites and model comparisons">
         <a class="ai-web-link" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" aria-label="Artificial Analysis model leaderboard" title="Artificial Analysis"><span class="ai-brand-mark analysis-mark" aria-hidden="true">▥</span><span class="sr-only">Artificial Analysis</span></a>
         <a class="ai-web-link" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" aria-label="Open Google Gemini" title="Google Gemini"><span class="ai-brand-mark gemini-mark" aria-hidden="true">✦</span><span class="sr-only">Gemini</span></a>
@@ -54,8 +59,9 @@
             <button class="creator-tab" type="button" role="tab" data-mode="music" aria-selected="false" title="Music"><span class="creator-tab-icon" aria-hidden="true">🎵</span><span class="creator-tab-label">Music</span></button>
           </div>
           <label class="ai-model-picker" for="ai-text-model"><span aria-hidden="true">◈</span><span class="sr-only">Deep reasoning model</span><select id="ai-text-model" name="text-model" aria-describedby="ai-model-status">
-            <option value="gpt-oss">gpt-oss-120b</option>
-            <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+            <option value="glm-4.7-flash">glm-4.7-flash</option>
+            <option value="gemma-4-26b-a4b-it">gemma-4-26b-a4b-it</option>
+            <option value="gpt-oss-120b">gpt-oss-120b</option>
           </select></label>
         </div>
         <p class="ai-model-status" id="ai-model-status" role="status" aria-live="polite"></p>
@@ -189,10 +195,7 @@
 
   function textModelNote(result) {
     const resolved = cleanText(result && result.model, 120) || DEFAULT_TEXT_MODEL;
-    const provider = result && result.engine === "cloudflare-ai-gateway"
-      ? "OpenAI through Cloudflare"
-      : "Cloudflare Workers AI";
-    return resolved + " · " + provider;
+    return resolved + " · Cloudflare Workers AI · no visitor login or additional provider key";
   }
 
   function resolveMountTarget(target) {
@@ -309,9 +312,6 @@
     }
     if (error && (error.status === 400 || error.status === 413 || error.status === 422)) {
       return "The provider could not process this prompt. Shorten it, remove unusual symbols, and try again.";
-    }
-    if (error && error.code === "provider" && error.status >= 500 && /unified billing|credits/i.test(error.message || "")) {
-      return cleanText(error.message, 260);
     }
     if (error && error.status >= 500) {
       return "The shared provider is temporarily unavailable. Your work was not saved here; please try again shortly.";

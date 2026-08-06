@@ -4,7 +4,7 @@ window.PF_DATA = window.PF_DATA || {};
 window.PF_DATA.tools = {
  "sections": [
   {
-   "title": "🛠️ Pigsfield — Tools with Tutorials | 50 Free-First Tools · 6 Categories",
+   "title": "SECTION — Digital Tools",
    "groups": [
     {
      "title": "AI & ML — Best AI tools + direct tutorials",

@@ -2163,3 +2163,12 @@ window.PF_DATA.school = {
   }
  ]
 };
+
+// Attach shared Teacher Training after PhD regardless of script load order.
+(function attachTeacherTrainingAfterPhd() {
+ const teacherTraining = window.PF_DATA.teacherTraining;
+ const sections = window.PF_DATA.school.sections || [];
+ if (teacherTraining && !sections.some((section) => section && section.id === "tt")) {
+  sections.push(teacherTraining);
+ }
+})();

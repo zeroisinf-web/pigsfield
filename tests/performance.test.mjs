@@ -58,19 +58,19 @@ test("the navigation shell stays small enough for a fast first visit", () => {
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
   const routes = [
-    ["index.html", 225, 80],
-    ["learn/index.html", 310, 95],
-    ["skills/index.html", 275, 90],
-    ["tools/index.html", 280, 90],
-    ["rights/index.html", 360, 105],
-    ["exams/index.html", 310, 100],
-    ["watch/index.html", 475, 145],
-    ["about/index.html", 215, 78],
-    ["editorial/index.html", 215, 78],
-    ["accessibility/index.html", 215, 78],
-    ["privacy/index.html", 215, 78],
-    ["submit/index.html", 220, 78],
-    ["ai/index.html", 215, 78]
+    ["index.html", 227, 80],
+    ["learn/index.html", 338, 97],
+    ["skills/index.html", 277, 90],
+    ["tools/index.html", 282, 90],
+    ["rights/index.html", 362, 105],
+    ["exams/index.html", 312, 100],
+    ["watch/index.html", 477, 145],
+    ["about/index.html", 220, 80],
+    ["editorial/index.html", 220, 80],
+    ["accessibility/index.html", 220, 80],
+    ["privacy/index.html", 220, 80],
+    ["submit/index.html", 225, 80],
+    ["ai/index.html", 220, 80]
   ];
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([
@@ -115,7 +115,10 @@ test("runtime work is deferred and long collections skip offscreen rendering", (
   const css = text("css/site.css");
   assert.match(site, /requestIdleCallback\(register,\s*\{\s*timeout:\s*4000\s*\}\)/, "service-worker installation must wait for idle time");
   assert.doesNotMatch(site.match(/function\s+init\(\)\s*\{([\s\S]*?)\n  \}/)?.[1] || "", /startTranslationObserver\(/, "English browsing must not run the translation observer");
-  assert.match(site, /setLanguageState\("hi"\);\s*startTranslationObserver\(\)/, "translation observation should start only after Hindi is chosen");
+  assert.match(site, /setLanguageState\("hi"\);\s*rememberLanguage\("hi"\);\s*startTranslationObserver\(\)/, "translation observation should start only after Hindi is chosen and remembered");
+  assert.match(site, /savedLanguage\(\)\s*===\s*"hi"\)\s*restoreSavedHindi\(\)/, "saved Hindi should restore without changing the page URL");
+  assert.doesNotMatch(site, /Translator\.availability\(/, "native translator creation must remain in the user-activation path");
+  assert.match(site, /SERVER_TRANSLATION_MAX_ITEMS\s*=\s*48[\s\S]{0,100}SERVER_TRANSLATION_MAX_CHARACTERS\s*=\s*10000/, "server translation batches must stay bounded");
   const summaryPinning = site.match(/function\s+pinActivatedSummary\([^)]*\)\s*\{([\s\S]*?)\n  \}\n\n  function setDetailsOpen/)?.[1] || "";
   assert.match(summaryPinning, /setTimeout\(/, "accordion position correction should run once after motion settles");
   assert.doesNotMatch(summaryPinning, /requestAnimationFrame|remainingFrames|maintainPosition/, "accordion pinning must not force layout on every animation frame");

@@ -1,7 +1,7 @@
 {
   "name": "Pigsfield — India's Open Learning Map",
   "short_name": "Pigsfield",
-  "description": "An open, free-first map that puts education, skills, exams, tools and government-accountability resources in your pocket.",
+  "description": "An open, free-first map for Nursery-to-PhD learning, PigBang, Competitive Exams, Vocational & Business, Digital Tools and government accountability.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -15,9 +15,11 @@
     {"src": "assets/pigsfield-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
   ],
   "shortcuts": [
-    {"name": "Learn", "url": "./learn/"},
-    {"name": "Competitive exams", "url": "./exams/"},
+    {"name": "Nursery to PhD", "url": "./learn/"},
     {"name": "PigBang", "url": "./watch/"},
-    {"name": "Make Government Accountable", "url": "./rights/"}
+    {"name": "Competitive Exams", "url": "./exams/"},
+    {"name": "Vocational & Business", "url": "./skills/"},
+    {"name": "Digital Tools", "url": "./tools/"},
+    {"name": "Make Govt Accountable", "url": "./rights/"}
   ]
 }

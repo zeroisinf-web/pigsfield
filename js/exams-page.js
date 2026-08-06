@@ -229,8 +229,8 @@
       { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap", render: renderRoadmap },
       { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers", render: renderMockTests },
       { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects", render: renderCommonSubjects },
-      { key: "ias", id: "exam-ias", title: "UPSC / IAS syllabus and essentials", render: () => renderExamTrack("ias", "UPSC / IAS syllabus and essentials", "Navigate Prelims, Mains, CSAT and essential primary sources in one place.") },
-      { key: "ras", id: "exam-ras", title: "RAS syllabus and essentials", render: () => renderExamTrack("ras", "RAS syllabus and essentials", "Navigate Rajasthan Prelims, Mains and high-value primary sources in one place.") },
+      { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course", render: () => renderExamTrack("ias", "UPSC/ IAS Complete Foundation Course", "Navigate Prelims, Mains, CSAT and essential primary sources in one place.") },
+      { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course", render: () => renderExamTrack("ras", "RAS Complete Foundation Course", "Navigate Rajasthan Prelims, Mains and high-value primary sources in one place.") },
       { key: "channels", id: "exam-channels", title: "Exam channels and official portals", render: renderChannels }
     ];
     const panelsByKey = new Map(panelDefinitions.map((definition) => [definition.key, definition]));

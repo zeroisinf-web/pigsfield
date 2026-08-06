@@ -4,7 +4,7 @@ window.PF_DATA = window.PF_DATA || {};
 window.PF_DATA.teach = {
  "sections": [
   {
-   "title": "SECTION — TEACHER TRAINING",
+   "title": "SECTION 7 — Teacher Training",
    "groups": [
     {
      "title": "",
@@ -557,10 +557,12 @@ window.PF_DATA.teach = {
      ]
     }
    ],
-   "id": "tt"
+   "id": "tt",
+   "resourceIdSection": 1,
+   "saveKey": "teach"
   },
   {
-   "title": "SECTION — VOCATIONAL + SKILLS (ITI / Technical / Employability / Coding)",
+   "title": "SECTION — Vocational & Business",
    "groups": [
     {
      "title": "GOVERNMENT SKILL PORTALS (GOV)",
@@ -984,7 +986,27 @@ window.PF_DATA.teach = {
      ]
     }
    ],
-   "id": "vs"
+   "id": "vs",
+   "resourceIdSection": 2
   }
  ]
 };
+
+// Share Teacher Training with learning while keeping this catalog vocational-only.
+(function moveTeacherTrainingIntoLearning() {
+ const sections = window.PF_DATA.teach.sections || [];
+ let teacherTraining = window.PF_DATA.teacherTraining;
+ const teacherIndex = sections.findIndex((section) => section && section.id === "tt");
+ if (teacherIndex >= 0) teacherTraining = sections.splice(teacherIndex, 1)[0];
+ if (!teacherTraining) return;
+
+ teacherTraining.title = "SECTION 7 — Teacher Training";
+ teacherTraining.highlight = true;
+ teacherTraining.note = "Strong teaching helps every stage of education flourish.";
+ window.PF_DATA.teacherTraining = teacherTraining;
+
+ const learningSections = window.PF_DATA.school && window.PF_DATA.school.sections;
+ if (Array.isArray(learningSections) && !learningSections.some((section) => section && section.id === "tt")) {
+  learningSections.push(teacherTraining);
+ }
+})();

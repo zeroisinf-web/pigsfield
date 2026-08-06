@@ -14,6 +14,12 @@
   const filterTarget = document.querySelector("#catalog-filters");
   const collapsibleGroups = root.dataset.collapsibleGroups === "true";
   const directSections = root.dataset.directSections === "true";
+  const destinationName = ({
+    school: "Nursery to PhD",
+    teach: "Vocational & Business",
+    tools: "Digital Tools",
+    govt: "Make Govt Accountable"
+  })[key] || document.title.split("|")[0].trim();
   const blockedHosts = new Set([
     "cineby.at", "www.cineby.at", "themoviebox.org", "www.themoviebox.org",
     "yarrlist.net", "www.yarrlist.net", "kisskh.nl", "www.kisskh.nl",
@@ -74,11 +80,46 @@
     return output;
   }
 
+  function resourceIdFor(item, section, sectionIndex, groupIndex, itemIndex) {
+    return PF.slug(`${item.title}-${section.resourceIdSection || sectionIndex + 1}-${groupIndex + 1}-${itemIndex + 1}`);
+  }
+
+  function legacyTeacherTrainingIds(section) {
+    const ids = new Set();
+    (section.groups || []).forEach((group, groupIndex) => {
+      (group.items || []).forEach((item, itemIndex) => {
+        ids.add(resourceIdFor(item, section, 0, groupIndex, itemIndex));
+      });
+    });
+    return ids;
+  }
+
+  function redirectLegacyTeacherTrainingHash() {
+    if (key !== "teach" || !location.hash) return false;
+    const teacherTraining = window.PF_DATA && window.PF_DATA.teacherTraining;
+    if (!teacherTraining) return false;
+    let id;
+    try {
+      id = decodeURIComponent(location.hash.slice(1));
+    } catch (_) {
+      return false;
+    }
+    if (!id || !legacyTeacherTrainingIds(teacherTraining).has(id)) return false;
+    const target = new URL(PF.path("learn"), location.href);
+    if (target.origin !== location.origin) return false;
+    target.hash = id;
+    location.replace(target.href);
+    return true;
+  }
+
+  if (redirectLegacyTeacherTrainingHash()) return;
+
   const entries = [];
   (data.sections || []).forEach((section, sectionIndex) => {
     (section.groups || []).forEach((group, groupIndex) => {
       (group.items || []).forEach((item, itemIndex) => {
-        const id = PF.slug(`${item.title}-${sectionIndex + 1}-${groupIndex + 1}-${itemIndex + 1}`);
+        const id = resourceIdFor(item, section, sectionIndex, groupIndex, itemIndex);
+        const saveId = `${section.saveKey || key}:${id}`;
         const links = flattenLinks(item);
         const entry = {
           item,
@@ -88,6 +129,7 @@
           groupIndex,
           itemIndex,
           id,
+          saveId,
           links,
           types: new Set(links.map((link) => link.type)),
           haystack: `${item.title || ""} ${item.desc || ""} ${item.badge || ""} ${group.title || ""} ${section.title || ""} ${(item.extra || []).map((part) => `${part.label || ""} ${part.text || ""}`).join(" ")}`.toLowerCase(),
@@ -95,7 +137,7 @@
         };
         entries.push(entry);
         entriesById.set(id, entry);
-        entriesBySaveId.set(`${key}:${id}`, entry);
+        entriesBySaveId.set(saveId, entry);
         entriesBySectionGroup[sectionIndex][groupIndex].push(entry);
       });
     });
@@ -183,7 +225,7 @@
 
   function renderCard(entry) {
     const item = entry.item;
-    const saveId = `${key}:${entry.id}`;
+    const saveId = entry.saveId;
     const saved = PF.isSaved(saveId);
     const cacheIndex = saved ? 1 : 0;
     const cardMarkup = entry.cardMarkup || (entry.cardMarkup = []);
@@ -246,7 +288,7 @@
       id: button.dataset.save,
       title: entry.item.title || "Resource",
       description: entry.item.desc || "",
-      section: document.title.split("|")[0].trim(),
+      section: destinationName,
       url: localUrl(entry.id)
     });
     button.classList.toggle("is-saved", nowSaved);
@@ -277,7 +319,8 @@
     const groupMarkup = groups.map((group, groupIndex) => {
       const groupEntries = entriesBySectionGroup[sectionIndex][groupIndex];
       const title = displaySectionTitle(group.title) || "Curated resources";
-      if (!collapsibleGroups) return `<section class="group-block">${group.title ? `<h2 class="group-title">${PF.escapeHtml(title)}</h2>` : ""}<div class="resource-grid">${groupEntries.map((entry) => renderCard(entry)).join("")}</div></section>`;
+      const headingTag = directSections ? "h3" : "h2";
+      if (!collapsibleGroups) return `<section class="group-block">${group.title ? `<${headingTag} class="group-title">${PF.escapeHtml(title)}</${headingTag}>` : ""}<div class="resource-grid">${groupEntries.map((entry) => renderCard(entry)).join("")}</div></section>`;
       const groupId = `catalog-group-${sectionIndex}-${groupIndex}`;
       const symbol = PF.resourceSymbolFor({
         title,
@@ -302,8 +345,9 @@
   function buildSections() {
     if (directSections) {
       sectionsTarget.innerHTML = (data.sections || []).map((section, index) => `
-        <section class="catalog-direct-section" data-section-index="${index}">
+        <section class="catalog-direct-section${section.highlight ? " catalog-section-highlight" : ""}" data-section-index="${index}">
           <h2 class="catalog-direct-title">${PF.escapeHtml(displaySectionTitle(section.title) || "Curated pathway")}</h2>
+          ${section.note ? `<p class="catalog-section-note">${PF.escapeHtml(section.note)}</p>` : ""}
           <div class="section-content"></div>
         </section>`).join("");
       sectionsTarget.querySelectorAll(".catalog-direct-section").forEach((section) => {
@@ -313,8 +357,8 @@
     }
     sectionsTarget.innerHTML = (data.sections || []).map((section, index) => {
       const count = sectionEntries(index).length;
-      return `<details class="catalog-section" data-section-index="${index}">
-        <summary><span>${PF.escapeHtml(displaySectionTitle(section.title) || "Curated pathway")}<small class="summary-meta">${count} curated ${count === 1 ? "resource" : "resources"}</small></span></summary>
+      return `<details class="catalog-section${section.highlight ? " catalog-section-highlight" : ""}" data-section-index="${index}">
+        <summary><span>${PF.escapeHtml(displaySectionTitle(section.title) || "Curated pathway")}<small class="summary-meta">${count} curated ${count === 1 ? "resource" : "resources"}</small>${section.note ? `<small class="catalog-section-note">${PF.escapeHtml(section.note)}</small>` : ""}</span></summary>
         <div class="section-content"></div>
       </details>`;
     }).join("");
@@ -419,5 +463,6 @@
       button.setAttribute("aria-pressed", String(isSaved));
     });
   });
-  revealHash();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", revealHash, { once: true });
+  else revealHash();
 })();

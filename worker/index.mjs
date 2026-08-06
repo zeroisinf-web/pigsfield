@@ -1,19 +1,29 @@
 const MODELS = Object.freeze({
-  "gpt-oss": Object.freeze({
+  "glm-4.7-flash": Object.freeze({
+    id: "@cf/zai-org/glm-4.7-flash",
+    name: "glm-4.7-flash",
+    tokenField: "max_completion_tokens"
+  }),
+  "gemma-4-26b-a4b-it": Object.freeze({
+    id: "@cf/google/gemma-4-26b-a4b-it",
+    name: "gemma-4-26b-a4b-it",
+    tokenField: "max_completion_tokens"
+  }),
+  "gpt-oss-120b": Object.freeze({
     id: "@cf/openai/gpt-oss-120b",
     name: "gpt-oss-120b",
-    thirdParty: false
-  }),
-  "gpt-5.4-mini": Object.freeze({
-    id: "openai/gpt-5.4-mini",
-    name: "gpt-5.4-mini",
-    thirdParty: true
+    tokenField: "max_tokens"
   })
 });
 
 const MAX_PROMPT_LENGTH = 1800;
 const MAX_BODY_BYTES = 12 * 1024;
 const MAX_OUTPUT_CHARACTERS = 24_000;
+const TRANSLATION_MODEL = "@cf/ai4bharat/indictrans2-en-indic-1B";
+const MAX_TRANSLATION_ITEMS = 48;
+const MAX_TRANSLATION_CHARACTERS = 10_000;
+const MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS = 12_000;
+const MAX_TRANSLATION_OUTPUT_CHARACTERS = 20_000;
 const VISITOR_COOKIE = "pf_visitor_month";
 const BASE_INSTRUCTION = [
   "You are Pigsfield's free educational assistant for learners in India.",
@@ -53,6 +63,59 @@ function clientKey(request) {
 function edgeKey(request) {
   const value = request.headers.get("CF-Connecting-IP") || "unknown";
   return /^[0-9a-f:.]{3,64}$/i.test(value) ? value : "unknown";
+}
+
+async function applyAIRateLimits(request, env) {
+  if (env.AI_RATE_LIMITER && typeof env.AI_RATE_LIMITER.limit === "function") {
+    const limit = await env.AI_RATE_LIMITER.limit({ key: clientKey(request) });
+    if (!limit.success) return json({ error: "The shared per-visitor limit is busy. Wait one minute and try again." }, 429);
+  }
+  if (env.AI_IP_RATE_LIMITER && typeof env.AI_IP_RATE_LIMITER.limit === "function") {
+    const limit = await env.AI_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
+    if (!limit.success) return json({ error: "The shared network limit is busy. Wait one minute and try again." }, 429);
+  }
+  return null;
+}
+
+async function applyTranslationRateLimits(request, env) {
+  if (env.TRANSLATION_RATE_LIMITER && typeof env.TRANSLATION_RATE_LIMITER.limit === "function") {
+    const limit = await env.TRANSLATION_RATE_LIMITER.limit({ key: clientKey(request) });
+    if (!limit.success) return json({ error: "The shared Hindi translation limit is busy. Wait one minute and try again." }, 429);
+  }
+  if (env.TRANSLATION_IP_RATE_LIMITER && typeof env.TRANSLATION_IP_RATE_LIMITER.limit === "function") {
+    const limit = await env.TRANSLATION_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
+    if (!limit.success) return json({ error: "The shared Hindi network limit is busy. Wait one minute and try again." }, 429);
+  }
+  return null;
+}
+
+async function boundedJsonBody(request) {
+  const declaredLength = Number(request.headers.get("Content-Length") || 0);
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    return { response: json({ error: "The request is too large." }, 413) };
+  }
+  if (!request.body) return { response: json({ error: "Send a valid JSON request." }, 400) };
+
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let bytes = 0;
+  let source = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > MAX_BODY_BYTES) {
+        try { await reader.cancel(); } catch (_) {}
+        return { response: json({ error: "The request is too large." }, 413) };
+      }
+      source += decoder.decode(value, { stream: true });
+    }
+    source += decoder.decode();
+    return { body: JSON.parse(source) };
+  } catch (_) {
+    return { response: json({ error: "Send a valid JSON request." }, 400) };
+  }
 }
 
 function indiaMonth(date = new Date()) {
@@ -201,15 +264,11 @@ async function handleAI(request, env) {
   if (request.method !== "POST") return json({ error: "Use POST for AI requests." }, 405);
   if (!sameOriginRequest(request)) return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
 
-  const contentLength = Number(request.headers.get("Content-Length") || 0);
-  if (contentLength > MAX_BODY_BYTES) return json({ error: "The request is too large." }, 413);
-
-  let body;
-  try {
-    body = await request.json();
-  } catch (_) {
-    return json({ error: "Send a valid JSON request." }, 400);
-  }
+  const limited = await applyAIRateLimits(request, env);
+  if (limited) return limited;
+  const parsed = await boundedJsonBody(request);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
 
   const model = MODELS[String(body && body.model || "")];
   const task = ["tutor", "document"].includes(body && body.task) ? body.task : "";
@@ -220,14 +279,6 @@ async function handleAI(request, env) {
   if (!prompt) return json({ error: "Enter a prompt to begin." }, 400);
   if (prompt.length > MAX_PROMPT_LENGTH) return json({ error: "Keep the prompt to 1,800 characters or fewer." }, 413);
 
-  if (env.AI_RATE_LIMITER && typeof env.AI_RATE_LIMITER.limit === "function") {
-    const limit = await env.AI_RATE_LIMITER.limit({ key: clientKey(request) });
-    if (!limit.success) return json({ error: "The shared per-visitor limit is busy. Wait one minute and try again." }, 429);
-  }
-  if (env.AI_IP_RATE_LIMITER && typeof env.AI_IP_RATE_LIMITER.limit === "function") {
-    const limit = await env.AI_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
-    if (!limit.success) return json({ error: "The shared network limit is busy. Wait one minute and try again." }, 429);
-  }
   if (!env.AI || typeof env.AI.run !== "function") return json({ error: "AI capacity is not configured." }, 503);
 
   try {
@@ -238,23 +289,60 @@ async function handleAI(request, env) {
       ],
       stream: false
     };
-    if (model.thirdParty) input.max_completion_tokens = 900;
-    else {
-      input.max_tokens = 900;
-      input.temperature = 0.55;
-      input.top_p = 0.9;
-    }
+    input[model.tokenField] = 900;
+    input.temperature = 0.55;
+    input.top_p = 0.9;
     const result = await env.AI.run(model.id, input, {
       gateway: { id: "default", collectLog: false }
     });
     const text = finalText(outputText(result));
     if (!text) return json({ error: "The model returned no usable answer." }, 502);
-    return json({ text, model: model.name, engine: model.thirdParty ? "cloudflare-ai-gateway" : "cloudflare-workers-ai" });
+    return json({ text, model: model.name, engine: "cloudflare-workers-ai" });
   } catch (_) {
-    const message = model.thirdParty
-      ? "GPT-5.4 mini is unavailable. The site owner must enable Cloudflare Unified Billing credits for this model."
-      : "Shared AI capacity is temporarily unavailable. Please try again shortly.";
-    return json({ error: message }, 503);
+    return json({ error: "Shared AI capacity is temporarily unavailable. Please try again shortly." }, 503);
+  }
+}
+
+async function handleTranslate(request, env) {
+  if (request.method !== "POST") return json({ error: "Use POST for translation requests." }, 405);
+  if (!sameOriginRequest(request)) return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
+
+  const limited = await applyTranslationRateLimits(request, env);
+  if (limited) return limited;
+  const parsed = await boundedJsonBody(request);
+  if (parsed.response) return parsed.response;
+  const texts = parsed.body && parsed.body.text;
+  if (!Array.isArray(texts)) return json({ error: "Send text as an array of English strings." }, 400);
+  if (!texts.length || texts.length > MAX_TRANSLATION_ITEMS) {
+    return json({ error: `Send between 1 and ${MAX_TRANSLATION_ITEMS} text items.` }, 400);
+  }
+  if (texts.some((value) => typeof value !== "string" || !value.trim())) {
+    return json({ error: "Every translation item must be a non-empty string." }, 400);
+  }
+  const totalCharacters = texts.reduce((sum, value) => sum + value.length, 0);
+  if (texts.some((value) => value.length > MAX_TRANSLATION_CHARACTERS) || totalCharacters > MAX_TRANSLATION_CHARACTERS) {
+    return json({ error: `Keep each translation batch to ${MAX_TRANSLATION_CHARACTERS.toLocaleString("en-US")} characters or fewer.` }, 413);
+  }
+
+  if (!env.AI || typeof env.AI.run !== "function") return json({ error: "Hindi translation capacity is not configured." }, 503);
+
+  try {
+    const result = await env.AI.run(TRANSLATION_MODEL, {
+      text: texts,
+      target_language: "hin_Deva"
+    }, {
+      gateway: { id: "default", collectLog: false }
+    });
+    const translations = result && result.translations;
+    const validStrings = Array.isArray(translations) && translations.length === texts.length &&
+      translations.every((value) => typeof value === "string" && value.trim() && value.length <= MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS);
+    const outputCharacters = validStrings ? translations.reduce((sum, value) => sum + value.length, 0) : 0;
+    if (!validStrings || outputCharacters > MAX_TRANSLATION_OUTPUT_CHARACTERS) {
+      return json({ error: "The translation model returned an incomplete result." }, 502);
+    }
+    return json({ translations, model: TRANSLATION_MODEL, engine: "cloudflare-workers-ai" });
+  } catch (_) {
+    return json({ error: "Hindi translation is temporarily unavailable. Please try again shortly." }, 503);
   }
 }
 
@@ -262,10 +350,24 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/ai") return handleAI(request, env);
+    if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
     if (url.pathname.startsWith("/api/")) return json({ error: "API route not found." }, 404);
     return env.ASSETS.fetch(request);
   }
 };
 
-export { MODELS, MonthlyVisitorCounter, handleAI, handleVisitors, indiaMonth, outputText };
+export {
+  MAX_TRANSLATION_CHARACTERS,
+  MAX_TRANSLATION_ITEMS,
+  MAX_TRANSLATION_OUTPUT_CHARACTERS,
+  MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS,
+  MODELS,
+  MonthlyVisitorCounter,
+  TRANSLATION_MODEL,
+  handleAI,
+  handleTranslate,
+  handleVisitors,
+  indiaMonth,
+  outputText
+};
