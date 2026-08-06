@@ -47,7 +47,7 @@
             <img class="pill-logo" src="/assets/chatgpt-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> ChatGPT
           </a>
           <a class="ai-ext-pill" href="https://www.kimi.com/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-emoji">🌙</span> Kimi
+            <img class="pill-logo" src="/assets/kimi-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Kimi
           </a>
           <a class="ai-ext-pill" href="https://www.meta.ai/" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/meta-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Meta AI
@@ -59,13 +59,13 @@
             <img class="pill-logo" src="/assets/qwen-symbol.png" alt="" width="16" height="16" aria-hidden="true"> Qwen
           </a>
           <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer">
-            <span class="pill-emoji">⚡</span> Z.ai
+            <img class="pill-logo" src="/assets/zai-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Z.ai
           </a>
           <a class="ai-ext-pill" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Gemini
           </a>
           <a class="ai-ext-pill" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Google AI Studio
+            <img class="pill-logo" src="/assets/google-aistudio-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Google AI Studio
           </a>
           <a class="ai-ext-pill" href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> DeepSeek
@@ -274,7 +274,6 @@
 
     if (!thread || !form || !promptInput) return null;
 
-    // Resolve relative logo images if needed
     root.querySelectorAll("img.pill-logo").forEach(img => {
       const src = img.getAttribute("src");
       if (src && src.startsWith("/")) {
