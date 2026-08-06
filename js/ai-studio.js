@@ -192,7 +192,7 @@
       },
       body: JSON.stringify({
         model: DEFAULT_TEXT_MODEL,
-        task: "ask",
+        task: "tutor",
         prompt: prompt
       })
     }, 90000);

@@ -261,7 +261,7 @@ async function handleAI(request, env) {
   const body = parsed.body;
 
   const model = MODELS[String(body && body.model || "")];
-  const task = ["tutor", "document"].includes(body && body.task) ? body.task : "";
+  const task = ["tutor", "document", "ask", "chat"].includes(body && body.task) ? body.task : "";
   const prompt = String(body && body.prompt || "").trim();
   const format = ["md", "txt", "html"].includes(body && body.format) ? body.format : "txt";
   if (!model) return json({ error: "Choose one of the available Pigsfield models." }, 400);
