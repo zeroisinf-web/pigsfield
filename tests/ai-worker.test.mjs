@@ -389,3 +389,9 @@ test("serves assets outside the API namespace", async () => {
   const missing = await worker.fetch(new Request(ORIGIN + "/api/unknown"), env());
   assert.equal(missing.status, 404);
 });
+
+test("redirects every HTTP request to the same HTTPS URL", async () => {
+  const response = await worker.fetch(new Request("http://pigsfield.com/learn/?q=teacher#training"), env());
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("Location"), "https://pigsfield.com/learn/?q=teacher#training");
+});

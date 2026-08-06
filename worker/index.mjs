@@ -349,6 +349,10 @@ async function handleTranslate(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.protocol === "http:") {
+      url.protocol = "https:";
+      return Response.redirect(url.href, 308);
+    }
     if (url.pathname === "/api/ai") return handleAI(request, env);
     if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
