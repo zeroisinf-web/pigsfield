@@ -11,6 +11,11 @@
   const trackedUrls = new Set();
   const outputUrls = new WeakMap();
 
+  function assetUrl(path) {
+    const base = document.documentElement.getAttribute("data-base") || "/";
+    return base.replace(/\/+$/, "") + "/" + path.replace(/^\/+/, "");
+  }
+
   const STUDIO_MARKUP = `
     <div data-ai-studio-root class="ai-studio-v2">
       <div class="ai-privacy">
@@ -24,23 +29,47 @@
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
-            <span class="pill-icon">📊</span><span class="pill-label">LLM Rankings</span><span class="pill-badge">Top</span>
+            <img class="pill-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="18" height="18" aria-hidden="true">
+            <span class="pill-label">LLM Rankings</span>
+            <span class="pill-badge">Top</span>
           </a>
           <a class="ai-ext-pill featured" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer" title="Open Qwen Chat">
-            <span class="pill-icon">🌐</span><span class="pill-label">Qwen.ai</span><span class="pill-badge">Featured</span>
+            <img class="pill-logo" src="/assets/qwen-symbol.png" alt="" width="18" height="18" aria-hidden="true">
+            <span class="pill-label">Qwen.ai</span>
+            <span class="pill-badge">Featured</span>
           </a>
         </div>
         <div class="ai-launchpad-scroll">
-          <a class="ai-ext-pill" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer"><span>🧠</span> Claude</a>
-          <a class="ai-ext-pill" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer"><span>🤖</span> ChatGPT</a>
-          <a class="ai-ext-pill" href="https://www.kimi.com/" target="_blank" rel="noopener noreferrer"><span>🌙</span> Kimi</a>
-          <a class="ai-ext-pill" href="https://www.meta.ai/" target="_blank" rel="noopener noreferrer"><span>♾️</span> Meta AI</a>
-          <a class="ai-ext-pill" href="https://grok.com/" target="_blank" rel="noopener noreferrer"><span>🚀</span> Grok</a>
-          <a class="ai-ext-pill" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer"><span>🌐</span> Qwen</a>
-          <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer"><span>⚡</span> Z.ai</a>
-          <a class="ai-ext-pill" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer"><span>✨</span> Gemini</a>
-          <a class="ai-ext-pill" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener noreferrer"><span>🛠️</span> Google AI Studio</a>
-          <a class="ai-ext-pill" href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer"><span>🐳</span> DeepSeek</a>
+          <a class="ai-ext-pill" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/claude-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Claude
+          </a>
+          <a class="ai-ext-pill" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/chatgpt-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> ChatGPT
+          </a>
+          <a class="ai-ext-pill" href="https://www.kimi.com/" target="_blank" rel="noopener noreferrer">
+            <span class="pill-emoji">🌙</span> Kimi
+          </a>
+          <a class="ai-ext-pill" href="https://www.meta.ai/" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/meta-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Meta AI
+          </a>
+          <a class="ai-ext-pill" href="https://grok.com/" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/grok-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Grok
+          </a>
+          <a class="ai-ext-pill" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/qwen-symbol.png" alt="" width="16" height="16" aria-hidden="true"> Qwen
+          </a>
+          <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer">
+            <span class="pill-emoji">⚡</span> Z.ai
+          </a>
+          <a class="ai-ext-pill" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Gemini
+          </a>
+          <a class="ai-ext-pill" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Google AI Studio
+          </a>
+          <a class="ai-ext-pill" href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer">
+            <img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> DeepSeek
+          </a>
         </div>
       </div>
 
@@ -125,23 +154,17 @@
 
   function formatMarkdown(text) {
     let escaped = escapeHtml(text);
-    // Code blocks ```
     escaped = escaped.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
       return `<pre class="ai-code-block"><code>${code.trim()}</code></pre>`;
     });
-    // Inline code `code`
     escaped = escaped.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
-    // Headers ###
     escaped = escaped.replace(/^### (.*$)/gim, '<h4 class="ai-msg-h3">$1</h4>');
     escaped = escaped.replace(/^## (.*$)/gim, '<h3 class="ai-msg-h2">$1</h3>');
     escaped = escaped.replace(/^# (.*$)/gim, '<h2 class="ai-msg-h1">$1</h2>');
-    // Bold & Italic
     escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     escaped = escaped.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    // Bullet lists
     escaped = escaped.replace(/^\s*[-*]\s+(.*$)/gim, '<li class="ai-msg-li">$1</li>');
     escaped = escaped.replace(/(<li class="ai-msg-li">[\s\S]*?<\/li>)/g, '<ul class="ai-msg-ul">$1</ul>');
-    // Paragraph breaks
     const paragraphs = escaped.split(/\n\n+/);
     return paragraphs.map(p => {
       if (p.startsWith('<pre') || p.startsWith('<h') || p.startsWith('<ul')) return p;
@@ -251,13 +274,19 @@
 
     if (!thread || !form || !promptInput) return null;
 
-    // Character counter
+    // Resolve relative logo images if needed
+    root.querySelectorAll("img.pill-logo").forEach(img => {
+      const src = img.getAttribute("src");
+      if (src && src.startsWith("/")) {
+        img.src = assetUrl(src);
+      }
+    });
+
     promptInput.addEventListener("input", () => {
       const count = promptInput.value.length;
       if (charCounter) charCounter.textContent = `${count} / ${MAX_PROMPT_LENGTH}`;
     });
 
-    // Mode Toggle Switcher
     function setMode(mode) {
       currentMode = mode;
       modeBtns.forEach(btn => {
@@ -285,7 +314,6 @@
       btn.addEventListener("click", () => setMode(btn.dataset.mode));
     });
 
-    // Clear Chat Button
     if (clearBtn) {
       clearBtn.addEventListener("click", () => {
         thread.replaceChildren();
@@ -293,12 +321,10 @@
       });
     }
 
-    // Scroll thread to bottom
     function scrollToBottom() {
       thread.scrollTop = thread.scrollHeight;
     }
 
-    // Append user message
     function appendUserMessage(text) {
       if (welcomeBox && welcomeBox.parentNode === thread) {
         welcomeBox.remove();
@@ -313,7 +339,6 @@
       scrollToBottom();
     }
 
-    // Append pending message
     function appendPendingMessage(label) {
       const msg = element("div", "ai-msg ai-msg-assistant is-pending");
       msg.id = "ai-pending-indicator";
@@ -329,13 +354,11 @@
       return msg;
     }
 
-    // Remove pending indicator
     function removePendingMessage() {
       const pending = thread.querySelector("#ai-pending-indicator");
       if (pending) pending.remove();
     }
 
-    // Append Assistant Text Message
     function appendAssistantTextMessage(text) {
       removePendingMessage();
       const msg = element("div", "ai-msg ai-msg-assistant");
@@ -361,7 +384,6 @@
       scrollToBottom();
     }
 
-    // Append Assistant Image Message
     function appendAssistantImageMessage(prompt, imageUrl) {
       removePendingMessage();
       const msg = element("div", "ai-msg ai-msg-assistant");
@@ -394,7 +416,6 @@
       scrollToBottom();
     }
 
-    // Append Error Message
     function appendErrorMessage(errorText) {
       removePendingMessage();
       const msg = element("div", "ai-msg ai-msg-assistant is-error");
@@ -410,7 +431,6 @@
       scrollToBottom();
     }
 
-    // Form Submit Handler
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const prompt = promptInput.value.trim();
