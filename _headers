@@ -42,14 +42,28 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# The font is replaced by filename, never edited in place, so it is safe to pin.
-# This is the single biggest asset on every page.
+# Cloudflare applies EVERY matching rule here and concatenates the values; it does not pick
+# the most specific one. A broad "/assets/*" rule alongside the font rule below therefore
+# shipped this on the live font:
+#   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000, public, max-age=31536000, immutable
+# Browsers take the first max-age, so the year-long pin silently became a week. The asset
+# rules are listed by extension instead, which cannot overlap.
+#
+# Adding a new asset type means adding a rule here. Forgetting one is safe — it falls
+# through to the default and revalidates every time — but it is not what you want.
+
+# The font is replaced by filename, never edited in place, so it is safe to pin for a year.
+# It is the single biggest asset on every page.
 /assets/*.woff2
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
 # Logos and icons change rarely; serve instantly and refresh in the background.
-/assets/*
+/assets/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/assets/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/assets/*.svg
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 # Stylesheets, scripts and catalog data are not fingerprinted, so keep the
