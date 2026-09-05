@@ -1115,6 +1115,8 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
+          "https://sampark.rajasthan.gov.in/",
+          "https://play.google.com/store/apps/details?id=com.rajsampark.versiontwo",
           "https://serviceonline.rajasthan.gov.in",
           "https://rps.rajasthan.gov.in"
          ]

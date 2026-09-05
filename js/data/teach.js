@@ -962,24 +962,6 @@ window.PF_DATA.teach = {
          ]
         }
        ]
-      },
-      {
-       "title": "Rajasthan Sampark 2.0",
-       "desc": "Rajasthan govt's integrated portal for citizen grievances and government services. Grievance + Govt Services",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://sampark.rajasthan.gov.in/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.rajsampark.versiontwo"
-         ]
-        }
-       ]
       }
      ]
     }

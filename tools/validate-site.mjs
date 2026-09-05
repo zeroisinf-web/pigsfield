@@ -27,7 +27,7 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
-const DATA_MINIMUMS = { school: 171, teach: 24, tools: 45, govt: 40, pigbang: 500 };
+const DATA_MINIMUMS = { school: 171, teach: 23, tools: 45, govt: 40, pigbang: 500 };
 const BANNED_DOMAIN_PATTERNS = [
   /\banimesalt(?:\.in|\.ac)?\b/i,
   /\bhianimes?(?:\.se|\.to|\.tv)?\b/i,
@@ -441,7 +441,7 @@ function validateData() {
     const phdIndex = learningIds.indexOf("phd");
     const teacherIndex = learningIds.indexOf("tt");
     check(groupedItemCount(data.school) === 171, path.join(ROOT, "js", "data", "school.js"), "Nursery to PhD must contain exactly 171 resources after Teacher Training moves");
-    check(groupedItemCount(data.teach) === 24, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 24 resources");
+    check(groupedItemCount(data.teach) === 23, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 23 resources");
     check(phdIndex >= 0 && teacherIndex === phdIndex + 1, path.join(ROOT, "js", "data", "school.js"), "Teacher Training must appear immediately after PhD");
     const teacherTraining = data.school.sections[teacherIndex];
     const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");
