@@ -1,0 +1,68 @@
+# Response headers for the static assets served by Cloudflare Workers.
+#
+# wrangler.jsonc sets run_worker_first to ["/api/*"], so worker/index.mjs never
+# runs for a page, a stylesheet or a font. This file is therefore the only place
+# these headers can be set. Cloudflare applies the most specific matching rule.
+#
+# Before this file every response carried "Cache-Control: public, max-age=0,
+# must-revalidate", so each navigation revalidated all 7-10 subresources,
+# including the 119 KB font that never changes. On a 4G link at ~150 ms RTT that
+# was roughly a second of dead time per page view for content already on the
+# device.
+#
+# Nothing here is content-hashed yet, so the cache lifetimes below are chosen to
+# survive a deploy rather than assuming immutability. Fonts are the exception:
+# that file is replaced by name, not edited in place.
+
+/*
+  # Sent on every response, including HTML.
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: accelerometer=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), usb=()
+  # 2 years, preload-eligible. Plain http:// currently answers 200 because the
+  # Worker's redirect at worker/index.mjs:342 only runs for /api/*; this makes a
+  # browser refuse http:// after its first visit. Turn on "Always Use HTTPS" in
+  # the Cloudflare dashboard to cover the very first one. See README.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  # Report-Only for now so a mistake cannot black out the site. Every origin below
+  # is one the code actually contacts: youtube.com for the IFrame API in
+  # js/player.js, youtube-nocookie.com for the embed, i.ytimg.com for thumbnails,
+  # image.pollinations.ai for AI Studio images. style-src needs 'unsafe-inline'
+  # only because of the style="--visual-hue:..." attributes written in
+  # js/catalog.js and js/watch.js. Promote to Content-Security-Policy once the
+  # browser console reports no violations.
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.ytimg.com https://image.pollinations.ai; font-src 'self'; connect-src 'self' https://image.pollinations.ai; frame-src https://www.youtube-nocookie.com https://www.youtube.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
+
+# HTML must stay revalidated so a deploy is visible immediately.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# The font is replaced by filename, never edited in place, so it is safe to pin.
+# This is the single biggest asset on every page.
+/assets/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# Logos and icons change rarely; serve instantly and refresh in the background.
+/assets/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# Stylesheets, scripts and catalog data are not fingerprinted, so keep the
+# window short. A returning visitor still skips the revalidation round trip
+# while moving between pages in one session, and picks up a deploy within
+# 10 minutes; the service worker refreshes them on the next navigation anyway.
+/css/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+/js/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+# The service worker itself must never be cached, or a deploy cannot land.
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.json
+  Cache-Control: public, max-age=3600
