@@ -93,6 +93,31 @@ Keep each link pointed at the original, lawful provider. Add a clear description
 
 Playback starts only after the visitor presses Play. The player uses YouTube's privacy-enhanced domain, sends a strict-origin referrer, supports video and playlist URLs, and always keeps an original-source fallback. Do not change the site referrer policy to `no-referrer`; YouTube needs site identity for embedded playback. Videos whose owners disable embedding must still open on their original YouTube page.
 
+## Knowing whether a change is actually live
+
+The repository being green and the site being current are two different facts. Cloudflare
+Workers Builds deploys from `main` on its own schedule, so a change can pass every check
+here, be merged, and simply not be serving — and until this existed, the only way to find
+out was for someone to open the site and notice.
+
+`npm run check:production` now answers it. `sw.js` carries a digest of the shell it
+precaches, stamped by `tools/build-sw.mjs`, which makes it a build fingerprint that costs
+nothing extra: the check reads the digest production is serving and compares it to the one
+this tree computes. It waits up to six minutes, because the post-merge job starts seconds
+after the push and legitimately races the deploy. A commit that does not touch the shell
+leaves the digest unchanged and passes at once, which is correct — there is nothing new to
+deploy.
+
+So a green `main` now means the site is serving that commit. A failure here is a deployment
+problem, not a code problem: check Workers Builds for the repository.
+
+One known failure is neither, and is a dashboard setting: `http://pigsfield.com/` answers
+200 instead of redirecting. `run_worker_first` is scoped to `/api/*`, so the Worker's own
+http→https redirect never runs for a page request, and no change in this repository can fix
+it. Turn on **Always Use HTTPS** in Cloudflare (SSL/TLS → Edge Certificates). The
+`Strict-Transport-Security` header in `_headers` already covers every visit after the first
+one; only that setting covers the first.
+
 ## Cover art (`/api/poster`)
 
 Every PigBang card shows real cover art, and the visitor's browser fetches none of it from
