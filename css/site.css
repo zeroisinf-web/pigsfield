@@ -45,10 +45,23 @@
   --catalog-group-sticky-top: calc(var(--catalog-sticky-top) + 4.7rem);
   --font-sans: "Google Sans Flex", "Google Sans", "Noto Sans Devanagari", system-ui, sans-serif;
   --font-serif: "Google Sans Flex", "Google Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  /* Label colour for a solid accent fill. White only reads on a DARK fill, and the accent
+     tokens deliberately get lighter in dark mode, so hardcoding #fff put white text on a
+     pale fill: .button.brand measured 2.64:1 and .button.secondary 2.14:1 in dark, both
+     failing WCAG AA. The label is therefore chosen per theme against its own fill.
+     --fill-ink is not theme-swapped: it is the near-black used on any bright fill, and
+     clears 4.5:1 on every accent in all three themes (worst case 5.05:1). */
+  --fill-ink: #0d1714;
+  --on-brand: var(--fill-ink);   /* #ef5d44 is bright -> 5.50:1 */
+  --on-green: #fff;              /* #126b58 is dark   -> 6.42:1 */
+  --on-green-deep: #fff;         /* #0a463b is dark   -> 10.76:1 */
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
+  --on-brand: var(--fill-ink);   /* #ff755e -> 6.92:1 */
+  --on-green: var(--fill-ink);   /* #61c2a9 -> 8.52:1 */
+  --on-green-deep: var(--fill-ink); /* #b7e8da is bright -> 13.54:1 */
   --paper: #0d1714;
   --paper-strong: #14211d;
   --ink: #f5f1e5;
@@ -203,8 +216,8 @@ p { color: var(--ink-soft); }
 }
 
 .button:hover { transform: translateY(-2px); }
-.button.brand { background: var(--brand); color: #fff; }
-.button.secondary { background: var(--green); color: #fff; }
+.button.brand { background: var(--brand); color: var(--on-brand); }
+.button.secondary { background: var(--green); color: var(--on-green); }
 .button.ghost {
   border-color: var(--line);
   background: transparent;
@@ -511,8 +524,8 @@ p { color: var(--ink-soft); }
 .path-card h3 { max-width: 12ch; margin: auto 0 0.6rem; font-family: var(--font-serif); font-size: clamp(1.8rem, 3vw, 2.7rem); line-height: 1; }
 .path-card p { max-width: 35rem; margin-bottom: 1.2rem; }
 .path-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
-.path-card.featured { background: var(--brand); color: #fff; }
-.path-card.featured p, .path-card.featured .path-index { color: #fff; opacity: 0.82; }
+.path-card.featured { background: var(--brand); color: var(--on-brand); }
+.path-card.featured p, .path-card.featured .path-index { color: var(--on-brand); opacity: 0.86; }
 .path-card.dark { background: var(--ink); color: var(--paper-strong); }
 .path-card.dark p { color: inherit; opacity: 0.72; }
 
@@ -727,7 +740,7 @@ summary::-webkit-details-marker { display: none; }
   cursor: pointer;
   font-size: 0.88rem;
 }
-.card-tool.is-saved { border-color: var(--brand); background: var(--brand); color: #fff; }
+.card-tool.is-saved { border-color: var(--brand); background: var(--brand); color: var(--on-brand); }
 .resource-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.9rem; }
 .tag {
   display: inline-flex;
@@ -783,7 +796,7 @@ summary::-webkit-details-marker { display: none; }
 .link-button.source-video { background: #d93025; color: #fff; border-color: transparent; }
 .link-button.source-app { background: #2266c8; color: #fff; border-color: transparent; }
 .link-button.source-document { background: #e7a72e; color: #18231f; border-color: transparent; }
-.link-button.source-website { background: var(--green); color: #fff; border-color: transparent; }
+.link-button.source-website { background: var(--green); color: var(--on-green); border-color: transparent; }
 .direct-links .link-button { width: auto; min-width: 2.75rem; flex: 1 1 9.5rem; }
 .source-icon {
   display: inline-grid;
@@ -976,7 +989,7 @@ summary::-webkit-details-marker { display: none; }
 .global-results { display: grid; gap: 0.45rem; }
 .global-result { display: grid; grid-template-columns: 2.35rem 1fr auto; gap: 0.75rem; align-items: center; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.75rem; text-decoration: none; }
 .global-result:hover { border-color: var(--green); }
-.result-monogram { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: 0.65rem; background: var(--green-deep); color: #fff; font-size: 0.7rem; font-weight: 900; }
+.result-monogram { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: 0.65rem; background: var(--green-deep); color: var(--on-green-deep); font-size: 0.7rem; font-weight: 900; }
 .global-result strong, .global-result small { display: block; }
 .global-result small { overflow: hidden; color: var(--ink-soft); text-overflow: ellipsis; white-space: nowrap; }
 .global-result em { color: var(--ink-soft); font-size: 0.7rem; font-style: normal; }
@@ -1008,13 +1021,13 @@ summary::-webkit-details-marker { display: none; }
   border: 1px solid rgba(255,255,255,.35);
   border-radius: 999px;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   box-shadow: 0 8px 28px rgba(75, 25, 18, 0.24);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 850;
 }
-.support-action.feedback { background: var(--green-deep); }
+.support-action.feedback { background: var(--green-deep); color: var(--on-green-deep); }
 [data-theme="dark"] .support-action.feedback { background: #e7f5ed; color: #0c2c24; }
 .upi-box { display: grid; gap: 0.7rem; padding: 1rem; border-radius: 0.8rem; background: var(--paper); }
 .upi-code { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; padding: 0.75rem; border: 1px dashed var(--line-strong); border-radius: 0.65rem; }
@@ -1137,7 +1150,10 @@ summary::-webkit-details-marker { display: none; }
   box-shadow: var(--depth-low);
 }
 .path-card.featured {
-  background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #ffb26b), var(--brand-deep));
+  /* The deep stop is pulled back toward --brand so the whole gradient stays light enough
+     for the --on-brand label. Ending on a raw --brand-deep put the text at 3.31:1 over
+     the dark end in light theme, while white would have failed at the bright end. */
+  background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #ffb26b), color-mix(in srgb, var(--brand) 70%, var(--brand-deep)));
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 -3px 0 rgba(0, 0, 0, 0.16) inset, 0 18px 38px color-mix(in srgb, var(--brand) 23%, transparent);
 }
 .path-card.dark {
@@ -1180,7 +1196,7 @@ summary::-webkit-details-marker { display: none; }
 }
 .catalog-section[open] > summary::after,
 .faq-item[open] > summary::after,
-.exam-panel[open] > summary::after { background: var(--green); color: #fff; }
+.exam-panel[open] > summary::after { background: var(--green); color: var(--on-green); }
 .catalog-section > summary:focus-visible,
 .faq-item > summary:focus-visible,
 .exam-panel > summary:focus-visible { outline-offset: -4px; }
@@ -1398,7 +1414,7 @@ summary::-webkit-details-marker { display: none; }
   font-weight: 700;
   padding: 0.1rem 0.35rem;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   border-radius: 1rem;
   text-transform: uppercase;
 }
@@ -1566,7 +1582,7 @@ summary::-webkit-details-marker { display: none; }
 
 .ai-msg-user .ai-msg-avatar {
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   border: none;
 }
 
@@ -1580,7 +1596,7 @@ summary::-webkit-details-marker { display: none; }
 
 .ai-msg-user .ai-msg-content {
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   border-bottom-right-radius: 0.25rem;
 }
 
@@ -1961,7 +1977,7 @@ summary::-webkit-details-marker { display: none; }
 }
 .catalog-group[open] { border-color: color-mix(in srgb, var(--green) 48%, var(--line)); box-shadow: var(--depth-low); }
 .catalog-group[open] > .catalog-group-summary { border-bottom: 1px solid var(--line); background: linear-gradient(105deg, var(--green-pale), transparent 70%); }
-.catalog-group[open] > .catalog-group-summary::after { content: "−"; background: var(--green); color: #fff; }
+.catalog-group[open] > .catalog-group-summary::after { content: "−"; background: var(--green); color: var(--on-green); }
 .catalog-group-symbol {
   display: grid;
   width: 2.7rem;
@@ -2301,6 +2317,9 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
 
 body[data-page="watch"] {
   color-scheme: dark;
+  --on-brand: var(--fill-ink);   /* #ff3150 -> 5.05:1 */
+  --on-green: var(--fill-ink);   /* #6ee7b7 -> 11.98:1 */
+  --on-green-deep: #fff;         /* #123c35 is dark -> 12.18:1 */
   --paper: #07090f;
   --paper-strong: #101621;
   --ink: #f7f9fc;
