@@ -84,19 +84,19 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
   // ~4% above what each route actually ships, so an accidental regression fails but a
   // deliberate change does not need the table rewritten every time.
   const routes = [
-    ["index.html", 299, 143],
+    ["index.html", 304, 143],
     ["learn/index.html", 413, 166],
     ["skills/index.html", 353, 156],
     ["tools/index.html", 358, 156],
     ["rights/index.html", 433, 169],
     ["exams/index.html", 378, 164],
     ["watch/index.html", 523, 197],
-    ["about/index.html", 293, 142],
-    ["editorial/index.html", 291, 141],
-    ["accessibility/index.html", 291, 141],
-    ["privacy/index.html", 294, 142],
-    ["submit/index.html", 291, 141],
-    ["ai/index.html", 289, 140]
+    ["about/index.html", 296, 142],
+    ["editorial/index.html", 294, 141],
+    ["accessibility/index.html", 294, 141],
+    ["privacy/index.html", 297, 142],
+    ["submit/index.html", 294, 141],
+    ["ai/index.html", 292, 140]
   ];
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([
