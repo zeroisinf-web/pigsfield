@@ -486,7 +486,7 @@ p { color: var(--ink-soft); }
 .hero-guide-link:focus-visible { outline: 3px solid var(--focus); outline-offset: -4px; }
 
 .section { padding: clamp(4.5rem, 9vw, 8.5rem) 0; }
-.section.alt { border-block: 1px solid var(--line); background: var(--paper-strong); }
+.section.alt { background: var(--paper-strong); }
 .section-head {
   display: flex;
   align-items: end;
@@ -2847,4 +2847,102 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   .guide-copy { padding: 0.7rem 0.85rem; }
   .guide-copy strong { font-size: 0.95rem; }
   .guide-copy small { font-size: 0.68rem; }
+}
+
+/* Editorial layout pass
+   -------------------------------------------------------------------------------------
+   Token tweaks alone did not change how the site reads. What separates labs.google and
+   one.google.com from a directory is structure: a centred hero with real air around it,
+   sections divided by soft bands rather than borders, and cards given room to breathe.
+   This changes the layout to match. The palette is untouched. */
+
+/* --- Hero: centred, generous, one.google.com's shape ------------------------------- */
+.home-hero { padding: clamp(3.5rem, 7vw, 8rem) 0 clamp(3rem, 6vw, 7rem); }
+.hero-stack {
+  display: grid;
+  justify-items: center;
+  gap: 1.4rem;
+  max-width: 60rem;
+  text-align: center;
+}
+.hero-stack .eyebrow { margin-bottom: 0; }
+.home-hero h1 {
+  max-width: 16ch;
+  margin-bottom: 0;
+  /* one.google.com sets 84px; this tops out a little higher because the line is shorter. */
+  font-size: clamp(2.9rem, 7.4vw, 6.4rem);
+  line-height: 0.95;
+}
+.hero-lede {
+  max-width: 44rem;
+  margin-bottom: 0;
+  font-size: clamp(1rem, 1.35vw, 1.18rem);
+  line-height: 1.6;
+}
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-top: 0.5rem; }
+.hero-actions .button { min-height: 3.25rem; padding-inline: 1.6rem; font-size: 0.98rem; }
+
+/* The tutorial becomes one quiet line under the fold-defining actions, not a poster. */
+.hero-guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 1.1rem 0.5rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background 160ms ease;
+}
+.hero-guide:hover { background: color-mix(in srgb, var(--ink) 11%, transparent); }
+.hero-guide small { display: block; color: var(--ink-soft); font-size: 0.72rem; font-weight: 500; }
+.hero-guide-mark {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.hero-guide-mark svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
+
+/* --- Bands replace borders as the way sections are separated ----------------------- */
+.section { padding: clamp(3.5rem, 6.5vw, 7rem) 0; }
+.section.band { background: var(--paper-strong); }
+.band-head {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  max-width: 46rem;
+  margin: 0 auto clamp(2.25rem, 4vw, 3.5rem);
+  text-align: center;
+}
+.band-head h2 { margin-bottom: 0; font-size: clamp(2rem, 4.2vw, 3.4rem); }
+.band-head p { margin-bottom: 0; max-width: 40rem; color: var(--ink-soft); }
+
+/* --- Cards with room to breathe ----------------------------------------------------- */
+.path-grid { gap: 1.25rem; }
+.path-card {
+  min-height: 15rem;
+  padding: clamp(1.6rem, 2.2vw, 2.25rem);
+  border-color: transparent;
+  background: var(--paper);
+}
+.section.band .path-card { background: var(--paper); }
+.path-card h3 { font-size: clamp(1.35rem, 1.9vw, 1.75rem); letter-spacing: -0.02em; }
+.path-card .path-icon { font-size: 2rem; }
+.path-card:hover { transform: translateY(-3px); border-color: var(--line); }
+
+@media (max-width: 52rem) {
+  .home-hero { padding: 1.75rem 0 1.4rem; }
+  .hero-stack { gap: 1rem; text-align: left; justify-items: start; }
+  .home-hero h1 { max-width: 18ch; font-size: clamp(2.1rem, 9vw, 3rem); }
+  .hero-actions { justify-content: flex-start; width: 100%; }
+  .hero-actions .button { flex: 1 1 auto; min-height: 3rem; }
+  .band-head { justify-items: start; text-align: left; margin-bottom: 1.5rem; }
+  .path-card { min-height: 0; }
 }
