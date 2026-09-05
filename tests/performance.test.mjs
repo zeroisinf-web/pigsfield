@@ -54,8 +54,9 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   // and the topic-page layout. Verified there is nothing dead left to reclaim first —
   // every remaining unreferenced selector is composed at runtime (source-brand-${brand}
   // and friends), so removing them would break the cards.
-  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 19 * 1024 });
-  withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 20 * 1024 });
+  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 20 * 1024 });
+  // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
+  withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
   // pixel-identically. This budget stops a future re-export shipping the full axes again.

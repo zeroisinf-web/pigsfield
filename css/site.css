@@ -2765,3 +2765,34 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   border-left-color: #ffb066;
   background: color-mix(in srgb, #ffb066 14%, transparent);
 }
+
+/* Optional sign-in, shown only inside the saved-list dialog. Deliberately quiet: an account
+   is a convenience for moving a list between devices, not something to push at anyone. */
+.account-strip {
+  margin-bottom: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 0.6rem);
+  background: var(--paper);
+}
+.account-row { display: grid; gap: 0.5rem; }
+.account-row:has(> .account-status) { grid-template-columns: 1fr auto; align-items: center; }
+.account-label { font-size: 0.82rem; font-weight: 700; }
+.account-status { font-size: 0.85rem; }
+.account-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.account-controls input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 2.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.55rem;
+  background: var(--paper-strong);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.account-note { color: var(--ink-soft); font-size: 0.74rem; line-height: 1.45; }
+.account-message { margin: 0; font-size: 0.8rem; font-weight: 600; }
+.account-message[data-tone="ok"] { color: var(--green); }
+.account-message[data-tone="error"] { color: var(--brand); }

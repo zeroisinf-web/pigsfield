@@ -246,7 +246,7 @@ export function renderTopicPage(destination, topic, source) {
   <meta property="og:image" content="${ORIGIN}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Pigsfield ${esc(topic.name)} resources"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(topic.title)}"><meta name="twitter:description" content="${esc(social)}"><meta name="twitter:image" content="${ORIGIN}/assets/og.png"><meta name="twitter:image:alt" content="Pigsfield ${esc(topic.name)} resources">
   <link rel="preload" href="../../assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../../css/site.css">
-  <script defer src="../../js/site.js"></script>
+  <script defer src="../../js/site.js"></script><script defer src="../../js/account.js"></script>
   <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>
 </head>
 <body data-page="${esc(destination.dest)}">

@@ -1,3 +1,4 @@
+import { handleAccountRoute } from "./account-routes.mjs";
 const MODELS = Object.freeze({
   "gemma-4-26b-a4b-it": Object.freeze({
     id: "@cf/google/gemma-4-26b-a4b-it",
@@ -421,6 +422,11 @@ export default {
     if (url.pathname === "/api/ai") return handleAI(request, env);
     if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
+    // Optional sign-in. Answers a clear "not enabled" when no D1 database is bound, so a
+    // deployment without accounts behaves exactly as it did before.
+    if (url.pathname.startsWith("/api/auth/") || url.pathname === "/api/saved") {
+      return handleAccountRoute(request, env, url);
+    }
     if (url.pathname.startsWith("/api/")) return json({ error: "API route not found." }, 404);
     return env.ASSETS.fetch(request);
   }

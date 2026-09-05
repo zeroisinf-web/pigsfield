@@ -49,6 +49,30 @@ npm test
 5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER` and `VISITOR_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
 6. The three text choices use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
 
+## Optional accounts (off by default)
+
+Pigsfield works fully without an account and nothing is gated behind one. Signing in exists
+only so a saved list can follow someone between a shared PC and a phone. With no D1 database
+bound, every `/api/auth/*` route answers "not enabled" and the sign-in panel never appears —
+guest mode is the default, not a fallback.
+
+To turn it on:
+
+```bash
+npx wrangler d1 create pigsfield
+# put the printed database_id into wrangler.jsonc
+npx wrangler d1 execute pigsfield --remote --file=worker/schema.sql
+npx wrangler secret put ACCOUNT_PEPPER      # any long random string
+npx wrangler secret put RESEND_API_KEY      # or swap sendMagicLink() for another provider
+npx wrangler secret put ACCOUNT_FROM_EMAIL  # e.g. hello@pigsfield.com, on a verified domain
+```
+
+`ACCOUNT_PEPPER` is not optional and is not stored in this repository. Email addresses are
+never written to the database — only a peppered SHA-256 of them — and email addresses carry
+far too little entropy for a bare hash to resist a dictionary attack. Without the pepper
+that protection would be theatre, so the code refuses to run rather than pretend. Losing the
+pepper means existing accounts can no longer be matched; rotating it is a deliberate reset.
+
 The static interface uses relative asset paths, but hosted text generation requires the Cloudflare Worker and its bindings. Canonical and social metadata intentionally point to the production domain.
 
 ## Edit resources

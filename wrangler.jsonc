@@ -14,6 +14,17 @@
   "ai": {
     "binding": "AI"
   },
+  // Optional accounts. Absent this binding the site runs exactly as before and every
+  // /api/auth route answers "not enabled" — guest mode is the default, not a fallback.
+  //   npx wrangler d1 create pigsfield
+  //   npx wrangler d1 execute pigsfield --remote --file=worker/schema.sql
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pigsfield",
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {
