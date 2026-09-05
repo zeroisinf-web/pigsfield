@@ -7,6 +7,11 @@ const ROBOTS_URL = `${PRODUCTION_ORIGIN}/robots.txt`;
 const SITEMAP_URL = `${PRODUCTION_ORIGIN}/sitemap.xml`;
 const TOOLS_URL = `${PRODUCTION_ORIGIN}/tools/`;
 const SERVICE_WORKER_URL = `${PRODUCTION_ORIGIN}/sw.js`;
+// A real PigBang entry (Hanuman, in the films tab). A YouTube video id is the one poster
+// source that resolves without reading a provider's page at all, so if this cannot be
+// served the endpoint itself is broken rather than a provider having blocked us.
+const POSTER_PROBE_TARGET = "https://www.youtube.com/watch?v=B_enxfU7a_o";
+const POSTER_URL = `${PRODUCTION_ORIGIN}/api/poster?u=${encodeURIComponent(POSTER_PROBE_TARGET)}`;
 
 // Cloudflare Workers Builds starts building after the push that triggers this job, so the
 // first look at production legitimately races the deploy. Wait it out rather than failing
@@ -351,6 +356,43 @@ async function checkDeployedBuild() {
   );
 }
 
+/**
+ * Does PigBang's cover art actually work in production?
+ *
+ * It cannot be tested anywhere else. /api/poster needs the deployed Worker — a static
+ * preview has no /api at all — so before this, the first person to find out that every card
+ * had lost its artwork would have been a visitor.
+ *
+ * The probe is a YouTube video id on purpose. That is the one source resolved without
+ * reading a provider's page, so a failure here means the endpoint is broken, not that
+ * Netflix declined to answer a crawler. A provider blocking us is a cached 404 and a card
+ * that keeps its generated symbol, which is working as designed and not something to fail a
+ * build over.
+ */
+async function checkPosterEndpoint() {
+  const response = await fetchWithRetry(POSTER_URL);
+  const contentType = (response.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  const cacheControl = response.headers.get("cache-control") || "";
+  const length = Number(response.headers.get("content-length") || 0);
+  await response.body?.cancel();
+
+  if (!/^image\/(?:jpeg|png|webp|gif|avif)$/.test(contentType)) {
+    throw new Error(
+      `${POSTER_URL} must return a raster image; received Content-Type: ${contentType || "(missing)"}. ` +
+      "PigBang cards fall back to their generated symbol when this fails, so the grid will look intentional but carry no cover art."
+    );
+  }
+  if (length > 0 && length < 512) {
+    throw new Error(`${POSTER_URL} returned ${length} bytes, which is a placeholder rather than cover art`);
+  }
+  // Without a long lifetime every card costs an upstream read on every visit.
+  if (!/max-age=\d{5,}/.test(cacheControl)) {
+    throw new Error(`${POSTER_URL} must be cacheable for the long term; received Cache-Control: ${cacheControl || "(missing)"}`);
+  }
+
+  console.log(`[pass] ${PRODUCTION_ORIGIN}/api/poster served ${contentType} cover art for a PigBang entry`);
+}
+
 async function main() {
   console.log(`Checking the deployed Pigsfield build and crawl surface at ${PRODUCTION_HOME}`);
 
@@ -359,6 +401,7 @@ async function main() {
     checkPermanentHttpsRedirect(),
     checkToolsRoute(),
     checkDeployedBuild(),
+    checkPosterEndpoint(),
   ]);
   const failures = results
     .filter((result) => result.status === "rejected")

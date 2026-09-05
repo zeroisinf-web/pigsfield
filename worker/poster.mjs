@@ -214,6 +214,36 @@ async function metadataPoster(url) {
   return extractPosterUrl(await readBounded(response, MAX_HTML_BYTES), response.url || url.href);
 }
 
+/** Read at most `limit` bytes of a body as bytes, abandoning anything larger mid-stream. */
+async function readBytesBounded(response, limit) {
+  const reader = response.body.getReader();
+  const chunks = [];
+  let read = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      read += value.byteLength;
+      // Stop at the limit rather than after it: a provider that streams half a gigabyte
+      // must not be able to make the isolate hold half a gigabyte first.
+      if (read > limit) {
+        try { await reader.cancel(); } catch (_) {}
+        return null;
+      }
+      chunks.push(value);
+    }
+  } catch (_) {
+    return null;
+  }
+  const bytes = new Uint8Array(read);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
 async function fetchImage(candidate) {
   const response = await boundedFetch(candidate, { headers: { Accept: "image/*", "User-Agent": PAGE_AGENT } });
   if (!response || !response.ok || !response.body) return null;
@@ -221,8 +251,11 @@ async function fetchImage(candidate) {
   if (!IMAGE_TYPES.has(type)) return null;
   const declared = Number(response.headers.get("Content-Length") || 0);
   if (Number.isFinite(declared) && declared > MAX_IMAGE_BYTES) return null;
-  const bytes = await response.arrayBuffer();
-  if (!bytes.byteLength || bytes.byteLength > MAX_IMAGE_BYTES) return null;
+  // Content-Length is a claim, not a guarantee, and the timeout above only covers the
+  // response headers — once they arrive the timer is cleared and the body is unbounded.
+  // So the body is read against the cap directly.
+  const bytes = await readBytesBounded(response, MAX_IMAGE_BYTES);
+  if (!bytes) return null;
   // A 120-byte answer is a tracking pixel or a placeholder, not cover art.
   if (bytes.byteLength < 512) return null;
   return { bytes, type };
