@@ -739,8 +739,12 @@ function checkExperienceContracts() {
   const home = fs.readFileSync(homeFile, "utf8");
   check(/href=["']watch\/["'][^>]*data-pigbang-link/.test(home), homeFile, "homepage PigBang destination must stay highlighted");
   check(!/id=["']hero-search-form["']|class=["']trust-strip["']|class=["']how-grid["']|One system\. Six connected pillars\./.test(home), homeFile, "removed homepage search, principle strip and explanatory blocks must stay removed");
-  check(/id=["']monthly-visitors["'][^>]*aria-live=["']polite["']/.test(home), homeFile, "homepage needs an honest live monthly visitor status");
-  check(/data-monthly-visitor-count/.test(home) && /Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
+  check(/id=["']visitor-counter["'][^>]*aria-live=["']polite["']/.test(home), homeFile, "homepage needs an honest live visitor status");
+  // Two figures, because they answer different questions and one cannot stand in for the
+  // other: a rolling 30-day window says whether the site is being used now, an all-time
+  // total says how far it has reached.
+  check(/data-visitor-rolling/.test(home) && /data-visitor-total/.test(home), homeFile, "the counter must show both the rolling window and the all-time total");
+  check(/Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
   check(/href=["']https:\/\/youtu\.be\/2k7OOZZlNrg\?si=vMCzk67HAuWQx-g1["'][^>]*target=["']_blank["'][^>]*rel=["']noopener noreferrer["'][^>]*data-home-video/.test(home), homeFile, "homepage tutorial must keep its exact native YouTube link");
   check(!/src=["']js\/player\.js["']/.test(home) && /src=["']js\/home\.js["']/.test(home), homeFile, "homepage must keep the player lazy and load only its small dedicated runtime");
   check(!/first-of-its-kind/i.test(home), homeFile, "homepage introduction must not make an unsupported first-of-its-kind claim");
@@ -748,7 +752,10 @@ function checkExperienceContracts() {
   const homeRuntimeFile = path.join(ROOT, "js", "home.js");
   const homeRuntime = fs.readFileSync(homeRuntimeFile, "utf8");
   check(/fetch\(["']\/api\/visitors["'][\s\S]{0,180}method:\s*["']POST["']/.test(homeRuntime), homeRuntimeFile, "homepage visitor count must use the live same-origin endpoint");
-  check(/Number\.isSafeInteger\(count\)[\s\S]{0,80}count\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
+  // The rolling window may honestly be 0 on a quiet day; the all-time total may not, because
+  // the request that reads it has just added to it.
+  check(/Number\.isSafeInteger\(rolling\)[\s\S]{0,60}rolling\s*<\s*0/.test(homeRuntime), homeRuntimeFile, "homepage must reject a fabricated rolling count");
+  check(/Number\.isSafeInteger\(total\)[\s\S]{0,60}total\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
   check(/dataset\.state\s*=\s*["']unavailable["']/.test(homeRuntime), homeRuntimeFile, "homepage must hide the count when its service is unavailable");
   check(/event\.button\s*!==\s*0/.test(homeRuntime) && /script\.src\s*=\s*["']js\/player\.js["']/.test(homeRuntime) && /player\.play\(guide\.href/.test(homeRuntime), homeRuntimeFile, "plain tutorial activation must lazy-load the inbuilt player while modified clicks stay native");
 
@@ -926,8 +933,14 @@ function checkExperienceContracts() {
     check(/request\.body\.getReader\(\)[\s\S]{0,500}bytes\s*>\s*MAX_BODY_BYTES/.test(worker), workerFile, "AI request bodies must be bounded while streaming, including when Content-Length is missing");
     check(/url\.pathname\s*===\s*["']\/api\/visitors["']/.test(worker), workerFile, "Worker must own the /api/visitors route");
     check(/class\s+MonthlyVisitorCounter\b/.test(worker), workerFile, "monthly visitor total needs strongly coordinated Durable Object storage");
-    check(/VISITOR_COOKIE\s*=\s*["']pf_visitor_month["']/.test(worker) && /HttpOnly;\s*SameSite=Lax/.test(worker), workerFile, "visitor deduplication cookie must contain only the month and stay HTTP-only");
-    check(/definition:\s*["']Best-effort browser check-ins/.test(worker), workerFile, "visitor endpoint must describe the total honestly");
+    check(/VISITOR_COOKIE\s*=\s*["']pf_visitor_day["']/.test(worker) && /HttpOnly;\s*SameSite=Lax/.test(worker), workerFile, "visitor deduplication cookie must contain only the day and stay HTTP-only");
+    // A calendar month cannot produce a rolling window: one check-in per browser per month
+    // puts everyone in the bucket for the 1st and leaves the rest of the window empty.
+    check(/ROLLING_WINDOW_DAYS\s*=\s*30/.test(worker) && /recentIndiaDays\(ROLLING_WINDOW_DAYS\)/.test(worker), workerFile, "the rolling figure must be the last 30 India days ending today");
+    check(/const total = Number\(payload && payload\.total\)/.test(worker), workerFile, "the counter must report an all-time total alongside the rolling window");
+    check(/importLegacyTotal/.test(worker), workerFile, "the all-time total must carry the per-month history rather than restarting at zero");
+    check(/definition:\s*`Best-effort browser check-ins/.test(worker), workerFile, "visitor endpoint must describe the total honestly");
+    check(/"rolling" covers the last \$\{ROLLING_WINDOW_DAYS\} days ending today/.test(worker), workerFile, "the endpoint must say which window the rolling figure covers");
     check(/automatedRequest\(request\)/.test(worker), workerFile, "visitor total must exclude recognizable automated requests");
     check(/env\.VISITOR_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "visitor increments need a separate abuse limit");
     check(!/(?:visitor|counter)[\s\S]{0,180}(?:storage\.put|INSERT)[\s\S]{0,80}(?:CF-Connecting-IP|User-Agent)/i.test(worker), workerFile, "visitor storage must not retain raw addresses or browser agents");

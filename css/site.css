@@ -11,47 +11,57 @@
 
 :root {
   color-scheme: light;
-  --paper: #f4f1e8;
-  --paper-strong: #fffdf7;
-  --ink: #10241e;
-  --ink-soft: #50625b;
-  --line: #d8d8ca;
-  --line-strong: #a9b2aa;
-  --brand: #ef5d44;
-  --brand-deep: #bf3827;
-  --green: #126b58;
-  --green-deep: #0a463b;
-  --green-pale: color-mix(in srgb, var(--green) 12%, var(--paper-strong));
-  --saffron: #f2b544;
-  --blue: #2765c4;
-  --focus: #156cff;
-  /* Surfaces are separated by tone, not by shadow. Both design references this follows
-     (labs.google, one.google.com) use flat cards with large radii and essentially no
-     elevation — one.google.com renders a single box-shadow on the entire page. The
-     --depth-* names are kept because the rest of the stylesheet and the build check refer
-     to them; they simply resolve to something much quieter now. */
-  --shadow-sm: 0 1px 2px rgba(16, 36, 30, 0.05);
-  --shadow-lg: 0 12px 40px rgba(16, 36, 30, 0.10);
-  --surface-top: rgba(255, 255, 255, 0.78);
-  --surface-bottom: rgba(244, 241, 232, 0.38);
-  /* The "lit bevel" look is gone. --depth-edge and --depth-highlight went with it: they
-     had been set to transparent, which left ~20 rules composing shadow layers that painted
-     nothing and still had to be rasterised. --depth-low is a real value on the PigBang
-     surface and none elsewhere, so it stays a token. */
+
+  /* Canvas and surfaces.
+     The page used to be cream (#f4f1e8) with a brighter-than-white card on it. That is a
+     warm, papery look and it is the opposite of the reference: labs.google is a plain white
+     canvas with soft neutral-grey surfaces raised on it, and colour arrives only through
+     artwork. Same two roles, inverted relationship — --paper is now the lighter of the two. */
+  --paper: #ffffff;
+  --paper-strong: #f4f4f2;
+  --ink: #191b1c;
+  --ink-soft: #5a6160;
+  --line: #e4e5e2;
+  --line-strong: #c2c5c1;
+
+  /* One warm primary — Pigsfield's own — and a spectrum around it. The spectrum is not
+     decoration: it is what the gradient mesh and every card's artwork are built from, which
+     is how the reference gets its colour without tinting a single surface. */
+  --brand: #f2542d;
+  --brand-deep: #c3350f;
+  --green: #0f7a63;
+  --green-deep: #0a4a3d;
+  --green-pale: color-mix(in srgb, var(--green) 10%, var(--paper));
+  --saffron: #ffb42e;
+  --azure: #2f6fed;
+  --violet: #7a5cf0;
+  --rose: #ff5f9e;
+  --focus: #1a73e8;
+
+  /* Elevation is nearly absent by design; separation comes from tone and space. */
+  --shadow-sm: 0 1px 2px rgba(20, 22, 24, 0.06);
+  --shadow-lg: 0 24px 64px rgba(20, 22, 24, 0.12);
+  --surface-top: rgba(255, 255, 255, 0.6);
+  --surface-bottom: rgba(20, 22, 24, 0.02);
   --depth-low: none;
-  --depth-high: 0 2px 10px rgba(16, 36, 30, 0.06);
-  --glow-brand: color-mix(in srgb, var(--brand) 18%, transparent);
-  --glow-green: color-mix(in srgb, var(--green) 15%, transparent);
-  --radius-sm: 0.75rem;
-  --radius: 1.625rem;
-  --radius-lg: 1.75rem;
-  --content: 78rem;
-  --header-h: 4.75rem;
+  --depth-high: 0 2px 10px rgba(20, 22, 24, 0.07);
+  --glow-brand: color-mix(in srgb, var(--brand) 16%, transparent);
+
+  /* Larger and rounder. A 24px card and a fully round control are the shapes that read as
+     this design language before any colour is seen. */
+  --radius-sm: 0.875rem;
+  --radius: 1.5rem;
+  --radius-lg: 2rem;
+  --radius-pill: 999px;
+
+  --content: 80rem;
+  --header-h: 4.5rem;
   --accordion-sticky-top: calc(var(--header-h) + 0.45rem);
   --catalog-sticky-top: calc(var(--header-h) + 5.35rem);
   --catalog-group-sticky-top: calc(var(--catalog-sticky-top) + 4.7rem);
   --font-sans: "Google Sans Flex", "Google Sans", "Noto Sans Devanagari", system-ui, sans-serif;
-  --font-serif: "Google Sans Flex", "Google Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+
   /* Label colour for a solid accent fill. White only reads on a DARK fill, and the accent
      tokens deliberately get lighter in dark mode, so hardcoding #fff put white text on a
      pale fill: .button.brand measured 2.64:1 and .button.secondary 2.14:1 in dark, both
@@ -59,35 +69,38 @@
      --fill-ink is not theme-swapped: it is the near-black used on any bright fill, and
      clears 4.5:1 on every accent in all three themes (worst case 5.05:1). */
   --fill-ink: #0d1714;
-  --on-brand: var(--fill-ink);   /* #ef5d44 is bright -> 5.50:1 */
-  --on-green: #fff;              /* #126b58 is dark   -> 6.42:1 */
-  --on-green-deep: #fff;         /* #0a463b is dark   -> 10.76:1 */
+  --on-brand: var(--fill-ink);   /* #f2542d is bright -> 5.29:1 */
+  --on-green: #fff;              /* #0f7a63 is dark   -> 5.27:1 */
+  --on-green-deep: #fff;         /* #0a4a3d is dark   -> 9.94:1 */
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --on-brand: var(--fill-ink);   /* #ff755e -> 6.92:1 */
-  --on-green: var(--fill-ink);   /* #61c2a9 -> 8.52:1 */
-  --on-green-deep: var(--fill-ink); /* #b7e8da is bright -> 13.54:1 */
-  --paper: #0d1714;
-  --paper-strong: #14211d;
-  --ink: #f5f1e5;
-  --ink-soft: #aebdb5;
-  --line: #2b3c36;
-  --line-strong: #52645d;
-  --brand: #ff755e;
-  --brand-deep: #ff9b88;
-  --green: #61c2a9;
-  --green-deep: #b7e8da;
-  --saffron: #f4be55;
-  --blue: #78a8ff;
-  --focus: #8bb6ff;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.22);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.34);
-  --surface-top: rgba(255, 255, 255, 0.04);
-  --surface-bottom: rgba(0, 0, 0, 0.10);
+  --on-brand: var(--fill-ink);   /* #ff7a55 -> 7.10:1 */
+  --on-green: var(--fill-ink);   /* #4fd3ae -> 9.79:1 */
+  --on-green-deep: var(--fill-ink); /* #b6f0dd is bright -> 14.35:1 */
+  --paper: #0e0f11;
+  --paper-strong: #17181b;
+  --ink: #f2f3f4;
+  --ink-soft: #a8afb2;
+  --line: #2a2c30;
+  --line-strong: #4d5257;
+  --brand: #ff7a55;
+  --brand-deep: #ff9f83;
+  --green: #4fd3ae;
+  --green-deep: #b6f0dd;
+  --saffron: #ffc75c;
+  --azure: #7aa8ff;
+  --violet: #a58cff;
+  --rose: #ff8dbb;
+  --focus: #8ab4f8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --surface-top: rgba(255, 255, 255, 0.03);
+  --surface-bottom: rgba(0, 0, 0, 0.12);
   --depth-low: none;
-  --depth-high: 0 2px 12px rgba(0, 0, 0, 0.28);
+  --depth-high: 0 2px 12px rgba(0, 0, 0, 0.32);
+  --glow-brand: color-mix(in srgb, var(--brand) 15%, transparent);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -97,14 +110,14 @@ html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 1rem)
 body {
   margin: 0;
   min-width: 19rem;
-  background:
-    radial-gradient(circle at 8% 2%, var(--glow-green), transparent 30rem),
-    radial-gradient(circle at 94% 18%, var(--glow-brand), transparent 34rem),
-    var(--paper);
+  /* Plain canvas. Colour arrives through artwork and the hero mesh, not as a wash over
+     every page — two radial glows behind all content was what made the old site read as
+     one continuous tinted scroll rather than composed sections. */
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1rem;
-  line-height: 1.55;
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -151,23 +164,20 @@ p { color: var(--ink-soft); }
   border: 0 !important;
 }
 
+/* Section labels are plain uppercase text, not a bordered chip with a sparkle in it.
+   --ink-soft is a colour for the page's own canvas, so on an inverted surface the label is
+   derived from whatever text colour it inherits instead: on the mission band and the
+   PigBang hero it was resolving to near-black on near-black. */
 .eyebrow, .section-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.48rem;
-  margin-bottom: 1.15rem;
-  padding: 0.35rem 0.95rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--green) 9%, var(--paper-strong));
-  border: 1px solid color-mix(in srgb, var(--green) 22%, transparent);
-  color: var(--green);
-  font-size: 0.75rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
   text-transform: uppercase;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--green) 6%, transparent);
 }
-.eyebrow::before, .section-kicker::before { content: "✦"; font-size: 0.8rem; color: var(--brand); line-height: 1; }
 
 .button,
 .icon-button,
@@ -222,34 +232,32 @@ p { color: var(--ink-soft); }
 .icon-button:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 4px 12px rgba(16, 36, 30, 0.08); }
 .icon-button:active { transform: scale(0.95); }
 
-/* Header - Google Labs Floating Pill Navigation */
+/* Header
+   A full-width bar that sits on the page rather than a pill floating above it. The floating
+   capsule drew a hard outline across the top of every screen and boxed the hero's gradient
+   in; the reference keeps its chrome almost invisible — a hairline that only appears once
+   you have scrolled past the hero — so the artwork is the first thing seen. */
 .site-header {
   position: sticky;
-  top: 0.65rem;
+  top: 0;
   z-index: 100;
-  width: min(calc(100% - 1.5rem), var(--content));
-  margin-inline: auto;
-  min-height: 4.15rem;
-  border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--paper-strong) 84%, transparent);
-  backdrop-filter: blur(24px) saturate(1.4);
-  box-shadow: 0 4px 20px rgba(16, 36, 30, 0.05), 0 1px 2px rgba(16, 36, 30, 0.03);
-  transition: box-shadow 0.2s ease, background 0.2s ease;
+  min-height: var(--header-h);
+  border-bottom: 1px solid transparent;
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
+  transition: border-color 220ms ease, background 220ms ease;
 }
-[data-theme="dark"] .site-header {
-  border-color: color-mix(in srgb, var(--line) 90%, transparent);
-  background: color-mix(in srgb, var(--paper-strong) 80%, transparent);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+.site-header[data-scrolled="true"] {
+  border-bottom-color: var(--line);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
 }
 
 .header-inner {
   display: grid;
-  min-height: 4.15rem;
+  min-height: var(--header-h);
   align-items: center;
   grid-template-columns: auto 1fr auto;
   gap: 1.25rem;
-  padding-inline: 1.15rem;
 }
 
 .brand-lockup {
@@ -327,57 +335,84 @@ p { color: var(--ink-soft); }
 .menu-toggle { display: none; }
 
 /* Home */
-.home-start { border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--paper-strong) 94%, var(--brand) 6%); }
-.home-start-inner {
-  display: flex;
-  min-height: 3.75rem;
-  align-items: center;
-}
+
+/* Two figures, not one. A rolling 30-day window says whether the site is being used now; an
+   all-time total says how far it has reached. Neither answers the other's question, and the
+   old single "check-ins this month" number reset to nearly nothing every 1st of the month.
+   It sits under the hero actions, where it reads as evidence for the claim above it rather
+   than as a banner strip a visitor has to scroll past to reach the page. */
 .visitor-signal {
   display: flex;
+  max-width: 100%;
   min-width: 0;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.65rem 0;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+  padding: 0.7rem 1.1rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
   color: var(--ink);
+  text-align: left;
 }
 .visitor-pulse {
-  width: 0.62rem;
-  height: 0.62rem;
-  flex: 0 0 0.62rem;
-  border: 2px solid color-mix(in srgb, var(--brand) 30%, var(--paper-strong));
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  margin-top: 0.5rem;
   border-radius: 50%;
-  background: var(--brand);
-  box-shadow: 0 0 0 0.22rem color-mix(in srgb, var(--brand) 12%, transparent);
+  background: var(--green);
+  box-shadow: 0 0 0 0.24rem color-mix(in srgb, var(--green) 16%, transparent);
 }
-.visitor-copy { display: grid; min-width: 0; gap: 0.08rem; }
-.visitor-copy > span { font-size: 0.82rem; font-weight: 750; line-height: 1.2; }
-.visitor-copy strong {
-  display: inline-block;
+.visitor-copy { display: grid; min-width: 0; gap: 0.15rem; }
+.visitor-figures { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; }
+.visitor-figure { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); }
+.visitor-figure strong {
   min-width: 2.5ch;
-  color: var(--brand);
-  font-size: 1.08rem;
+  margin-right: 0.28rem;
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
-.visitor-copy small { color: var(--ink-soft); font-size: 0.66rem; line-height: 1.25; }
+.visitor-copy small { color: var(--ink-soft); font-size: 0.68rem; line-height: 1.35; }
 .visitor-signal[data-state="unavailable"] { display: none; }
 
 .home-hero {
   position: relative;
   overflow: clip;
-  padding: clamp(2.25rem, 4.8vw, 4.5rem) 0 clamp(2.5rem, 4vw, 3.75rem);
+  padding: clamp(3rem, 7vw, 7rem) 0 clamp(3rem, 6vw, 6rem);
 }
 
-.home-hero::after {
-  content: "";
+/* The gradient mesh.
+   This is the single element that carries the design language: a plain white page, and one
+   soft field of colour behind the headline. It replaces a flat tint over the whole document
+   plus a decorative ring — neither of which said anything, and the tint made every section
+   read as one continuous scroll.
+   Built from five wide radial stops rather than a blurred image: a filter: blur() over a
+   viewport-sized layer is a real per-frame cost, and a radial gradient with soft stops is
+   already soft for free. It drifts slowly, and holds still for anyone who asked it to. */
+.hero-mesh {
   position: absolute;
-  top: 6%;
-  right: -7rem;
-  width: 24rem;
-  height: 24rem;
-  border: 4.5rem solid color-mix(in srgb, var(--brand) 14%, transparent);
-  border-radius: 50%;
   z-index: -1;
+  inset: -30% -15% auto;
+  height: 150%;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    radial-gradient(38rem 30rem at 14% 20%, color-mix(in srgb, var(--violet) 55%, transparent), transparent 68%),
+    radial-gradient(34rem 28rem at 80% 14%, color-mix(in srgb, var(--azure) 52%, transparent), transparent 66%),
+    radial-gradient(36rem 30rem at 64% 74%, color-mix(in srgb, var(--brand) 50%, transparent), transparent 68%),
+    radial-gradient(30rem 26rem at 24% 80%, color-mix(in srgb, var(--saffron) 48%, transparent), transparent 68%),
+    radial-gradient(28rem 24rem at 94% 66%, color-mix(in srgb, var(--rose) 40%, transparent), transparent 68%);
+  animation: mesh-drift 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+[data-theme="dark"] .hero-mesh { opacity: 0.42; }
+@keyframes mesh-drift {
+  from { transform: translate3d(-2%, -1.5%, 0) scale(1.04); }
+  to { transform: translate3d(2.5%, 2%, 0) scale(1.14); }
 }
 
 .home-hero h1 {
@@ -419,45 +454,79 @@ p { color: var(--ink-soft); }
 
 .path-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
 }
+
+/* Cards lead with artwork, not with a label.
+   Every card is now structurally identical — a coloured panel, then a category, a title, a
+   line of copy and a destination — and the colour lives entirely in the panel. That is the
+   reference's whole card system, and it replaces a 12-column bento in which one card was
+   filled brand-orange, one was filled ink-dark and four were plain, so the row read as four
+   unrelated designs rather than one set. */
 .path-card {
   position: relative;
   display: flex;
-  min-height: 19rem;
   flex-direction: column;
-  padding: 1.5rem;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--paper-strong);
-  text-decoration: none;
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-}
-.path-card:nth-child(1), .path-card:nth-child(4) { grid-column: span 7; }
-.path-card:nth-child(2), .path-card:nth-child(3) { grid-column: span 5; }
-.path-card:nth-child(5), .path-card:nth-child(6), .path-card:nth-child(7) { grid-column: span 4; }
-.path-card:hover { transform: translateY(-5px); border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
-.path-card .path-index { color: var(--brand); font-family: var(--font-serif); font-size: 1.2rem; }
-.path-card h3 { max-width: 12ch; margin: auto 0 0.6rem; font-family: var(--font-serif); font-size: clamp(1.8rem, 3vw, 2.7rem); line-height: 1; }
-.path-card p { max-width: 35rem; margin-bottom: 1.2rem; }
-.path-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
-.path-meta span:last-child {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.38rem 0.95rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  background: var(--paper);
   color: var(--ink);
-  transition: all 0.18s ease;
+  text-decoration: none;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease, border-color 200ms ease;
 }
-.path-card:hover .path-meta span:last-child { background: var(--ink); color: var(--paper-strong); transform: translateX(4px); }
-.path-card.featured { background: var(--brand); color: var(--on-brand); }
-.path-card.featured p, .path-card.featured .path-index { color: var(--on-brand); opacity: 0.86; }
-.path-card.featured .path-meta span:last-child { background: rgba(255, 255, 255, 0.22); color: #fff; }
-.path-card.featured:hover .path-meta span:last-child { background: #fff; color: var(--brand-deep); }
+.path-card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: var(--shadow-lg); }
+.path-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+.path-art {
+  display: grid;
+  aspect-ratio: 16 / 10;
+  place-items: center;
+  background: linear-gradient(140deg, var(--art-a, #dfe3ea), var(--art-b, #c9d3e4) 55%, var(--art-c, #e7dcf3));
+  /* Near-black, not white. Measured against every stop below, a white mark clears 3:1 on
+     none of these gradients (worst case 1.55:1 on the amber) while --fill-ink clears it on
+     all of them, worst case 3.47:1. tests/contrast.test.mjs holds that line. */
+  color: var(--fill-ink);
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.path-card:hover .path-art { transform: scale(1.035); }
+.path-art svg { width: 3.4rem; height: 3.4rem; fill: currentColor; }
+.path-art img { width: 3.6rem; height: 3.6rem; object-fit: contain; }
+
+/* One pair of stops per destination. The panel is the only place a card carries colour, so
+   these are the palette doing its actual job rather than decorating a surface. */
+.path-card[data-path="learn"] { --art-a: #ff9a3c; --art-b: #f2542d; --art-c: #ff5f9e; }
+.path-card[data-path="watch"] { --art-a: #3a1440; --art-b: #8f1a3f; --art-c: #1c0814; }
+.path-card[data-path="exams"] { --art-a: #5fa8ff; --art-b: #2f6fed; --art-c: #7a5cf0; }
+.path-card[data-path="skills"] { --art-a: #35d0a5; --art-b: #0f7a63; --art-c: #2f6fed; }
+.path-card[data-path="tools"] { --art-a: #a58cff; --art-b: #7a5cf0; --art-c: #2f6fed; }
+.path-card[data-path="rights"] { --art-a: #ffc75c; --art-b: #ffb42e; --art-c: #f2542d; }
+
+.path-body { display: flex; flex: 1; flex-direction: column; padding: 1.35rem 1.4rem 1.25rem; }
+.path-label {
+  margin-bottom: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.path-card h3 { margin: 0 0 0.45rem; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.022em; line-height: 1.15; }
+.path-card p { margin: 0 0 1.15rem; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
+.path-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  gap: 1rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--ink-soft);
+}
+.path-go { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--ink); }
+.path-go svg { width: 0.95rem; height: 0.95rem; fill: currentColor; transition: transform 220ms ease; }
+.path-card:hover .path-go svg { transform: translateX(3px); }
 
 .pitch-grid {
   display: grid;
@@ -509,8 +578,8 @@ p { color: var(--ink-soft); }
 .breadcrumbs li:not(:last-child)::after { content: "/"; margin-left: 0.45rem; opacity: 0.5; }
 .breadcrumbs a { text-decoration: none; }
 
-.page-hero { padding: clamp(3.5rem, 8vw, 7.5rem) 0 3.75rem; }
-.page-hero h1 { max-width: 20ch; margin-bottom: 1.2rem; font-size: clamp(3rem, 7vw, 6.8rem); }
+.page-hero { padding: clamp(2.5rem, 5vw, 4.5rem) 0 2.25rem; }
+.page-hero h1 { max-width: 20ch; margin-bottom: 1rem; font-size: clamp(2.6rem, 5.6vw, 5.2rem); }
 .page-hero .lede { max-width: 52rem; margin-bottom: 0; font-size: 1.2rem; }
 .page-hero-mark {
   display: block;
@@ -939,24 +1008,31 @@ summary::-webkit-details-marker { display: none; }
   flex-direction: column;
   gap: 0.45rem;
 }
+/* The dock stays on every page, so it has to be quiet. Three saturated fills — orange,
+   gradient-blue and bottle-green — stacked in the corner were the loudest thing on a page
+   whose whole point is that colour lives in the artwork. They are one neutral surface now,
+   with the primary action alone carrying the accent. */
 .support-action {
   display: inline-flex;
-  min-height: 2.8rem;
+  min-height: 2.6rem;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.65rem 0.85rem;
-  border: 1px solid rgba(255,255,255,.35);
-  border-radius: 999px;
-  background: var(--brand);
-  color: var(--on-brand);
-  box-shadow: 0 8px 28px rgba(75, 25, 18, 0.24);
+  padding: 0.6rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(12px);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 850;
+  font-size: 0.8rem;
+  font-weight: 650;
 }
-.support-action.feedback { background: var(--green-deep); color: var(--on-green-deep); }
-[data-theme="dark"] .support-action.feedback { background: #e7f5ed; color: #0c2c24; }
+.support-action:hover { border-color: var(--line-strong); background: var(--paper); }
+.support-action .ui-icon { color: var(--ink-soft); }
+.support-action.feedback,
+.support-action[data-open-donate] { color: var(--ink); }
 .upi-box { display: grid; gap: 0.7rem; padding: 1rem; border-radius: 0.8rem; background: var(--paper); }
 .upi-code { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; padding: 0.75rem; border: 1px dashed var(--line-strong); border-radius: 0.65rem; }
 .upi-code code { font-size: 1rem; font-weight: 800; }
@@ -987,9 +1063,6 @@ summary::-webkit-details-marker { display: none; }
    Depth is CSS-native and intentionally restrained: no canvas, WebGL or
    constantly running animation. Fine pointers receive a subtle tilt while
    touch layouts keep the same layered surfaces without movement. */
-.site-header { box-shadow: 0 10px 34px rgba(16, 36, 30, 0.08); }
-[data-theme="dark"] .site-header { box-shadow: 0 12px 38px rgba(0, 0, 0, 0.28); }
-
 .brand-lockup img { filter: drop-shadow(0 7px 8px color-mix(in srgb, var(--green) 22%, transparent)); }
 
 .icon-button,.search-trigger,.lang-toggle,.filter-chip,.card-tool{ box-shadow: 0 5px 12px rgba(16, 36, 30, 0.06); transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
@@ -1005,28 +1078,28 @@ summary::-webkit-details-marker { display: none; }
 .info-page {
   position: relative;
   isolation: isolate;
-  perspective: 90rem;
   overflow: clip;
 }
-.home-hero::before,
+/* Interior pages get the same mesh, quieter and pushed to one side, so they read as the
+   same site without competing with their own content. */
 .page-hero::before,
 .info-page::before {
   content: "";
   position: absolute;
   z-index: -1;
-  width: clamp(17rem, 38vw, 34rem);
+  top: -18rem;
+  right: -12rem;
+  width: clamp(24rem, 46vw, 44rem);
   aspect-ratio: 1;
-  border-radius: 50%;
   pointer-events: none;
+  opacity: 0.4;
   background:
-    radial-gradient(circle at 36% 32%, color-mix(in srgb, var(--saffron) 42%, transparent), transparent 28%),
-    radial-gradient(circle at 64% 66%, color-mix(in srgb, var(--brand) 26%, transparent), transparent 48%);
-  filter: blur(1px);
-  opacity: 0.65;
+    radial-gradient(22rem 18rem at 40% 42%, color-mix(in srgb, var(--azure) 50%, transparent), transparent 68%),
+    radial-gradient(20rem 17rem at 66% 62%, color-mix(in srgb, var(--brand) 46%, transparent), transparent 68%),
+    radial-gradient(18rem 15rem at 28% 72%, color-mix(in srgb, var(--violet) 42%, transparent), transparent 68%);
 }
-.home-hero::before { left: -18rem; bottom: -13rem; }
-.page-hero::before,
-.info-page::before { right: -15rem; top: -10rem; }
+[data-theme="dark"] .page-hero::before,
+[data-theme="dark"] .info-page::before { opacity: 0.3; }
 
 .mission-band { box-shadow: 0 30px 68px rgba(10, 70, 59, 0.22); }
 
@@ -1036,17 +1109,8 @@ summary::-webkit-details-marker { display: none; }
     var(--paper-strong);
 }
 
-.path-card,.resource-card,.exam-subject,.syllabus-item,.principle-card,.action-option,.saved-item,.global-result,.ai-privacy{
-  background:
-    linear-gradient(145deg, var(--surface-top), var(--surface-bottom)),
-    var(--paper-strong);
-}
-.path-card.featured {
-  /* The deep stop is pulled back toward --brand so the whole gradient stays light enough
-     for the --on-brand label. Ending on a raw --brand-deep put the text at 3.31:1 over
-     the dark end in light theme, while white would have failed at the bright end. */
-  background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #ffb26b), color-mix(in srgb, var(--brand) 70%, var(--brand-deep)));
-  box-shadow: 0 18px 38px color-mix(in srgb, var(--brand) 23%, transparent);
+.resource-card,.exam-subject,.syllabus-item,.principle-card,.action-option,.saved-item,.global-result,.ai-privacy{
+  background: var(--paper-strong);
 }
 
 .pitch-item { transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
@@ -1151,22 +1215,20 @@ summary::-webkit-details-marker { display: none; }
 .ai-launchpad-title { display: flex; align-items: center; gap: 0.45rem; }
 #global-ai-title .ui-icon { width: 1.9rem; height: 1.9rem; color: var(--brand); }
 .ai-dock-mark .ui-icon { width: 0.95rem; height: 0.95rem; }
-.support-action { box-shadow: 0 12px 28px rgba(75, 25, 18, 0.24); }
+.support-action { box-shadow: var(--shadow-sm); }
+/* One accent in the dock, on the one action that opens a whole tool. */
 .support-action.ai-action {
-  border-color: rgba(255, 255, 255, 0.48);
-  background: linear-gradient(135deg, #6d3fd6, #246dd0 48%, #087f73);
-  color: #fff;
-  box-shadow: 0 12px 30px rgba(55, 55, 165, 0.28);
+  border-color: transparent;
+  background: var(--ink);
+  color: var(--paper);
 }
+.support-action.ai-action:hover { background: var(--ink); opacity: 0.9; }
+.support-action.ai-action .ui-icon { color: inherit; }
 .ai-dock-mark {
   display: inline-grid;
-  min-width: 1.55rem;
-  height: 1.55rem;
+  min-width: 1.35rem;
+  height: 1.35rem;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 0.48rem;
-  background: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 5px 10px rgba(17, 11, 54, 0.2);
   letter-spacing: -0.02em;
 }
 
@@ -1323,46 +1385,6 @@ summary::-webkit-details-marker { display: none; }
 .ai-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid color-mix(in srgb, var(--brand) 30%, transparent); border-top-color: var(--brand); border-radius: 50%; animation: aiSpin 0.7s linear infinite; }
 @keyframes aiSpin { to { transform: rotate(360deg); } }
 
-/* Home category art: familiar, full-colour and dimensional */
-
-.path-card:nth-child(5),
-.path-card:nth-child(6) { grid-column: span 6; }
-/* One flat squircle per path, carrying a drawn mark rather than an emoji.
-   Emoji are a font the visitor's OS chooses: the row rendered at a different weight, colour
-   and baseline on an iPhone, a Windows laptop and an Android phone, which is most of this
-   audience. These are one 24-grid, one ink colour, and identical everywhere. */
-.path-card .path-icon {
-  display: grid;
-  width: 3.5rem;
-  height: 3.5rem;
-  place-items: center;
-  border-radius: 1.15rem;
-  background: var(--path-tint, #e6e2d6);
-  color: #16211d;
-}
-.path-card .path-icon svg { width: 1.85rem; height: 1.85rem; fill: currentColor; }
-.path-card:nth-child(1) { --path-tint: #ffd7a1; }
-.path-card:nth-child(2) { --path-tint: #b7e6d0; }
-.path-card:nth-child(3) { --path-tint: #bcd8ff; }
-.path-card:nth-child(4) { --path-tint: #ffc2ba; }
-.path-card:nth-child(5) { --path-tint: #dcc8ff; }
-.path-card:nth-child(6) { --path-tint: #ffe9a3; }
-/* The two inverted cards keep their tint: a pale mark on a coloured card is the one place
-   the tile has to carry itself rather than sit on paper. */
-.path-card.featured .path-icon { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5); }
-.path-card .path-icon img { width: 2.3rem; height: 2.3rem; object-fit: contain; }
-.pitch-item > b{
-  display: grid;
-  width: 3.15rem;
-  height: 3.15rem;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 0.9rem;
-  background: linear-gradient(145deg, #fff, color-mix(in srgb, var(--saffron) 26%, var(--paper)));
-  box-shadow: 0 10px 20px rgba(16, 36, 30, 0.11);
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
-  font-size: 1.65rem;
-}
 .prose > section {
   margin-bottom: 1rem;
   padding: clamp(1.2rem, 3vw, 1.8rem);
@@ -1739,8 +1761,6 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
   .link-button:active,
   .support-action:active { transform: translateY(1px); box-shadow: 0 3px 8px rgba(16, 36, 30, 0.11); }
 
-  .path-card:hover { transform: perspective(70rem) translateY(-8px) rotateX(1.35deg) rotateY(-0.8deg); box-shadow: var(--depth-high); }
-  .path-card:nth-child(even):hover { transform: perspective(70rem) translateY(-8px) rotateX(1.35deg) rotateY(0.8deg); }
   .resource-card:hover,.exam-subject:hover,.principle-card:hover,.action-option:hover,.saved-item:hover,.global-result:hover,.prose > section:hover{
     transform: perspective(60rem) translateY(-5px) rotateX(1deg) rotateY(-0.55deg);
     border-color: var(--line-strong);
@@ -1796,19 +1816,19 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
 .footer-bottom { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 0.75rem; }
 
 /* PigBang destinations and dark educational OTT route */
+/* PigBang stays marked in the nav, but as a mark rather than a slab.
+   It was a dark red capsule with its own gradient and drop shadow, sitting in a bar whose
+   other seven links are plain text — the single loudest object above the fold, and the
+   thing that most made the chrome look assembled from two different sites. The logo plus a
+   tint identifies it just as well at a fraction of the weight. */
 .site-nav a[data-pigbang-link] {
   position: relative;
   display: inline-flex;
-  min-height: 2.55rem;
+  min-height: 2.2rem;
   align-items: center;
-  gap: 0.42rem;
-  border: 1px solid #ff5f78;
-  background:
-    radial-gradient(circle at 82% 18%, rgba(255, 75, 106, 0.35), transparent 42%),
-    linear-gradient(145deg, #3c0d1b, #12080d 68%);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(117, 8, 37, 0.24);
-  letter-spacing: 0.015em;
+  gap: 0.4rem;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  color: color-mix(in srgb, var(--brand-deep) 88%, var(--ink));
 }
 .site-nav a[data-pigbang-link]::before,
 .footer-links a[data-pigbang-link]::before {
@@ -1817,67 +1837,21 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
   height: 1.25rem;
   flex: 0 0 auto;
   background: url("../assets/pigbang-logo-nav.webp") center / contain no-repeat;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.42));
 }
 .site-nav a[data-pigbang-link]:hover,
 .site-nav a[data-pigbang-link][aria-current="page"] {
-  border-color: #ffc857;
-  background:
-    radial-gradient(circle at 82% 18%, rgba(255, 200, 87, 0.28), transparent 42%),
-    linear-gradient(145deg, #5a1024, #18080f 72%);
-  color: #fff;
-  box-shadow: 0 0 0 2px rgba(255, 200, 87, 0.18), 0 12px 28px rgba(117, 8, 37, 0.3);
+  background: color-mix(in srgb, var(--brand) 18%, transparent);
+  color: color-mix(in srgb, var(--brand-deep) 94%, var(--ink));
 }
 .footer-links a[data-pigbang-link] {
   display: inline-flex;
   width: fit-content;
-  min-height: 2.15rem;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.34rem 0.62rem;
-  border: 1px solid color-mix(in srgb, #ff4f6d 60%, var(--line));
-  border-radius: 999px;
-  background: color-mix(in srgb, #ff3150 10%, var(--paper-strong));
-  color: color-mix(in srgb, #ff3150 82%, var(--ink));
-  font-weight: 850;
+  color: color-mix(in srgb, var(--brand-deep) 82%, var(--ink));
+  font-weight: 700;
 }
 .footer-links a[data-pigbang-link]::before { width: 1.05rem; height: 1.05rem; }
-
-.path-card[data-pigbang-link] {
-  isolation: isolate;
-  border-color: rgba(255, 91, 119, 0.72);
-  background:
-    radial-gradient(circle at 86% 10%, rgba(255, 49, 80, 0.45), transparent 34%),
-    radial-gradient(circle at 12% 80%, rgba(82, 119, 255, 0.25), transparent 42%),
-    linear-gradient(150deg, #171b27, #080a10 72%);
-  color: #f9fbff;
-  box-shadow: 0 22px 44px rgba(32, 8, 18, 0.25);
-}
-.path-card[data-pigbang-link]::before {
-  content: "";
-  position: absolute;
-  inset: auto -18% -54% 24%;
-  z-index: -1;
-  aspect-ratio: 1;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 50%;
-  background: repeating-radial-gradient(circle, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 1.1rem);
-  pointer-events: none;
-}
-.path-card[data-pigbang-link] .path-icon {
-  background: rgba(4, 6, 11, 0.58);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-}
-.path-card[data-pigbang-link] h3 { color: #fff; }
-.path-card[data-pigbang-link] p { color: #bfc7d6; }
-.path-card[data-pigbang-link] .path-meta { color: #ffc857; }
-.path-card[data-pigbang-link] .path-meta span:last-child {
-  padding: 0.32rem 0.58rem;
-  border: 1px solid rgba(255, 90, 119, 0.68);
-  border-radius: 999px;
-  background: rgba(255, 49, 80, 0.15);
-  color: #fff;
-}
 
 .global-result[data-pigbang-link],
 .saved-item[data-pigbang-item] {
@@ -1913,14 +1887,12 @@ body[data-page="watch"] {
   --green: #6ee7b7;
   --green-deep: #123c35;
   --saffron: #ffc857;
-  --blue: #78a8ff;
   --focus: #9bc2ff;
   --surface-top: rgba(255, 255, 255, 0.065);
   --surface-bottom: rgba(0, 0, 0, 0.18);
   --depth-low: 0 14px 32px rgba(0, 0, 0, 0.3);
   --depth-high: 0 28px 60px rgba(0, 0, 0, 0.48), 0 7px 0 -5px rgba(0, 0, 0, 0.6);
   --glow-brand: rgba(255, 49, 80, 0.18);
-  --glow-green: rgba(85, 126, 255, 0.14);
   background:
     radial-gradient(circle at 84% 3%, rgba(255, 49, 80, 0.2), transparent 30rem),
     radial-gradient(circle at 8% 32%, rgba(74, 111, 255, 0.14), transparent 32rem),
@@ -2027,7 +1999,7 @@ body[data-page="watch"] .search-field input { background: #111722; color: #f7f9f
 body[data-page="watch"] .search-field input::placeholder { color: #8f9aad; opacity: 1; }
 body[data-page="watch"] .search-field::before { color: #ffc857; }
 body[data-page="watch"] .result-count { color: #c2cad6; }
-body[data-page="watch"] .watch-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+body[data-page="watch"] .watch-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1.1rem; }
 body[data-page="watch"] .watch-card {
   min-height: 20rem;
   border-color: #273247;
@@ -2066,7 +2038,6 @@ body[data-page="watch"] .player-dialog { border: 1px solid rgba(255, 91, 119, 0.
 body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: linear-gradient(90deg, rgba(255, 49, 80, 0.16), transparent 55%); }
 
 @media (hover: hover) and (pointer: fine) {
-  .path-card[data-pigbang-link]:hover { border-color: #ff6b82; box-shadow: 0 28px 60px rgba(78, 8, 27, 0.34), 0 0 0 3px rgba(255, 49, 80, 0.1); }
   body[data-page="watch"] .watch-card:hover {
     border-color: #4f5f78;
     transform: perspective(60rem) translateY(-6px) scale(1.012);
@@ -2091,8 +2062,10 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .path-card[data-pigbang-link],
   body[data-page="watch"] .watch-card { transform: none; }
+  /* The mesh still paints; it just stops moving. Removing the colour as well would take the
+     page's only piece of art away from the people who asked for less motion. */
+  .hero-mesh { animation: none; transform: scale(1.08); }
 }
 
 @media (forced-colors: active) {
@@ -2107,7 +2080,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   }
   .site-nav a[data-pigbang-link],
   .footer-links a[data-pigbang-link],
-  .path-card[data-pigbang-link],
   .global-result[data-pigbang-link],
   .saved-item[data-pigbang-item] {
     border: 2px solid LinkText;
@@ -2135,7 +2107,7 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 @media (max-width: 52rem) {
   :root { --header-h: 4.25rem; }
   #catalog-root[data-collapsible-groups="true"] { --catalog-parent-summary-stack: 7.25rem; }
-  .site-header { width: 100%; top: 0; border-radius: 0; border-inline: 0; border-top: 0; background: var(--paper); }
+  .site-header { background: var(--paper); }
   .explorer-toolbar,.ai-dialog-head{ background: var(--paper-strong); }
   .site-header,.explorer-toolbar,.ai-dialog-head,.player-dialog::backdrop,.site-dialog::backdrop{ backdrop-filter: none; }
   .container { width: min(calc(100% - 1.25rem), var(--content)); }
@@ -2146,7 +2118,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 
   .section-head { display: block; }
   .section-head p { margin-top: 1rem; }
-  .path-card:nth-child(n) { grid-column: span 6; }
   .pitch-statement, .prose-nav { position: static; }
 
   .resource-grid, .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -2154,7 +2125,7 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   .ai-model-grid { grid-template-columns: 1fr; }
 
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
-  .home-hero::before, .page-hero::before, .info-page::before { opacity: 0.42; }
+  .page-hero::before, .info-page::before { opacity: 0.3; }
   .mission-band { box-shadow: var(--depth-high); }
 }
 
@@ -2163,12 +2134,10 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   #catalog-root[data-collapsible-groups="true"] { --catalog-parent-summary-stack: 10rem; }
   #catalog-root[data-collapsible-groups="true"][data-direct-sections="true"] { --catalog-parent-summary-stack: 0rem; --catalog-group-sticky-top: var(--catalog-sticky-top); }
   .header-actions .saved-trigger { display: none; }
-  .home-start-inner { min-height: 3.4rem; }
   .visitor-copy small { font-size: 0.62rem; }
   .home-hero h1 { font-size: clamp(2.55rem, 13.5vw, 4rem); }
 
   .path-grid { display: grid; grid-template-columns: 1fr; }
-  .path-card:nth-child(n) { grid-column: auto; min-height: 16.5rem; }
   .mission-band { padding: 2rem 1.2rem; }
   .explorer-toolbar { position: static; grid-template-columns: 1fr; }
   .toolbar-actions { justify-content: stretch; }
@@ -2209,8 +2178,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   .site-dialog:not(.ai-studio-dialog) .dialog-body { padding: 1rem; font-size: 0.95rem; }
 
   .ai-privacy { align-items: flex-start; font-size: 0.7rem; }
-  .path-card .path-icon { width: 3.1rem; height: 3.1rem; border-radius: 1rem; }
-  .path-card .path-icon svg { width: 1.6rem; height: 1.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2267,7 +2234,7 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 }
 
 /* Per-stage landing pages (generated by tools/build-topics.mjs) and the hub nav. */
-.stage-nav-band { padding-top: 0; }
+.stage-nav-band { padding-top: 0; padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
 .stage-nav-title { margin-bottom: 1rem; font-size: 1.1rem; }
 .stage-nav, .topic-siblings { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .stage-nav .button, .topic-siblings .button { min-height: 2.6rem; padding: 0.5rem 1rem; }
@@ -2439,24 +2406,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 }
 .band-head h2 { margin-bottom: 0; font-size: clamp(2rem, 4.2vw, 3.4rem); }
 .band-head p { margin-bottom: 0; max-width: 40rem; color: var(--ink-soft); }
-
-/* --- Cards with room to breathe ----------------------------------------------------- */
-.path-grid { gap: 1.25rem; }
-.path-card {
-  min-height: 15rem;
-  padding: clamp(1.6rem, 2.2vw, 2.25rem);
-  border-color: transparent;
-  background: var(--paper);
-}
-/* There was a ".section.band .path-card { background: var(--paper) }" here. Two classes and
-   an element beat ".path-card.featured" and ".path-card[data-pigbang-link]" on specificity,
-   so the three inverted cards lost their dark backgrounds and kept their light text: the
-   PigBang and Competitive Exams headings rendered near-white on cream, and the featured
-   card's near-black label sat on paper. Any reset for these cards belongs on .path-card
-   itself, at one class, where the variants below can still win. */
-.path-card h3 { font-size: clamp(1.35rem, 1.9vw, 1.75rem); letter-spacing: -0.02em; }
-
-.path-card:hover { transform: translateY(-3px); border-color: var(--line); }
 
 @media (max-width: 52rem) {
   .home-hero { padding: 1.75rem 0 1.4rem; }

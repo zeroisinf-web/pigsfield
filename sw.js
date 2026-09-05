@@ -5,7 +5,7 @@
 // nobody remembered to bump: the site shipped a redesign and every returning visitor kept
 // being served the previous stylesheet out of this cache, because a cache whose name has not
 // changed is never discarded. A digest cannot be forgotten.
-const CACHE = "pigsfield-670b075956f3";
+const CACHE = "pigsfield-f9a02809c54f";
 const CORE = [
   "./",
   "./404.html",

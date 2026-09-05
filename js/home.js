@@ -2,10 +2,10 @@
   "use strict";
 
   const PF = (window.PF = window.PF || {});
-  const counter = document.querySelector("#monthly-visitors");
-  const countTarget = counter && counter.querySelector("[data-monthly-visitor-count]");
-  const labelTarget = counter && counter.querySelector("[data-monthly-visitor-label]");
-  const noteTarget = counter && counter.querySelector("small");
+  const counter = document.querySelector("#visitor-counter");
+  const rollingTarget = counter && counter.querySelector("[data-visitor-rolling]");
+  const totalTarget = counter && counter.querySelector("[data-visitor-total]");
+  const noteTarget = counter && counter.querySelector("[data-visitor-note]");
   const guide = document.querySelector("[data-home-video]");
   let playerPromise = null;
 
@@ -34,12 +34,13 @@
     return new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "long",
+      year: "numeric",
       timeZone: "Asia/Kolkata"
     }).format(date);
   }
 
-  async function loadMonthlyVisitors() {
-    if (!counter || !countTarget || !labelTarget) return;
+  async function loadVisitorCounts() {
+    if (!counter || !rollingTarget || !totalTarget) return;
     try {
       const response = await fetch("/api/visitors", {
         method: "POST",
@@ -49,14 +50,21 @@
       });
       if (!response.ok) throw new Error("Visitor count unavailable");
       const data = await response.json();
-      const count = Number(data && data.count);
-      if (!Number.isSafeInteger(count) || count < 1) throw new Error("Invalid visitor count");
+      const rolling = Number(data && data.rolling);
+      const total = Number(data && data.total);
+      // The rolling window can legitimately be 0 on a quiet day; a total cannot, because
+      // this very request just added to it.
+      if (!Number.isSafeInteger(rolling) || rolling < 0) throw new Error("Invalid visitor count");
+      if (!Number.isSafeInteger(total) || total < 1) throw new Error("Invalid visitor total");
 
-      countTarget.textContent = new Intl.NumberFormat("en-IN").format(count);
-      labelTarget.textContent = count === 1 ? "visitor check-in this month" : "visitor check-ins this month";
+      const number = new Intl.NumberFormat("en-IN");
+      rollingTarget.textContent = number.format(rolling);
+      totalTarget.textContent = number.format(total);
       const started = formatStartDate(data.startedAt);
-      if (noteTarget && started) {
-        noteTarget.textContent = `Best-effort since ${started}, usually one check-in per browser. No account or visitor profile.`;
+      if (noteTarget) {
+        noteTarget.textContent = started
+          ? `Best-effort, usually one check-in per browser each day. Counting since ${started}. No account or visitor profile.`
+          : "Best-effort, usually one check-in per browser each day. No account or visitor profile.";
       }
       counter.dataset.state = "ready";
     } catch (_) {
@@ -81,7 +89,7 @@
   }
 
   if (counter) {
-    if ("requestIdleCallback" in window) window.requestIdleCallback(loadMonthlyVisitors, { timeout: 1200 });
-    else window.setTimeout(loadMonthlyVisitors, 120);
+    if ("requestIdleCallback" in window) window.requestIdleCallback(loadVisitorCounts, { timeout: 1200 });
+    else window.setTimeout(loadVisitorCounts, 120);
   }
 })();

@@ -951,6 +951,28 @@
       </div>`;
   }
 
+  /**
+   * The header carries no border until the page has moved.
+   *
+   * A hairline drawn across the top of an untouched page cuts the hero's artwork off at the
+   * fold, which is the one thing this design cannot afford. It appears on the first scroll
+   * and goes again at the top, so the chrome only asserts itself once there is content
+   * behind it to separate.
+   */
+  function watchHeaderScroll() {
+    const header = qs("[data-site-header]");
+    if (!header) return;
+    let scrolled = null;
+    const sync = () => {
+      const next = window.scrollY > 8;
+      if (next === scrolled) return;
+      scrolled = next;
+      header.dataset.scrolled = String(next);
+    };
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+  }
+
   function buildFooter() {
     const mount = qs("[data-site-footer]");
     if (!mount) return;
@@ -1759,6 +1781,7 @@
 
   function init() {
     buildHeader();
+    watchHeaderScroll();
     buildFooter();
     dialogMarkup();
     initializeAccordions();

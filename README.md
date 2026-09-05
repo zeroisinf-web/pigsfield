@@ -196,7 +196,19 @@ stop and requests simply fail, so a ceiling would add nothing but a nicer error 
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
-The homepage calls `/api/visitors` only to show a best-effort monthly browser check-in total. A first-party, HTTP-only cookie stores the current India calendar month so the same browser is usually counted once. The Durable Object stores only the total and its start time; it does not store per-visitor identifiers.
+The homepage calls `/api/visitors` to show two best-effort figures: visits in the last 30
+days, and every visit since the counter started. A first-party, HTTP-only cookie stores the
+current India **day**, so the same browser is usually counted once a day.
+
+It used to be one figure counted per calendar month, which could not produce a rolling
+window — one check-in per browser per month puts everyone in the bucket for the 1st and
+leaves the rest of the window empty — and reset to nearly nothing every month. The Durable
+Object now keeps a running all-time total plus one small bucket per day, pruned to 45 days,
+and the rolling figure is the sum of the last 30 of those. On first run it reads the old
+per-month objects once and adds their totals, so "since we started" means since the counter
+started rather than since this change shipped.
+
+It stores counts, a first-seen timestamp and nothing else: no per-visitor identifiers.
 
 The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models) and [Qwen Chat](https://chat.qwen.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 

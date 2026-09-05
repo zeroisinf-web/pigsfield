@@ -98,21 +98,28 @@ test("--fill-ink is legible on every bright accent in every theme", () => {
   }
 });
 
-test("the featured path card stays legible across its whole gradient", () => {
-  // background: linear-gradient(145deg, color-mix(brand 88%, #ffb26b), color-mix(brand 70%, brand-deep))
-  const rule = css.slice(css.indexOf(".path-card.featured {"));
-  assert.match(rule, /color-mix\(in srgb, var\(--brand\) 88%, #ffb26b\)/, "bright stop changed — recheck contrast");
-  assert.match(rule, /color-mix\(in srgb, var\(--brand\) 70%, var\(--brand-deep\)\)/, "deep stop changed — recheck contrast");
+test("every card's mark stays visible on its own artwork", () => {
+  // Cards lead with a coloured panel and a drawn mark. The mark is decorative, so WCAG's
+  // 4.5:1 text rule does not apply — but 1.4.11 asks 3:1 of a non-text graphic, and a mark
+  // nobody can make out is a card with no subject.
+  //
+  // This is not theoretical: white was the obvious choice and it clears 3:1 on none of these
+  // gradients. The amber panel measured 1.55:1. --fill-ink clears every stop of every card.
+  const NON_TEXT = 3;
+  const artColour = css.match(/\.path-art \{[\s\S]*?color: (var\(--fill-ink\)|#[0-9a-f]{3,6});/i);
+  assert.ok(artColour, "the artwork panel must set an explicit mark colour");
+  const mark = artColour[1].includes("--fill-ink") ? rgb(token(":root", "fill-ink")) : rgb(artColour[1]);
 
-  for (const theme of Object.keys(THEMES)) {
-    const p = palette(theme);
-    const stops = { bright: mix(p.brand, rgb("#ffb26b"), 0.88), deep: mix(p.brand, p.brandDeep, 0.7) };
-    for (const [where, stop] of Object.entries(stops)) {
-      const ratio = contrast(p.onBrand, stop);
-      assert.ok(
-        ratio >= AA_NORMAL,
-        `${theme} featured card label over the ${where} gradient stop is ${ratio.toFixed(2)}:1; needs ${AA_NORMAL}:1`
-      );
+  const cards = [...css.matchAll(/\.path-card\[data-path="([a-z]+)"\] \{([^}]*)\}/g)]
+    .map(([, name, body]) => [name, [...body.matchAll(/--art-[abc]: (#[0-9a-f]{6})/gi)].map((m) => m[1])])
+    .filter(([name]) => name !== "watch"); // its panel carries the logo image, not a mark
+  assert.ok(cards.length >= 4, `expected the artwork palette, found ${cards.length} cards`);
+
+  for (const [name, stops] of cards) {
+    assert.equal(stops.length, 3, `${name} must define all three gradient stops`);
+    for (const stop of stops) {
+      const ratio = contrast(mark, rgb(stop));
+      assert.ok(ratio >= NON_TEXT, `the ${name} card's mark is ${ratio.toFixed(2)}:1 on ${stop}; needs ${NON_TEXT}:1`);
     }
   }
 });

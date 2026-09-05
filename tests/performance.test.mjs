@@ -50,17 +50,22 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  // Raw came DOWN from 105.6 to 103.5 KiB: the replaced hero-guide poster, the dead
-  // .hero-search/.hero-grid rules, the transparent --depth-edge/--depth-highlight bevel
-  // layers and the invisible fixed grid overlay were all removed. Compressed sizes still
-  // rose ~0.4 KiB, because what went was repetitive (Brotli nearly free) and what arrived
-  // is not: the drawn path/pitch/studio marks that replaced emoji are unique path data.
-  // That is the deliberate trade — an emoji is a font the visitor's OS picks, so the icon
-  // row rendered differently on every device. Every unreferenced selector that remains is
-  // composed at runtime (source-brand-${brand} and friends); there is nothing left to
-  // reclaim without breaking the cards.
-  withinBudget("css/site.css", { raw: 104 * 1024, gzip: 24 * 1024, brotli: 22 * 1024 });
+  // Raw keeps coming DOWN — 105.6 KiB before this run of work, 102.4 now — while the
+  // compressed figures creep up, and both facts have the same cause. What has been removed
+  // is repetitive and Brotli was already compressing it to almost nothing: a 12-column
+  // bento with per-card background overrides, the dark PigBang card treatment, the emoji
+  // icon tiles and their tint list, a duplicate .pitch-item tile, three tokens nothing
+  // read, the transparent bevel layers, an invisible fixed grid overlay and a dead hero
+  // poster. What replaced them is not repetitive: a gradient mesh, an artwork palette and
+  // one card system whose colour lives entirely in its panel.
+  //
+  // Checked for dead weight three times before moving these numbers. Every unreferenced
+  // selector that remains is composed at runtime (source-brand-${brand} and friends), so
+  // removing it would break the cards.
+  withinBudget("css/site.css", { raw: 103 * 1024, gzip: 24 * 1024, brotli: 23 * 1024 });
   // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
+  // +0.3 KiB for the header's scroll state, which is what lets the chrome carry no border
+  // until the page has moved and stop cutting the hero artwork off at the fold.
   withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
@@ -79,9 +84,12 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   // Raw is 4 KiB below the previous 205 KiB ceiling and the ceiling moves down with it.
   // Compressed moved the other way for the reason above the stylesheet budget: unique SVG
   // path data replaced repetitive rules that Brotli was compressing to almost nothing.
-  assert.ok(raw <= 201 * 1024, `home render shell is ${kib(raw)} raw; budget is 201 KiB`);
-  assert.ok(gzipped <= 59 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 59 KiB`);
-  assert.ok(compressed <= 49 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 49 KiB`);
+  // The stylesheet's 1.5 KiB saving went back into the markup: six cards now carry a
+  // category, a title, a line of copy and their own artwork panel instead of an icon and a
+  // heading, which is the card system the whole redesign rests on.
+  assert.ok(raw <= 203 * 1024, `home render shell is ${kib(raw)} raw; budget is 203 KiB`);
+  assert.ok(gzipped <= 60 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 60 KiB`);
+  assert.ok(compressed <= 50 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 50 KiB`);
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {

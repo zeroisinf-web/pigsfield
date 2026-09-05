@@ -53,7 +53,16 @@ const MAX_TRANSLATION_ITEMS = 48;
 const MAX_TRANSLATION_CHARACTERS = 10_000;
 const MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS = 12_000;
 const MAX_TRANSLATION_OUTPUT_CHARACTERS = 20_000;
-const VISITOR_COOKIE = "pf_visitor_month";
+// One check-in per browser per India day. It used to be per calendar month, which cannot
+// produce a rolling window: everyone would be counted on the 1st and the last 30 days would
+// be a cliff rather than a curve.
+const VISITOR_COOKIE = "pf_visitor_day";
+const ROLLING_WINDOW_DAYS = 30;
+// A few days more than the window, so pruning is not knife-edge against a clock skew.
+const VISITOR_DAY_RETENTION = 45;
+// The month the counter started recording. Used once, to carry the per-month totals from
+// the previous scheme into the all-time figure rather than restarting it at zero.
+const VISITOR_EPOCH_MONTH = "2026-06";
 const BASE_INSTRUCTION = [
   "You are Pigsfield's free educational assistant for learners in India.",
   "Answer in the user's language, explain clearly, use practical examples, and distinguish facts from uncertainty.",
@@ -179,6 +188,30 @@ function indiaDay(date = new Date()) {
     : date.toISOString().slice(0, 10);
 }
 
+/** The last `count` India days, most recent first, as YYYY-MM-DD. */
+function recentIndiaDays(count, date = new Date()) {
+  const days = [];
+  for (let back = 0; back < count; back += 1) {
+    days.push(indiaDay(new Date(date.getTime() - back * 86400000)));
+  }
+  return days;
+}
+
+/** Every India month from the counter's epoch to now, for the one-time legacy import. */
+function monthsSinceEpoch(now = new Date()) {
+  const [epochYear, epochMonth] = VISITOR_EPOCH_MONTH.split("-").map(Number);
+  const [nowYear, nowMonth] = indiaMonth(now).split("-").map(Number);
+  const months = [];
+  for (let year = epochYear, month = epochMonth; year < nowYear || (year === nowYear && month <= nowMonth);) {
+    months.push(`${year}-${String(month).padStart(2, "0")}`);
+    // 720 is 60 years: a loop bound, not an expectation.
+    if (months.length > 720) break;
+    month += 1;
+    if (month > 12) { month = 1; year += 1; }
+  }
+  return months;
+}
+
 function cookieValue(request, name) {
   const cookies = String(request.headers.get("Cookie") || "").split(";");
   for (const cookie of cookies) {
@@ -190,8 +223,10 @@ function cookieValue(request, name) {
   return "";
 }
 
-function visitorCookie(month) {
-  return `${VISITOR_COOKIE}=${encodeURIComponent(month)}; Path=/; Max-Age=2764800; Secure; HttpOnly; SameSite=Lax`;
+function visitorCookie(day) {
+  // Two days, so a browser is not re-counted by a timezone boundary but is counted again
+  // tomorrow. The old cookie carried a month and 32 days; it simply expires.
+  return `${VISITOR_COOKIE}=${encodeURIComponent(day)}; Path=/; Max-Age=172800; Secure; HttpOnly; SameSite=Lax`;
 }
 
 function automatedRequest(request) {
@@ -200,18 +235,60 @@ function automatedRequest(request) {
   return /bot\b|crawler|spider|headless|preview|facebookexternalhit|slurp|bingpreview/i.test(agent);
 }
 
-async function counterResponse(stub, increment) {
-  const response = await stub.fetch(new Request(`https://counter.internal/${increment ? "increment" : "count"}`, {
-    method: increment ? "POST" : "GET"
-  }));
+async function counterFetch(stub, path, method = "GET") {
+  const response = await stub.fetch(new Request(`https://counter.internal${path}`, { method }));
   if (!response.ok) throw new Error("Counter storage unavailable");
-  const payload = await response.json();
-  const count = Number(payload && payload.count);
-  if (!Number.isSafeInteger(count) || count < 0) throw new Error("Invalid counter response");
+  return response.json();
+}
+
+/**
+ * Read the counter, incrementing today's bucket first when this visit counts.
+ *
+ * `window` is the list of days the rolling figure covers; `keep` is a slightly longer list,
+ * passed so the object prunes to exactly what the Worker still considers current rather than
+ * having to know the retention rule itself.
+ */
+async function counterResponse(stub, increment) {
+  const window = recentIndiaDays(ROLLING_WINDOW_DAYS);
+  const keep = recentIndiaDays(VISITOR_DAY_RETENTION);
+  const payload = increment
+    ? await counterFetch(stub, `/increment?day=${window[0]}&keep=${keep.join(",")}`, "POST")
+    : await counterFetch(stub, "/count");
+
+  const total = Number(payload && payload.total);
+  if (!Number.isSafeInteger(total) || total < 0) throw new Error("Invalid counter response");
+  const days = payload && typeof payload.days === "object" && payload.days ? payload.days : {};
+  const rolling = window.reduce((sum, day) => sum + (Number(days[day]) || 0), 0);
+
   return {
-    count,
+    total,
+    rolling,
+    imported: Boolean(payload && payload.imported),
     startedAt: typeof payload.startedAt === "string" ? payload.startedAt : null
   };
+}
+
+/**
+ * Carry the per-month totals from the previous scheme into the all-time figure, once.
+ *
+ * Without this, "total visits since the site launched" would start at zero on the day this
+ * shipped, which is not a total and not since launch. The old objects are still addressable
+ * through the same binding, so their counts can simply be read and added.
+ */
+async function importLegacyTotal(env, stub) {
+  let carried = 0;
+  let startedAt = "";
+  for (const month of monthsSinceEpoch()) {
+    try {
+      const legacy = await counterFetch(env.VISITOR_COUNTER.getByName(`pigsfield-visitors-${month}`), "/legacy");
+      carried += Math.max(0, Number(legacy && legacy.count) || 0);
+      if (!startedAt && typeof legacy.startedAt === "string") startedAt = legacy.startedAt;
+    } catch (_) {
+      // A month that cannot be read contributes nothing rather than failing the import.
+    }
+  }
+  const query = `total=${carried}${startedAt ? `&startedAt=${encodeURIComponent(startedAt)}` : ""}`;
+  await counterFetch(stub, `/seed?${query}`, "POST");
 }
 
 async function handleVisitors(request, env) {
@@ -223,8 +300,8 @@ async function handleVisitors(request, env) {
     return json({ error: "Visitor count is not configured." }, 503);
   }
 
-  const month = indiaMonth();
-  const alreadyCounted = cookieValue(request, VISITOR_COOKIE) === month;
+  const today = indiaDay();
+  const alreadyCounted = cookieValue(request, VISITOR_COOKIE) === today;
   let increment = request.method === "POST" && !alreadyCounted && !automatedRequest(request);
 
   if (increment && env.VISITOR_RATE_LIMITER && typeof env.VISITOR_RATE_LIMITER.limit === "function") {
@@ -233,20 +310,44 @@ async function handleVisitors(request, env) {
   }
 
   try {
-    const result = await counterResponse(env.VISITOR_COUNTER.getByName(`pigsfield-visitors-${month}`), increment);
-    const headers = increment ? { "Set-Cookie": visitorCookie(month) } : {};
+    // One object now, not one per month: a rolling window has to read across months, and an
+    // all-time total cannot live in a counter that is replaced every month.
+    const stub = env.VISITOR_COUNTER.getByName("pigsfield-visitors-all");
+    let result = await counterResponse(stub, increment);
+    if (!result.imported) {
+      await importLegacyTotal(env, stub);
+      result = await counterResponse(stub, false);
+    }
+    const headers = increment ? { "Set-Cookie": visitorCookie(today) } : {};
     return json({
-      count: result.count,
-      month,
+      total: result.total,
+      rolling: result.rolling,
+      windowDays: ROLLING_WINDOW_DAYS,
       startedAt: result.startedAt,
       counted: increment,
-      definition: "Best-effort browser check-ins; usually one per browser each India calendar month."
+      definition: `Best-effort browser check-ins; usually one per browser each India day. "rolling" covers the last ${ROLLING_WINDOW_DAYS} days ending today; "total" is every check-in since the counter started.`
     }, 200, headers);
   } catch (_) {
     return json({ error: "Visitor count is temporarily unavailable." }, 503);
   }
 }
 
+/**
+ * The visitor counter.
+ *
+ * Keeps an all-time total and one bucket per India day. The rolling figure is the sum of the
+ * last 30 buckets, which is what "the last 30 days" has to mean: a calendar month cannot
+ * produce a rolling window, because one check-in per browser per month puts everyone in the
+ * bucket for the 1st and leaves the rest of the window empty.
+ *
+ * Buckets older than the retention window are deleted on write, so storage stays flat rather
+ * than growing forever. The all-time total is a running sum and never loses history to that
+ * pruning.
+ *
+ * The class name is historical. Renaming a Durable Object class needs a migration that can
+ * orphan live objects, and this one holds the only copy of a number that cannot be
+ * recomputed — so the name stays and this comment explains it.
+ */
 class MonthlyVisitorCounter {
   constructor(state) {
     this.state = state;
@@ -254,16 +355,52 @@ class MonthlyVisitorCounter {
 
   async fetch(request) {
     if (!["GET", "POST"].includes(request.method)) return json({ error: "Method not allowed." }, 405);
-    let count = Number(await this.state.storage.get("count")) || 0;
-    let startedAt = await this.state.storage.get("startedAt") || null;
+    const url = new URL(request.url);
 
-    if (request.method === "POST" && new URL(request.url).pathname === "/increment") {
-      count += 1;
-      if (!startedAt) startedAt = new Date().toISOString();
-      await this.state.storage.put({ count, startedAt });
+    // The previous scheme kept one object per month under a "count" key. Reading it is how
+    // the all-time total keeps the history that predates day buckets.
+    if (url.pathname === "/legacy") {
+      return json({
+        count: Number(await this.state.storage.get("count")) || 0,
+        startedAt: await this.state.storage.get("startedAt") || null
+      });
     }
 
-    return json({ count, startedAt });
+    let total = Number(await this.state.storage.get("total")) || 0;
+    let days = await this.state.storage.get("days");
+    if (!days || typeof days !== "object") days = {};
+    let startedAt = await this.state.storage.get("startedAt") || null;
+    let imported = Boolean(await this.state.storage.get("imported"));
+
+    if (request.method === "POST" && url.pathname === "/increment") {
+      const day = url.searchParams.get("day") || "";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ error: "A calendar day is required." }, 400);
+      const keep = new Set((url.searchParams.get("keep") || "").split(",").filter(Boolean));
+      total += 1;
+      days[day] = (Number(days[day]) || 0) + 1;
+      // Anything outside the retention window the Worker asked us to keep.
+      for (const key of Object.keys(days)) {
+        if (!keep.has(key)) delete days[key];
+      }
+      if (!startedAt) startedAt = new Date().toISOString();
+      await this.state.storage.put({ total, days, startedAt });
+    }
+
+    if (request.method === "POST" && url.pathname === "/seed") {
+      // One-time carry-over of the per-month totals. Guarded so a retry cannot double it.
+      const carried = Number(url.searchParams.get("total")) || 0;
+      if (!imported) {
+        imported = true;
+        total += Math.max(0, carried);
+        // The earlier date wins, not the missing one: the visit that triggered this import
+        // has already stamped startedAt with today, and the counter started long before.
+        const since = url.searchParams.get("startedAt");
+        if (since && (!startedAt || since < startedAt)) startedAt = since;
+        await this.state.storage.put({ total, startedAt, imported });
+      }
+    }
+
+    return json({ total, days, startedAt, imported });
   }
 }
 
@@ -497,6 +634,9 @@ export default {
 
 export {
   DEFAULT_MODEL,
+  ROLLING_WINDOW_DAYS,
+  monthsSinceEpoch,
+  recentIndiaDays,
   handlePoster,
   modelInput,
   MAX_TRANSLATION_CHARACTERS,
