@@ -1,0 +1,70 @@
+name: Validate Pigsfield
+
+# Production is Cloudflare Workers, deployed from main by Cloudflare Workers Builds — see
+# wrangler.jsonc and the README. GitHub's job is to say whether a change is safe, not to
+# publish a second copy of the site.
+#
+# This replaces the old "Validate and deploy" workflow, which also pushed the repository to
+# GitHub Pages. That produced a second live copy at zeroisinf-web.github.io/pigsfield/ with
+# no Worker attached, so /api/ai, /api/translate and /api/visitors were all dead there while
+# the pages themselves looked complete. It self-canonicalised to pigsfield.com, so the SEO
+# damage was limited, but a half-working public mirror is not something to keep by accident.
+#
+# To finish removing it, switch Pages off in Settings -> Pages -> Source: None. Deleting this
+# workflow alone stops future deploys but leaves the last one published.
+#
+# To restore Pages deployment, revert this file to the previous pages.yml.
+
+on:
+  push:
+    branches: [main]
+  # Pull requests were not validated before, which is how main came to be failing its own
+  # build for weeks without anyone being told.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Validate site
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+  smoke:
+    name: Post-merge production check
+    # Cloudflare deploys from main on its own schedule, so this is a check on the live site
+    # rather than a gate on a deployment this workflow performed.
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Verify production crawl surface
+        run: npm run check:production
