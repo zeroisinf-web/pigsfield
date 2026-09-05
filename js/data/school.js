@@ -283,8 +283,7 @@ window.PF_DATA.school = {
         {
          "label": "YouTube",
          "urls": [
-          "https://www.youtube.com/@AumSum/playlists",
-          "https://www.youtube.com/@SmartLearningforAll"
+          "https://www.youtube.com/@AumSum/playlists"
          ]
         }
        ]
@@ -686,8 +685,7 @@ window.PF_DATA.school = {
         {
          "label": "YouTube",
          "urls": [
-          "https://www.youtube.com/@AumSum/playlists",
-          "https://www.youtube.com/@SmartLearningforAll"
+          "https://www.youtube.com/@AumSum/playlists"
          ]
         }
        ]
@@ -802,7 +800,6 @@ window.PF_DATA.school = {
          "label": "Web",
          "urls": [
           "https://cbseacademic.nic.in/cbe/assessment.html",
-          "https://cbseacademic.nic.in/curriculum_2024-25.html",
           "https://cbse.gov.in/"
          ]
         }
@@ -864,8 +861,7 @@ window.PF_DATA.school = {
         {
          "label": "Web",
          "urls": [
-          "https://rajeduboard.rajasthan.gov.in/books/index.htm",
-          "https://rajshaladarpan.rajasthan.gov.in/sd1/SportsNew/Home/Default.asp"
+          "https://rajeduboard.rajasthan.gov.in/books/index.htm"
          ]
         }
        ]
@@ -1129,7 +1125,7 @@ window.PF_DATA.school = {
         {
          "label": "Web",
          "urls": [
-          "https://sathee.prutor.ai/"
+          "https://sathee.iitk.ac.in/"
          ]
         }
        ]
@@ -1163,8 +1159,7 @@ window.PF_DATA.school = {
          "label": "Web",
          "urls": [
           "https://cbseacademic.nic.in/SQP_CLASSX_2024-25.html",
-          "https://cbseacademic.nic.in/SQP_CLASSXII_2024-25.html",
-          "https://cbseacademic.nic.in/curriculum_2024-25.html"
+          "https://cbseacademic.nic.in/SQP_CLASSXII_2024-25.html"
          ]
         }
        ]

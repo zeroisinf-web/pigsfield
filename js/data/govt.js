@@ -296,8 +296,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://cbi.gov.in",
-          "https://cbi.gov.in/complaints.php"
+          "https://cbi.gov.in"
          ]
         },
         {
@@ -385,8 +384,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://www.incometax.gov.in",
-          "https://www.incometax.gov.in/iec/foportal/help/how-to-report-tax-evasion"
+          "https://www.incometax.gov.in"
          ]
         },
         {
@@ -698,8 +696,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://nhrc.nic.in",
-          "https://nhrc.nic.in/complaints/human-rights-complaint-form.aspx"
+          "https://nhrc.nic.in"
          ]
         },
         {
@@ -942,7 +939,6 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://trai.gov.in/consumers/complaintregistration"
          ]
         },
         {
@@ -1654,7 +1650,6 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://uidai.gov.in/contact-support/grievances.html",
           "https://pmkisan.gov.in/grievance.aspx"
          ]
         },

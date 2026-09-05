@@ -369,7 +369,7 @@ window.PF_DATA.teach = {
         {
          "label": "Web",
          "urls": [
-          "https://tiss.ac.in/"
+          "https://www.tiss.ac.in/"
          ]
         }
        ]
@@ -507,7 +507,6 @@ window.PF_DATA.teach = {
         {
          "label": "YouTube",
          "urls": [
-          "https://www.youtube.com/@Teachmint"
          ]
         },
         {
@@ -634,7 +633,6 @@ window.PF_DATA.teach = {
         {
          "label": "Web",
          "urls": [
-          "https://swayam-plus.swayam2.ac.in/courses"
          ]
         },
         {

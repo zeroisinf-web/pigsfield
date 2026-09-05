@@ -94,13 +94,21 @@ export function classifyStatus(status) {
   return UNSTABLE;
 }
 
-/** Network-level failures. DNS and certificate errors are real rot; timeouts are not. */
-export function classifyNetworkError(error) {
-  const code = String((error && ((error.cause && error.cause.code) || error.code)) || "");
-  const message = String((error && error.message) || "").toLowerCase();
-  if (code === "ENOTFOUND" || code === "EAI_AGAIN" || message.includes("getaddrinfo")) return DEAD;
-  if (code === "ECONNREFUSED" || code === "ERR_TLS_CERT_ALTNAME_INVALID") return DEAD;
-  if (code.startsWith("CERT_") || code.startsWith("DEPTH_ZERO") || code.startsWith("UNABLE_TO_VERIFY")) return DEAD;
+/**
+ * Network-level failures are never reported as rot, only as UNSTABLE.
+ *
+ * An earlier version called DNS and connection failures DEAD, which produced confident
+ * false positives. Checked from an Indian consumer connection, every one of
+ * edaakhil.nic.in, main.sci.gov.in, loksabha.nic.in and a dozen other government hosts
+ * "failed to resolve" — but so did ncert.nic.in, which is plainly alive. The resolver was
+ * answering 172.16.61.239, a private RFC1918 address, i.e. an ISP sinkhole rather than a
+ * real answer. Captive portals, NAT64, IPv6 gaps, DNS filtering and firewalls all look
+ * identical to a vanished domain from inside one machine.
+ *
+ * So the rule is: only a server that actually answered can convict a link. A 404 is
+ * evidence; silence is not.
+ */
+export function classifyNetworkError() {
   return UNSTABLE;
 }
 

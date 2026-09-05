@@ -79,12 +79,22 @@ test("a HEAD rejection is retried with GET instead of being believed", () => {
   [200, 404, 410, 500].forEach((status) => assert.equal(shouldRetryWithGet(status), false, `${status} is a real answer`));
 });
 
-test("a vanished host is rot but a slow one is not", () => {
-  assert.equal(classifyNetworkError({ cause: { code: "ENOTFOUND" } }), DEAD);
-  assert.equal(classifyNetworkError({ cause: { code: "ECONNREFUSED" } }), DEAD);
-  assert.equal(classifyNetworkError({ cause: { code: "CERT_HAS_EXPIRED" } }), DEAD);
-  assert.equal(classifyNetworkError({ cause: { code: "UND_ERR_CONNECT_TIMEOUT" } }), UNSTABLE);
-  assert.equal(classifyNetworkError({ message: "This operation was aborted" }), UNSTABLE);
+test("a link is never convicted on a network failure, only on a server's answer", () => {
+  // Checked from an Indian consumer connection, ncert.nic.in — plainly alive — failed to
+  // connect, and the resolver returned 172.16.61.239 (private RFC1918) for a dozen
+  // government hosts. An ISP sinkhole, a captive portal, NAT64 and a firewall all look
+  // exactly like a vanished domain from inside one machine, so none of them may convict.
+  for (const error of [
+    { cause: { code: "ENOTFOUND" } },
+    { cause: { code: "ECONNREFUSED" } },
+    { cause: { code: "CERT_HAS_EXPIRED" } },
+    { cause: { code: "UND_ERR_CONNECT_TIMEOUT" } },
+    { message: "This operation was aborted" }
+  ]) {
+    assert.equal(classifyNetworkError(error), UNSTABLE, `${JSON.stringify(error)} must not be reported as rot`);
+  }
+  // Only a real response can mark a link dead.
+  assert.equal(classifyStatus(404), DEAD);
 });
 
 test("YouTube videos are checked through oEmbed, because watch pages answer 200 when removed", () => {
