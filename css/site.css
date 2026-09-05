@@ -2796,3 +2796,45 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 .account-message { margin: 0; font-size: 0.8rem; font-weight: 600; }
 .account-message[data-tone="ok"] { color: var(--green); }
 .account-message[data-tone="error"] { color: var(--brand); }
+
+/* Above-the-fold pass (phones)
+   -------------------------------------------------------------------------------------
+   Measured on a 375x812 phone before this block: the hero ran 467px, the search field sat
+   at 958px and the first resource card at 1202px — a screen and a half of scrolling past a
+   headline before reaching anything a visitor actually came for. The hero had no mobile
+   treatment at all, so a phone was rendering desktop-scale padding and display type.
+   Nothing here changes the desktop layout. */
+@media (max-width: 52rem) {
+  .page-hero { padding: 2rem 0 1.4rem; }
+  .page-hero h1 { max-width: 18ch; margin-bottom: 0.7rem; font-size: clamp(2.1rem, 8.5vw, 3.1rem); }
+  .page-hero .lede { font-size: 1rem; line-height: 1.5; }
+  .page-hero .eyebrow { margin-bottom: 0.5rem; }
+
+  /* The topic chips are a genuine shortcut, so they stay above the fold — just tighter. */
+  .stage-nav-band { padding-top: 0; padding-bottom: 1.2rem; }
+  .stage-nav-title { margin-bottom: 0.7rem; font-size: 1rem; }
+  .stage-nav { gap: 0.45rem; }
+  .stage-nav .button { min-height: 2.5rem; padding: 0.45rem 0.8rem; font-size: 0.82rem; }
+
+  .explorer { padding-top: 0.6rem; }
+  .explorer-toolbar { margin-bottom: 0.8rem; }
+
+  /* Homepage. The six destinations are the site; on a phone they began at 999px, below a
+     visitor counter, a headline, a paragraph and a 304px video card. The tutorial keeps its
+     place but stops outranking the thing people came to choose from. */
+  .home-hero { padding: 1.5rem 0 1.2rem; }
+  .home-hero h1 { max-width: 16ch; margin-bottom: 0.65rem; font-size: clamp(2.1rem, 9vw, 3rem); }
+  .hero-lede { margin-bottom: 0.9rem; font-size: 0.95rem; }
+  .hero-grid { gap: 1.1rem; }
+
+  /* The guide becomes a compact row instead of a poster: same link, a fifth of the height. */
+  .hero-guide-link { min-height: 0; grid-template-rows: none; grid-template-columns: 4.75rem 1fr; align-items: center; }
+  /* No aspect-ratio here: with height:100% it resolves the width from the height, so the
+     visual rendered 115px wide inside a 76px column and covered the text. */
+  .guide-visual { min-height: 0; width: 100%; height: 100%; }
+  .guide-orbit { display: none; }
+  .home-guide-mark { width: 2.1rem; height: 2.1rem; }
+  .guide-copy { padding: 0.7rem 0.85rem; }
+  .guide-copy strong { font-size: 0.95rem; }
+  .guide-copy small { font-size: 0.68rem; }
+}

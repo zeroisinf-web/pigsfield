@@ -54,7 +54,10 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   // and the topic-page layout. Verified there is nothing dead left to reclaim first —
   // every remaining unreferenced selector is composed at runtime (source-brand-${brand}
   // and friends), so removing them would break the cards.
-  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 20 * 1024 });
+  // 103 KiB raw for the phone above-the-fold rules. Checked for dead weight first: every
+  // remaining unreferenced selector is composed at runtime, so there is nothing to reclaim.
+  // Brotli is what a visitor downloads and barely moves — these are repetitive media rules.
+  withinBudget("css/site.css", { raw: 103 * 1024, gzip: 22 * 1024, brotli: 20 * 1024 });
   // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
   withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
@@ -81,19 +84,19 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
   // ~4% above what each route actually ships, so an accidental regression fails but a
   // deliberate change does not need the table rewritten every time.
   const routes = [
-    ["index.html", 295, 142],
-    ["learn/index.html", 410, 165],
-    ["skills/index.html", 350, 155],
-    ["tools/index.html", 355, 155],
-    ["rights/index.html", 430, 168],
-    ["exams/index.html", 375, 163],
-    ["watch/index.html", 520, 196],
-    ["about/index.html", 290, 141],
-    ["editorial/index.html", 288, 140],
-    ["accessibility/index.html", 288, 140],
-    ["privacy/index.html", 290, 140],
-    ["submit/index.html", 288, 140],
-    ["ai/index.html", 286, 139]
+    ["index.html", 299, 143],
+    ["learn/index.html", 413, 166],
+    ["skills/index.html", 353, 156],
+    ["tools/index.html", 358, 156],
+    ["rights/index.html", 433, 169],
+    ["exams/index.html", 378, 164],
+    ["watch/index.html", 523, 197],
+    ["about/index.html", 293, 142],
+    ["editorial/index.html", 291, 141],
+    ["accessibility/index.html", 291, 141],
+    ["privacy/index.html", 294, 142],
+    ["submit/index.html", 291, 141],
+    ["ai/index.html", 289, 140]
   ];
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([
@@ -131,6 +134,24 @@ test("large optional features remain lazy and the service worker installs a smal
   assert.ok(installRaw <= 235 * 1024, `service-worker install shell is ${kib(installRaw)} raw; budget is 235 KiB`);
   assert.doesNotMatch(worker.match(/const\s+CORE\s*=\s*\[([\s\S]*?)\];/)?.[1] || "", /(?:data\/|ai-|catalog|watch|player|pigbang)/i);
   assert.match(worker, /navigationPreload\.enable\(\)[\s\S]*event\.preloadResponse/, "repeat navigations should use navigation preload");
+});
+
+test("a phone reaches the useful part of a page without scrolling past a poster", () => {
+  const css = text("css/site.css");
+  // Measured on a 375x812 phone before these rules existed: the catalogue hero ran 467px,
+  // the search field sat at 958px and the first resource at 1202px — a screen and a half of
+  // scrolling to reach anything. The homepage was worse: the six destinations began at 999px,
+  // below a visitor counter, a headline, a paragraph and a 304px video card. The generic
+  // hero had no mobile treatment at all, so phones rendered desktop-scale padding and type.
+  const mobile = css.slice(css.indexOf("Above-the-fold pass"));
+  assert.ok(mobile, "the phone above-the-fold block must exist");
+  assert.match(mobile, /@media \(max-width: 52rem\)/, "these rules must not touch desktop");
+  assert.match(mobile, /\.page-hero \{ padding: 2rem 0 1\.4rem; \}/, "the catalogue hero must stay compact on phones");
+  assert.match(mobile, /\.home-hero \{ padding: 1\.5rem 0 1\.2rem; \}/, "the homepage hero must stay compact on phones");
+  assert.match(mobile, /\.hero-guide-link \{ min-height: 0;/, "the guide must stay a compact row, not a 19rem poster");
+  // aspect-ratio here resolves width from height, which overflowed the visual out of its
+  // 76px column and covered the text. It must not come back.
+  assert.doesNotMatch(mobile, /\.guide-visual \{[^}]*aspect-ratio/, "guide-visual must size from its column, not an aspect ratio");
 });
 
 test("runtime work is deferred and long collections skip offscreen rendering", () => {
