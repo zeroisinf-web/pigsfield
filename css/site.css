@@ -2714,3 +2714,22 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 .topic-sources { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .topic-sources .link-button { width: auto; }
 .topic-host { color: var(--ink-soft); font-weight: 500; }
+
+/* Visible scope/eligibility warning on a catalogue card. Deliberately NOT inside the
+   collapsed "Practical guide" details: a warning nobody opens is not a warning. Used
+   where following a link incorrectly costs the reader money — e.g. filing a state RTI
+   on the central portal, which is returned without a fee refund. */
+.resource-warning {
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid #b3541e;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, #b3541e 12%, var(--paper));
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+[data-theme="dark"] .resource-warning {
+  border-left-color: #ffb066;
+  background: color-mix(in srgb, #ffb066 14%, transparent);
+}

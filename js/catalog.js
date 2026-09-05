@@ -254,6 +254,7 @@
       ${tags.length ? `<div class="resource-tags">${Array.from(new Set(tags)).slice(0, 4).map((tag) => `<span class="tag">${PF.escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       <h3>${PF.escapeHtml(item.title || item.desc || "Untitled resource")}</h3>
       ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
+      ${item.warning ? `<p class="resource-warning" role="note">${PF.escapeHtml(item.warning)}</p>` : ""}
       <div class="resource-actions">
         ${renderExtra(item.extra)}
         <div class="direct-links" aria-label="Original resource links">${links}</div>
