@@ -1,0 +1,13 @@
+# Keep every text file LF in the working tree on every platform.
+# Without this, Windows checkouts get CRLF (core.autocrlf=true is the Git-for-Windows
+# default), which silently breaks the source-slicing tests in tests/ — their end
+# markers contain "\n\n" and can never match "\r\n\r\n" — and inflates the raw-byte
+# size budgets in tests/performance.test.mjs by ~1 byte per line.
+* text=auto eol=lf
+
+*.png  binary
+*.webp binary
+*.woff2 binary
+*.ico  binary
+*.jpg  binary
+*.jpeg binary

@@ -6,7 +6,15 @@ import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (name) => fs.readFileSync(path.join(ROOT, name));
+// Size budgets must measure the bytes that actually ship. Git stores text as LF, so a
+// CRLF working tree (the Git-for-Windows default) would otherwise inflate every text
+// asset by one byte per line and fail these budgets for the wrong reason.
+const TEXT_ASSET = /\.(?:css|js|mjs|html|json|txt|xml|svg)$/i;
+const normalizeText = (bytes, name) => TEXT_ASSET.test(name)
+  ? Buffer.from(bytes.toString("utf8").replace(/\r\n/g, "\n"), "utf8")
+  : bytes;
+const read = (name) => normalizeText(fs.readFileSync(path.join(ROOT, name)), name);
+const readAbsolute = (file) => normalizeText(fs.readFileSync(file), file);
 const text = (name) => read(name).toString("utf8");
 const kib = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`;
 const brotliSize = (buffer) => zlib.brotliCompressSync(buffer, {
@@ -79,8 +87,8 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
       path.join(ROOT, "assets/pigsfield-logo-ui.webp"),
       path.join(ROOT, "assets/pigbang-logo-nav.webp")
     ])];
-    const raw = files.reduce((sum, file) => sum + fs.statSync(file).size, 0);
-    const compressed = files.reduce((sum, file) => sum + brotliSize(fs.readFileSync(file)), 0);
+    const raw = files.reduce((sum, file) => sum + readAbsolute(file).length, 0);
+    const compressed = files.reduce((sum, file) => sum + brotliSize(readAbsolute(file)), 0);
     assert.ok(raw <= rawBudgetKiB * 1024, `${htmlFile} direct payload is ${kib(raw)} raw; budget is ${rawBudgetKiB} KiB`);
     assert.ok(compressed <= brotliBudgetKiB * 1024, `${htmlFile} direct payload is ${kib(compressed)} Brotli; budget is ${brotliBudgetKiB} KiB`);
   }

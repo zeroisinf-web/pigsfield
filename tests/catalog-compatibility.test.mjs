@@ -6,7 +6,8 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (name) => fs.readFileSync(path.join(ROOT, name), "utf8");
+// Normalize CRLF so the source-slice markers below match on Windows checkouts too.
+const read = (name) => fs.readFileSync(path.join(ROOT, name), "utf8").replace(/\r\n/g, "\n");
 
 function slug(value) {
   const result = String(value || "resource")

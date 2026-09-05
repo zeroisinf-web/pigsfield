@@ -6,7 +6,9 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const siteSource = fs.readFileSync(path.join(ROOT, "js", "site.js"), "utf8");
+// Normalize CRLF so the source-slice markers below match on Windows checkouts too.
+const readSource = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8").replace(/\r\n/g, "\n");
+const siteSource = readSource("js", "site.js");
 
 function loadResourceResolver() {
   const start = siteSource.indexOf("  const RESOURCE_ORGANIZATIONS");
@@ -107,7 +109,7 @@ test("catalog and PigBang share one resolver and emit one main content symbol", 
   ];
 
   for (const [fileName, functionName] of renderers) {
-    const source = fs.readFileSync(path.join(ROOT, "js", fileName), "utf8");
+    const source = readSource("js", fileName);
     const body = source.match(new RegExp(`function\\s+${functionName}\\(entry\\)\\s*\\{([\\s\\S]*?)\\n  \\}`))?.[1] || "";
     assert.match(body, /PF\.resourceSymbolFor\s*\(/, `${fileName} must use the shared resolver`);
     assert.match(body, /\btitle\s*:/, `${fileName} must provide a canonical title`);

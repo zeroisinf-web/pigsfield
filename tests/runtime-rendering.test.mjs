@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const text = (name) => fs.readFileSync(path.join(ROOT, name), "utf8");
+const text = (name) => fs.readFileSync(path.join(ROOT, name), "utf8").replace(/\r\n/g, "\n");
 
 test("closed exam panels do not construct their large bodies at startup", () => {
   const source = text("js/exams-page.js");

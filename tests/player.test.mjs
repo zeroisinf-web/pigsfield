@@ -6,7 +6,7 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const playerSource = fs.readFileSync(path.join(ROOT, "js", "player.js"), "utf8");
+const playerSource = fs.readFileSync(path.join(ROOT, "js", "player.js"), "utf8").replace(/\r\n/g, "\n");
 const context = vm.createContext({
   URL,
   window: { PF: {} },
