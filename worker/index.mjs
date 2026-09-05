@@ -1,9 +1,11 @@
 import { handleAccountRoute } from "./account-routes.mjs";
 const MODELS = Object.freeze({
-  "gemma-4-26b-a4b-it": Object.freeze({
-    id: "@cf/google/gemma-4-26b-a4b-it",
-    name: "gemma-4-26b-a4b-it",
-    tokenField: "max_completion_tokens"
+  "llama-4-scout-17b-16e-instruct": Object.freeze({
+    id: "@cf/meta/llama-4-scout-17b-16e-instruct",
+    name: "llama-4-scout-17b-16e-instruct",
+    // Llama takes max_tokens; Gemma took max_completion_tokens. Getting this wrong does
+    // not error, it silently ignores the cap, so the field travels with the model.
+    tokenField: "max_tokens"
   })
 });
 

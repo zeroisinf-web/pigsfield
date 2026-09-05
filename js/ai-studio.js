@@ -5,7 +5,7 @@
   const MAX_PROMPT_LENGTH = 1800;
   const TEXT_ENDPOINT = new URL("/api/ai", window.location.origin).href;
   const IMAGE_ENDPOINT = "https://image.pollinations.ai/prompt/";
-  const DEFAULT_TEXT_MODEL = "gemma-4-26b-a4b-it";
+  const DEFAULT_TEXT_MODEL = "llama-4-scout-17b-16e-instruct";
   const IMAGE_MODEL = "sana";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const trackedUrls = new Set();
@@ -72,7 +72,7 @@
         <div class="ai-control-bar">
           <div class="ai-model-tag">
             <span class="model-icon">◈</span>
-            <span class="model-name">Gemma 4 26B A4B</span>
+            <span class="model-name">Llama 4 Scout 17B</span>
             <span class="model-status-dot" title="Online"></span>
           </div>
 

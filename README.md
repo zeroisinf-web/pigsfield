@@ -96,7 +96,9 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 
 Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly one selectable model hosted by Cloudflare Workers AI:
 
-- `gemma-4-26b-a4b-it` — Google's efficient reasoning model, served as `@cf/google/gemma-4-26b-a4b-it`. Visitors need no login or additional provider key.
+- `llama-4-scout-17b-16e-instruct` — Meta's mixture-of-experts model, served as `@cf/meta/llama-4-scout-17b-16e-instruct`. Visitors need no login or additional provider key.
+
+It replaced `gemma-4-26b-a4b-it` for stronger multilingual answering, which matters for a mostly Indian audience. It costs roughly 2.8x more per output token ($0.85 vs $0.30 per million), so the daily ceiling in `DAILY_AI_CALL_BUDGET` matters more than it did — see the spending controls above.
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
