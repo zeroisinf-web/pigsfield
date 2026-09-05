@@ -60,7 +60,8 @@ To turn it on:
 
 ```bash
 npx wrangler d1 create pigsfield
-# put the printed database_id into wrangler.jsonc
+# add the printed database_id to wrangler.jsonc; the binding is documented there but not
+# declared, because a placeholder id cannot deploy
 npx wrangler d1 execute pigsfield --remote --file=worker/schema.sql
 npx wrangler secret put ACCOUNT_PEPPER      # any long random string
 npx wrangler secret put RESEND_API_KEY      # or swap sendMagicLink() for another provider
@@ -97,6 +98,10 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly one selectable model hosted by Cloudflare Workers AI:
 
 - `llama-4-scout-17b-16e-instruct` — Meta's mixture-of-experts model, served as `@cf/meta/llama-4-scout-17b-16e-instruct`. Visitors need no login or additional provider key.
+
+The daily spend ceiling (`DAILY_AI_CALL_BUDGET`) needs the `AI_BUDGET` Durable Object
+binding, which `wrangler.jsonc` documents but does not declare. Until it is added the
+per-address rate limits apply but nothing bounds the day's total spend.
 
 It replaced `gemma-4-26b-a4b-it` for stronger multilingual answering, which matters for a mostly Indian audience. It costs roughly 2.8x more per output token ($0.85 vs $0.30 per million), so the daily ceiling in `DAILY_AI_CALL_BUDGET` matters more than it did — see the spending controls above.
 
