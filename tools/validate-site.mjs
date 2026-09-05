@@ -4,37 +4,11 @@ import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { TOPICS, build as buildTopics } from "./build-topics.mjs";
+import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
+import { renderSitemap } from "./build-sitemap.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
-const REQUIRED_ROUTES = [
-  "/",
-  "/about/",
-  "/accessibility/",
-  "/ai/",
-  "/editorial/",
-  "/exams/",
-  "/learn/",
-  "/privacy/",
-  "/rights/",
-  "/skills/",
-  "/submit/",
-  "/tools/",
-  "/watch/",
-  // Generated per-stage landing pages. Slugs come from tools/build-topics.mjs so
-  // the generator and the validator can never disagree about which routes exist.
-  ...TOPICS.map((topic) => `/learn/${topic.slug}/`)
-];
-const SITE_ORIGIN = "https://pigsfield.com";
-// lastmod is a claim about content, so it is pinned rather than generated: a date that
-// moves on every deploy is a freshness signal the page has not earned, and SEO-GROWTH.md
-// rules out that kind of trick. Bump a route here only when its content actually changed.
-const SITEMAP_LASTMOD_DEFAULT = "2026-07-15";
-const SITEMAP_LASTMOD = new Map([
-  ["/learn/", "2026-09-05"],                       // now links out to the per-stage pages
-  ["/watch/", "2026-09-05"],                       // PigBang brand mark restored
-  ...TOPICS.map((topic) => [`/learn/${topic.slug}/`, "2026-09-05"])  // new pages
-]);
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -50,7 +24,7 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/submit/", { pageType: "ContactPage", breadcrumb: true }],
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
-  ...TOPICS.map((topic) => [`/learn/${topic.slug}/`, { pageType: "CollectionPage", breadcrumb: true }])
+  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
 const DATA_MINIMUMS = { school: 171, teach: 24, tools: 45, govt: 40, pigbang: 500 };
@@ -372,11 +346,15 @@ function checkSeoInfrastructure() {
     const lastmod = entry[1].match(/<lastmod>([^<]+)<\/lastmod>/i)?.[1]?.trim() || "";
     const changefreq = entry[1].match(/<changefreq>([^<]+)<\/changefreq>/i)?.[1]?.trim() || "";
     const priority = entry[1].match(/<priority>([^<]+)<\/priority>/i)?.[1]?.trim() || "";
-    const expectedLastmod = SITEMAP_LASTMOD.get(new URL(loc).pathname) || SITEMAP_LASTMOD_DEFAULT;
+    const expectedLastmod = SITEMAP_LASTMOD.get(new URL(loc).pathname);
     check(lastmod === expectedLastmod, sitemapFile, `sitemap lastmod for ${loc} must be ${expectedLastmod}, not ${lastmod || "(missing)"}`);
     check(["weekly", "monthly", "yearly"].includes(changefreq), sitemapFile, `sitemap changefreq is invalid for ${loc}`);
     check(/^(?:0(?:\.\d)?|1(?:\.0)?)$/.test(priority), sitemapFile, `sitemap priority is invalid for ${loc}`);
   });
+
+  // sitemap.xml is generated from tools/routes.mjs, so hand edits and forgotten
+  // regenerations both surface here rather than as a silently wrong sitemap in production.
+  check(sitemap === renderSitemap(), sitemapFile, 'sitemap.xml is out of date with tools/routes.mjs — run "npm run build:sitemap"');
 }
 
 function checkNotFoundPage() {
