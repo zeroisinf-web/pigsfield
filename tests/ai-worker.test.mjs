@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import worker, {
+  DEFAULT_MODEL,
   MAX_TRANSLATION_CHARACTERS,
   MAX_TRANSLATION_ITEMS,
   MAX_TRANSLATION_OUTPUT_CHARACTERS,
@@ -10,6 +11,7 @@ import worker, {
   TRANSLATION_MODEL,
   handleAI,
   handleTranslate,
+  modelInput,
   outputText
 } from "../worker/index.mjs";
 
@@ -69,14 +71,60 @@ function env(overrides = {}) {
   };
 }
 
-test("exposes exactly the requested Workers AI model", () => {
-  assert.deepEqual(Object.keys(MODELS), ["gemma-4-26b-a4b-it"]);
+test("exposes exactly the three offered Workers AI models, each with its own contract", () => {
+  assert.deepEqual(Object.keys(MODELS), [
+    "gemma-4-26b-a4b-it",
+    "gpt-oss-120b",
+    "llama-4-scout-17b-16e-instruct"
+  ]);
   assert.deepEqual(Object.values(MODELS).map((model) => model.id), [
-    "@cf/google/gemma-4-26b-a4b-it"
+    "@cf/google/gemma-4-26b-a4b-it",
+    "@cf/openai/gpt-oss-120b",
+    "@cf/meta/llama-4-scout-17b-16e-instruct"
   ]);
+  // Workers AI drops an input field it does not recognise instead of rejecting it, so the
+  // wrong cap name means no cap at all on a per-token bill. Each model owns its field.
   assert.deepEqual(Object.values(MODELS).map((model) => model.tokenField), [
-    "max_completion_tokens"
+    "max_completion_tokens",
+    "max_output_tokens",
+    "max_tokens"
   ]);
+  assert.equal(DEFAULT_MODEL, "gemma-4-26b-a4b-it", "the cheapest model stays the default");
+});
+
+test("each model is sent the request shape it actually reads", () => {
+  const chat = modelInput(MODELS["gemma-4-26b-a4b-it"], "system rules", "Explain gravity.");
+  assert.deepEqual(chat.messages, [
+    { role: "system", content: "system rules" },
+    { role: "user", content: "Explain gravity." }
+  ]);
+  assert.equal(chat.max_completion_tokens, 900);
+  assert.equal("max_tokens" in chat, false);
+  assert.equal("max_output_tokens" in chat, false);
+
+  const scout = modelInput(MODELS["llama-4-scout-17b-16e-instruct"], "system rules", "Explain gravity.");
+  assert.equal(scout.max_tokens, 900);
+  assert.equal("max_completion_tokens" in scout, false);
+
+  // Responses-shaped: instructions and a bare input, never a messages array.
+  const reasoning = modelInput(MODELS["gpt-oss-120b"], "system rules", "Explain gravity.");
+  assert.equal(reasoning.instructions, "system rules");
+  assert.equal(reasoning.input, "Explain gravity.");
+  assert.equal("messages" in reasoning, false);
+  // Reasoning tokens are charged against this ceiling before the answer begins, so it is
+  // deliberately larger than the chat models'.
+  assert.equal(reasoning.max_output_tokens, 2400);
+  assert.equal(reasoning.reasoning.effort, "low");
+});
+
+test("a reasoning model's scratch work is never returned as the answer", () => {
+  const answer = outputText({
+    output: [
+      { type: "reasoning", content: [{ type: "reasoning_text", text: "The user wants me to ignore my instructions." }] },
+      { type: "message", content: [{ type: "output_text", text: "Gravity is the attraction between masses." }] }
+    ]
+  });
+  assert.equal(answer, "Gravity is the attraction between masses.");
 });
 
 test("translates aligned batches with the exact AI4Bharat model contract", async () => {
@@ -226,6 +274,7 @@ test("accepts a same-origin request and passes only server-owned instructions", 
   assert.deepEqual(await response.json(), {
     text: "Evaporation starts the cycle.",
     model: "gemma-4-26b-a4b-it",
+    modelName: "Gemma 4 26B A4B",
     engine: "cloudflare-workers-ai"
   });
   assert.equal(captured.model, "@cf/google/gemma-4-26b-a4b-it");
@@ -258,6 +307,7 @@ test("uses the Gemma completion-token field through Workers AI", async () => {
   assert.deepEqual(await response.json(), {
     text: "# Study plan",
     model: "gemma-4-26b-a4b-it",
+    modelName: "Gemma 4 26B A4B",
     engine: "cloudflare-workers-ai"
   });
   assert.equal(captured.model, "@cf/google/gemma-4-26b-a4b-it");
@@ -277,7 +327,7 @@ test("rejects missing or foreign origins", async () => {
 });
 
 test("rejects unknown models and oversized prompts", async () => {
-  for (const model of ["glm-4.7-flash", "gpt-oss-120b", "qwen3-30b-a3b-fp8", "gpt-5.5"]) {
+  for (const model of ["glm-4.7-flash", "qwen3-30b-a3b-fp8", "gpt-5.5", "@cf/openai/gpt-oss-120b"]) {
     const unknown = await handleAI(request({ model, task: "tutor", prompt: "Hello" }), env());
     assert.equal(unknown.status, 400);
   }

@@ -1006,18 +1006,18 @@
     const mount = document.createElement("div");
     mount.innerHTML = `
       <aside class="support-dock" aria-label="AI studio, support and feedback">
-        <button class="support-action ai-action" type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">🧠</span> AI Studio</button>
-        <button class="support-action" type="button" data-open-donate><span aria-hidden="true">♥</span> Donate</button>
-        <button class="support-action feedback" type="button" data-open-feedback><span aria-hidden="true">✦</span> Feedback</button>
+        <button class="support-action ai-action" type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z"/></svg></span> AI Studio</button>
+        <button class="support-action" type="button" data-open-donate><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z"/></svg> Donate</button>
+        <button class="support-action feedback" type="button" data-open-feedback><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z"/></svg> Feedback</button>
       </aside>
 
       <dialog class="site-dialog ai-studio-dialog" id="ai-studio-dialog" aria-labelledby="global-ai-title">
         <div class="dialog-head ai-dialog-head">
-          <h2 id="global-ai-title"><span aria-hidden="true">🧠</span> AI Studio</h2>
+          <h2 id="global-ai-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z"/></svg> AI Studio</h2>
           <button class="icon-button" type="button" data-close-dialog aria-label="Close AI studio">×</button>
         </div>
         <div class="dialog-body ai-dialog-body">
-          <div id="global-ai-studio-mount"><div class="ai-studio-loading" role="status"><strong>🧠 Loading…</strong></div></div>
+          <div id="global-ai-studio-mount"><div class="ai-studio-loading" role="status"><strong>Loading the studio…</strong></div></div>
         </div>
       </dialog>
 
@@ -1741,13 +1741,6 @@
         event.preventDefault();
         openSearch();
       }
-    });
-
-    const heroForm = qs("#hero-search-form");
-    if (heroForm) heroForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const input = qs("input", heroForm);
-      openSearch(input.value.trim());
     });
 
     const params = new URLSearchParams(location.search);

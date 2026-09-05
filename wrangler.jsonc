@@ -82,6 +82,17 @@
         "limit": 60,
         "period": 60
       }
+    },
+    {
+      // A PigBang screen paints 24 cards, and "Load 24 more" adds a screenful at a time.
+      // 120/minute leaves room for a fast scroll while still bounding what one address can
+      // make the Worker fetch upstream. Cache hits are answered before this runs.
+      "name": "POSTER_IP_RATE_LIMITER",
+      "namespace_id": "2026090501",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
     }
   ],
   "compatibility_flags": [

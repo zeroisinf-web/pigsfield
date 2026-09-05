@@ -133,3 +133,41 @@ test("the contrast helper matches known WCAG values", () => {
   assert.ok(Math.abs(contrast(rgb("#ffffff"), rgb("#ef5d44")) - 3.32) < 0.02);
   assert.ok(Math.abs(contrast(rgb("#ffffff"), rgb("#ff755e")) - 2.64) < 0.02);
 });
+
+test("no later rule outranks an inverted card and strands its light text", () => {
+  // The second shape this defect takes: not a wrong colour, a lost background.
+  //
+  // A redesign pass added `.section.band .path-card { background: var(--paper) }`. Two
+  // classes and an element outrank `.path-card.featured` and
+  // `.path-card[data-pigbang-link]` however the file is ordered, so those cards kept their
+  // near-white text and lost the dark fill under it: the PigBang and Competitive Exams
+  // headings shipped as white-on-cream, unreadable, and no token check could see it because
+  // every token involved was correct.
+  //
+  // Any default for these cards belongs on `.path-card` at one class, where the inverted
+  // variants can still win.
+  const variants = [".featured", "[data-pigbang-link]"];
+  /** Class + attribute + pseudo-class count — the middle column of CSS specificity. */
+  const rank = (selector) => (selector.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[a-z-]+(?:\([^)]*\))?/g) || []).length;
+
+  // Scan declaration blocks rather than pattern-matching them: a rule preceded by a comment
+  // or sitting inside a media query still has to be seen.
+  const offenders = [];
+  const source = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const block of source.split("}")) {
+    const brace = block.indexOf("{");
+    if (brace < 0) continue;
+    const selectorList = block.slice(0, brace).split(/[{@]/).pop();
+    const body = block.slice(brace + 1);
+    if (!/(?:^|[\s;])background(?:-color|-image)?\s*:/.test(body)) continue;
+    for (const selector of selectorList.split(",").map((part) => part.trim())) {
+      if (!selector.includes(".path-card")) continue;
+      // Only rules whose subject is the card itself can replace the card's own background.
+      const subject = selector.split(/\s*[>+~]\s*|\s+/).pop() || "";
+      if (!subject.includes(".path-card")) continue;
+      if (variants.some((variant) => subject.includes(variant))) continue;
+      if (rank(selector) > 1) offenders.push(selector);
+    }
+  }
+  assert.deepEqual(offenders, [], `these rules outrank an inverted path card's background:\n${offenders.join("\n")}`);
+});

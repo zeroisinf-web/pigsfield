@@ -5,7 +5,7 @@
 // nobody remembered to bump: the site shipped a redesign and every returning visitor kept
 // being served the previous stylesheet out of this cache, because a cache whose name has not
 // changed is never discarded. A digest cannot be forgotten.
-const CACHE = "pigsfield-a3b79ee46c01";
+const CACHE = "pigsfield-670b075956f3";
 const CORE = [
   "./",
   "./404.html",
@@ -38,6 +38,12 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || request.headers.has("range")) return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // API routes answer for themselves. /api/poster in particular is same-origin, GET and not
+  // a .css/.js path, so without this it fell into the cache-first branch below: every poster
+  // would be stored in the shell cache AND refetched in the background on every hit, which
+  // doubles the Worker requests the endpoint exists to avoid. Its own 30-day Cache-Control
+  // is the right layer for that, and the others must never be served from a cache at all.
+  if (url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {
     event.respondWith(Promise.resolve(event.preloadResponse).then((preloaded) => preloaded || fetch(request)).then((response) => {

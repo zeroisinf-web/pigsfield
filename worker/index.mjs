@@ -1,11 +1,46 @@
 import { handleAccountRoute } from "./account-routes.mjs";
+import { handlePoster } from "./poster.mjs";
+// Every model here is served by the Cloudflare Workers AI binding, which is what makes the
+// studio's promise true regardless of which one is picked: no visitor account, no additional
+// provider key, no model download. That is a property of the endpoint, not of the model.
+//
+// Three, not one, because they are not interchangeable and the differences are real:
+//   - Gemma is the default because it is by far the cheapest to run ($0.30 per million
+//     output tokens against $0.35 and $0.85), which is what keeps the studio free to offer.
+//   - GPT-OSS 120B is the strongest open-weights model on the platform. It answers in the
+//     Responses shape, not the chat-completions shape, and its cap counts the reasoning it
+//     does before the answer — hence the separate builder and the larger ceiling below.
+//   - Llama 4 Scout is the best of the three on Indian languages, which is most of what this
+//     site is asked in.
+// A model added here must bring its own request shape with it. Workers AI ignores unknown
+// input fields rather than rejecting them, so sending "max_tokens" to a model that reads
+// "max_completion_tokens" silently drops the output cap on a per-token bill.
 const MODELS = Object.freeze({
   "gemma-4-26b-a4b-it": Object.freeze({
     id: "@cf/google/gemma-4-26b-a4b-it",
-    name: "gemma-4-26b-a4b-it",
-    tokenField: "max_completion_tokens"
+    name: "Gemma 4 26B A4B",
+    shape: "chat",
+    tokenField: "max_completion_tokens",
+    maxOutputTokens: 900
+  }),
+  "gpt-oss-120b": Object.freeze({
+    id: "@cf/openai/gpt-oss-120b",
+    name: "GPT-OSS 120B",
+    shape: "responses",
+    tokenField: "max_output_tokens",
+    // Reasoning tokens are charged against this ceiling before a single word of the answer
+    // is written, so 900 would routinely return an empty completion.
+    maxOutputTokens: 2400
+  }),
+  "llama-4-scout-17b-16e-instruct": Object.freeze({
+    id: "@cf/meta/llama-4-scout-17b-16e-instruct",
+    name: "Llama 4 Scout 17B",
+    shape: "chat",
+    tokenField: "max_tokens",
+    maxOutputTokens: 900
   })
 });
+const DEFAULT_MODEL = "gemma-4-26b-a4b-it";
 
 const MAX_PROMPT_LENGTH = 1800;
 // Ceiling on model calls per India-calendar day, across every visitor. Sized so a normal
@@ -243,6 +278,34 @@ function taskInstruction(task, format) {
   return BASE_INSTRUCTION + " Give a readable answer with useful line breaks and a concise conclusion.";
 }
 
+/**
+ * The request body for one model, in the shape that model actually reads.
+ *
+ * The cap always travels under the model's own field name: Workers AI drops an unknown input
+ * field silently, so getting this wrong removes the output ceiling instead of erroring.
+ */
+function modelInput(model, instruction, prompt) {
+  const input = model.shape === "responses"
+    ? {
+      instructions: instruction,
+      input: prompt,
+      // Enough deliberation to be worth choosing this model, not so much that the answer
+      // budget is spent before the answer starts.
+      reasoning: { effort: "low" }
+    }
+    : {
+      messages: [
+        { role: "system", content: instruction },
+        { role: "user", content: prompt }
+      ],
+      stream: false,
+      temperature: 0.55,
+      top_p: 0.9
+    };
+  input[model.tokenField] = model.maxOutputTokens;
+  return input;
+}
+
 function contentText(content) {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) return content.map(contentText).filter(Boolean).join("\n");
@@ -258,7 +321,12 @@ function outputText(result) {
   const choiceText = contentText(choice && choice.message && choice.message.content) || contentText(choice && choice.text);
   if (choiceText) return choiceText;
   if (Array.isArray(result.output)) {
-    return result.output.map((item) => contentText(item && item.content) || contentText(item)).filter(Boolean).join("\n");
+    // A reasoning model returns its scratch work alongside the answer, as separate typed
+    // items. Take the answer when the response distinguishes them: BASE_INSTRUCTION asks the
+    // model not to reveal chain-of-thought, and an instruction is not an enforcement.
+    const answers = result.output.filter((item) => item && item.type === "message");
+    const items = answers.length ? answers : result.output.filter((item) => !item || !/^reasoning/.test(String(item.type || "")));
+    return items.map((item) => contentText(item && item.content) || contentText(item)).filter(Boolean).join("\n");
   }
   return "";
 }
@@ -288,7 +356,8 @@ async function handleAI(request, env) {
   if (parsed.response) return parsed.response;
   const body = parsed.body;
 
-  const model = MODELS[String(body && body.model || "")];
+  const modelKey = String(body && body.model || "");
+  const model = MODELS[modelKey];
   const task = ["tutor", "document"].includes(body && body.task) ? body.task : "";
   const prompt = String(body && body.prompt || "").trim();
   const format = ["md", "txt", "html"].includes(body && body.format) ? body.format : "txt";
@@ -300,22 +369,14 @@ async function handleAI(request, env) {
   if (!env.AI || typeof env.AI.run !== "function") return json({ error: "AI capacity is not configured." }, 503);
 
   try {
-    const input = {
-      messages: [
-        { role: "system", content: taskInstruction(task, format) },
-        { role: "user", content: prompt }
-      ],
-      stream: false
-    };
-    input[model.tokenField] = 900;
-    input.temperature = 0.55;
-    input.top_p = 0.9;
-    const result = await env.AI.run(model.id, input, {
+    const result = await env.AI.run(model.id, modelInput(model, taskInstruction(task, format), prompt), {
       gateway: { id: "default", collectLog: false }
     });
     const text = finalText(outputText(result));
     if (!text) return json({ error: "The model returned no usable answer." }, 502);
-    return json({ text, model: model.name, engine: "cloudflare-workers-ai" });
+    // The key, so a caller gets back the identifier it sent rather than a label that can be
+    // reworded; the display name travels beside it for the studio to print.
+    return json({ text, model: modelKey, modelName: model.name, engine: "cloudflare-workers-ai" });
   } catch (_) {
     return json({ error: "Shared AI capacity is temporarily unavailable. Please try again shortly." }, 503);
   }
@@ -422,6 +483,8 @@ export default {
     if (url.pathname === "/api/ai") return handleAI(request, env);
     if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
+    // Same-origin cover art for the catalog. See worker/poster.mjs for why it exists.
+    if (url.pathname === "/api/poster") return handlePoster(request, env, url);
     // Optional sign-in. Answers a clear "not enabled" when no D1 database is bound, so a
     // deployment without accounts behaves exactly as it did before.
     if (url.pathname.startsWith("/api/auth/") || url.pathname === "/api/saved") {
@@ -433,6 +496,9 @@ export default {
 };
 
 export {
+  DEFAULT_MODEL,
+  handlePoster,
+  modelInput,
   MAX_TRANSLATION_CHARACTERS,
   MAX_TRANSLATION_ITEMS,
   MAX_TRANSLATION_OUTPUT_CHARACTERS,

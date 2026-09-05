@@ -223,7 +223,9 @@
         button.className = "player-playlist-item";
         button.dataset.playlistIndex = String(index);
         button.setAttribute("aria-label", `Play playlist video ${index + 1}`);
-        image.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+        // Same-origin, like every other thumbnail on the site: the player is the
+        // privacy-enhanced surface, so it must not call Google to draw its own sidebar.
+        image.src = `/api/poster?u=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
         image.alt = "";
         image.loading = "lazy";
         image.decoding = "async";

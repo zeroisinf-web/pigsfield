@@ -11,7 +11,8 @@ name: Validate Pigsfield
 # damage was limited, but a half-working public mirror is not something to keep by accident.
 #
 # To finish removing it, switch Pages off in Settings -> Pages -> Source: None. Deleting this
-# workflow alone stops future deploys but leaves the last one published.
+# workflow alone stops future deploys but leaves the last one published. The .nojekyll file
+# that went with it has been deleted too — it only ever meant anything to Pages.
 #
 # To restore Pages deployment, revert this file to the previous pages.yml.
 

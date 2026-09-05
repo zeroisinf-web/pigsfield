@@ -126,27 +126,42 @@
     return `<span class="source-icon source-mark source-mark-${brand}" aria-hidden="true">${sourceMarkParts[brand] || sourceMarkParts.website}</span>`;
   }
 
-// Real artwork, derived from the links an entry already has — no API key, no build step
-  // and no stored map that could drift out of sync with these positional ids.
+  // Real cover art for every entry, resolved same-origin by /api/poster.
   //
-  // Only two sources can be resolved this way. A YouTube video id maps straight to its
-  // thumbnail, and a Steam app id to its store header. Channels, playlists and the
-  // streaming services cannot: youtube.com/oembed rejects channel URLs outright, and
-  // Netflix, Prime and Hotstar publish no derivable image path. Those keep the generated
-  // symbol until a licensed source (TMDB) is wired in.
-  const YOUTUBE_VIDEO = /(?:youtube\.com\/watch\?(?:[^#]*&)?v=|youtu\.be\/|youtube\.com\/(?:shorts|live|embed)\/)([A-Za-z0-9_-]{11})/;
-  const STEAM_APP = /store\.steampowered\.com\/app\/(\d+)/;
+  // Deriving artwork from the link itself only ever worked for two providers — a YouTube
+  // video id and a Steam app id — so most of the grid fell back to a generated tile. Every
+  // provider here publishes cover art as Open Graph metadata for link previews, and the
+  // Worker reads it at the edge and streams the image back from this origin. The browser
+  // therefore makes no third-party request to paint a card, and the image is lazy so a card
+  // that is never scrolled to never costs anything.
+  //
+  // Entries carry several links. Preference goes to the one whose provider publishes the
+  // most representative art: a specific video or title page over a store listing, and a
+  // store listing over a channel or a bare homepage.
+  const ARTWORK_PREFERENCE = [
+    /(?:youtube\.com\/watch|youtu\.be\/|youtube\.com\/(?:shorts|live|embed)\/)/i,
+    /(?:netflix\.com|hotstar\.com|primevideo\.com|amazon\.[a-z.]+\/(?:gp\/video|dp)|jiocinema\.com|sonyliv\.com|zee5\.com|mubi\.com|criterion|apple\.com\/[a-z-]+\/movie)/i,
+    /archive\.org\/details\//i,
+    /(?:store\.steampowered\.com\/app|play\.google\.com\/store|apps\.apple\.com)/i,
+    /[?&]list=/i,
+    /./
+  ];
+
+  function artworkUrl(entry) {
+    const urls = entryUrls(entry).filter((url) => /^https:/i.test(url));
+    for (const pattern of ARTWORK_PREFERENCE) {
+      const match = urls.find((url) => pattern.test(url));
+      if (match) return match;
+    }
+    return "";
+  }
 
   function artworkFor(entry) {
-    for (const url of entryUrls(entry)) {
-      const video = url.match(YOUTUBE_VIDEO);
-      if (video) return { src: `https://i.ytimg.com/vi/${video[1]}/mqdefault.jpg`, width: 320, height: 180 };
-    }
-    for (const url of entryUrls(entry)) {
-      const app = url.match(STEAM_APP);
-      if (app) return { src: `https://cdn.cloudflare.steamstatic.com/steam/apps/${app[1]}/header.jpg`, width: 460, height: 215 };
-    }
-    return null;
+    const source = artworkUrl(entry);
+    if (!source) return null;
+    // 16:9 at the size the tile actually paints, so the row reserves its space before the
+    // image arrives and nothing below it jumps.
+    return { src: `/api/poster?u=${encodeURIComponent(source)}`, width: 480, height: 270 };
   }
 
   function watchSymbol(entry) {
@@ -330,6 +345,15 @@
   grid.addEventListener("error", (event) => {
     const image = event.target;
     if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
+  }, true);
+  // The generated symbol is the fallback, so it stays painted until real art arrives — at
+  // which point it must get out of the way rather than sit on top of the poster. "load"
+  // does not bubble either, hence the capture phase.
+  grid.addEventListener("load", (event) => {
+    const image = event.target;
+    if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) {
+      image.parentElement.classList.add("has-art");
+    }
   }, true);
   grid.addEventListener("click", handleGridClick);
   input.addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { visible = PAGE_SIZE; render(); }, 160); });
