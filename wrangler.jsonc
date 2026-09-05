@@ -19,11 +19,19 @@
       {
         "name": "VISITOR_COUNTER",
         "class_name": "MonthlyVisitorCounter"
+      },
+      {
+        "name": "AI_BUDGET",
+        "class_name": "DailyAIBudget"
       }
     ]
   },
   "exports": {
     "MonthlyVisitorCounter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    },
+    "DailyAIBudget": {
       "type": "durable-object",
       "storage": "sqlite"
     }
