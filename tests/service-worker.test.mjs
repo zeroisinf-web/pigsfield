@@ -120,9 +120,14 @@ test("navigations remain network-first with the preload response", async () => {
   assert.equal(response.preloaded, true, "navigation preload must be used when present");
 });
 
-test("cross-origin and non-GET requests are left alone", () => {
+test("cross-origin, API and non-GET requests are left alone", () => {
   const { handlers, calls } = loadWorker();
-  assert.equal(respondWith(handlers.fetch, req("https://i.ytimg.com/vi/x/mqdefault.jpg")), undefined);
+  assert.equal(respondWith(handlers.fetch, req("https://fonts.example/inter.woff2")), undefined);
   assert.equal(respondWith(handlers.fetch, req("https://pigsfield.com/api/ai", { method: "POST" })), undefined);
-  assert.equal(calls.fetched.length, 0, "the worker must not touch either");
+  // Same-origin and GET, so this would otherwise land in the cache-first branch and be
+  // refetched in the background on every hit — doubling the upstream reads /api/poster
+  // exists to avoid. Its own Cache-Control is what caches it.
+  assert.equal(respondWith(handlers.fetch, req("https://pigsfield.com/api/poster?u=https%3A%2F%2Fexample.org%2Fa")), undefined);
+  assert.equal(respondWith(handlers.fetch, req("https://pigsfield.com/api/visitors")), undefined);
+  assert.equal(calls.fetched.length, 0, "the worker must not touch any of them");
 });

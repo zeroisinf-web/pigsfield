@@ -7,12 +7,12 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 ## What is included
 
 - Nursery to PhD learning paths with highlighted Teacher Training after PhD
-- PigBang educational media with lazy, privacy-enhanced YouTube playback
+- PigBang educational media with real cover art for every entry and lazy, privacy-enhanced YouTube playback
 - Competitive Exams roadmaps, mock tests and subject collections
 - Vocational & Business resources shown directly
 - Digital Tools with six directly visible categories and practical tutorials
 - Expandable RTI, grievance, legal-aid and Make Govt Accountable categories
-- An always-available AI Studio with no visitor login, additional provider key or model download for tutoring, images, documents, capability-gated browser voice previews and browser-made music
+- An always-available AI Studio with a choice of three hosted models and no visitor login, additional provider key or model download, for tutoring, images, documents, capability-gated browser voice previews and browser-made music
 - Persistent in-page Hindi translation: on-device where supported, otherwise through a rate-limited same-origin Cloudflare AI4Bharat route
 - Persistent AI Studio, Donate and Feedback controls
 - A best-effort monthly browser check-in total backed by a privacy-light Cloudflare Durable Object
@@ -46,8 +46,8 @@ npm test
 2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
 3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
 4. Turn on **Always Use HTTPS** in the Cloudflare dashboard (SSL/TLS → Edge Certificates). `worker/index.mjs` contains an http→https redirect, but `run_worker_first` in `wrangler.jsonc` is scoped to `/api/*`, so the Worker never runs for a page request and that redirect cannot fire for ordinary traffic. The `Strict-Transport-Security` header in `_headers` protects every visit after the first one; only the dashboard setting covers the first.
-5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER` and `VISITOR_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
-6. The three text choices use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
+5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER`, `VISITOR_RATE_LIMITER` and `POSTER_IP_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate`, `/api/poster` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
+6. The three text models use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
 
 ## Optional accounts (off by default)
 
@@ -93,18 +93,67 @@ Keep each link pointed at the original, lawful provider. Add a clear description
 
 Playback starts only after the visitor presses Play. The player uses YouTube's privacy-enhanced domain, sends a strict-origin referrer, supports video and playlist URLs, and always keeps an original-source fallback. Do not change the site referrer policy to `no-referrer`; YouTube needs site identity for embedded playback. Videos whose owners disable embedding must still open on their original YouTube page.
 
+## Cover art (`/api/poster`)
+
+Every PigBang card shows real cover art, and the visitor's browser fetches none of it from
+the provider.
+
+Deriving artwork from the link only ever worked for two of them — a YouTube video id maps to
+a thumbnail and a Steam app id to a store header — so most of the grid fell back to a
+generated tile with an emoji on it. But Netflix, Prime Video, Hotstar, the Play Store, the
+App Store, Internet Archive and YouTube channels all publish cover art already: as the Open
+Graph metadata they serve to link-preview crawlers. `worker/poster.mjs` reads it the same
+way, at the edge, and streams the image back from this origin.
+
+That means the browser contacts nobody to paint a card, `img-src` needs no exception beyond
+`'self'`, and a provider that blocks us costs one cached 404 rather than a broken tile on
+every visit — the generated symbol stays behind every poster and is revealed if the image
+does not arrive.
+
+The URL comes from a query string, so it is treated as attacker-controlled even though the
+catalog is a fixed list: https only, public DNS names only, no IP literals (a public-looking
+one can still resolve inside a private range), no ports, no `/api/` paths, bounded reads, a
+hard timeout, and a response that must actually be a raster image. SVG is refused — it is a
+document, not a poster.
+
+Cost is bounded by caching, not by hope: a resolved poster is held in the Cloudflare edge
+cache and in the browser for 30 days, a miss for 6 hours, and `POSTER_IP_RATE_LIMITER` caps
+what one address can make the Worker fetch upstream. `sw.js` deliberately skips `/api/`, or
+the service worker's cache-first branch would have refetched every poster in the background
+on every hit.
+
+Refresh a stale poster by clearing the Cloudflare cache for the URL; there is no stored image
+map to regenerate and nothing to keep in sync with the catalog.
+
 ## AI Studio boundaries
 
-Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly one selectable model hosted by Cloudflare Workers AI:
+Pigsfield does not ask visitors for an account or additional provider key. The studio loads
+only when its persistent dock button is opened, and offers three selectable models, all
+hosted by Cloudflare Workers AI:
 
-- `gemma-4-26b-a4b-it` — Google's efficient reasoning model, served as `@cf/google/gemma-4-26b-a4b-it`. Visitors need no login or additional provider key.
+- `gemma-4-26b-a4b-it` — the default. Google's efficient reasoning model, served as `@cf/google/gemma-4-26b-a4b-it`.
+- `gpt-oss-120b` — the strongest open-weights model on the platform, served as `@cf/openai/gpt-oss-120b`. Best for a hard problem; slower, and the only one that reasons before answering.
+- `llama-4-scout-17b-16e-instruct` — the best of the three on Indian languages, served as `@cf/meta/llama-4-scout-17b-16e-instruct`.
 
-Gemma is chosen for cost, not inertia. At $0.30 per million output tokens it is the
+"No login, no key, no download" is a property of the endpoint, not of the model behind it,
+so it holds for all three.
+
+Gemma stays the default for cost, not inertia. At $0.30 per million output tokens it is the
 cheapest text model on Workers AI by a wide margin — roughly 2.8x cheaper than
 `llama-4-scout-17b-16e-instruct` and over 10x cheaper than `qwen3.8-27b`. Against the
-10,000 Neurons/day free allocation that is about 730 answers a day rather than 260, which
-is the difference between the studio staying free to run and not. Swap it only with that
-trade in mind.
+10,000 Neurons/day free allocation that is about 730 answers a day on Gemma rather than 260
+on Scout, which is the difference between the studio staying free to run and not. The other
+two are there because they are genuinely better at something, and a visitor who needs that
+should not have to go elsewhere; make one of them the default only with that trade in mind.
+
+Each model reads a different request body, and Workers AI **ignores an input field it does
+not recognise rather than rejecting it** — so sending `max_tokens` to a model that reads
+`max_completion_tokens` silently removes the output cap on a per-token bill. The field name
+and the ceiling therefore travel with the model in the `MODELS` table, `modelInput()` is the
+only place that writes either, and `tests/ai-worker.test.mjs` asserts both that the right
+field is sent and that the others are absent. GPT-OSS also answers in the Responses shape
+rather than chat completions, and its ceiling counts the reasoning it does before the answer
+begins, which is why it is 2,400 rather than 900.
 
 The daily spend ceiling (`DAILY_AI_CALL_BUDGET`) needs the `AI_BUDGET` Durable Object
 binding, which `wrangler.jsonc` documents but does not declare. It is only worth adding on

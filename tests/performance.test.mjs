@@ -50,14 +50,16 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  // 19 KiB Brotli rather than 18: the stylesheet gained the .resource-warning treatment
-  // and the topic-page layout. Verified there is nothing dead left to reclaim first —
-  // every remaining unreferenced selector is composed at runtime (source-brand-${brand}
-  // and friends), so removing them would break the cards.
-  // 103 KiB raw for the phone above-the-fold rules. Checked for dead weight first: every
-  // remaining unreferenced selector is composed at runtime, so there is nothing to reclaim.
-  // Brotli is what a visitor downloads and barely moves — these are repetitive media rules.
-  withinBudget("css/site.css", { raw: 106 * 1024, gzip: 23 * 1024, brotli: 21 * 1024 });
+  // Raw came DOWN from 105.6 to 103.5 KiB: the replaced hero-guide poster, the dead
+  // .hero-search/.hero-grid rules, the transparent --depth-edge/--depth-highlight bevel
+  // layers and the invisible fixed grid overlay were all removed. Compressed sizes still
+  // rose ~0.4 KiB, because what went was repetitive (Brotli nearly free) and what arrived
+  // is not: the drawn path/pitch/studio marks that replaced emoji are unique path data.
+  // That is the deliberate trade — an emoji is a font the visitor's OS picks, so the icon
+  // row rendered differently on every device. Every unreferenced selector that remains is
+  // composed at runtime (source-brand-${brand} and friends); there is nothing left to
+  // reclaim without breaking the cards.
+  withinBudget("css/site.css", { raw: 104 * 1024, gzip: 24 * 1024, brotli: 22 * 1024 });
   // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
   withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
@@ -74,30 +76,35 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   const raw = shell.reduce((sum, item) => sum + item.length, 0);
   const gzipped = shell.reduce((sum, item) => sum + gzipSize(item), 0);
   const compressed = shell.reduce((sum, item) => sum + brotliSize(item), 0);
-  assert.ok(raw <= 205 * 1024, `home render shell is ${kib(raw)} raw; budget is 205 KiB`);
-  assert.ok(gzipped <= 58 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 58 KiB`);
-  assert.ok(compressed <= 48 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 48 KiB`);
+  // Raw is 4 KiB below the previous 205 KiB ceiling and the ceiling moves down with it.
+  // Compressed moved the other way for the reason above the stylesheet budget: unique SVG
+  // path data replaced repetitive rules that Brotli was compressing to almost nothing.
+  assert.ok(raw <= 201 * 1024, `home render shell is ${kib(raw)} raw; budget is 201 KiB`);
+  assert.ok(gzipped <= 59 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 59 KiB`);
+  assert.ok(compressed <= 49 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 49 KiB`);
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
-  // Re-baselined once the web font was counted (see localDependencies): these numbers are
-  // ~4% above what each route actually ships, so an accidental regression fails but a
-  // deliberate change does not need the table rewritten every time.
+  // Re-baselined after the emoji-to-drawn-mark pass: these numbers are ~2% above what each
+  // route actually ships, so an accidental regression fails but a deliberate change does
+  // not need the table rewritten every time. Every route also got smaller in raw bytes than
+  // the previous baseline — the stylesheet lost more than the markup gained.
   const routes = [
-    ["index.html", 304, 143],
-    ["learn/index.html", 413, 166],
-    ["skills/index.html", 353, 156],
-    ["tools/index.html", 358, 156],
-    ["rights/index.html", 433, 169],
-    ["exams/index.html", 378, 164],
-    ["watch/index.html", 523, 197],
-    ["about/index.html", 296, 142],
-    ["editorial/index.html", 294, 141],
-    ["accessibility/index.html", 294, 141],
-    ["privacy/index.html", 297, 142],
-    ["submit/index.html", 294, 141],
-    ["ai/index.html", 292, 140]
+    ["index.html", 309, 147],
+    ["learn/index.html", 418, 167],
+    ["skills/index.html", 359, 157],
+    ["tools/index.html", 364, 157],
+    ["rights/index.html", 438, 171],
+    ["exams/index.html", 384, 165],
+    ["watch/index.html", 531, 199],
+    ["about/index.html", 299, 144],
+    ["editorial/index.html", 296, 143],
+    ["accessibility/index.html", 296, 143],
+    ["privacy/index.html", 300, 144],
+    ["submit/index.html", 296, 143],
+    ["ai/index.html", 296, 143]
   ];
+
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([
       path.join(ROOT, htmlFile),
@@ -148,10 +155,11 @@ test("a phone reaches the useful part of a page without scrolling past a poster"
   assert.match(mobile, /@media \(max-width: 52rem\)/, "these rules must not touch desktop");
   assert.match(mobile, /\.page-hero \{ padding: 2rem 0 1\.4rem; \}/, "the catalogue hero must stay compact on phones");
   assert.match(mobile, /\.home-hero \{ padding: 1\.5rem 0 1\.2rem; \}/, "the homepage hero must stay compact on phones");
-  assert.match(mobile, /\.hero-guide-link \{ min-height: 0;/, "the guide must stay a compact row, not a 19rem poster");
-  // aspect-ratio here resolves width from height, which overflowed the visual out of its
-  // 76px column and covered the text. It must not come back.
-  assert.doesNotMatch(mobile, /\.guide-visual \{[^}]*aspect-ratio/, "guide-visual must size from its column, not an aspect ratio");
+  // The guide is one pill-shaped line under the hero actions on every width. The 19rem
+  // .hero-guide-card poster it replaced is gone, along with the mobile rules that used to
+  // fold it down; neither may come back and push the six paths below the fold again.
+  assert.match(css, /\.hero-guide \{\s*display: inline-flex;/, "the guide must stay a compact inline row");
+  assert.doesNotMatch(css, /hero-guide-card|guide-visual|guide-orbit|home-guide-mark|guide-copy/, "the replaced guide poster must stay deleted");
 });
 
 test("runtime work is deferred and long collections skip offscreen rendering", () => {

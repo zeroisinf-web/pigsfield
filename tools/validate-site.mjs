@@ -650,7 +650,13 @@ function checkPerformanceContracts() {
   if (fs.existsSync(assetsIgnoreFile)) {
     const assetsIgnore = fs.readFileSync(assetsIgnoreFile, "utf8");
     check(!/^tools\/\s*$/m.test(assetsIgnore), assetsIgnoreFile, "tools/ must not be excluded wholesale because it contains the public /tools/ page");
-    check(/^tools\/validate-site\.mjs\s*$/m.test(assetsIgnore) && /^tools\/check-production\.mjs\s*$/m.test(assetsIgnore), assetsIgnoreFile, "only the non-public tool scripts should be excluded from static assets");
+    // Every script in tools/ is a build or check script and none of them is a page, so the
+    // pattern covers the directory's scripts without touching tools/index.html or its
+    // category pages. Naming them one by one is how five of them came to be published.
+    check(/^tools\/\*\.mjs\s*$/m.test(assetsIgnore), assetsIgnoreFile, "the non-public tool scripts must be excluded from static assets as tools/*.mjs");
+    for (const entry of fs.readdirSync(path.join(ROOT, "tools"))) {
+      check(!entry.endsWith(".mjs") || !/^tools\/[\w.-]+\.mjs\s*$/m.test(assetsIgnore), assetsIgnoreFile, `${entry} should be covered by tools/*.mjs, not listed individually`);
+    }
   }
   const file = path.join(ROOT, "sw.js");
   check(fs.existsSync(file), file, "missing service worker");
@@ -831,14 +837,26 @@ function checkExperienceContracts() {
   check(JSON.stringify(modeButtons) === JSON.stringify(["chat", "image"]), aiFile, "AI Studio must expose exactly the Chat and Image modes");
   check(!/data-(?:mode|panel)=["'](?:video|voice|music|document)["']/.test(ai), aiFile, "modes removed from the studio must not return without capability gating");
   check(/class=["']ai-control-bar["']/.test(ai), aiFile, "AI functions and the model tag must share one control bar");
-  check(!/<select\b/.test(ai), aiFile, "the studio serves one fixed hosted model, so it must not ship a model chooser");
-  check(/Gemma 4 26B A4B/.test(ai), aiFile, "AI Studio must name the hosted model it uses");
+  // The studio now offers three hosted models rather than one. They are not interchangeable
+  // — cheapest to run, strongest, best on Indian languages — so the chooser is the feature,
+  // and every option it lists must be one worker/index.mjs will actually accept.
+  const studioModels = [...(ai.match(/const TEXT_MODELS = \[([\s\S]*?)\];/)?.[1] || "").matchAll(/\bid:\s*"([^"]+)"/g)].map((match) => match[1]);
+  check(/<select\b[^>]*data-ai-model/.test(ai), aiFile, "AI Studio must let a visitor choose between the hosted models");
+  check(studioModels.length >= 2, aiFile, "the model chooser must offer more than one model");
+  // A model the chooser lists but the Worker refuses is a dead option a visitor can select.
+  studioModels.forEach((model) => check(
+    fs.readFileSync(path.join(ROOT, "worker", "index.mjs"), "utf8").includes(`"${model}": Object.freeze({`),
+    aiFile,
+    `AI Studio offers "${model}", which worker/index.mjs does not accept`
+  ));
+  check(/Gemma 4 26B A4B/.test(ai), aiFile, "AI Studio must name the hosted model it defaults to");
+  check(/DEFAULT_TEXT_MODEL\s*=\s*TEXT_MODELS\[0\]\.id/.test(ai) && /"gemma-4-26b-a4b-it"/.test(ai), aiFile, "the cheapest model must stay the default, so the studio stays free to run");
   check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
   check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
   check(/task:\s*["'](?:tutor|document)["']/.test(ai), aiFile, "the studio must send a task the Worker accepts");
   check(!/(?:TEXT_PROFILES|responseProfiles?)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
   check(!/(?:gpt-5\.4-mini|cloudflare-ai-gateway|Unified Billing)/i.test(ai), aiFile, "stale third-party model and billing claims must stay removed");
-  check(!/(?:glm-4\.7-flash|gpt-oss-120b|qwen3\.6-27b|qwen3-30b-a3b-fp8)/i.test(ai), aiFile, "removed or unavailable model labels must not appear in AI Studio");
+  check(!/(?:glm-4\.7-flash|qwen3\.6-27b|qwen3-30b-a3b-fp8)/i.test(ai), aiFile, "removed or unavailable model labels must not appear in AI Studio");
   check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
   check(/link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
   check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
@@ -880,13 +898,23 @@ function checkExperienceContracts() {
   if (fs.existsSync(workerFile)) {
     const worker = fs.readFileSync(workerFile, "utf8");
     const workerModels = [
-      "@cf/google/gemma-4-26b-a4b-it"
+      "@cf/google/gemma-4-26b-a4b-it",
+      "@cf/openai/gpt-oss-120b",
+      "@cf/meta/llama-4-scout-17b-16e-instruct"
     ];
     workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
+    // Workers AI ignores an input field it does not know rather than rejecting it, so a
+    // model sent the wrong cap name runs with no output ceiling on a per-token bill. Each
+    // model therefore carries its own field name and its own ceiling, and the request
+    // builder is the only place that writes either.
     check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 1, workerFile, "Gemma must use max_completion_tokens");
-    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 0, workerFile, "removed model token fields must stay absent");
-    check(!/(?:@cf\/zai-org\/glm-4\.7-flash|@cf\/openai\/gpt-oss-120b|@cf\/qwen\/qwen3-30b-a3b-fp8|qwen3\.6-27b)/i.test(worker), workerFile, "removed or unavailable model mappings must stay absent");
-    check(/input\[model\.tokenField\]\s*=\s*900/.test(worker), workerFile, "the selected model must control its token field");
+    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 1, workerFile, "Llama must use max_tokens");
+    check((worker.match(/tokenField:\s*"max_output_tokens"/g) || []).length === 1, workerFile, "GPT-OSS must use max_output_tokens");
+    check(!/(?:@cf\/zai-org\/glm-4\.7-flash|@cf\/qwen\/qwen3-30b-a3b-fp8|qwen3\.6-27b)/i.test(worker), workerFile, "removed or unavailable model mappings must stay absent");
+    check(/input\[model\.tokenField\]\s*=\s*model\.maxOutputTokens/.test(worker), workerFile, "the selected model must control its own token field and ceiling");
+    check(/shape === "responses"/.test(worker) && /instructions:\s*instruction/.test(worker), workerFile, "a Responses-shaped model must not be sent a chat-completions body");
+    check(/item\.type === "message"/.test(worker), workerFile, "a reasoning model's scratch work must not be returned as the answer");
+    check(/DEFAULT_MODEL\s*=\s*"gemma-4-26b-a4b-it"/.test(worker), workerFile, "the cheapest model must stay the documented default");
     check(!/(?:gpt-5\.4-mini|openai\/gpt-5\.4-mini|thirdParty|cloudflare-ai-gateway|Unified Billing)/i.test(worker), workerFile, "stale third-party model and billing paths must stay removed");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
     check(/url\.pathname\s*===\s*["']\/api\/translate["']/.test(worker), workerFile, "Worker must own the same-origin /api/translate route");

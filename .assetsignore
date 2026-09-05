@@ -4,9 +4,14 @@
 node_modules/
 worker/
 tests/
-tools/check-production.mjs
-tools/validate-site.mjs
+# Every build and check script, not just two of them: build-sitemap.mjs, build-sw.mjs,
+# build-topics.mjs, link-check.mjs and routes.mjs were being published as static assets,
+# readable at https://pigsfield.com/tools/build-sw.mjs. Not "tools/" — that directory also
+# holds the public Digital Tools route (tools/index.html and its category pages), which
+# must keep shipping.
+tools/*.mjs
 .assetsignore
+.gitattributes
 .gitignore
 CNAME
 LICENSE
