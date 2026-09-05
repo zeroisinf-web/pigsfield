@@ -1,9 +1,18 @@
+import { shellDigest } from "./build-sw.mjs";
+
 const PRODUCTION_ORIGIN = "https://pigsfield.com";
 const PRODUCTION_HOME = `${PRODUCTION_ORIGIN}/`;
 const HTTP_HOME = "http://pigsfield.com/";
 const ROBOTS_URL = `${PRODUCTION_ORIGIN}/robots.txt`;
 const SITEMAP_URL = `${PRODUCTION_ORIGIN}/sitemap.xml`;
 const TOOLS_URL = `${PRODUCTION_ORIGIN}/tools/`;
+const SERVICE_WORKER_URL = `${PRODUCTION_ORIGIN}/sw.js`;
+
+// Cloudflare Workers Builds starts building after the push that triggers this job, so the
+// first look at production legitimately races the deploy. Wait it out rather than failing
+// on a deploy that is simply still in flight.
+const DEPLOY_WAIT_MS = 6 * 60 * 1000;
+const DEPLOY_POLL_MS = 15_000;
 
 const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_ATTEMPTS = 4;
@@ -304,13 +313,52 @@ async function checkToolsRoute() {
   console.log(`[pass] ${TOOLS_URL} returned the Pigsfield Tools page with HTTP 200`);
 }
 
+/**
+ * Is the site actually serving the commit this workflow just validated?
+ *
+ * Nothing used to answer that. A change could pass every check here, be merged, and simply
+ * not be live — because the repository is green and the deployment is a separate system —
+ * and the only way to find out was for someone to look at the site and notice.
+ *
+ * sw.js already carries a digest of the shell it precaches, stamped by tools/build-sw.mjs.
+ * That makes it a build fingerprint that costs nothing extra: if the digest production
+ * serves matches the digest this tree computes, the deployed shell is this shell. A commit
+ * that does not touch the shell leaves the digest unchanged and passes immediately, which is
+ * correct — there is nothing new to deploy.
+ */
+async function checkDeployedBuild() {
+  const expected = shellDigest();
+  const deadline = Date.now() + DEPLOY_WAIT_MS;
+  let seen = "(not read)";
+
+  while (true) {
+    const response = await fetchWithRetry(SERVICE_WORKER_URL);
+    const source = await readTextLimited(response, 256 * 1024);
+    seen = source.match(/const\s+CACHE\s*=\s*"pigsfield-([0-9a-f]+)"/)?.[1] || "(no digest found)";
+    if (seen === expected) {
+      console.log(`[pass] production is serving this commit's shell (digest ${expected})`);
+      return;
+    }
+    if (Date.now() >= deadline) break;
+    console.log(`[wait] production still serving digest ${seen}, expected ${expected}; retrying`);
+    await sleep(DEPLOY_POLL_MS);
+  }
+
+  throw new Error(
+    `${SERVICE_WORKER_URL} still reports shell digest ${seen} after ${Math.round(DEPLOY_WAIT_MS / 1000)}s, ` +
+    `but this commit builds ${expected}. Production is not serving this commit: check the Cloudflare ` +
+    "Workers Builds deployment for this repository. (If another commit landed while this ran, rerun the job.)"
+  );
+}
+
 async function main() {
-  console.log(`Checking the deployed Pigsfield crawl surface at ${PRODUCTION_HOME}`);
+  console.log(`Checking the deployed Pigsfield build and crawl surface at ${PRODUCTION_HOME}`);
 
   const results = await Promise.allSettled([
     checkCrawlSurface(),
     checkPermanentHttpsRedirect(),
     checkToolsRoute(),
+    checkDeployedBuild(),
   ]);
   const failures = results
     .filter((result) => result.status === "rejected")
@@ -325,7 +373,7 @@ async function main() {
       }
     }
     console.error(
-      "\nIf the HTTP redirect check failed, enable Cloudflare 'Always Use HTTPS' or add an equivalent 301/308 apex redirect, then rerun npm run check:production.",
+      "\nIf the HTTP redirect check failed, enable Cloudflare 'Always Use HTTPS' or add an equivalent 301/308 apex redirect, then rerun npm run check:production. That one is a dashboard setting, not a code change: run_worker_first is scoped to /api/*, so the Worker's own http->https redirect never runs for a page request.",
     );
     process.exitCode = 1;
     return;
