@@ -39,7 +39,10 @@ function localDependencies(htmlFile) {
     .map((match) => match[1] || match[2])
     .filter((value) => value && !/^(?:https?:|mailto:|tel:|upi:|#)/i.test(value))
     .map((value) => value.split(/[?#]/, 1)[0])
-    .filter((value) => /\.(?:css|js|png|webp|jpg|jpeg)$/i.test(value))
+    // woff2 belongs here: the web font is the single largest asset on every page, and
+    // leaving it out meant these budgets never measured it. It is discovered through the
+    // <link rel="preload"> in each document head.
+    .filter((value) => /\.(?:css|js|png|webp|jpg|jpeg|woff2)$/i.test(value))
     .map((value) => path.resolve(directory, value))
     .filter((value) => fs.existsSync(value));
   return [...new Set(references)];
@@ -47,8 +50,16 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 18 * 1024 });
+  // 19 KiB Brotli rather than 18: the stylesheet gained the .resource-warning treatment
+  // and the topic-page layout. Verified there is nothing dead left to reclaim first —
+  // every remaining unreferenced selector is composed at runtime (source-brand-${brand}
+  // and friends), so removing them would break the cards.
+  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 19 * 1024 });
   withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 20 * 1024 });
+  // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
+  // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
+  // pixel-identically. This budget stops a future re-export shipping the full axes again.
+  withinBudget("assets/google-sans-flex-latin.woff2", { raw: 90 * 1024, gzip: 90 * 1024, brotli: 90 * 1024 });
   withinBudget("assets/pigsfield-logo-ui.webp", { raw: 12 * 1024, gzip: 12 * 1024, brotli: 12 * 1024 });
   withinBudget("assets/pigbang-logo-nav.webp", { raw: 8 * 1024, gzip: 8 * 1024, brotli: 8 * 1024 });
   withinBudget("assets/pigbang-logo-display.webp", { raw: 14 * 1024, gzip: 14 * 1024, brotli: 14 * 1024 });
@@ -65,20 +76,23 @@ test("the navigation shell stays small enough for a fast first visit", () => {
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
+  // Re-baselined once the web font was counted (see localDependencies): these numbers are
+  // ~4% above what each route actually ships, so an accidental regression fails but a
+  // deliberate change does not need the table rewritten every time.
   const routes = [
-    ["index.html", 227, 80],
-    ["learn/index.html", 338, 97],
-    ["skills/index.html", 277, 90],
-    ["tools/index.html", 282, 90],
-    ["rights/index.html", 362, 105],
-    ["exams/index.html", 312, 100],
-    ["watch/index.html", 477, 145],
-    ["about/index.html", 220, 80],
-    ["editorial/index.html", 220, 80],
-    ["accessibility/index.html", 220, 80],
-    ["privacy/index.html", 220, 80],
-    ["submit/index.html", 225, 80],
-    ["ai/index.html", 220, 80]
+    ["index.html", 295, 142],
+    ["learn/index.html", 410, 165],
+    ["skills/index.html", 350, 155],
+    ["tools/index.html", 355, 155],
+    ["rights/index.html", 430, 168],
+    ["exams/index.html", 375, 163],
+    ["watch/index.html", 520, 196],
+    ["about/index.html", 290, 141],
+    ["editorial/index.html", 288, 140],
+    ["accessibility/index.html", 288, 140],
+    ["privacy/index.html", 290, 140],
+    ["submit/index.html", 288, 140],
+    ["ai/index.html", 286, 139]
   ];
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([

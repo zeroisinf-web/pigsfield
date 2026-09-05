@@ -1,7 +1,10 @@
 @font-face {
   font-family: "Google Sans Flex";
   font-style: normal;
-  font-weight: 1 1000;
+  /* Matches the trimmed axis in the woff2: nothing on the site paints below 400 or
+     above 900, and advertising a range the file no longer carries makes a browser
+     synthesise weights instead of using real ones. */
+  font-weight: 400 900;
   font-display: swap;
   src: url("../assets/google-sans-flex-latin.woff2") format("woff2");
 }
