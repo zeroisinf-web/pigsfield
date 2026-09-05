@@ -44,6 +44,20 @@ test("the whole catalog reaches the DOM without anyone opening an accordion", ()
   );
 });
 
+test("a YouTube search link is not dressed up as a video", () => {
+  const source = text("js/catalog.js");
+  // 96 catalogue links point at youtube.com/results?search_query=... . isYouTube() is true
+  // for any YouTube host, so these were classified "video": red play styling, a play
+  // affordance, and a label reading "Tutorial" for a page that plays nothing. js/player.js
+  // parse() returns null for /results, so the play never had anywhere to go.
+  assert.match(source, /function isYouTubeSearch\(url\)/, "search links need their own classification");
+  assert.match(source, /parsed\.pathname === "\/results"/, "a search is identified by its /results path");
+  assert.match(source, /if \(isYouTubeSearch\(url\)\) return "website";/, "a search must not classify as a video");
+  assert.match(source, /if \(isYouTubeSearch\(link\.url\)\) return "Search YouTube";/, "the label must say it is a search");
+  // The host check must be anchored: a bare dot would also match evilyoutubeXcom.
+  assert.match(source, /\/\(\?:\^\|\\\.\)youtube\\\.com\$\/i/, "the host pattern must escape its dots");
+});
+
 test("catalog cards use one delegated listener rather than per-card binding", () => {
   const source = text("js/catalog.js");
   assert.match(source, /<div class="catalog-group-content"><\/div>/);

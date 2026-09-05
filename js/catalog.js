@@ -54,8 +54,21 @@
     }
   }
 
+  // A youtube.com/results link is a search, not a video. isYouTube() says true for any
+  // YouTube host, so without this these 96 catalogue links get the red play affordance
+  // and a "Tutorial" label for a page that plays nothing.
+  function isYouTubeSearch(url) {
+    try {
+      const parsed = new URL(url);
+      return /(?:^|\.)youtube\.com$/i.test(parsed.hostname) && parsed.pathname === "/results";
+    } catch (_) {
+      return false;
+    }
+  }
+
   function classifyUrl(url) {
     const lower = url.toLowerCase();
+    if (isYouTubeSearch(url)) return "website";
     if (PF.YouTube && PF.YouTube.isYouTube(url)) return "video";
     if (/play\.google\.com|apps\.apple\.com|microsoft\.com\/store/.test(lower)) return "app";
     if (/\.pdf(?:$|\?)|drive\.google\.com|docs\.google\.com/.test(lower)) return "document";
@@ -151,6 +164,7 @@
   }
 
   function externalLabel(link) {
+    if (isYouTubeSearch(link.url)) return "Search YouTube";
     let host = "Source";
     try { host = new URL(link.url).hostname.replace(/^www\./, ""); } catch (_) {}
     const label = String(link.label || "").replace(/\b(?:youtube|website|web|app|pdf)\b/gi, "").replace(/\s{2,}/g, " ").trim();
