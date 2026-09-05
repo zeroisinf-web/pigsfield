@@ -7,7 +7,8 @@
     "build": "node tools/validate-site.mjs",
     "test": "node --test tests/*.test.mjs",
     "check:production": "node tools/check-production.mjs",
-    "check:links": "node tools/link-check.mjs"
+    "check:links": "node tools/link-check.mjs",
+    "build:topics": "node tools/build-topics.mjs"
   },
   "engines": {
     "node": ">=20"

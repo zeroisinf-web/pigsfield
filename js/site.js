@@ -284,6 +284,9 @@
     return PF.resourceSymbolFor({ title: text, type, urls });
   };
 
+  // Clear pf-recent-v2: a log of opened resources that nothing read back. See git log.
+  try { localStorage.removeItem("pf-recent-v2"); } catch (_) {}
+
   function readJson(key, fallback) {
     try {
       const parsed = JSON.parse(localStorage.getItem(key));
@@ -1173,20 +1176,12 @@
     PF.applyLanguageTo(list);
   }
 
-  function trackUse(item) {
-    const recent = readJson("pf-recent-v2", []);
-    const clean = Array.isArray(recent) ? recent.filter((entry) => entry.url !== item.url) : [];
-    clean.unshift({ title: item.title, url: item.url, at: Date.now() });
-    setJson("pf-recent-v2", clean.slice(0, 20));
-  }
-
   PF.openExternal = function (url, title = "Resource") {
     const safe = PF.safeUrl(url);
     if (!safe) {
       PF.toast("This link could not be opened safely.");
       return;
     }
-    trackUse({ title, url: safe });
     const opened = window.open(safe, "_blank", "noopener");
     if (opened) opened.opener = null;
   };

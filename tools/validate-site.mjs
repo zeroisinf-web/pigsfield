@@ -3,6 +3,7 @@ import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { TOPICS, build as buildTopics } from "./build-topics.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -19,9 +20,21 @@ const REQUIRED_ROUTES = [
   "/skills/",
   "/submit/",
   "/tools/",
-  "/watch/"
+  "/watch/",
+  // Generated per-stage landing pages. Slugs come from tools/build-topics.mjs so
+  // the generator and the validator can never disagree about which routes exist.
+  ...TOPICS.map((topic) => `/learn/${topic.slug}/`)
 ];
 const SITE_ORIGIN = "https://pigsfield.com";
+// lastmod is a claim about content, so it is pinned rather than generated: a date that
+// moves on every deploy is a freshness signal the page has not earned, and SEO-GROWTH.md
+// rules out that kind of trick. Bump a route here only when its content actually changed.
+const SITEMAP_LASTMOD_DEFAULT = "2026-07-15";
+const SITEMAP_LASTMOD = new Map([
+  ["/learn/", "2026-09-05"],                       // now links out to the per-stage pages
+  ["/watch/", "2026-09-05"],                       // PigBang brand mark restored
+  ...TOPICS.map((topic) => [`/learn/${topic.slug}/`, "2026-09-05"])  // new pages
+]);
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -36,7 +49,8 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/editorial/", { pageType: "WebPage", breadcrumb: true }],
   ["/submit/", { pageType: "ContactPage", breadcrumb: true }],
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
-  ["/privacy/", { pageType: "WebPage", breadcrumb: true }]
+  ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
+  ...TOPICS.map((topic) => [`/learn/${topic.slug}/`, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
 const DATA_MINIMUMS = { school: 171, teach: 24, tools: 45, govt: 40, pigbang: 500 };
@@ -358,7 +372,8 @@ function checkSeoInfrastructure() {
     const lastmod = entry[1].match(/<lastmod>([^<]+)<\/lastmod>/i)?.[1]?.trim() || "";
     const changefreq = entry[1].match(/<changefreq>([^<]+)<\/changefreq>/i)?.[1]?.trim() || "";
     const priority = entry[1].match(/<priority>([^<]+)<\/priority>/i)?.[1]?.trim() || "";
-    check(lastmod === "2026-07-15", sitemapFile, `sitemap lastmod must remain 2026-07-15 for ${loc}`);
+    const expectedLastmod = SITEMAP_LASTMOD.get(new URL(loc).pathname) || SITEMAP_LASTMOD_DEFAULT;
+    check(lastmod === expectedLastmod, sitemapFile, `sitemap lastmod for ${loc} must be ${expectedLastmod}, not ${lastmod || "(missing)"}`);
     check(["weekly", "monthly", "yearly"].includes(changefreq), sitemapFile, `sitemap changefreq is invalid for ${loc}`);
     check(/^(?:0(?:\.\d)?|1(?:\.0)?)$/.test(priority), sitemapFile, `sitemap priority is invalid for ${loc}`);
   });
@@ -980,6 +995,13 @@ for (const file of htmlFiles) checkHtml(file);
 checkSeoContracts(htmlFiles);
 checkSeoInfrastructure();
 checkNotFoundPage();
+
+// The per-stage pages under /learn/ are generated from js/data/school.js and committed,
+// because Cloudflare deploys the repo as-is. Editing the catalog without regenerating
+// them would quietly publish stale content, so fail the build instead.
+for (const staleRoute of buildTopics({ check: true }).stale) {
+  fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
+}
 
 const javascriptFiles = walk(ROOT, (file) => file.endsWith(".js"));
 parseJavaScript(javascriptFiles);
