@@ -831,7 +831,7 @@ function checkExperienceContracts() {
   check(!/data-(?:mode|panel)=["'](?:video|voice|music|document)["']/.test(ai), aiFile, "modes removed from the studio must not return without capability gating");
   check(/class=["']ai-control-bar["']/.test(ai), aiFile, "AI functions and the model tag must share one control bar");
   check(!/<select\b/.test(ai), aiFile, "the studio serves one fixed hosted model, so it must not ship a model chooser");
-  check(/Llama 4 Scout 17B/.test(ai), aiFile, "AI Studio must name the hosted model it uses");
+  check(/Gemma 4 26B A4B/.test(ai), aiFile, "AI Studio must name the hosted model it uses");
   check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
   check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
   check(/task:\s*["'](?:tutor|document)["']/.test(ai), aiFile, "the studio must send a task the Worker accepts");
@@ -879,11 +879,11 @@ function checkExperienceContracts() {
   if (fs.existsSync(workerFile)) {
     const worker = fs.readFileSync(workerFile, "utf8");
     const workerModels = [
-      "@cf/meta/llama-4-scout-17b-16e-instruct"
+      "@cf/google/gemma-4-26b-a4b-it"
     ];
     workerModels.forEach((model) => check(worker.includes(`id: "${model}"`), workerFile, `missing Cloudflare AI model mapping ${model}`));
-    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 1, workerFile, "Llama 4 Scout must use max_tokens");
-    check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 0, workerFile, "removed model token fields must stay absent");
+    check((worker.match(/tokenField:\s*"max_completion_tokens"/g) || []).length === 1, workerFile, "Gemma must use max_completion_tokens");
+    check((worker.match(/tokenField:\s*"max_tokens"/g) || []).length === 0, workerFile, "removed model token fields must stay absent");
     check(!/(?:@cf\/zai-org\/glm-4\.7-flash|@cf\/openai\/gpt-oss-120b|@cf\/qwen\/qwen3-30b-a3b-fp8|qwen3\.6-27b)/i.test(worker), workerFile, "removed or unavailable model mappings must stay absent");
     check(/input\[model\.tokenField\]\s*=\s*900/.test(worker), workerFile, "the selected model must control its token field");
     check(!/(?:gpt-5\.4-mini|openai\/gpt-5\.4-mini|thirdParty|cloudflare-ai-gateway|Unified Billing)/i.test(worker), workerFile, "stale third-party model and billing paths must stay removed");
