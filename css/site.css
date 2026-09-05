@@ -25,19 +25,27 @@
   --saffron: #f2b544;
   --blue: #2765c4;
   --focus: #156cff;
-  --shadow-sm: 0 1px 0 rgba(16, 36, 30, 0.08), 0 8px 24px rgba(16, 36, 30, 0.06);
-  --shadow-lg: 0 24px 80px rgba(16, 36, 30, 0.17);
+  /* Surfaces are separated by tone, not by shadow. Both design references this follows
+     (labs.google, one.google.com) use flat cards with large radii and essentially no
+     elevation — one.google.com renders a single box-shadow on the entire page. The
+     --depth-* names are kept because the rest of the stylesheet and the build check refer
+     to them; they simply resolve to something much quieter now. */
+  --shadow-sm: 0 1px 2px rgba(16, 36, 30, 0.05);
+  --shadow-lg: 0 12px 40px rgba(16, 36, 30, 0.10);
   --surface-top: rgba(255, 255, 255, 0.78);
   --surface-bottom: rgba(244, 241, 232, 0.38);
-  --depth-edge: rgba(16, 36, 30, 0.1);
-  --depth-highlight: rgba(255, 255, 255, 0.78);
-  --depth-low: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 10px 26px rgba(16, 36, 30, 0.07);
-  --depth-high: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 20px 44px rgba(16, 36, 30, 0.13), 0 7px 0 -5px rgba(16, 36, 30, 0.09);
+  /* Transparent, so the inset highlight/edge pairs still written throughout the
+     stylesheet resolve to nothing. Keeping the tokens rather than deleting 17 rules means
+     the "lit bevel" look disappears in one place and can be restored in one place. */
+  --depth-edge: transparent;
+  --depth-highlight: transparent;
+  --depth-low: none;
+  --depth-high: 0 2px 10px rgba(16, 36, 30, 0.06);
   --glow-brand: color-mix(in srgb, var(--brand) 18%, transparent);
   --glow-green: color-mix(in srgb, var(--green) 15%, transparent);
-  --radius-sm: 0.65rem;
-  --radius: 1.15rem;
-  --radius-lg: 2rem;
+  --radius-sm: 0.75rem;
+  --radius: 1.625rem;
+  --radius-lg: 1.75rem;
   --content: 78rem;
   --header-h: 4.75rem;
   --accordion-sticky-top: calc(var(--header-h) + 0.45rem);
@@ -75,14 +83,14 @@
   --saffron: #f4be55;
   --blue: #78a8ff;
   --focus: #8bb6ff;
-  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.18);
-  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.42);
-  --surface-top: rgba(255, 255, 255, 0.055);
-  --surface-bottom: rgba(0, 0, 0, 0.14);
-  --depth-edge: rgba(0, 0, 0, 0.42);
-  --depth-highlight: rgba(255, 255, 255, 0.09);
-  --depth-low: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 12px 30px rgba(0, 0, 0, 0.24);
-  --depth-high: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 24px 54px rgba(0, 0, 0, 0.38), 0 7px 0 -5px rgba(0, 0, 0, 0.46);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.22);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.34);
+  --surface-top: rgba(255, 255, 255, 0.04);
+  --surface-bottom: rgba(0, 0, 0, 0.10);
+  --depth-edge: transparent;
+  --depth-highlight: transparent;
+  --depth-low: none;
+  --depth-high: 0 2px 12px rgba(0, 0, 0, 0.28);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -396,7 +404,7 @@ p { color: var(--ink-soft); }
   margin-bottom: 1rem;
   font-family: var(--font-serif);
   font-size: clamp(2.55rem, 5.7vw, 5.6rem);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.052em;
   line-height: 0.93;
 }
@@ -466,7 +474,7 @@ p { color: var(--ink-soft); }
   border-radius: 1.25rem;
   background: #ff0033;
   color: #fff;
-  box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 14px 30px rgba(0,0,0,.34);
+  box-shadow: 0 14px 30px rgba(0,0,0,.34);
   transition: transform 160ms ease;
 }
 .home-guide-mark svg { width: 2.25rem; height: 2.25rem; fill: currentColor; }
@@ -491,8 +499,10 @@ p { color: var(--ink-soft); }
 .page-hero h1 {
   margin-bottom: 0;
   font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -0.045em;
+  /* 700/-0.05em tracks one.google.com's display setting (84px/700/-4px). The variable font
+     already carries wght 400-900, so this costs nothing extra to download. */
+  font-weight: 700;
+  letter-spacing: -0.05em;
   line-height: 0.98;
 }
 .section-head h2 { max-width: 17ch; font-size: clamp(2.5rem, 5.4vw, 5.2rem); }
@@ -1077,7 +1087,7 @@ summary::-webkit-details-marker { display: none; }
 .button,
 .link-button,
 .support-action {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.28) inset, 0 -2px 0 rgba(0, 0, 0, 0.15) inset, 0 7px 16px rgba(16, 36, 30, 0.12);
+  box-shadow: 0 7px 16px rgba(16, 36, 30, 0.12);
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
 }
 .button.ghost {
@@ -1132,9 +1142,9 @@ summary::-webkit-details-marker { display: none; }
 .hero-search {
   background: linear-gradient(145deg, var(--paper-strong), color-mix(in srgb, var(--paper) 82%, var(--paper-strong)));
 }
-.hero-guide-card { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 -3px 0 rgba(0, 0, 0, 0.28) inset, 0 24px 54px rgba(10, 36, 58, 0.24); }
+.hero-guide-card { box-shadow: 0 24px 54px rgba(10, 36, 58, 0.24); }
 .mission-band {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.17) inset, 0 -4px 0 rgba(0, 0, 0, 0.2) inset, 0 30px 68px rgba(10, 70, 59, 0.22), 0 10px 0 -6px rgba(10, 70, 59, 0.42);
+  box-shadow: 0 30px 68px rgba(10, 70, 59, 0.22);
 }
 
 .section.alt,.site-footer{
@@ -1154,11 +1164,11 @@ summary::-webkit-details-marker { display: none; }
      for the --on-brand label. Ending on a raw --brand-deep put the text at 3.31:1 over
      the dark end in light theme, while white would have failed at the bright end. */
   background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #ffb26b), color-mix(in srgb, var(--brand) 70%, var(--brand-deep)));
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 -3px 0 rgba(0, 0, 0, 0.16) inset, 0 18px 38px color-mix(in srgb, var(--brand) 23%, transparent);
+  box-shadow: 0 18px 38px color-mix(in srgb, var(--brand) 23%, transparent);
 }
 .path-card.dark {
   background: linear-gradient(145deg, color-mix(in srgb, var(--ink) 88%, var(--green)), var(--ink));
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.09) inset, 0 -3px 0 rgba(0, 0, 0, 0.28) inset, 0 18px 38px rgba(16, 36, 30, 0.2);
+  box-shadow: 0 18px 38px rgba(16, 36, 30, 0.2);
 }
 
 .pitch-item { transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
@@ -1229,20 +1239,20 @@ summary::-webkit-details-marker { display: none; }
     linear-gradient(145deg, rgba(255, 255, 255, 0.28), transparent 46%),
     radial-gradient(circle at 78% 22%, hsl(var(--visual-hue, 154) 74% 72% / 0.42), transparent 36%),
     hsl(var(--visual-hue, 154) 38% 88%);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.68) inset, 0 -8px 20px hsl(var(--visual-hue, 154) 50% 32% / 0.12) inset;
+  box-shadow: none;
 }
 [data-theme="dark"] .resource-visual {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 46%),
     radial-gradient(circle at 78% 22%, hsl(var(--visual-hue, 154) 70% 54% / 0.26), transparent 38%),
     hsl(var(--visual-hue, 154) 30% 22%);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 -10px 24px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: none;
 }
 .watch-art {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 -14px 28px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: none;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.16), 0 12px 22px rgba(0, 0, 0, 0.34);
 }
-.source-icon { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 3px 7px rgba(0, 0, 0, 0.12); }
+.source-icon { box-shadow: 0 3px 7px rgba(0, 0, 0, 0.12); }
 .table-scroll { box-shadow: var(--depth-low); }
 .data-table th { background: linear-gradient(145deg, color-mix(in srgb, var(--ink) 88%, var(--green)), var(--ink)); }
 
@@ -1258,13 +1268,13 @@ summary::-webkit-details-marker { display: none; }
 
 .support-dock { perspective: 50rem; }
 .support-action {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 -3px 0 rgba(0, 0, 0, 0.17) inset, 0 12px 28px rgba(75, 25, 18, 0.24), 0 5px 0 -3px rgba(75, 25, 18, 0.34);
+  box-shadow: 0 12px 28px rgba(75, 25, 18, 0.24);
 }
 .support-action.ai-action {
   border-color: rgba(255, 255, 255, 0.48);
   background: linear-gradient(135deg, #6d3fd6, #246dd0 48%, #087f73);
   color: #fff;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.36) inset, 0 -3px 0 rgba(21, 10, 58, 0.25) inset, 0 12px 30px rgba(55, 55, 165, 0.28), 0 5px 0 -3px rgba(36, 45, 128, 0.42);
+  box-shadow: 0 12px 30px rgba(55, 55, 165, 0.28);
 }
 .ai-dock-mark {
   display: inline-grid;
@@ -1274,7 +1284,7 @@ summary::-webkit-details-marker { display: none; }
   border: 1px solid rgba(255, 255, 255, 0.65);
   border-radius: 0.48rem;
   background: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 5px 10px rgba(17, 11, 54, 0.2);
+  box-shadow: 0 5px 10px rgba(17, 11, 54, 0.2);
   font-size: 1rem;
   letter-spacing: -0.02em;
 }
@@ -1745,7 +1755,7 @@ summary::-webkit-details-marker { display: none; }
     linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.5)),
     hsl(calc(var(--visual-hue, 190) * 1deg) 70% 78%);
   color: initial;
-  box-shadow: 0 1px 0 #fff inset, 0 -4px 0 rgba(20, 42, 35, 0.1) inset, 0 14px 26px rgba(16, 36, 30, 0.15), 0 5px 0 -2px rgba(16, 36, 30, 0.18);
+  box-shadow: 0 14px 26px rgba(16, 36, 30, 0.15);
   font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
   font-size: 2.25rem;
   line-height: 1;
@@ -1774,7 +1784,7 @@ summary::-webkit-details-marker { display: none; }
   border: 1px solid var(--line);
   border-radius: 0.9rem;
   background: linear-gradient(145deg, #fff, color-mix(in srgb, var(--saffron) 26%, var(--paper)));
-  box-shadow: 0 1px 0 #fff inset, 0 10px 20px rgba(16, 36, 30, 0.11), 0 4px 0 -2px rgba(16, 36, 30, 0.17);
+  box-shadow: 0 10px 20px rgba(16, 36, 30, 0.11);
   font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
   font-size: 1.65rem;
 }
@@ -1805,7 +1815,7 @@ summary::-webkit-details-marker { display: none; }
   border: 0;
   border-radius: 0.55rem;
   background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 4px 9px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
 }
 .source-mark span { display: block; }
 .source-brand-youtube { background: linear-gradient(135deg, #ff0033, #d50022); }
@@ -1933,7 +1943,7 @@ summary::-webkit-details-marker { display: none; }
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 244, 210, 0.68)),
     hsl(var(--visual-hue, 154) 70% 72%);
-  box-shadow: 0 1px 0 #fff inset, 0 -4px 0 rgba(52, 38, 10, 0.1) inset, 0 15px 24px rgba(24, 48, 40, 0.24), 0 5px 0 -2px rgba(79, 55, 12, 0.24);
+  box-shadow: 0 15px 24px rgba(24, 48, 40, 0.24);
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   font-size: 2.75rem;
   line-height: 1;
@@ -1996,7 +2006,7 @@ summary::-webkit-details-marker { display: none; }
   border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 0.72rem;
   background: linear-gradient(145deg, #fff4bd, #ffbd4a);
-  box-shadow: 0 1px 0 #fff inset, 0 6px 12px rgba(114, 69, 6, 0.16), 0 3px 0 -1px rgba(107, 62, 4, 0.2);
+  box-shadow: 0 6px 12px rgba(114, 69, 6, 0.16);
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   font-size: 1.45rem;
   transform: rotate(-3deg);
@@ -2060,7 +2070,7 @@ body[data-page="watch"] .exam-panel[open] > summary,
 body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
   border-color: #303b50;
   background: linear-gradient(110deg, rgba(255, 49, 80, 0.1), transparent 68%), #0a0f18;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 1px 0 #303b50, 0 14px 30px rgba(0, 0, 0, 0.46);
+  box-shadow: 0 1px 0 #303b50, 0 14px 30px rgba(0, 0, 0, 0.46);
 }
 .catalog-section > summary,
 .faq-item > summary,
@@ -2152,7 +2162,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
   .link-button:hover,
   .support-action:hover {
     transform: translateY(-3px);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 -2px 0 rgba(0, 0, 0, 0.14) inset, 0 13px 25px rgba(16, 36, 30, 0.16);
+    box-shadow: 0 13px 25px rgba(16, 36, 30, 0.16);
   }
   .button:active,
   .icon-button:active,
@@ -2234,7 +2244,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
     radial-gradient(circle at 82% 18%, rgba(255, 75, 106, 0.35), transparent 42%),
     linear-gradient(145deg, #3c0d1b, #12080d 68%);
   color: #fff;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 8px 20px rgba(117, 8, 37, 0.24);
+  box-shadow: 0 8px 20px rgba(117, 8, 37, 0.24);
   letter-spacing: 0.015em;
 }
 .site-nav a[data-pigbang-link]::before,
@@ -2278,7 +2288,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
     radial-gradient(circle at 12% 80%, rgba(82, 119, 255, 0.25), transparent 42%),
     linear-gradient(150deg, #171b27, #080a10 72%);
   color: #f9fbff;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 -3px 0 rgba(0, 0, 0, 0.45) inset, 0 22px 44px rgba(32, 8, 18, 0.25);
+  box-shadow: 0 22px 44px rgba(32, 8, 18, 0.25);
 }
 .path-card[data-pigbang-link]::before {
   content: "";
@@ -2294,7 +2304,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
 .path-card[data-pigbang-link] .path-icon {
   border-color: rgba(255, 255, 255, 0.32);
   background: rgba(4, 6, 11, 0.58);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 12px 28px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
 }
 .path-card[data-pigbang-link] h3 { color: #fff; }
 .path-card[data-pigbang-link] p { color: #bfc7d6; }
@@ -2345,8 +2355,8 @@ body[data-page="watch"] {
   --focus: #9bc2ff;
   --surface-top: rgba(255, 255, 255, 0.065);
   --surface-bottom: rgba(0, 0, 0, 0.18);
-  --depth-edge: rgba(0, 0, 0, 0.56);
-  --depth-highlight: rgba(255, 255, 255, 0.1);
+  --depth-edge: transparent;
+  --depth-highlight: transparent;
   --depth-low: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 14px 32px rgba(0, 0, 0, 0.3);
   --depth-high: 0 1px 0 var(--depth-highlight) inset, 0 -1px 0 var(--depth-edge) inset, 0 28px 60px rgba(0, 0, 0, 0.48), 0 7px 0 -5px rgba(0, 0, 0, 0.6);
   --glow-brand: rgba(255, 49, 80, 0.18);
@@ -2378,7 +2388,7 @@ body[data-page="watch"]::before {
 body[data-page="watch"] .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.09);
   background: rgba(5, 8, 14, 0.88);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 16px 40px rgba(0, 0, 0, 0.36);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.36);
 }
 body[data-page="watch"] .site-footer {
   border-top-color: rgba(255, 255, 255, 0.09);
@@ -2454,7 +2464,7 @@ body[data-page="watch"] .filter-chip.active {
 body[data-page="watch"] .explorer-toolbar {
   border-color: #354158;
   background: rgba(10, 14, 22, 0.9);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 18px 46px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
 }
 body[data-page="watch"] .search-field input {
   background: #111722;
@@ -2474,7 +2484,7 @@ body[data-page="watch"] .watch-card {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.055), transparent 42%),
     #101621;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.075) inset, 0 15px 34px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 34px rgba(0, 0, 0, 0.3);
 }
 body[data-page="watch"] .watch-card:focus-within {
   border-color: #9bc2ff;
@@ -2513,12 +2523,12 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 @media (hover: hover) and (pointer: fine) {
   .path-card[data-pigbang-link]:hover {
     border-color: #ff6b82;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 28px 60px rgba(78, 8, 27, 0.34), 0 0 0 3px rgba(255, 49, 80, 0.1);
+    box-shadow: 0 28px 60px rgba(78, 8, 27, 0.34), 0 0 0 3px rgba(255, 49, 80, 0.1);
   }
   body[data-page="watch"] .watch-card:hover {
     border-color: #4f5f78;
     transform: perspective(60rem) translateY(-6px) scale(1.012);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 28px 58px rgba(0, 0, 0, 0.48);
+    box-shadow: 0 28px 58px rgba(0, 0, 0, 0.48);
   }
 }
 
