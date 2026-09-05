@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
+import { stamp as stampServiceWorker } from "./build-sw.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -977,6 +978,14 @@ checkNotFoundPage();
 // The per-stage pages under /learn/ are generated from js/data/school.js and committed,
 // because Cloudflare deploys the repo as-is. Editing the catalog without regenerating
 // them would quietly publish stale content, so fail the build instead.
+// A service worker whose CACHE name has not changed is never discarded, so a stale version
+// silently keeps serving the previous stylesheet to every returning visitor. That happened.
+{
+  const swFile = path.join(ROOT, "sw.js");
+  check(fs.readFileSync(swFile, "utf8") === stampServiceWorker(), swFile,
+    'service worker cache version is stale, so returning visitors would keep the previous shell — run "npm run build:sw"');
+}
+
 for (const staleRoute of buildTopics({ check: true }).stale) {
   fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
 }
