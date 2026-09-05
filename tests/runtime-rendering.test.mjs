@@ -19,7 +19,32 @@ test("closed exam panels do not construct their large bodies at startup", () => 
   );
 });
 
-test("closed catalog groups defer cards and use one delegated card listener", () => {
+test("the whole catalog reaches the DOM without anyone opening an accordion", () => {
+  const source = text("js/catalog.js");
+  // Sections used to build only on their first `toggle` event. Crawlers, AI answer
+  // engines, social preview fetchers and no-JS readers never fire that, so the
+  // entire catalog was absent for them. Render up front instead; the sections stay
+  // visually collapsed, and .resource-card keeps content-visibility:auto so
+  // offscreen cards still skip layout and paint.
+  assert.match(
+    source,
+    /querySelectorAll\("\.catalog-section"\)\)\s*\.forEach\(\(item\) => renderSection\(item,/,
+    "every catalog section must render during setup"
+  );
+  assert.doesNotMatch(
+    source,
+    /addEventListener\("toggle",[\s\S]{0,160}renderSection\(/,
+    "section content must not be gated behind a toggle event"
+  );
+  // The nested category accordions on /tools/ and /rights/ need the same treatment.
+  assert.match(
+    source,
+    /if \(collapsibleGroups\) content\.querySelectorAll\("details\.catalog-group"\)\.forEach\(renderGroup\)/,
+    "category groups must render with their section"
+  );
+});
+
+test("catalog cards use one delegated listener rather than per-card binding", () => {
   const source = text("js/catalog.js");
   assert.match(source, /<div class="catalog-group-content"><\/div>/);
   assert.match(source, /function renderGroup\(details\)[\s\S]*?groupEntries\.map\(\(entry\) => renderCard\(entry\)\)/);

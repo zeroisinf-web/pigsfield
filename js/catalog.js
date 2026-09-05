@@ -339,6 +339,10 @@
       content.innerHTML = groupMarkup;
     }
     content.dataset.rendered = "true";
+    // Fill the category accordions now too, for the same reason as the sections
+    // themselves: content that only appears on a click is content a crawler and a
+    // no-JS reader never see.
+    if (collapsibleGroups) content.querySelectorAll("details.catalog-group").forEach(renderGroup);
     if (PF.applyLanguageTo) PF.applyLanguageTo(content);
   }
 
@@ -363,10 +367,14 @@
       </details>`;
     }).join("");
 
-    const details = Array.from(sectionsTarget.querySelectorAll(".catalog-section"));
-    details.forEach((item) => item.addEventListener("toggle", () => {
-      if (item.open) renderSection(item, Number(item.dataset.sectionIndex));
-    }));
+    // Render every section up front rather than on the first toggle. Content that
+    // only appears after a click is invisible to search engines (they do not click),
+    // to AI answer engines, to social previews and to anyone browsing without JS —
+    // which previously meant the entire catalog. Cheap to do eagerly because
+    // .resource-card sets content-visibility:auto, so offscreen cards still skip
+    // layout and paint; the sections stay visually collapsed exactly as before.
+    Array.from(sectionsTarget.querySelectorAll(".catalog-section"))
+      .forEach((item) => renderSection(item, Number(item.dataset.sectionIndex)));
   }
 
   function buildFilters() {
