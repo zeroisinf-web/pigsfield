@@ -3,25 +3,12 @@ import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { TOPICS, build as buildTopics } from "./build-topics.mjs";
+import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
+import { renderSitemap } from "./build-sitemap.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
-const REQUIRED_ROUTES = [
-  "/",
-  "/about/",
-  "/accessibility/",
-  "/ai/",
-  "/editorial/",
-  "/exams/",
-  "/learn/",
-  "/privacy/",
-  "/rights/",
-  "/skills/",
-  "/submit/",
-  "/tools/",
-  "/watch/"
-];
-const SITE_ORIGIN = "https://pigsfield.com";
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -36,10 +23,11 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/editorial/", { pageType: "WebPage", breadcrumb: true }],
   ["/submit/", { pageType: "ContactPage", breadcrumb: true }],
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
-  ["/privacy/", { pageType: "WebPage", breadcrumb: true }]
+  ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
+  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
-const DATA_MINIMUMS = { school: 171, teach: 24, tools: 45, govt: 40, pigbang: 500 };
+const DATA_MINIMUMS = { school: 171, teach: 23, tools: 45, govt: 40, pigbang: 500 };
 const BANNED_DOMAIN_PATTERNS = [
   /\banimesalt(?:\.in|\.ac)?\b/i,
   /\bhianimes?(?:\.se|\.to|\.tv)?\b/i,
@@ -358,10 +346,15 @@ function checkSeoInfrastructure() {
     const lastmod = entry[1].match(/<lastmod>([^<]+)<\/lastmod>/i)?.[1]?.trim() || "";
     const changefreq = entry[1].match(/<changefreq>([^<]+)<\/changefreq>/i)?.[1]?.trim() || "";
     const priority = entry[1].match(/<priority>([^<]+)<\/priority>/i)?.[1]?.trim() || "";
-    check(lastmod === "2026-07-15", sitemapFile, `sitemap lastmod must remain 2026-07-15 for ${loc}`);
+    const expectedLastmod = SITEMAP_LASTMOD.get(new URL(loc).pathname);
+    check(lastmod === expectedLastmod, sitemapFile, `sitemap lastmod for ${loc} must be ${expectedLastmod}, not ${lastmod || "(missing)"}`);
     check(["weekly", "monthly", "yearly"].includes(changefreq), sitemapFile, `sitemap changefreq is invalid for ${loc}`);
     check(/^(?:0(?:\.\d)?|1(?:\.0)?)$/.test(priority), sitemapFile, `sitemap priority is invalid for ${loc}`);
   });
+
+  // sitemap.xml is generated from tools/routes.mjs, so hand edits and forgotten
+  // regenerations both surface here rather than as a silently wrong sitemap in production.
+  check(sitemap === renderSitemap(), sitemapFile, 'sitemap.xml is out of date with tools/routes.mjs — run "npm run build:sitemap"');
 }
 
 function checkNotFoundPage() {
@@ -448,7 +441,7 @@ function validateData() {
     const phdIndex = learningIds.indexOf("phd");
     const teacherIndex = learningIds.indexOf("tt");
     check(groupedItemCount(data.school) === 171, path.join(ROOT, "js", "data", "school.js"), "Nursery to PhD must contain exactly 171 resources after Teacher Training moves");
-    check(groupedItemCount(data.teach) === 24, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 24 resources");
+    check(groupedItemCount(data.teach) === 23, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 23 resources");
     check(phdIndex >= 0 && teacherIndex === phdIndex + 1, path.join(ROOT, "js", "data", "school.js"), "Teacher Training must appear immediately after PhD");
     const teacherTraining = data.school.sections[teacherIndex];
     const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");
@@ -828,47 +821,50 @@ function checkExperienceContracts() {
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  const expectedModels = ["gemma-4-26b-a4b-it"];
-  const modelSelect = ai.match(/<select\s+id=["']ai-text-model["'][^>]*>([\s\S]*?)<\/select>/)?.[1] || "";
-  const modelOptions = [...modelSelect.matchAll(/<option\s+value=["']([^"']+)["']/g)].map((match) => match[1]);
-  const functionButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bcreator-tab\b[^"']*["'][^>]*>/g)]
+  // The studio was rebuilt (3da7dad, b64aed0) into a fixed-model Chat/Image surface with a
+  // launchpad of external AI sites. These checks assert the design that actually ships; every
+  // guarantee that survived the rebuild is kept and re-pointed at its new home.
+  const modeButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bai-mode-btn\b[^"']*["'][^>]*>/g)]
     .map((match) => parseAttributes(match[0])["data-mode"])
     .filter(Boolean);
-  check(/class=["']ai-command-bar["'][^>]*id=["']ai-function-model-bar["']/.test(ai), aiFile, "AI functions and model chooser must share one compact command bar");
-  check(JSON.stringify(modelOptions) === JSON.stringify(expectedModels), aiFile, "AI Studio must expose exactly Gemma 4 26B A4B");
-  expectedModels.forEach((model) => check(ai.includes(`id: "${model}"`), aiFile, `missing real text model ${model}`));
-  check(JSON.stringify(functionButtons) === JSON.stringify(["ask", "image", "document", "voice", "music"]), aiFile, "AI Studio must expose only Tutor, Image, Document, Voice and Music");
-  check(!/data-(?:mode|panel)=["']video["']/.test(ai), aiFile, "the non-working Video mode must stay removed");
-  check(/function\s+(?:removeUnsupportedModes|setupCapabilityModes)\s*\(/.test(ai), aiFile, "browser-only AI functions need capability gating before they are shown");
-  check(/speechSynthesis/.test(ai) && /SpeechSynthesisUtterance/.test(ai), aiFile, "Voice must be gated by browser speech-synthesis support");
-  check(/OfflineAudioContext|webkitOfflineAudioContext/.test(ai), aiFile, "Music must be gated by browser offline-audio support");
-  check(!/(?:TEXT_PROFILES|responseProfiles?|\bQuick\b|\bBalanced\b)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
+  check(JSON.stringify(modeButtons) === JSON.stringify(["chat", "image"]), aiFile, "AI Studio must expose exactly the Chat and Image modes");
+  check(!/data-(?:mode|panel)=["'](?:video|voice|music|document)["']/.test(ai), aiFile, "modes removed from the studio must not return without capability gating");
+  check(/class=["']ai-control-bar["']/.test(ai), aiFile, "AI functions and the model tag must share one control bar");
+  check(!/<select\b/.test(ai), aiFile, "the studio serves one fixed hosted model, so it must not ship a model chooser");
+  check(/Gemma 4 26B A4B/.test(ai), aiFile, "AI Studio must name the hosted model it uses");
   check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
   check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
-  const modelEngines = [...ai.matchAll(/engine:\s*["']([^"']+)["']/g)].map((match) => match[1]);
-  check(modelEngines.length === expectedModels.length && modelEngines.every((engine) => engine === "workers-ai"), aiFile, "every text model must identify Cloudflare Workers AI as its engine");
-  check(/No visitor login or additional provider key\./.test(ai), aiFile, "AI Studio must explain that text models require no visitor login or additional provider key");
+  check(/task:\s*["'](?:tutor|document)["']/.test(ai), aiFile, "the studio must send a task the Worker accepts");
+  check(!/(?:TEXT_PROFILES|responseProfiles?)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
   check(!/(?:gpt-5\.4-mini|cloudflare-ai-gateway|Unified Billing)/i.test(ai), aiFile, "stale third-party model and billing claims must stay removed");
   check(!/(?:glm-4\.7-flash|gpt-oss-120b|qwen3\.6-27b|qwen3-30b-a3b-fp8)/i.test(ai), aiFile, "removed or unavailable model labels must not appear in AI Studio");
   check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
-  check(/downloadBlob\(/.test(ai) && /link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
+  check(/link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
   check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
   check(/IMAGE_MODEL\s*=\s*["']sana["']/.test(ai), aiFile, "anonymous image model must be explicit");
-  const externalAiLinks = [
-    "https://artificialanalysis.ai/leaderboards/models",
-    "https://chat.qwen.ai/"
-  ];
-  const studioAnchors = [...ai.matchAll(/<a\b[^>]*>/g)].map((match) => match[0]);
-  externalAiLinks.forEach((url) => {
-    const tag = studioAnchors.find((anchor) => parseAttributes(anchor).href === url);
-    check(Boolean(tag), aiFile, `AI Studio is missing the external website link ${url}`);
-    if (tag) {
-      const attributes = parseAttributes(tag);
-      check(attributes.target === "_blank", aiFile, `${url} must preserve native new-tab behavior`);
-      check((attributes.rel || "").split(/\s+/).includes("noopener") && (attributes.rel || "").split(/\s+/).includes("noreferrer"), aiFile, `${url} must isolate the external tab`);
-    }
+
+  // The "no login, no provider key" promise moved out of the studio into the AI page copy.
+  const aiPageFile = path.join(ROOT, "ai", "index.html");
+  const aiPage = fs.readFileSync(aiPageFile, "utf8");
+  check(/(?:no|without a) visitor login, additional provider key or model download/i.test(aiPage), aiPageFile, "the AI page must state that the studio needs no visitor login, provider key or model download");
+
+  // Every outbound studio link is a third-party AI site: each must be https and isolated.
+  const studioAnchors = [...ai.matchAll(/<a\b[^>]*>/g)].map((match) => parseAttributes(match[0]));
+  const externalAnchors = studioAnchors.filter((attributes) => /^https?:/i.test(attributes.href || ""));
+  check(externalAnchors.length > 0, aiFile, "AI Studio launchpad must offer external AI websites");
+  externalAnchors.forEach((attributes) => {
+    const url = attributes.href;
+    check(url.startsWith("https://"), aiFile, `${url} must use https`);
+    check(attributes.target === "_blank", aiFile, `${url} must preserve native new-tab behavior`);
+    const rel = (attributes.rel || "").split(/\s+/);
+    check(rel.includes("noopener") && rel.includes("noreferrer"), aiFile, `${url} must isolate the external tab`);
   });
-  check(studioAnchors.length === externalAiLinks.length, aiFile, "AI Studio shortcut row must contain only Artificial Analysis and Qwen Chat");
+  studioAnchors.forEach((attributes) => {
+    const rel = (attributes.rel || "").split(/\s+/);
+    check(attributes.target !== "_blank" || (rel.includes("noopener") && rel.includes("noreferrer")), aiFile, "every new-tab link in AI Studio must set rel=noopener noreferrer");
+  });
+  check(externalAnchors.some((attributes) => attributes.href === "https://artificialanalysis.ai/leaderboards/models"), aiFile, "AI Studio is missing the Artificial Analysis leaderboard link");
+  check(externalAnchors.some((attributes) => /qwen\.ai/.test(attributes.href)), aiFile, "AI Studio must keep a Qwen Chat shortcut");
   ["assets/artificial-analysis-symbol.png", "assets/qwen-symbol.png"].forEach((relativePath) => {
     const assetFile = path.join(ROOT, ...relativePath.split("/"));
     check(fs.existsSync(assetFile), assetFile, `missing local official brand symbol ${relativePath}`);
@@ -977,6 +973,13 @@ for (const file of htmlFiles) checkHtml(file);
 checkSeoContracts(htmlFiles);
 checkSeoInfrastructure();
 checkNotFoundPage();
+
+// The per-stage pages under /learn/ are generated from js/data/school.js and committed,
+// because Cloudflare deploys the repo as-is. Editing the catalog without regenerating
+// them would quietly publish stale content, so fail the build instead.
+for (const staleRoute of buildTopics({ check: true }).stale) {
+  fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
+}
 
 const javascriptFiles = walk(ROOT, (file) => file.endsWith(".js"));
 parseJavaScript(javascriptFiles);

@@ -45,8 +45,34 @@ npm test
 1. Push this folder to the repository's `main` branch.
 2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
 3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
-4. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER` and `VISITOR_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
-5. The three text choices use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
+4. Turn on **Always Use HTTPS** in the Cloudflare dashboard (SSL/TLS → Edge Certificates). `worker/index.mjs` contains an http→https redirect, but `run_worker_first` in `wrangler.jsonc` is scoped to `/api/*`, so the Worker never runs for a page request and that redirect cannot fire for ordinary traffic. The `Strict-Transport-Security` header in `_headers` protects every visit after the first one; only the dashboard setting covers the first.
+5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER` and `VISITOR_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
+6. The three text choices use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
+
+## Optional accounts (off by default)
+
+Pigsfield works fully without an account and nothing is gated behind one. Signing in exists
+only so a saved list can follow someone between a shared PC and a phone. With no D1 database
+bound, every `/api/auth/*` route answers "not enabled" and the sign-in panel never appears —
+guest mode is the default, not a fallback.
+
+To turn it on:
+
+```bash
+npx wrangler d1 create pigsfield
+# add the printed database_id to wrangler.jsonc; the binding is documented there but not
+# declared, because a placeholder id cannot deploy
+npx wrangler d1 execute pigsfield --remote --file=worker/schema.sql
+npx wrangler secret put ACCOUNT_PEPPER      # any long random string
+npx wrangler secret put RESEND_API_KEY      # or swap sendMagicLink() for another provider
+npx wrangler secret put ACCOUNT_FROM_EMAIL  # e.g. hello@pigsfield.com, on a verified domain
+```
+
+`ACCOUNT_PEPPER` is not optional and is not stored in this repository. Email addresses are
+never written to the database — only a peppered SHA-256 of them — and email addresses carry
+far too little entropy for a bare hash to resist a dictionary attack. Without the pepper
+that protection would be theatre, so the code refuses to run rather than pretend. Losing the
+pepper means existing accounts can no longer be matched; rotating it is a deliberate reset.
 
 The static interface uses relative asset paths, but hosted text generation requires the Cloudflare Worker and its bindings. Canonical and social metadata intentionally point to the production domain.
 
@@ -72,6 +98,18 @@ Playback starts only after the visitor presses Play. The player uses YouTube's p
 Pigsfield does not ask visitors for an account or additional provider key. The studio loads only when its persistent dock button is opened and offers exactly one selectable model hosted by Cloudflare Workers AI:
 
 - `gemma-4-26b-a4b-it` — Google's efficient reasoning model, served as `@cf/google/gemma-4-26b-a4b-it`. Visitors need no login or additional provider key.
+
+Gemma is chosen for cost, not inertia. At $0.30 per million output tokens it is the
+cheapest text model on Workers AI by a wide margin — roughly 2.8x cheaper than
+`llama-4-scout-17b-16e-instruct` and over 10x cheaper than `qwen3.8-27b`. Against the
+10,000 Neurons/day free allocation that is about 730 answers a day rather than 260, which
+is the difference between the studio staying free to run and not. Swap it only with that
+trade in mind.
+
+The daily spend ceiling (`DAILY_AI_CALL_BUDGET`) needs the `AI_BUDGET` Durable Object
+binding, which `wrangler.jsonc` documents but does not declare. It is only worth adding on
+a Workers Paid plan, where overage is billable; on Workers Free the allocation is a hard
+stop and requests simply fail, so a ceiling would add nothing but a nicer error message.
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 

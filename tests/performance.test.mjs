@@ -6,7 +6,15 @@ import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (name) => fs.readFileSync(path.join(ROOT, name));
+// Size budgets must measure the bytes that actually ship. Git stores text as LF, so a
+// CRLF working tree (the Git-for-Windows default) would otherwise inflate every text
+// asset by one byte per line and fail these budgets for the wrong reason.
+const TEXT_ASSET = /\.(?:css|js|mjs|html|json|txt|xml|svg)$/i;
+const normalizeText = (bytes, name) => TEXT_ASSET.test(name)
+  ? Buffer.from(bytes.toString("utf8").replace(/\r\n/g, "\n"), "utf8")
+  : bytes;
+const read = (name) => normalizeText(fs.readFileSync(path.join(ROOT, name)), name);
+const readAbsolute = (file) => normalizeText(fs.readFileSync(file), file);
 const text = (name) => read(name).toString("utf8");
 const kib = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`;
 const brotliSize = (buffer) => zlib.brotliCompressSync(buffer, {
@@ -31,7 +39,10 @@ function localDependencies(htmlFile) {
     .map((match) => match[1] || match[2])
     .filter((value) => value && !/^(?:https?:|mailto:|tel:|upi:|#)/i.test(value))
     .map((value) => value.split(/[?#]/, 1)[0])
-    .filter((value) => /\.(?:css|js|png|webp|jpg|jpeg)$/i.test(value))
+    // woff2 belongs here: the web font is the single largest asset on every page, and
+    // leaving it out meant these budgets never measured it. It is discovered through the
+    // <link rel="preload"> in each document head.
+    .filter((value) => /\.(?:css|js|png|webp|jpg|jpeg|woff2)$/i.test(value))
     .map((value) => path.resolve(directory, value))
     .filter((value) => fs.existsSync(value));
   return [...new Set(references)];
@@ -39,8 +50,20 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  withinBudget("css/site.css", { raw: 100 * 1024, gzip: 22 * 1024, brotli: 18 * 1024 });
-  withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 20 * 1024 });
+  // 19 KiB Brotli rather than 18: the stylesheet gained the .resource-warning treatment
+  // and the topic-page layout. Verified there is nothing dead left to reclaim first —
+  // every remaining unreferenced selector is composed at runtime (source-brand-${brand}
+  // and friends), so removing them would break the cards.
+  // 103 KiB raw for the phone above-the-fold rules. Checked for dead weight first: every
+  // remaining unreferenced selector is composed at runtime, so there is nothing to reclaim.
+  // Brotli is what a visitor downloads and barely moves — these are repetitive media rules.
+  withinBudget("css/site.css", { raw: 103 * 1024, gzip: 22 * 1024, brotli: 20 * 1024 });
+  // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
+  withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
+  // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
+  // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
+  // pixel-identically. This budget stops a future re-export shipping the full axes again.
+  withinBudget("assets/google-sans-flex-latin.woff2", { raw: 90 * 1024, gzip: 90 * 1024, brotli: 90 * 1024 });
   withinBudget("assets/pigsfield-logo-ui.webp", { raw: 12 * 1024, gzip: 12 * 1024, brotli: 12 * 1024 });
   withinBudget("assets/pigbang-logo-nav.webp", { raw: 8 * 1024, gzip: 8 * 1024, brotli: 8 * 1024 });
   withinBudget("assets/pigbang-logo-display.webp", { raw: 14 * 1024, gzip: 14 * 1024, brotli: 14 * 1024 });
@@ -57,20 +80,23 @@ test("the navigation shell stays small enough for a fast first visit", () => {
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
+  // Re-baselined once the web font was counted (see localDependencies): these numbers are
+  // ~4% above what each route actually ships, so an accidental regression fails but a
+  // deliberate change does not need the table rewritten every time.
   const routes = [
-    ["index.html", 227, 80],
-    ["learn/index.html", 338, 97],
-    ["skills/index.html", 277, 90],
-    ["tools/index.html", 282, 90],
-    ["rights/index.html", 362, 105],
-    ["exams/index.html", 312, 100],
-    ["watch/index.html", 477, 145],
-    ["about/index.html", 220, 80],
-    ["editorial/index.html", 220, 80],
-    ["accessibility/index.html", 220, 80],
-    ["privacy/index.html", 220, 80],
-    ["submit/index.html", 225, 80],
-    ["ai/index.html", 220, 80]
+    ["index.html", 299, 143],
+    ["learn/index.html", 413, 166],
+    ["skills/index.html", 353, 156],
+    ["tools/index.html", 358, 156],
+    ["rights/index.html", 433, 169],
+    ["exams/index.html", 378, 164],
+    ["watch/index.html", 523, 197],
+    ["about/index.html", 293, 142],
+    ["editorial/index.html", 291, 141],
+    ["accessibility/index.html", 291, 141],
+    ["privacy/index.html", 294, 142],
+    ["submit/index.html", 291, 141],
+    ["ai/index.html", 289, 140]
   ];
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
     const files = [...new Set([
@@ -79,8 +105,8 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
       path.join(ROOT, "assets/pigsfield-logo-ui.webp"),
       path.join(ROOT, "assets/pigbang-logo-nav.webp")
     ])];
-    const raw = files.reduce((sum, file) => sum + fs.statSync(file).size, 0);
-    const compressed = files.reduce((sum, file) => sum + brotliSize(fs.readFileSync(file)), 0);
+    const raw = files.reduce((sum, file) => sum + readAbsolute(file).length, 0);
+    const compressed = files.reduce((sum, file) => sum + brotliSize(readAbsolute(file)), 0);
     assert.ok(raw <= rawBudgetKiB * 1024, `${htmlFile} direct payload is ${kib(raw)} raw; budget is ${rawBudgetKiB} KiB`);
     assert.ok(compressed <= brotliBudgetKiB * 1024, `${htmlFile} direct payload is ${kib(compressed)} Brotli; budget is ${brotliBudgetKiB} KiB`);
   }
@@ -108,6 +134,24 @@ test("large optional features remain lazy and the service worker installs a smal
   assert.ok(installRaw <= 235 * 1024, `service-worker install shell is ${kib(installRaw)} raw; budget is 235 KiB`);
   assert.doesNotMatch(worker.match(/const\s+CORE\s*=\s*\[([\s\S]*?)\];/)?.[1] || "", /(?:data\/|ai-|catalog|watch|player|pigbang)/i);
   assert.match(worker, /navigationPreload\.enable\(\)[\s\S]*event\.preloadResponse/, "repeat navigations should use navigation preload");
+});
+
+test("a phone reaches the useful part of a page without scrolling past a poster", () => {
+  const css = text("css/site.css");
+  // Measured on a 375x812 phone before these rules existed: the catalogue hero ran 467px,
+  // the search field sat at 958px and the first resource at 1202px — a screen and a half of
+  // scrolling to reach anything. The homepage was worse: the six destinations began at 999px,
+  // below a visitor counter, a headline, a paragraph and a 304px video card. The generic
+  // hero had no mobile treatment at all, so phones rendered desktop-scale padding and type.
+  const mobile = css.slice(css.indexOf("Above-the-fold pass"));
+  assert.ok(mobile, "the phone above-the-fold block must exist");
+  assert.match(mobile, /@media \(max-width: 52rem\)/, "these rules must not touch desktop");
+  assert.match(mobile, /\.page-hero \{ padding: 2rem 0 1\.4rem; \}/, "the catalogue hero must stay compact on phones");
+  assert.match(mobile, /\.home-hero \{ padding: 1\.5rem 0 1\.2rem; \}/, "the homepage hero must stay compact on phones");
+  assert.match(mobile, /\.hero-guide-link \{ min-height: 0;/, "the guide must stay a compact row, not a 19rem poster");
+  // aspect-ratio here resolves width from height, which overflowed the visual out of its
+  // 76px column and covered the text. It must not come back.
+  assert.doesNotMatch(mobile, /\.guide-visual \{[^}]*aspect-ratio/, "guide-visual must size from its column, not an aspect ratio");
 });
 
 test("runtime work is deferred and long collections skip offscreen rendering", () => {

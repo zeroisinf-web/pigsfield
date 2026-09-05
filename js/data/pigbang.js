@@ -321,7 +321,6 @@ window.PF_DATA.pigbang = {
      "name": "The Who Was? Show",
      "desc": "Based on bestselling book series. Sketch comedy + biography. Perfect for Class 6–8.",
      "urls": [
-      "https://www.netflix.com/title/80161467"
      ],
      "price": "Paid"
     },
@@ -482,7 +481,6 @@ window.PF_DATA.pigbang = {
      "name": "Dangal",
      "desc": "Coaching, ambition, and the weight of \"believing more in your students than they do\".",
      "urls": [
-      "https://www.netflix.com/in/title/80166605"
      ],
      "price": "Paid"
     },
@@ -522,7 +520,6 @@ window.PF_DATA.pigbang = {
      "name": "Avatar: The Last Airbender",
      "desc": "Character arcs, ethics, war/peace and identity in a genuinely fun series.",
      "urls": [
-      "https://www.netflix.com/title/70142405"
      ],
      "price": "Paid"
     },
@@ -827,7 +824,6 @@ window.PF_DATA.pigbang = {
      "name": "The Ron Clark Story",
      "desc": "Matthew Perry as Ron Clark — energy, rules, and love. TV movie classic.",
      "urls": [
-      "https://www.netflix.com/title/70058937"
      ],
      "price": "Paid"
     },
@@ -855,7 +851,6 @@ window.PF_DATA.pigbang = {
      "name": "Sitare Zameen Par",
      "desc": "Educational support scenes.",
      "urls": [
-      "https://www.youtube.com/watch?v=NDnmiyC746c"
      ],
      "price": "Free"
     },
@@ -1052,8 +1047,7 @@ window.PF_DATA.pigbang = {
      "name": "Planet Earth II",
      "desc": "David Attenborough. Jungles, deserts, oceans — the greatest nature documentary ever made.",
      "urls": [
-      "https://www.primevideo.com/detail/0NIM45GPUT6SJETRIBXS75Q0MD/ref=atv_dp_share_cu_r",
-      "https://www.bbc.co.uk/programmes/n9mbvqj7"
+      "https://www.primevideo.com/detail/0NIM45GPUT6SJETRIBXS75Q0MD/ref=atv_dp_share_cu_r"
      ],
      "price": "Paid"
     },
@@ -2185,7 +2179,6 @@ window.PF_DATA.pigbang = {
      "name": "Black Holes: Edge of All We Know",
      "desc": "The Event Horizon Telescope collaboration — real-time cutting-edge physics research.",
      "urls": [
-      "https://www.netflix.com/title/81054691"
      ],
      "price": "Paid"
     },
@@ -2368,7 +2361,6 @@ window.PF_DATA.pigbang = {
      "name": "The Startup Kids",
      "desc": "An open, honest look at young founders behind Dropbox, Vimeo, and SoundCloud, addressing venture grit, burnout, and mental resilience.",
      "urls": [
-      "https://www.youtube.com/watch?v=84Ere7Y_kCg"
      ],
      "price": "Free"
     },
@@ -2396,7 +2388,6 @@ window.PF_DATA.pigbang = {
      "name": "Something Ventured",
      "desc": "A gripping archival documentary tracking the birth of venture capital and the high-stakes early financing of Apple, Intel, Atari, and Cisco.",
      "urls": [
-      "https://www.youtube.com/watch?v=X7SgUuV_XkM"
      ],
      "price": "Free"
     },
@@ -2432,8 +2423,7 @@ window.PF_DATA.pigbang = {
      "name": "Most Likely to Succeed",
      "desc": "High Tech High, project-based learning, and what a 21st-century school could be.",
      "urls": [
-      "https://www.youtube.com/watch?v=pQTbjZrmdvQ",
-      "https://www.mltsfilm.org/"
+      "https://www.youtube.com/watch?v=pQTbjZrmdvQ"
      ],
      "price": "Free"
     },
@@ -3025,7 +3015,6 @@ window.PF_DATA.pigbang = {
      "name": "ACK Hindi YouTube",
      "desc": "Indian heroes, legends and history stories in Hindi-friendly format.",
      "urls": [
-      "https://www.youtube.com/@amarchitrakathahindi"
      ]
     },
     {
@@ -3170,7 +3159,6 @@ window.PF_DATA.pigbang = {
      "name": "It's AumSum Time Hindi",
      "desc": "Science + GK explainers in Hindi with funny animations. Engaging for Class 9–10.",
      "urls": [
-      "https://www.youtube.com/@itsaumsum"
      ]
     },
     {
@@ -3302,7 +3290,6 @@ window.PF_DATA.pigbang = {
      "name": "Smart Learning for All",
      "desc": "Hindi explainers aligned to NCERT — history, science, civics in Hindi. Class 9–12 syllabus.",
      "urls": [
-      "https://www.youtube.com/@SmartLearningforAll/playlists"
      ]
     },
     {
@@ -3364,7 +3351,6 @@ window.PF_DATA.pigbang = {
      "name": "Smart Learning for All (Hindi)",
      "desc": "NCERT-aligned Hindi explainers — great for observing vernacular-medium pedagogy.",
      "urls": [
-      "https://www.youtube.com/@SmartLearningforAll"
      ]
     },
     {
@@ -3710,7 +3696,7 @@ window.PF_DATA.pigbang = {
      "name": "Rajya Sabha TV",
      "desc": "Parliamentary debates, cultural programs, historical docs in Hindi. Authentic language exposure.",
      "urls": [
-      "https://www.youtube.com/@RajyaSabhaTV"
+      "https://www.youtube.com/@sansadtv"
      ]
     },
     {
@@ -3813,8 +3799,7 @@ window.PF_DATA.pigbang = {
      "name": "CA Rachana Phadke",
      "desc": "Hindi-English finance teacher — taxes, investing, markets explained simply.",
      "urls": [
-      "https://www.youtube.com/@CARachanaRanade/videos",
-      "https://www.youtube.com/@CARachanaPhadkeRanade"
+      "https://www.youtube.com/@CARachanaRanade/videos"
      ]
     },
     {
@@ -3907,7 +3892,6 @@ window.PF_DATA.pigbang = {
      "name": "IAS Princeton",
      "desc": "Institute for Advanced Study lectures — math and physics at the absolute frontier.",
      "urls": [
-      "https://www.youtube.com/@InstituteforAdvancedStudy"
      ]
     },
     {
@@ -3974,7 +3958,6 @@ window.PF_DATA.pigbang = {
      "name": "Teach Like a Champion",
      "desc": "Videos demonstrating Doug Lemov's highly regarded teaching techniques for classroom management and student engagement.",
      "urls": [
-      "https://www.youtube.com/@TeachLikeaChampion"
      ]
     },
     {
@@ -4020,7 +4003,6 @@ window.PF_DATA.pigbang = {
      "name": "CLE for Free",
      "desc": "Continuing legal education lectures — evidence, criminal procedure, corporate law, ethics.",
      "urls": [
-      "https://www.youtube.com/@CLEforFree/playlists"
      ]
     },
     {
@@ -4084,7 +4066,6 @@ window.PF_DATA.pigbang = {
      "name": "iBiology",
      "desc": "Research-level biology seminars by Nobel laureates and world-leading scientists.",
      "urls": [
-      "https://www.youtube.com/@iBiology"
      ]
     },
     {
@@ -4149,7 +4130,7 @@ window.PF_DATA.pigbang = {
      "name": "Perimeter Institute",
      "desc": "Theoretical physics talks by the world's top researchers — cutting-edge physics.",
      "urls": [
-      "https://www.youtube.com/@PerimeterInstitute"
+      "https://www.youtube.com/@PIOutreach"
      ]
     },
     {
@@ -4291,7 +4272,6 @@ window.PF_DATA.pigbang = {
      "name": "Patrick Boyle",
      "desc": "Hedge fund manager explains derivatives, quant finance, market microstructure, macro economics. Brilliant.",
      "urls": [
-      "https://www.youtube.com/@PatrickBoyleOnFinance/playlists"
      ]
     },
     {
@@ -4385,8 +4365,7 @@ window.PF_DATA.pigbang = {
      "name": "Krishi Jagran (Hindi)",
      "desc": "India's leading agri-media — farming practices, schemes, success stories.",
      "urls": [
-      "https://www.youtube.com/@kjkrishijagran/videos",
-      "https://www.youtube.com/@KrishiJagranIn"
+      "https://www.youtube.com/@kjkrishijagran/videos"
      ]
     },
     {
@@ -5424,8 +5403,7 @@ window.PF_DATA.pigbang = {
      "name": "Periodic Table App",
      "desc": "Complete interactive periodic table — properties, reactions, history of each element.",
      "urls": [
-      "https://play.google.com/store/apps/details?id=mendeleev.redlime",
-      "https://play.google.com/store/apps/details?id=com.enrique.periodictable"
+      "https://play.google.com/store/apps/details?id=mendeleev.redlime"
      ]
     },
     {
@@ -6506,7 +6484,6 @@ window.PF_DATA.pigbang = {
      "name": "Cashflow Classic",
      "desc": "Robert Kiyosaki's official financial literacy game. Teaches cash flow mechanics, asset vs liability management, and investing logic.",
      "urls": [
-      "https://www.richdad.com/products/cashflow-classic"
      ]
     },
     {

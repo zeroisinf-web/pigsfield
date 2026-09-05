@@ -284,6 +284,9 @@
     return PF.resourceSymbolFor({ title: text, type, urls });
   };
 
+  // Clear pf-recent-v2: a log of opened resources that nothing read back. See git log.
+  try { localStorage.removeItem("pf-recent-v2"); } catch (_) {}
+
   function readJson(key, fallback) {
     try {
       const parsed = JSON.parse(localStorage.getItem(key));
@@ -1149,6 +1152,21 @@
     return index < 0;
   };
 
+  // Read/replace the saved list. js/account.js uses these to sync with an optional
+  // account; the list itself stays in this browser for anyone who never signs in.
+  PF.getSaved = function () {
+    return saved.slice();
+  };
+
+  PF.replaceSaved = function (items) {
+    if (!Array.isArray(items)) return PF.getSaved();
+    saved = items.slice(0, 100);
+    setJson(SAVED_KEY, saved);
+    renderSaved();
+    document.dispatchEvent(new CustomEvent("pf:saved-changed", { detail: { id: "" } }));
+    return PF.getSaved();
+  };
+
   function renderSaved() {
     const list = qs("#saved-list");
     if (!list) return;
@@ -1173,20 +1191,12 @@
     PF.applyLanguageTo(list);
   }
 
-  function trackUse(item) {
-    const recent = readJson("pf-recent-v2", []);
-    const clean = Array.isArray(recent) ? recent.filter((entry) => entry.url !== item.url) : [];
-    clean.unshift({ title: item.title, url: item.url, at: Date.now() });
-    setJson("pf-recent-v2", clean.slice(0, 20));
-  }
-
   PF.openExternal = function (url, title = "Resource") {
     const safe = PF.safeUrl(url);
     if (!safe) {
       PF.toast("This link could not be opened safely.");
       return;
     }
-    trackUse({ title, url: safe });
     const opened = window.open(safe, "_blank", "noopener");
     if (opened) opened.opener = null;
   };

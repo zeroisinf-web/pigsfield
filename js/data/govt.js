@@ -12,6 +12,7 @@ window.PF_DATA.govt = {
      "items": [
       {
        "title": "RTI — सूचना का अधिकार अधिनियम 2005",
+       "warning": "⚠️ rtionline.gov.in केवल केंद्र सरकार (Central Government) के विभागों के लिए है। राज्य सरकार या दिल्ली NCT के विभाग के लिए यहाँ आवेदन न करें — आवेदन वापस कर दिया जाएगा और फीस वापस नहीं मिलेगी। राज्य के लिए अपने राज्य का RTI पोर्टल इस्तेमाल करें (Rajasthan: rti.rajasthan.gov.in)।",
        "desc": "किसी भी सरकारी विभाग से दस्तावेज़, फ़ाइल, निर्णय, खर्च, रिकॉर्ड मांगने का अधिकार। PM/CM दफ्तर तक RTI जाती है।",
        "links": [
         {
@@ -24,9 +25,11 @@ window.PF_DATA.govt = {
          ]
         },
         {
-         "label": "YouTube Tutorial",
+         "label": "Official Step-by-Step Guide",
          "urls": [
-          "https://www.youtube.com/watch?v=how_to_file_rti_hindi"
+          
+         "https://rtionline.gov.in/guidelines.php?request",
+         "https://rtionline.gov.in/faq.php"
          ]
         },
         {
@@ -51,7 +54,7 @@ window.PF_DATA.govt = {
         },
         {
          "label": "Emergency / Helpline",
-         "text": "CIC Helpline: 011-23404900"
+         "text": "CIC Facilitation Desk: 011-26183053 / 011-26767500 (Mon-Fri, 09:30-18:00) | fdesk-cic[at]gov[dot]in"
         },
         {
          "label": "प्रक्रिया (Step-by-Step)",
@@ -293,8 +296,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://cbi.gov.in",
-          "https://cbi.gov.in/complaints.php"
+          "https://cbi.gov.in"
          ]
         },
         {
@@ -382,8 +384,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://www.incometax.gov.in",
-          "https://www.incometax.gov.in/iec/foportal/help/how-to-report-tax-evasion"
+          "https://www.incometax.gov.in"
          ]
         },
         {
@@ -695,8 +696,7 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://nhrc.nic.in",
-          "https://nhrc.nic.in/complaints/human-rights-complaint-form.aspx"
+          "https://nhrc.nic.in"
          ]
         },
         {
@@ -939,7 +939,6 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://trai.gov.in/consumers/complaintregistration"
          ]
         },
         {
@@ -1116,6 +1115,8 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
+          "https://sampark.rajasthan.gov.in/",
+          "https://play.google.com/store/apps/details?id=com.rajsampark.versiontwo",
           "https://serviceonline.rajasthan.gov.in",
           "https://rps.rajasthan.gov.in"
          ]
@@ -1651,7 +1652,6 @@ window.PF_DATA.govt = {
         {
          "label": "Official Website",
          "urls": [
-          "https://uidai.gov.in/contact-support/grievances.html",
           "https://pmkisan.gov.in/grievance.aspx"
          ]
         },

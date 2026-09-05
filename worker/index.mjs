@@ -1,3 +1,4 @@
+import { handleAccountRoute } from "./account-routes.mjs";
 const MODELS = Object.freeze({
   "gemma-4-26b-a4b-it": Object.freeze({
     id: "@cf/google/gemma-4-26b-a4b-it",
@@ -7,6 +8,9 @@ const MODELS = Object.freeze({
 });
 
 const MAX_PROMPT_LENGTH = 1800;
+// Ceiling on model calls per India-calendar day, across every visitor. Sized so a normal
+// day never touches it while a runaway script cannot spend the month in an afternoon.
+const DAILY_AI_CALL_BUDGET = 1500;
 const MAX_BODY_BYTES = 12 * 1024;
 const MAX_OUTPUT_CHARACTERS = 24_000;
 const TRANSLATION_MODEL = "@cf/ai4bharat/indictrans2-en-indic-1B";
@@ -45,9 +49,15 @@ function sameOriginRequest(request) {
   }
 }
 
+// The per-visitor bucket is scoped to the trusted Cloudflare edge address, not to the
+// client-supplied identifier alone. Keyed on the header by itself, a caller could rotate it
+// for an endless supply of fresh buckets, while every honest browser that sends no header
+// shared one "anonymous" bucket and throttled each other. Scoping to the address means the
+// identifier can only ever subdivide a visitor own allowance, never escape it.
 function clientKey(request) {
   const supplied = request.headers.get("X-Pigsfield-Client") || "";
-  return /^[a-z0-9-]{12,80}$/i.test(supplied) ? supplied : "anonymous";
+  const identity = /^[a-z0-9-]{12,80}$/i.test(supplied) ? supplied : "anon";
+  return `${edgeKey(request)}|${identity}`;
 }
 
 function edgeKey(request) {
@@ -117,6 +127,21 @@ function indiaMonth(date = new Date()) {
   const year = parts.find((part) => part.type === "year")?.value || "";
   const month = parts.find((part) => part.type === "month")?.value || "";
   return /^\d{4}$/.test(year) && /^\d{2}$/.test(month) ? `${year}-${month}` : date.toISOString().slice(0, 7);
+}
+
+/** The India-calendar date, so the AI budget resets at IST midnight like the rest of the site. */
+function indiaDay(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const get = (type) => parts.find((part) => part.type === type)?.value || "";
+  const [year, month, day] = [get("year"), get("month"), get("day")];
+  return /^\d{4}$/.test(year) && /^\d{2}$/.test(month) && /^\d{2}$/.test(day)
+    ? `${year}-${month}-${day}`
+    : date.toISOString().slice(0, 10);
 }
 
 function cookieValue(request, name) {
@@ -256,12 +281,15 @@ async function handleAI(request, env) {
 
   const limited = await applyAIRateLimits(request, env);
   if (limited) return limited;
+  // Per-address limits cannot bound total spend, because addresses are cheap. This can.
+  const overBudget = await reserveAIBudget(env);
+  if (overBudget) return overBudget;
   const parsed = await boundedJsonBody(request);
   if (parsed.response) return parsed.response;
   const body = parsed.body;
 
   const model = MODELS[String(body && body.model || "")];
-  const task = ["tutor", "document", "ask", "chat"].includes(body && body.task) ? body.task : "";
+  const task = ["tutor", "document"].includes(body && body.task) ? body.task : "";
   const prompt = String(body && body.prompt || "").trim();
   const format = ["md", "txt", "html"].includes(body && body.format) ? body.format : "txt";
   if (!model) return json({ error: "Choose one of the available Pigsfield models." }, 400);
@@ -336,6 +364,54 @@ async function handleTranslate(request, env) {
   }
 }
 
+// Workers AI is billed per token, /api/ai is reachable by anything that can set an Origin
+// header, and the rate limiters are per-address — so N addresses cost N times as much with
+// no ceiling at all. This is that ceiling: a single counter, reset each India-calendar day,
+// that stops the day spending before the bill does. It stores a count and a date. No
+// visitor identifiers, no prompts.
+class DailyAIBudget {
+  constructor(state) {
+    this.state = state;
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    const today = indiaDay();
+    let day = await this.state.storage.get("day");
+    let used = Number(await this.state.storage.get("used")) || 0;
+    if (day !== today) {
+      day = today;
+      used = 0;
+    }
+
+    if (url.pathname === "/spend") {
+      const limit = Number(url.searchParams.get("limit")) || DAILY_AI_CALL_BUDGET;
+      if (used >= limit) return json({ allowed: false, used, limit, day });
+      used += 1;
+      await this.state.storage.put({ day, used });
+      return json({ allowed: true, used, limit, day });
+    }
+
+    return json({ allowed: used < DAILY_AI_CALL_BUDGET, used, day });
+  }
+}
+
+/** Reserve one model call against today budget. Fails open only when the binding is absent. */
+async function reserveAIBudget(env) {
+  if (!env.AI_BUDGET || typeof env.AI_BUDGET.idFromName !== "function") return null;
+  try {
+    const stub = env.AI_BUDGET.get(env.AI_BUDGET.idFromName("global"));
+    const response = await stub.fetch(`https://budget/spend?limit=${DAILY_AI_CALL_BUDGET}`, { method: "POST" });
+    const body = await response.json();
+    if (body && body.allowed === false) {
+      return json({ error: "Pigsfield has reached its shared AI limit for today. It resets after midnight IST." }, 429);
+    }
+  } catch (_) {
+    // A storage blip must not take the studio down; the per-address limiters still apply.
+  }
+  return null;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -346,6 +422,11 @@ export default {
     if (url.pathname === "/api/ai") return handleAI(request, env);
     if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
+    // Optional sign-in. Answers a clear "not enabled" when no D1 database is bound, so a
+    // deployment without accounts behaves exactly as it did before.
+    if (url.pathname.startsWith("/api/auth/") || url.pathname === "/api/saved") {
+      return handleAccountRoute(request, env, url);
+    }
     if (url.pathname.startsWith("/api/")) return json({ error: "API route not found." }, 404);
     return env.ASSETS.fetch(request);
   }
@@ -357,11 +438,13 @@ export {
   MAX_TRANSLATION_OUTPUT_CHARACTERS,
   MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS,
   MODELS,
+  DailyAIBudget,
   MonthlyVisitorCounter,
   TRANSLATION_MODEL,
   handleAI,
   handleTranslate,
   handleVisitors,
+  indiaDay,
   indiaMonth,
   outputText
 };

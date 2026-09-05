@@ -369,7 +369,7 @@ window.PF_DATA.teach = {
         {
          "label": "Web",
          "urls": [
-          "https://tiss.ac.in/"
+          "https://www.tiss.ac.in/"
          ]
         }
        ]
@@ -507,7 +507,6 @@ window.PF_DATA.teach = {
         {
          "label": "YouTube",
          "urls": [
-          "https://www.youtube.com/@Teachmint"
          ]
         },
         {
@@ -634,7 +633,6 @@ window.PF_DATA.teach = {
         {
          "label": "Web",
          "urls": [
-          "https://swayam-plus.swayam2.ac.in/courses"
          ]
         },
         {
@@ -961,24 +959,6 @@ window.PF_DATA.teach = {
          "label": "YouTube",
          "urls": [
           "https://www.youtube.com/c/ScratchTeam"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Rajasthan Sampark 2.0",
-       "desc": "Rajasthan govt's integrated portal for citizen grievances and government services. Grievance + Govt Services",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://sampark.rajasthan.gov.in/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.rajsampark.versiontwo"
          ]
         }
        ]

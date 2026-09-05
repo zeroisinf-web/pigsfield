@@ -499,7 +499,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.cdac.eraktkosh"
          ]
         },
         {
@@ -618,7 +617,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.microsoft.windows365.test"
          ]
         },
         {
@@ -707,7 +705,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.suno.app"
          ]
         },
         {
@@ -797,7 +794,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.circular.pixelcut"
          ]
         },
         {
@@ -821,7 +817,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.freepik.app"
          ]
         },
         {
@@ -964,7 +959,6 @@ window.PF_DATA.tools = {
         {
          "label": "App",
          "urls": [
-          "https://play.google.com/store/apps/details?id=com.producthunt.app"
          ]
         },
         {

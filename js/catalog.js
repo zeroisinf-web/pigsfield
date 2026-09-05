@@ -54,8 +54,21 @@
     }
   }
 
+  // A youtube.com/results link is a search, not a video. isYouTube() says true for any
+  // YouTube host, so without this these 96 catalogue links get the red play affordance
+  // and a "Tutorial" label for a page that plays nothing.
+  function isYouTubeSearch(url) {
+    try {
+      const parsed = new URL(url);
+      return /(?:^|\.)youtube\.com$/i.test(parsed.hostname) && parsed.pathname === "/results";
+    } catch (_) {
+      return false;
+    }
+  }
+
   function classifyUrl(url) {
     const lower = url.toLowerCase();
+    if (isYouTubeSearch(url)) return "website";
     if (PF.YouTube && PF.YouTube.isYouTube(url)) return "video";
     if (/play\.google\.com|apps\.apple\.com|microsoft\.com\/store/.test(lower)) return "app";
     if (/\.pdf(?:$|\?)|drive\.google\.com|docs\.google\.com/.test(lower)) return "document";
@@ -151,6 +164,7 @@
   }
 
   function externalLabel(link) {
+    if (isYouTubeSearch(link.url)) return "Search YouTube";
     let host = "Source";
     try { host = new URL(link.url).hostname.replace(/^www\./, ""); } catch (_) {}
     const label = String(link.label || "").replace(/\b(?:youtube|website|web|app|pdf)\b/gi, "").replace(/\s{2,}/g, " ").trim();
@@ -254,6 +268,7 @@
       ${tags.length ? `<div class="resource-tags">${Array.from(new Set(tags)).slice(0, 4).map((tag) => `<span class="tag">${PF.escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       <h3>${PF.escapeHtml(item.title || item.desc || "Untitled resource")}</h3>
       ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
+      ${item.warning ? `<p class="resource-warning" role="note">${PF.escapeHtml(item.warning)}</p>` : ""}
       <div class="resource-actions">
         ${renderExtra(item.extra)}
         <div class="direct-links" aria-label="Original resource links">${links}</div>
@@ -339,6 +354,10 @@
       content.innerHTML = groupMarkup;
     }
     content.dataset.rendered = "true";
+    // Fill the category accordions now too, for the same reason as the sections
+    // themselves: content that only appears on a click is content a crawler and a
+    // no-JS reader never see.
+    if (collapsibleGroups) content.querySelectorAll("details.catalog-group").forEach(renderGroup);
     if (PF.applyLanguageTo) PF.applyLanguageTo(content);
   }
 
@@ -363,10 +382,14 @@
       </details>`;
     }).join("");
 
-    const details = Array.from(sectionsTarget.querySelectorAll(".catalog-section"));
-    details.forEach((item) => item.addEventListener("toggle", () => {
-      if (item.open) renderSection(item, Number(item.dataset.sectionIndex));
-    }));
+    // Render every section up front rather than on the first toggle. Content that
+    // only appears after a click is invisible to search engines (they do not click),
+    // to AI answer engines, to social previews and to anyone browsing without JS —
+    // which previously meant the entire catalog. Cheap to do eagerly because
+    // .resource-card sets content-visibility:auto, so offscreen cards still skip
+    // layout and paint; the sections stay visually collapsed exactly as before.
+    Array.from(sectionsTarget.querySelectorAll(".catalog-section"))
+      .forEach((item) => renderSection(item, Number(item.dataset.sectionIndex)));
   }
 
   function buildFilters() {

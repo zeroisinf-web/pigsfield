@@ -6,7 +6,8 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (name) => fs.readFileSync(path.join(ROOT, name), "utf8");
+// Normalize CRLF so the source-slice markers below match on Windows checkouts too.
+const read = (name) => fs.readFileSync(path.join(ROOT, name), "utf8").replace(/\r\n/g, "\n");
 
 function slug(value) {
   const result = String(value || "resource")
@@ -64,7 +65,8 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
   assert.equal(teacherTraining.saveKey, "teach");
   assert.equal(vocational.resourceIdSection, 2);
   assert.equal(groupedItemCount(data.school), 171);
-  assert.equal(groupedItemCount(data.teach), 24);
+  // 23 since the misfiled duplicate of Rajasthan Sampark was merged into /rights/.
+  assert.equal(groupedItemCount(data.teach), 23);
 
   const runtime = compatibilityRuntime(teacherTraining, "");
   [

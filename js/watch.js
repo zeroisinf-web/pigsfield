@@ -126,6 +126,29 @@
     return `<span class="source-icon source-mark source-mark-${brand}" aria-hidden="true">${sourceMarkParts[brand] || sourceMarkParts.website}</span>`;
   }
 
+// Real artwork, derived from the links an entry already has — no API key, no build step
+  // and no stored map that could drift out of sync with these positional ids.
+  //
+  // Only two sources can be resolved this way. A YouTube video id maps straight to its
+  // thumbnail, and a Steam app id to its store header. Channels, playlists and the
+  // streaming services cannot: youtube.com/oembed rejects channel URLs outright, and
+  // Netflix, Prime and Hotstar publish no derivable image path. Those keep the generated
+  // symbol until a licensed source (TMDB) is wired in.
+  const YOUTUBE_VIDEO = /(?:youtube\.com\/watch\?(?:[^#]*&)?v=|youtu\.be\/|youtube\.com\/(?:shorts|live|embed)\/)([A-Za-z0-9_-]{11})/;
+  const STEAM_APP = /store\.steampowered\.com\/app\/(\d+)/;
+
+  function artworkFor(entry) {
+    for (const url of entryUrls(entry)) {
+      const video = url.match(YOUTUBE_VIDEO);
+      if (video) return { src: `https://i.ytimg.com/vi/${video[1]}/mqdefault.jpg`, width: 320, height: 180 };
+    }
+    for (const url of entryUrls(entry)) {
+      const app = url.match(STEAM_APP);
+      if (app) return { src: `https://cdn.cloudflare.steamstatic.com/steam/apps/${app[1]}/header.jpg`, width: 460, height: 215 };
+    }
+    return null;
+  }
+
   function watchSymbol(entry) {
     const emojiType = entry.tab === "apps" ? "app" : "video";
     const emoji = PF.resourceSymbolFor({
@@ -147,6 +170,7 @@
     const cardMarkup = entry.cardMarkup || (entry.cardMarkup = []);
     if (cardMarkup[cacheIndex]) return cardMarkup[cacheIndex];
     const price = String(item.price || "").trim();
+    const art = artworkFor(entry);
     const priceClass = /^free$/i.test(price) ? "free" : /^paid$/i.test(price) ? "paid" : "";
     const links = urls.length ? urls.map((url) => {
       const type = sourceType(url);
@@ -157,7 +181,7 @@
     }).join("") : `<span class="link-button"><span>Source is being reviewed</span></span>`;
 
     const markup = `<article class="resource-card watch-card" id="${PF.escapeHtml(entry.id)}" data-entry-id="${PF.escapeHtml(saveId)}">
-      <div class="watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}" aria-hidden="true">${watchSymbol(entry)}</div>
+      <div class="watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}" aria-hidden="true">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}</div>
       <div class="resource-topline">
         <span class="tag">${PF.escapeHtml(tabLabels[entry.tab] || "PigBang")}</span>
         <div class="card-tools">
@@ -300,6 +324,13 @@
 
   buildFilters();
   render();
+  // Artwork is third-party and will sometimes 404 or be blocked. "error" does not bubble,
+  // so this listens in the capture phase and drops the image, revealing the generated
+  // symbol underneath instead of an empty tile.
+  grid.addEventListener("error", (event) => {
+    const image = event.target;
+    if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
+  }, true);
   grid.addEventListener("click", handleGridClick);
   input.addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { visible = PAGE_SIZE; render(); }, 160); });
   moreButton.addEventListener("click", () => {

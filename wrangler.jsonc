@@ -14,6 +14,20 @@
   "ai": {
     "binding": "AI"
   },
+  // Optional accounts are OFF here on purpose. Every /api/auth route answers "not enabled"
+  // without this binding and the sign-in panel never renders, so guest mode is the default
+  // rather than a fallback. A placeholder database_id cannot deploy, so the binding is
+  // documented rather than declared. To switch accounts on:
+  //   npx wrangler d1 create pigsfield
+  //   npx wrangler d1 execute pigsfield --remote --file=worker/schema.sql
+  //   npx wrangler secret put ACCOUNT_PEPPER
+  // then add, with the real id printed by d1 create:
+  //   "d1_databases": [{ "binding": "DB", "database_name": "pigsfield", "database_id": "<id>" }],
+  // The daily AI spend ceiling is also opt-in. Without AI_BUDGET the per-address rate
+  // limits still apply but nothing bounds the day's total spend, so add this once the
+  // Durable Object migration is accepted:
+  //   bindings:  { "name": "AI_BUDGET", "class_name": "DailyAIBudget" }
+  //   exports:   "DailyAIBudget": { "type": "durable-object", "storage": "sqlite" }
   "durable_objects": {
     "bindings": [
       {

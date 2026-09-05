@@ -392,7 +392,7 @@
           <span class="ai-image-prompt-text">“${escapeHtml(prompt)}”</span>
           <div class="ai-image-actions">
             <button type="button" class="button small brand ai-dl-btn">📥 Download</button>
-            <a class="button small ghost" href="${imageUrl}" target="_blank" rel="noopener">↗️ Full View</a>
+            <a class="button small ghost" href="${imageUrl}" target="_blank" rel="noopener noreferrer">↗️ Full View</a>
           </div>
         </div>`;
 
