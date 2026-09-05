@@ -108,8 +108,17 @@ after the push and legitimately races the deploy. A commit that does not touch t
 leaves the digest unchanged and passes at once, which is correct — there is nothing new to
 deploy.
 
-So a green `main` now means the site is serving that commit. A failure here is a deployment
-problem, not a code problem: check Workers Builds for the repository.
+The same job also asks production for one real PigBang poster. `/api/poster` needs the
+deployed Worker, so it cannot be exercised anywhere else — a static preview has no `/api` at
+all — and before this the first person to notice that every card had lost its artwork would
+have been a visitor. The probe uses a YouTube video id, the one source resolved without
+reading a provider's page, so a failure means the endpoint is broken rather than a provider
+having declined to answer a crawler. A provider blocking us is a cached 404 and a card that
+keeps its generated symbol: working as designed, and not something to fail a build over.
+
+So a green `main` now means the site is serving that commit and PigBang's cover art works. A
+failure in either is a deployment problem, not a code problem: check Workers Builds for the
+repository.
 
 One known failure is neither, and is a dashboard setting: `http://pigsfield.com/` answers
 200 instead of redirecting. `run_worker_first` is scoped to `/api/*`, so the Worker's own

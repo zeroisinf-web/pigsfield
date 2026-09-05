@@ -153,6 +153,7 @@ test("a non-image answer is never passed through as one", async () => {
 });
 
 test("an oversized image is refused rather than streamed through the Worker", async () => {
+  // Refused on the declared length...
   stubFetch({
     "https://www.example.org/title/1": {
       body: '<meta property="og:image" content="https://www.example.org/huge.jpg">',
@@ -164,6 +165,26 @@ test("an oversized image is refused rather than streamed through the Worker", as
     }
   });
   assert.equal((await handlePoster(...posterRequest("https://www.example.org/title/1"))).status, 404);
+
+  // ...and on the bytes that actually arrive, because Content-Length is a claim. The
+  // per-request timeout only covers the response headers; once they land the timer is
+  // cleared, so nothing but this bounds the body.
+  let delivered = 0;
+  stubFetch((url) => {
+    if (url.endsWith("/title/2")) {
+      return { body: '<meta property="og:image" content="https://www.example.org/liar.jpg">', headers: { "Content-Type": "text/html" } };
+    }
+    return new Response(new ReadableStream({
+      pull(controller) {
+        delivered += 1;
+        // 40 chunks of 128 KiB is 5 MiB, well past the 3 MiB cap.
+        if (delivered > 40) return controller.close();
+        controller.enqueue(new Uint8Array(128 * 1024));
+      }
+    }), { headers: { "Content-Type": "image/jpeg" } });
+  });
+  assert.equal((await handlePoster(...posterRequest("https://www.example.org/title/2"))).status, 404);
+  assert.ok(delivered < 40, `the read must stop at the cap, not after it (took ${delivered} chunks)`);
 });
 
 test("a rejected target never reaches the network", async () => {
