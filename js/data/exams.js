@@ -679,8 +679,8 @@ window.PF_DATA.exams = {
          "https://www.youtube.com/live/WkXYpoS5Kvs"
         ],
         "books": [
-         "https://dl.flipkart.com/dlhttp://www.flipkart.com/student-atlas-hindi-medium-all-geographic-information-world-india-map/p/itm6030b416321d6?pid=9784162061192&lid=LSTBOK9784162061192QA7AG6&marketplace=FLIPKART&cmpid=content_book_23721442947_g_8965229628_gmc_pla&tgi=sem,1,G,11214002,g,search,,804075027818,,,,m,,mobile,,,,,&entryMethod=23721442947&&cmpid=content_23721442947_gmc_pla&gad_source=1&gad_campaignid=23721442947&gclid=Cj0KCQjw2_TQBhCnARIsAF3-XhwgxxfKEq-hV-iNja4er-0SJm1m_K9zgbutv61JCG1uP_1yWSdZoDsaAkN6EALw_wcB&_refId=&_appId=CL",
-         "https://dl.flipkart.com/dlhttp://www.flipkart.com/vishwa-bhugol/p/itmdxng8ater5agz?pid=9788131603130&lid=LSTBOK97881316031305YWGRZ&marketplace=FLIPKART&cmpid=content_book_23721442947_g_8965229628_gmc_pla&tgi=sem,1,G,11214002,g,search,,804075027818,,,,m,,mobile,,,,,&entryMethod=23721442947&&cmpid=content_23721442947_gmc_pla&gad_source=1&gad_campaignid=23721442947&gclid=Cj0KCQjw2_TQBhCnARIsAF3-XhypucQXLQoVqr4_09HuLXLpYJqh9GxbCP8zY7WylyxGI9rECCZBaYEaAvBiEALw_wcB&_refId=&_appId=CL"
+         "https://www.flipkart.com/student-atlas-hindi-medium-all-geographic-information-world-india-map/p/itm6030b416321d6?pid=9784162061192",
+         "https://www.flipkart.com/vishwa-bhugol/p/itmdxng8ater5agz?pid=9788131603130"
         ]
        },
        {

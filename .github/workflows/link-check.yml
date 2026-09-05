@@ -1,0 +1,92 @@
+name: Broken link sentinel
+
+# Indian government, university and provider portals move URLs often and rarely
+# leave redirects behind, so the catalog rots quietly between releases. This runs
+# every Monday, checks all ~1,500 outbound links in js/data/*.js, and keeps a
+# single rolling GitHub Issue up to date with whatever is broken.
+#
+# It never fails the build. A red X on a schedule is easy to start ignoring; an
+# issue with a checklist is something a volunteer can actually work through.
+
+on:
+  schedule:
+    # 05:30 UTC Monday = 11:00 IST Monday.
+    - cron: "30 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Check only the first N links (0 = all)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: link-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Check every catalog link
+        id: check
+        run: |
+          node tools/link-check.mjs \
+            --concurrency 12 \
+            --limit "${{ github.event.inputs.limit || 0 }}" \
+            --json link-report.json \
+            --markdown link-report.md
+          echo "dead=$(node -e "const r=require('./link-report.json');console.log(r.results.filter(x=>x&&x.verdict==='dead').length)")" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the full result as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-report
+          path: |
+            link-report.json
+            link-report.md
+          retention-days: 90
+
+      - name: Open or update the rolling issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEAD: ${{ steps.check.outputs.dead }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          TITLE="Broken link sentinel: catalog link report"
+          {
+            echo "_Updated automatically by [Broken link sentinel]($RUN_URL) on $(date -u '+%Y-%m-%d %H:%M UTC')._"
+            echo
+            cat link-report.md
+            echo
+            echo "---"
+            echo "Only **Dead** entries need action. Fix one by editing the URL in the matching \`js/data/*.js\` file, then tick its box."
+          } > issue-body.md
+
+          EXISTING="$(gh issue list --state open --label link-rot --json number --jq '.[0].number // empty')"
+
+          if [ "$DEAD" = "0" ] && [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "All catalog links are resolving again as of $(date -u '+%Y-%m-%d'). Closing until the next failure."
+            gh issue close "$EXISTING"
+          elif [ "$DEAD" = "0" ]; then
+            echo "No dead links and no open issue. Nothing to do."
+          elif [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --body-file issue-body.md
+            echo "Updated issue #$EXISTING with $DEAD dead links."
+          else
+            gh label create link-rot --color d93f0b --description "Catalog links that no longer resolve" 2>/dev/null || true
+            gh issue create --title "$TITLE" --label link-rot --body-file issue-body.md
+          fi
