@@ -60,11 +60,21 @@ export const DESTINATIONS = [
     parentName: "Digital Tools",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "ai-tools", name: "AI Tools", h1: "AI you can actually use today, free.", title: "Free AI Tools: ChatGPT, Claude, Gemini | Pigsfield", description: "A free-first guide to AI chat, research and coding assistants usable from India, including ChatGPT, Claude, Gemini, NotebookLM and Indian-language models.", intro: "Assistants for writing, studying, coding and research. Most have a free tier with limits that change often, so check the current terms at the provider." },
+      { key: 0, slug: "ai-tools", name: "AI & Coding Tools", h1: "AI and coding tools you can actually use today, free.", title: "Free AI & Coding Tools: ChatGPT, Claude, Colab | Pigsfield", description: "A free-first guide to AI chat, research and coding assistants usable from India, including ChatGPT, Claude, Gemini, Google Colab and Indian-language models.", intro: "Assistants and cloud environments for writing, studying, coding and research. Most have a free tier with limits that change often, so check the current terms at the provider." },
       { key: 1, slug: "privacy-and-browsers", name: "Privacy & Browsers", h1: "Browse without being the product.", title: "Privacy Tools, Tor & Brave Browser Guide | Pigsfield", description: "Free-first privacy browsers, tracker blockers, breach checkers and web utilities for safer everyday browsing on Indian phones and laptops.", intro: "Browsers and utilities that reduce tracking, plus tools for checking whether your own data has already leaked." },
       { key: 2, slug: "files-and-remote-access", name: "Files & Remote Access", h1: "Your documents, reachable from anywhere.", title: "DigiLocker, PDF Tools & Remote Desktop | Pigsfield", description: "Free-first tools for Indian document storage, PDF editing, cloud drives, file management and controlling a computer remotely from a phone.", intro: "Government document storage, cloud drives, PDF utilities and remote desktop access — the plumbing that makes study and paperwork portable." },
       { key: 3, slug: "creative-tools", name: "Creative Tools", h1: "Make things without buying a licence.", title: "Free Video, Music & Photo Editing Tools | Pigsfield", description: "Free-first video editors, AI music generators, photo editing and image compression tools for creators and students working on a phone or laptop.", intro: "Editing and generation tools for video, music and images. Several replace subscriptions that would otherwise cost more than a month of data." },
       { key: 4, slug: "research-tools", name: "Research Tools", h1: "Find the source, not the summary.", title: "Free Research Tools, Books & Analytics | Pigsfield", description: "Free-first research libraries, science explainers, community channels and analytics tools for students and independent researchers in India.", intro: "Places to find books, papers, explanations and data. Availability and legality of individual libraries vary by country — check before you rely on one." }
+    ],
+    extraCards: [
+      {
+        name: "fmhy.net",
+        count: "Free-First Directory",
+        note: "The largest curated collection of free software, media, tools and resources on the internet.",
+        href: "https://fmhy.net",
+        highlight: true,
+        external: true
+      }
     ]
   },
   {
@@ -361,7 +371,11 @@ export function renderTopicIndex(data, destination) {
     // for it; the hub accordion was the only thing that used to show either.
     const note = source.highlight && source.note ? source.note : firstSentence(topic.intro);
     return `<a class="topic-card${source.highlight ? " topic-card-highlight" : ""}" href="${esc(topic.slug)}/"><span class="topic-card-name">${esc(topic.name)}</span><span class="topic-card-count">${count} ${count === 1 ? "resource" : "resources"}</span><span class="topic-card-note">${esc(note)}</span></a>`;
-  }).join("");
+  }).concat(
+    (destination.extraCards || []).map((card) =>
+      `<a class="topic-card${card.highlight ? " topic-card-highlight" : ""}" href="${esc(card.href)}"${card.external ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="topic-card-name">${esc(card.name)}</span><span class="topic-card-count">${esc(card.count)}</span><span class="topic-card-note">${esc(card.note)}</span></a>`
+    )
+  ).join("");
   const leftovers = leftoverGroups(data, destination).map(({ title, source }) =>
     `<section class="topic-leftover"><h3>${esc(title)}</h3><div class="topic-list">
         ${renderResources(source, title)}

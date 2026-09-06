@@ -75,7 +75,7 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
       }
     }
   }
-  assert.equal(checked, 290, "every resource that has a page of its own must keep its id");
+  assert.equal(checked, 291, "every resource that has a page of its own must keep its id");
 });
 
 test("moved Teacher Training cards retain the legacy save namespace", () => {

@@ -7,7 +7,7 @@ window.PF_DATA.tools = {
    "title": "SECTION — Digital Tools",
    "groups": [
     {
-     "title": "AI & ML — Best AI tools + direct tutorials",
+     "title": "AI & Coding — Best AI & coding tools + direct tutorials",
      "items": [
       {
        "title": "ChatGPT",
@@ -303,6 +303,24 @@ window.PF_DATA.tools = {
          "label": "Tutorial",
          "urls": [
           "https://www.youtube.com/results?search_query=google+opal+ai+tutorial"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Google Colab",
+       "desc": "ब्राउज़र में ही Python और Machine Learning कोड रन करने का फ्री क्लाउड टूल।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://colab.research.google.com"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=google+colab+tutorial+for+beginners"
          ]
         }
        ]
@@ -1001,29 +1019,6 @@ window.PF_DATA.tools = {
          "label": "Tutorial",
          "urls": [
           "https://www.youtube.com/results?search_query=how+to+compare+phones+on+91mobiles"
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "title": "Dev & Design — Build, code, design — everything with quick tutorials",
-     "items": [
-      {
-       "title": "Google Colab",
-       "desc": "ब्राउज़र में ही Python और Machine Learning कोड रन करने का फ्री क्लाउड टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://colab.research.google.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+colab+tutorial+for+beginners"
          ]
         }
        ]
