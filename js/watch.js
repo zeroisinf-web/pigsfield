@@ -171,22 +171,42 @@
     return `<span class="resource-emoji resource-emoji-card watch-emoji" aria-hidden="true">${emoji}</span>`;
   }
 
-  function entryLinks(entry) {
+  function renderEntrySource(url, item) {
+    const type = sourceType(url);
+    const brand = sourceBrand(url, type);
+    const host = sourceLabel(url);
+    const playable = PF.YouTube && PF.YouTube.parse(url);
+    const mark = sourceMark(url, type);
+    if (type === "video") {
+      const playAttr = playable ? ` data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"` : "";
+      return `<a class="link-button source-icon-only source-video source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playAttr} aria-label="Watch ${PF.escapeHtml(item.name || "title")} on YouTube" title="${PF.escapeHtml(host)}">${mark}</a>`;
+    }
+    if (type === "app") {
+      return `<a class="link-button source-icon-only source-app source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" aria-label="Get ${PF.escapeHtml(item.name || "title")} on ${PF.escapeHtml(host)}" title="${PF.escapeHtml(host)}">${mark}</a>`;
+    }
+    return `<a class="link-button source-${type} source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${PF.escapeHtml(host)}">${mark}<span class="source-label">${PF.escapeHtml(host)}</span></a>`;
+  }
+
+  function entrySources(entry) {
     const item = entry.item;
     const urls = entryUrls(entry);
-    if (!urls.length) return `<span class="link-button"><span>Source is being reviewed</span></span>`;
-    return urls.map((url) => {
+    if (!urls.length) return `<div class="topic-sources"><span class="link-button"><span>Source is being reviewed</span></span></div>`;
+    const lanes = { web: [], video: [], app: [] };
+    for (const url of urls) {
       const type = sourceType(url);
-      const brand = sourceBrand(url, type);
-      const playable = PF.YouTube && PF.YouTube.parse(url);
-      if (playable) return `<span class="source-link-pair"><a class="link-button source-video source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}">${sourceMark(url, type)}<span>${PF.escapeHtml(sourceLabel(url))}</span></a></span>`;
-      return `<span class="source-link-pair"><a class="link-button source-${type} source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${sourceMark(url, type)}<span>${PF.escapeHtml(sourceLabel(url))}</span></a></span>`;
-    }).join("");
+      lanes[type === "video" || type === "app" ? type : "web"].push(renderEntrySource(url, item));
+    }
+    return `<div class="topic-sources" aria-label="Resource links">${["web", "video", "app"]
+      .map((lane) => `<div class="topic-lane topic-lane-${lane}">${lanes[lane].join("")}</div>`)
+      .join("")}</div>`;
+  }
+
+  function entryLinks(entry) {
+    return entrySources(entry);
   }
 
   function card(entry) {
     const item = entry.item;
-    const urls = entryUrls(entry);
     const saveId = `pigbang:${entry.id}`;
     const saved = PF.isSaved(saveId);
     const cacheIndex = saved ? 1 : 0;
@@ -195,7 +215,6 @@
     const price = String(item.price || "").trim();
     const art = artworkFor(entry);
     const priceClass = /^free$/i.test(price) ? "free" : /^paid$/i.test(price) ? "paid" : "";
-    const links = entryLinks(entry);
 
     const markup = `<article class="resource-card watch-card" id="${PF.escapeHtml(entry.id)}" data-entry-id="${PF.escapeHtml(saveId)}">
       <div class="watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}" aria-hidden="true">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}</div>
@@ -211,7 +230,7 @@
       </div>
       <h3>${PF.escapeHtml(item.name || "Untitled")}</h3>
       ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
-      <div class="resource-actions"><div class="direct-links" aria-label="Original resource links">${links}</div></div>
+      <div class="resource-actions">${entrySources(entry)}</div>
     </article>`;
     cardMarkup[cacheIndex] = markup;
     return markup;
@@ -258,26 +277,43 @@
       : open
         ? `<a class="ott-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${PF.escapeHtml(item.name || "this title")} at its source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.6l-8.3 8.3 1.4 1.4L19 6.4V10h2V3h-7Zm5 16H5V5h5V3H3v18h18v-7h-2v5Z"/></svg></a>`
         : "";
+    const price = priceText(entry);
     return `<li class="ott-tile">
       <div class="ott-art watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}
-        <div class="ott-tile-overlay">${action}<button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button></div>
+        <div class="ott-tile-overlay">
+          <div class="ott-tile-actions">
+            ${action}
+            <button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+            <button class="ott-tile-info" type="button" data-detail="${PF.escapeHtml(entry.id)}" aria-label="More details about ${PF.escapeHtml(item.name || "this title")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="ott-tile-pills">
+            <span class="ott-pill-hd">HD</span>
+            <span class="ott-pill-level">${PF.escapeHtml(price)}</span>
+          </div>
+        </div>
       </div>
       <button class="ott-tile-title" type="button" data-detail="${PF.escapeHtml(entry.id)}">${PF.escapeHtml(item.name || "Untitled")}</button>
-      <p class="ott-tile-meta">${PF.escapeHtml([levelText(entry), priceText(entry)].filter(Boolean).join(" · "))}</p>
+      <p class="ott-tile-meta"><span class="ott-badge-mini">HD</span> ${PF.escapeHtml([levelText(entry), priceText(entry)].filter(Boolean).join(" · "))}</p>
     </li>`;
   }
 
   function shelves() {
     const list = [];
+    const savedItems = (typeof PF.getSaved === "function" ? PF.getSaved() : []).filter((savedItem) => String(savedItem.id || "").startsWith("pigbang:"));
+    const savedEntries = savedItems.map((savedItem) => entriesBySaveId.get(savedItem.id)).filter(Boolean);
+    if (savedEntries.length) {
+      list.push({ id: "my-list", title: "⭐ My List & Watchlist", entries: savedEntries, filter: { tab: "all" } });
+    }
     const free = entries.filter((entry) => entry.price === "free");
-    if (free.length) list.push({ id: "free", title: "Free to watch", entries: free, filter: { price: "free" } });
+    if (free.length) list.push({ id: "free", title: "🔥 Free to Stream", entries: free, filter: { price: "free" } });
     (data.tabs || []).forEach((tab) => {
       const tabEntries = entriesByTab.get(tab.id) || [];
-      if (tabEntries.length) list.push({ id: `tab-${tab.id}`, title: tabLabels[tab.id] || tab.id, entries: tabEntries, filter: { tab: tab.id } });
+      const titles = { movies: "🎬 Films & Documentaries", channels: "📺 Channels & Masterclasses", apps: "📱 Interactive Learning Apps" };
+      if (tabEntries.length) list.push({ id: `tab-${tab.id}`, title: titles[tab.id] || tabLabels[tab.id] || tab.id, entries: tabEntries, filter: { tab: tab.id } });
     });
     LEVEL_SHELVES.forEach(([level, title]) => {
       const forLevel = entries.filter((entry) => entry.classes.includes(level));
-      if (forLevel.length >= 8) list.push({ id: `level-${PF.slug(level)}`, title, entries: forLevel, filter: { level } });
+      if (forLevel.length >= 8) list.push({ id: `level-${PF.slug(level)}`, title: `🎓 ${title}`, entries: forLevel, filter: { level } });
     });
     return list;
   }
@@ -393,18 +429,28 @@
     const play = playableUrl(entry);
     const open = openUrl(entry);
     const primary = play
-      ? `<a class="button brand" href="${PF.escapeHtml(play)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7.5 8 4.5-8 4.5v-9Z"/></svg> Play</a>`
-      : `<a class="button brand" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`;
+      ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(play)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7.5 8 4.5-8 4.5v-9Z"/></svg> Play</a>`
+      : `<a class="button brand ott-hero-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`;
     const media = document.querySelector("#watch-billboard-media");
     if (media && art) media.innerHTML = `<img src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" decoding="async" referrerpolicy="no-referrer">`;
-    featured.innerHTML = `<p class="ott-billboard-kicker">Featured today</p>
+    featured.innerHTML = `<div class="ott-billboard-badges">
+        <span class="ott-badge ott-badge-netflix">PIGBANG ORIGINAL</span>
+        <span class="ott-badge ott-badge-quality">HD</span>
+        <span class="ott-badge ott-badge-free">${PF.escapeHtml(priceText(entry))}</span>
+        <span class="ott-badge ott-badge-top10">#1 Featured</span>
+      </div>
       <h2 class="ott-billboard-title">${PF.escapeHtml(item.name || "PigBang")}</h2>
-      <p class="ott-billboard-meta">${PF.escapeHtml([tabLabels[entry.tab] || "", levelText(entry), priceText(entry), item.subject || ""].filter(Boolean).join("  ·  "))}</p>
+      <p class="ott-billboard-meta">
+        <span class="ott-meta-pill">${PF.escapeHtml(tabLabels[entry.tab] || "Special")}</span>
+        <span class="ott-meta-pill">${PF.escapeHtml(levelText(entry) || "All Levels")}</span>
+        <span class="ott-meta-pill">${PF.escapeHtml(priceText(entry))}</span>
+        ${item.subject ? `<span class="ott-meta-pill">${PF.escapeHtml(item.subject)}</span>` : ""}
+      </p>
       <p class="ott-billboard-desc">${PF.escapeHtml(item.desc || "")}</p>
       <div class="ott-billboard-actions">
         ${primary}
-        <button class="button ghost" type="button" data-detail="${PF.escapeHtml(entry.id)}">More info</button>
-        <button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+        <button class="button ghost ott-hero-info" type="button" data-detail="${PF.escapeHtml(entry.id)}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> More info</button>
+        <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
       </div>`;
     if (PF.applyLanguageTo) PF.applyLanguageTo(featured);
   }
@@ -443,18 +489,59 @@
     const art = artworkFor(entry);
     const saveId = `pigbang:${entry.id}`;
     const saved = PF.isSaved(saveId);
-    dialog.innerHTML = `<div class="dialog-head"><h2>${PF.escapeHtml(item.name || "PigBang")}</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close details">×</button></div>
-      <div class="dialog-body ott-detail-body">
+    const play = playableUrl(entry);
+    const open = openUrl(entry);
+    const primary = play
+      ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(play)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7.5 8 4.5-8 4.5v-9Z"/></svg> Play</a>`
+      : open
+        ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`
+        : "";
+
+    const similar = (entriesByTab.get(entry.tab) || []).filter((other) => other.id !== entry.id).slice(0, 3);
+    const similarMarkup = similar.length ? `<div class="ott-similar-section">
+      <h3 class="ott-similar-title">More Like This</h3>
+      <div class="ott-similar-grid">
+        ${similar.map((other) => {
+          const oArt = artworkFor(other);
+          return `<div class="ott-similar-card" data-detail="${PF.escapeHtml(other.id)}" role="button" tabindex="0">
+            <div class="ott-art watch-art watch-art-${other.tab}" style="--visual-hue:${visualHue(other.item.name)}">${watchSymbol(other)}${oArt ? `<img class="watch-art-img" src="${PF.escapeHtml(oArt.src)}" width="${oArt.width}" height="${oArt.height}" alt="" loading="lazy">` : ""}</div>
+            <p class="ott-similar-name">${PF.escapeHtml(other.item.name || "Title")}</p>
+            <p class="ott-similar-meta">${PF.escapeHtml(priceText(other))}</p>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>` : "";
+
+    dialog.innerHTML = `<div class="ott-detail-hero">
         <div class="ott-detail-art watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}</div>
+        <div class="ott-detail-scrim"></div>
+        <button class="icon-button ott-detail-close" type="button" data-close-dialog aria-label="Close details">×</button>
+        <div class="ott-detail-hero-body">
+          <div class="ott-billboard-badges">
+            <span class="ott-badge ott-badge-netflix">PIGBANG ORIGINAL</span>
+            <span class="ott-badge ott-badge-quality">HD</span>
+            <span class="ott-badge ott-badge-free">${PF.escapeHtml(priceText(entry))}</span>
+          </div>
+          <h2>${PF.escapeHtml(item.name || "PigBang")}</h2>
+          <div class="ott-detail-cta">
+            ${primary}
+            <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-body ott-detail-body">
         <div class="resource-tags">
           <span class="tag">${PF.escapeHtml(tabLabels[entry.tab] || "PigBang")}</span>
           ${(entry.classes || []).map((level) => `<span class="tag">${PF.escapeHtml(level)}</span>`).join("")}
           <span class="tag ${/^free$/i.test(priceText(entry)) ? "free" : /^paid$/i.test(priceText(entry)) ? "paid" : ""}">${PF.escapeHtml(priceText(entry))}</span>
           ${item.subject ? `<span class="tag">${PF.escapeHtml(item.subject)}</span>` : ""}
         </div>
-        ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
-        <div class="direct-links" aria-label="Original resource links">${entryLinks(entry)}</div>
-        <div class="ott-detail-actions"><button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button><span>Save to your list</span></div>
+        ${item.desc ? `<p class="ott-detail-desc">${PF.escapeHtml(item.desc)}</p>` : ""}
+        <div class="ott-detail-sources-box">
+          <h4 class="ott-sources-head">Resource Links &amp; Actions</h4>
+          ${entrySources(entry)}
+        </div>
+        ${similarMarkup}
       </div>`;
     if (PF.applyLanguageTo) PF.applyLanguageTo(dialog);
     if (typeof dialog.showModal === "function") { if (!dialog.open) dialog.showModal(); }
@@ -480,14 +567,19 @@
     const entry = entriesBySaveId.get(button.dataset.save);
     if (!entry) return;
     const saved = PF.toggleSaved({ id: button.dataset.save, title: entry.item.name || "PigBang item", description: entry.item.desc || "", section: "PigBang", url: localUrl(entry.id) });
-    button.classList.toggle("is-saved", saved);
-    button.textContent = saved ? "♥" : "♡";
-    button.setAttribute("aria-pressed", String(saved));
+    const saveSelector = CSS && CSS.escape ? `[data-save="${CSS.escape(button.dataset.save)}"]` : `[data-save="${button.dataset.save.replace(/["\\]/g, "\\$&")}"]`;
+    document.querySelectorAll(saveSelector).forEach((b) => {
+      b.classList.toggle("is-saved", saved);
+      b.textContent = saved ? "♥" : "♡";
+      b.setAttribute("aria-pressed", String(saved));
+    });
   }
 
   function matches() {
     const terms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const pool = activeTab === "all" ? entries : (entriesByTab.get(activeTab) || []);
+    const pool = activeTab === "my-list"
+      ? entries.filter((entry) => PF.isSaved(`pigbang:${entry.id}`))
+      : (activeTab === "all" ? entries : (entriesByTab.get(activeTab) || []));
     return pool.filter((entry) => {
       if (activeLevel !== "all" && !entry.classes.includes(activeLevel)) return false;
       if (activePrice !== "all" && entry.price !== activePrice) return false;
@@ -546,7 +638,7 @@
   }
 
   function buildFilters() {
-    tabsTarget.innerHTML = [["all", "Browse all"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
+    tabsTarget.innerHTML = [["all", "Browse all"], ["my-list", "⭐ My List"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
       .map(([id, label]) => `<button class="filter-chip${id === activeTab ? " active" : ""}" type="button" data-tab="${PF.escapeHtml(id)}" aria-pressed="${id === activeTab}">${PF.escapeHtml(label)}</button>`).join("");
     tabButtons = Array.from(tabsTarget.querySelectorAll("[data-tab]"));
     tabsTarget.addEventListener("click", (event) => {
