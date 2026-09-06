@@ -118,30 +118,87 @@ export function loadCatalog(root = ROOT) {
   return context.window.PF_DATA;
 }
 
-/** The slice of catalogue a topic renders: a whole section, or one group inside it. */
+/** The slice of catalogue a topic renders: a whole section, or one group inside it.
+ *
+ *  The slice is returned with the numbers its resource IDs are built from, because those
+ *  IDs have to keep matching what the JavaScript catalogue produced when every resource
+ *  lived on the hub. */
 export function sourceFor(data, destination, topic) {
   const module = data[destination.module];
   if (!module) throw new Error(`js/data/${destination.module}.js did not register its data`);
+  const sections = module.sections || [];
   if (destination.splitBy === "section") {
-    const section = (module.sections || []).find((candidate) => candidate.id === topic.key);
-    if (!section) throw new Error(`${destination.module} has no section with id "${topic.key}"`);
-    return section;
+    const index = sections.findIndex((candidate) => candidate.id === topic.key);
+    if (index < 0) throw new Error(`${destination.module} has no section with id "${topic.key}"`);
+    const section = sections[index];
+    return { ...section, sectionNumber: section.resourceIdSection || index + 1, catalogKey: destination.module };
   }
-  const first = (module.sections || [])[0] || {};
+  const first = sections[0] || {};
   const group = (first.groups || [])[topic.key];
   if (!group) throw new Error(`${destination.module} has no group at index ${topic.key}`);
-  return group;
+  return {
+    ...group,
+    sectionNumber: first.resourceIdSection || 1,
+    groupNumber: topic.key + 1,
+    saveKey: first.saveKey,
+    catalogKey: destination.module
+  };
 }
 
-/** Everything a page renders, so the digest changes whenever visible content changes. */
+/** The source-button vocabulary, lifted straight out of js/site.js rather than copied.
+ *  A generated topic page and a runtime page therefore cannot disagree about what a
+ *  YouTube link, a store link or a PDF looks like. */
+function sourceHelpers(root = ROOT) {
+  const site = fs.readFileSync(path.join(root, "js", "site.js"), "utf8");
+  const start = site.indexOf("/* pf:source-marks:start");
+  const end = site.indexOf("/* pf:source-marks:end */");
+  if (start < 0 || end <= start) throw new Error("js/site.js no longer marks its shared source-button block");
+  const context = vm.createContext({ PF: {}, URL });
+  vm.runInContext(`${site.slice(start, end)}\n;globalThis.helpers = { classifySource, sourceBrand, sourceMark, isYouTubeSearch };`, context);
+  return context.helpers;
+}
+
+const { classifySource, sourceBrand, sourceMark, isYouTubeSearch } = sourceHelpers();
+
+/** Mirrors PF.slug in js/site.js. tests/catalog-compatibility.test.mjs pins the result. */
+function slug(value) {
+  const result = String(value || "resource")
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 88);
+  return result || "resource";
+}
+
+/** Everything a page renders, so the digest changes whenever visible content changes.
+ *
+ *  The element id is part of it deliberately: it is the anchor a saved item and an old
+ *  deep link point at, and it must not move without the page being rebuilt.
+ *
+ *  Ids keep the scheme the JavaScript catalogue used — slug(title-section-group-item),
+ *  with the preserved section number for the two catalogues that were moved between
+ *  destinations — so a heart saved before the split still resolves afterwards. */
 export function topicPayload(source) {
-  const items = source.groups ? (source.groups || []).flatMap((group) => group.items || []) : source.items || [];
-  return items.map((item) => ({
-    title: item.title || "",
-    desc: item.desc || "",
-    warning: item.warning || "",
-    urls: (item.links || []).flatMap((link) => (link.urls || []).map((url) => `${link.label || ""}|${url}`))
-  }));
+  const groups = source.groups
+    ? source.groups.map((group, index) => ({ group, groupNumber: index + 1 }))
+    : [{ group: source, groupNumber: source.groupNumber || 1 }];
+  const sectionNumber = source.resourceIdSection || source.sectionNumber || 1;
+  const saveKey = source.saveKey || source.catalogKey || "";
+  return groups.flatMap(({ group, groupNumber }) =>
+    (group.items || []).map((item, itemIndex) => {
+      const id = slug(`${item.title}-${sectionNumber}-${groupNumber}-${itemIndex + 1}`);
+      return {
+        id,
+        saveId: saveKey ? `${saveKey}:${id}` : "",
+        title: item.title || "",
+        desc: item.desc || "",
+        warning: item.warning || "",
+        extra: (item.extra || []).filter((part) => part && part.text && part.text.replace(/[|\s]/g, "")),
+        urls: (item.links || []).flatMap((link) => (link.urls || []).map((url) => `${link.label || ""}|${url}`))
+      };
+    })
+  );
 }
 
 export function digestFor(source) {
@@ -156,35 +213,138 @@ function hostOf(url) {
   }
 }
 
-// Mirrors isYouTubeSearch in js/catalog.js: a /results link is a search, not a video.
-function isYouTubeSearch(url) {
-  try {
-    const parsed = new URL(url);
-    return /(?:^|\.)youtube\.com$/i.test(parsed.hostname) && parsed.pathname === "/results";
-  } catch {
-    return false;
-  }
+/** One provider button: its brand mark, what it is, and where it goes. */
+function renderSource(pair) {
+  const split = pair.indexOf("|");
+  const label = pair.slice(0, split);
+  const url = pair.slice(split + 1);
+  const host = hostOf(url);
+  const type = classifySource(url);
+  const brand = sourceBrand(url, type);
+  const text = isYouTubeSearch(url)
+    ? "Search YouTube"
+    : label && !/^(url|link|website|web)$/i.test(label)
+      ? label
+      : host;
+  // The host is the second column, so it is worth showing only when it says something the
+  // label does not. "ncert.nic.in — ncert.nic.in" was the old output for most links.
+  const trailer = text.toLowerCase() === host.toLowerCase() ? "" : `<span class="topic-host">${esc(host)}</span>`;
+  return `<a class="link-button source-${type} source-brand-${brand}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${sourceMark(url, type)}<span class="source-label">${esc(text)}</span>${trailer}</a>`;
 }
 
-function renderResources(source) {
+/** The step-by-step notes some resources carry: who to complain to, which form, which
+ *  deadline. 47 entries have them, and they are the most practical writing on the site, so
+ *  they follow the resource onto its own page rather than staying behind on the hub. */
+function renderExtra(extra) {
+  if (!extra.length) return "";
+  return `<details class="resource-links resource-notes"><summary>Practical guide</summary><div class="link-list extra-list">${extra
+    .map((part) => `<div><strong>${esc(part.label || "More information")}</strong><p>${esc(part.text)}</p></div>`)
+    .join("")}</div></details>`;
+}
+
+function renderResources(source, sectionName) {
   return topicPayload(source)
     .map((item) => {
-      const links = item.urls
-        .map((pair) => {
-          const split = pair.indexOf("|");
-          const label = pair.slice(0, split);
-          const url = pair.slice(split + 1);
-          const text = isYouTubeSearch(url)
-            ? "Search YouTube"
-            : label && !/^(url|link|website|web)$/i.test(label)
-              ? label
-              : hostOf(url);
-          return `<a class="link-button" href="${esc(url)}" target="_blank" rel="noopener noreferrer"><span>${esc(text)}</span><span class="topic-host">${esc(hostOf(url))}</span></a>`;
-        })
-        .join("");
-      return `<article class="topic-item"><h3>${esc(item.title)}</h3>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}<div class="topic-sources">${links}</div></article>`;
+      const save = item.saveId
+        ? `<button class="card-tool" type="button" data-save="${esc(item.saveId)}" data-save-title="${esc(item.title)}" data-save-section="${esc(sectionName)}" aria-pressed="false" aria-label="Save ${esc(item.title)}">\u2661</button>`
+        : "";
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><h3>${esc(item.title)}</h3>${save}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}<div class="topic-sources">${item.urls.map(renderSource).join("")}</div>${renderExtra(item.extra)}</article>`;
     })
     .join("\n        ");
+}
+
+const HUB_START = "<!--topic-index:start-->";
+const HUB_END = "<!--topic-index:end-->";
+
+/** The first sentence of a topic's intro, which is the length a card wants. */
+function firstSentence(value) {
+  const match = String(value || "").match(/^[\s\S]*?[.?!](?=\s|$)/);
+  return (match ? match[0] : String(value || "")).trim();
+}
+
+/** "Dev & Design — Build, code, design — everything…" is a title and a description in one
+ *  field. Cards want the title. */
+function groupLabel(title) {
+  return String(title || "").split(/\s+[—–-]\s+/)[0].trim() || "More resources";
+}
+
+/** Groups that stayed on the hub because they are too thin for a page of their own.
+ *  Rendering them here is what makes removing the hub catalogue lossless. */
+function leftoverGroups(data, destination) {
+  if (destination.splitBy !== "group") return [];
+  const first = (data[destination.module].sections || [])[0] || {};
+  return (first.groups || [])
+    .map((group, index) => ({ group, index }))
+    .filter(({ index }) => !destination.topics.some((topic) => topic.key === index))
+    .map(({ group, index }) => ({
+      title: groupLabel(group.title),
+      source: {
+        ...group,
+        sectionNumber: first.resourceIdSection || 1,
+        groupNumber: index + 1,
+        saveKey: first.saveKey,
+        catalogKey: destination.module
+      }
+    }))
+    .filter(({ source }) => topicPayload(source).length);
+}
+
+/** Total resources a destination holds, whether or not they earned their own page. */
+function destinationCount(data, destination) {
+  const sections = data[destination.module].sections || [];
+  return sections.reduce((total, section) =>
+    total + (section.groups || []).reduce((sum, group) => sum + (group.items || []).length, 0), 0);
+}
+
+/** The hub's whole body: what each page holds, and any group that has no page.
+ *
+ *  The hubs used to re-render the entire catalogue underneath these links — 171 resources
+ *  on /learn/ alone, behind a format filter and a search box that duplicated both the
+ *  per-stage pages and the site-wide search. That is the same content competing with
+ *  itself for the same queries, and it cost every visitor the catalogue data, the catalogue
+ *  runtime and the player before the page could paint. This block replaces it. */
+export function renderTopicIndex(data, destination) {
+  const total = destinationCount(data, destination);
+  const cards = destination.topics.map((topic) => {
+    const source = sourceFor(data, destination, topic);
+    const count = topicPayload(source).length;
+    // A pathway the catalogue marks as highlighted keeps its accent and the line written
+    // for it; the hub accordion was the only thing that used to show either.
+    const note = source.highlight && source.note ? source.note : firstSentence(topic.intro);
+    return `<a class="topic-card${source.highlight ? " topic-card-highlight" : ""}" href="${esc(topic.slug)}/"><span class="topic-card-name">${esc(topic.name)}</span><span class="topic-card-count">${count} ${count === 1 ? "resource" : "resources"}</span><span class="topic-card-note">${esc(note)}</span></a>`;
+  }).join("");
+  const leftovers = leftoverGroups(data, destination).map(({ title, source }) =>
+    `<section class="topic-leftover"><h3>${esc(title)}</h3><div class="topic-list">
+        ${renderResources(source, title)}
+      </div></section>`).join("\n      ");
+  return [
+    `<p class="topic-count"><strong>${total}</strong> free-first ${total === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>`,
+    `<div class="topic-index">${cards}</div>`,
+    leftovers
+  ].filter(Boolean).join("\n      ");
+}
+
+/** Write the generated block into each hub between its markers. */
+export function buildHubs({ root = ROOT, check = false, data }) {
+  const stale = [];
+  const written = [];
+  for (const destination of DESTINATIONS) {
+    const file = path.join(root, destination.dest, "index.html");
+    const source = fs.readFileSync(file, "utf8");
+    const start = source.indexOf(HUB_START);
+    const end = source.indexOf(HUB_END);
+    if (start < 0 || end < start) throw new Error(`/${destination.dest}/index.html has no ${HUB_START} … ${HUB_END} markers`);
+    const next = `${source.slice(0, start)}${HUB_START}
+      ${renderTopicIndex(data, destination)}
+      ${HUB_END}${source.slice(end + HUB_END.length)}`;
+    if (next === source) continue;
+    if (check) stale.push(`/${destination.dest}/`);
+    else {
+      fs.writeFileSync(file, next, "utf8");
+      written.push(`/${destination.dest}/`);
+    }
+  }
+  return { stale, written };
 }
 
 function renderSiblings(destination, current) {
@@ -257,7 +417,7 @@ export function renderTopicPage(destination, topic, source) {
     <section class="section"><div class="container">
       <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>
       <div class="topic-list">
-        ${renderResources(source)}
+        ${renderResources(source, topic.name)}
       </div>
     </div></section>
     <section class="section alt"><div class="container">
@@ -300,6 +460,10 @@ export function build({ root = ROOT, check = false } = {}) {
     }
   }
 
+  const hubs = buildHubs({ root, check, data });
+  stale.push(...hubs.stale);
+  written.push(...hubs.written.map((route) => ({ route, count: 0, hub: true })));
+
   return { stale, written, thin };
 }
 
@@ -308,10 +472,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const { stale, written, thin } = build({ check });
   if (check) {
     if (stale.length) {
-      console.error(`Topic pages are stale: ${stale.join(", ")}\nRun: npm run build:topics`);
+      console.error(`Generated pages are stale: ${stale.join(", ")}\nRun: npm run build:topics`);
       process.exitCode = 1;
     } else {
-      console.log(`All ${TOPICS.length} topic pages match js/data/.`);
+      console.log(`All ${TOPICS.length} topic pages and ${DESTINATIONS.length} hub indexes match js/data/.`);
     }
   } else {
     let dest = "";
@@ -321,9 +485,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         dest = current;
         console.log(`\n/${dest}/`);
       }
-      console.log(`  ${entry.route.padEnd(42)} ${entry.count} resources`);
+      console.log(`  ${entry.route.padEnd(42)} ${entry.hub ? "hub index" : `${entry.count} resources`}`);
     }
     if (thin.length) console.log(`\nSkipped as too thin for their own page (under ${MIN_RESOURCES}):\n  ${thin.join("\n  ")}`);
-    console.log(`\nWrote ${written.length} topic pages.`);
+    console.log(`\nWrote ${written.filter((entry) => !entry.hub).length} topic pages and ${written.filter((entry) => entry.hub).length} hub indexes.`);
   }
 }

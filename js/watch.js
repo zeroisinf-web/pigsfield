@@ -13,14 +13,6 @@
   const moreButton = document.querySelector("#watch-more");
   const PAGE_SIZE = 24;
   const tabLabels = { movies: "Films & shows", channels: "Channels & playlists", apps: "Learning apps" };
-  const sourceMarkParts = {
-    youtube: '<span class="source-mark-body"><span class="source-mark-play"></span></span>',
-    "google-play": '<span class="source-mark-play-triangle source-mark-play-triangle-a"></span><span class="source-mark-play-triangle source-mark-play-triangle-b"></span><span class="source-mark-play-triangle source-mark-play-triangle-c"></span>',
-    "apple-store": '<span class="source-mark-apple-fruit"></span><span class="source-mark-apple-leaf"></span>',
-    app: '<span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span>',
-    document: '<span class="source-mark-page"><span class="source-mark-page-fold"></span><span class="source-mark-page-line"></span><span class="source-mark-page-line"></span></span>',
-    website: '<span class="source-mark-globe"><span class="source-mark-globe-axis"></span><span class="source-mark-globe-ring"></span></span>'
-  };
   let activeTab = data.tabs[0] ? data.tabs[0].id : "movies";
   let activeLevel = "all";
   let activePrice = "all";
@@ -106,25 +98,11 @@
     return host;
   }
 
-  function sourceType(url) {
-    if (PF.YouTube && PF.YouTube.isYouTube(url)) return "video";
-    if (/play\.google|apps\.apple|microsoft\.com\/store|apps\.microsoft/i.test(url)) return "app";
-    if (/\.pdf(?:$|\?)/i.test(url)) return "document";
-    return "website";
-  }
-
-  function sourceBrand(url, type) {
-    const lower = String(url || "").toLowerCase();
-    if (type === "video" && /(?:youtube\.com|youtu\.be|youtube-nocookie\.com)/.test(lower)) return "youtube";
-    if (/play\.google\.com/.test(lower)) return "google-play";
-    if (/apps\.apple\.com/.test(lower)) return "apple-store";
-    return type === "app" ? "app" : type;
-  }
-
-  function sourceMark(url, type) {
-    const brand = sourceBrand(url, type);
-    return `<span class="source-icon source-mark source-mark-${brand}" aria-hidden="true">${sourceMarkParts[brand] || sourceMarkParts.website}</span>`;
-  }
+  // Classification, brand names and the marks themselves come from js/site.js, which every
+  // page already loads. See the pf:source-marks block there.
+  const sourceType = PF.classifySource;
+  const sourceBrand = PF.sourceBrand;
+  const sourceMark = PF.sourceMark;
 
   // Real cover art for every entry, resolved same-origin by /api/poster.
   //

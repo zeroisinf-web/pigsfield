@@ -103,8 +103,8 @@ test("one peer opens at a time while nested accordion scopes remain independent"
   const PF = loadAccordionRuntime();
   const sections = new FakeElement("div");
   sections.setAttribute("data-accordion-scope", "");
-  const first = new FakeDetailsElement(["catalog-section"]);
-  const second = new FakeDetailsElement(["catalog-section"]);
+  const first = new FakeDetailsElement(["exam-panel"]);
+  const second = new FakeDetailsElement(["exam-panel"]);
   sections.append(first, second);
 
   PF.initializeAccordions(sections);
@@ -120,8 +120,8 @@ test("one peer opens at a time while nested accordion scopes remain independent"
 
   const groups = new FakeElement("div");
   groups.setAttribute("data-accordion-scope", "");
-  const groupOne = new FakeDetailsElement(["catalog-group"]);
-  const groupTwo = new FakeDetailsElement(["catalog-group"]);
+  const groupOne = new FakeDetailsElement(["faq-item"]);
+  const groupTwo = new FakeDetailsElement(["faq-item"]);
   groups.append(groupOne, groupTwo);
   second.children[1].append(groups);
   PF.initializeAccordions(groups);
@@ -135,7 +135,7 @@ test("one peer opens at a time while nested accordion scopes remain independent"
 test("every authored accordion is closed and expand-all controls cannot return", () => {
   const runtimeFiles = [
     "index.html", "learn/index.html", "skills/index.html", "tools/index.html", "rights/index.html", "exams/index.html",
-    "js/catalog.js", "js/exams-page.js"
+    "js/exams-page.js"
   ];
   for (const file of runtimeFiles) {
     const source = read(file);
@@ -144,21 +144,23 @@ test("every authored accordion is closed and expand-all controls cannot return",
   }
 });
 
-test("catalogs, exams and FAQ declare separate accordion scopes", () => {
-  for (const file of ["learn/index.html", "skills/index.html", "tools/index.html", "rights/index.html"]) {
-    assert.match(read(file), /id="catalog-sections"\s+data-accordion-scope/, `${file} needs a top-level accordion scope`);
-  }
+test("exams and the FAQ declare separate accordion scopes", () => {
   assert.match(read("index.html"), /class="faq-list"\s+data-accordion-scope/);
-  assert.match(read("js/catalog.js"), /class="catalog-groups"[^>]*data-accordion-scope/);
   assert.match(read("js/exams-page.js"), /class="exam-stack"[^>]*data-accordion-scope/);
+});
+
+test("a practical guide on a generated page stays an independent disclosure", () => {
+  // The hubs used to hold the only copy of these notes, inside a catalogue card. They are
+  // authored into the topic pages now, and they must still open without closing a sibling.
+  const page = read("rights/information-and-records/index.html");
+  assert.match(page, /<details class="resource-links resource-notes"><summary>Practical guide<\/summary>/);
+  assert.doesNotMatch(page, /<details\b[^>]*\sopen(?:\s|=|>)/i);
 });
 
 test("sticky summaries and motion keep accessibility fallbacks", () => {
   const css = read("css/site.css");
   const site = read("js/site.js");
-  assert.match(css, /\.catalog-section\[open\]\s*>\s*summary[\s\S]{0,500}position:\s*sticky/);
-  assert.match(css, /\.catalog-group\[open\]\s*>\s*\.catalog-group-summary[\s\S]{0,500}position:\s*sticky/);
-  assert.match(css, /\.exam-panel\[open\]\s*>\s*summary/);
+  assert.match(css, /\.exam-panel\[open\]\s*>\s*summary[\s\S]{0,500}position:\s*sticky/);
   assert.match(css, /\.faq-item\[open\]\s*>\s*summary/);
   assert.doesNotMatch(css, /\.resource-links\[open\]\s*>\s*summary\s*\{[^}]*position:\s*sticky/);
   assert.match(css, /@supports\s+selector\(details::details-content\)/);

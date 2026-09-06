@@ -19,52 +19,53 @@ test("closed exam panels do not construct their large bodies at startup", () => 
   );
 });
 
-test("the whole catalog reaches the DOM without anyone opening an accordion", () => {
-  const source = text("js/catalog.js");
-  // Sections used to build only on their first `toggle` event. Crawlers, AI answer
-  // engines, social preview fetchers and no-JS readers never fire that, so the
-  // entire catalog was absent for them. Render up front instead; the sections stay
-  // visually collapsed, and .resource-card keeps content-visibility:auto so
-  // offscreen cards still skip layout and paint.
-  assert.match(
-    source,
-    /querySelectorAll\("\.catalog-section"\)\)\s*\.forEach\(\(item\) => renderSection\(item,/,
-    "every catalog section must render during setup"
-  );
-  assert.doesNotMatch(
-    source,
-    /addEventListener\("toggle",[\s\S]{0,160}renderSection\(/,
-    "section content must not be gated behind a toggle event"
-  );
-  // The nested category accordions on /tools/ and /rights/ need the same treatment.
-  assert.match(
-    source,
-    /if \(collapsibleGroups\) content\.querySelectorAll\("details\.catalog-group"\)\.forEach\(renderGroup\)/,
-    "category groups must render with their section"
-  );
+test("the whole catalog reaches the DOM without anyone running any JavaScript", () => {
+  // The hubs used to assemble their catalogue in the browser, first on a click and later
+  // during setup. Crawlers, AI answer engines, social preview fetchers and no-JS readers
+  // get whatever the server sent, so the catalogue is generated into the markup now:
+  // tools/build-topics.mjs writes one page per topic and the hubs link to them.
+  for (const page of ["learn/nursery-to-class-5/index.html", "rights/anti-corruption/index.html", "tools/ai-tools/index.html"]) {
+    const source = text(page);
+    assert.match(source, /<article class="topic-item" id="[a-z0-9-]+">/, `${page} must serve its resources as markup`);
+    assert.doesNotMatch(source, /js\/(?:catalog|data\/)/, `${page} must not load a catalogue runtime to show its own content`);
+  }
+  for (const hub of ["learn/index.html", "skills/index.html", "tools/index.html", "rights/index.html"]) {
+    const source = text(hub);
+    assert.match(source, /<a class="topic-card" href="[a-z0-9-]+\/">/, `${hub} must link its generated pages`);
+    assert.doesNotMatch(source, /id="catalog-(?:root|sections)"/, `${hub} must not rebuild the catalogue it links to`);
+  }
 });
 
 test("a YouTube search link is not dressed up as a video", () => {
-  const source = text("js/catalog.js");
-  // 96 catalogue links point at youtube.com/results?search_query=... . isYouTube() is true
-  // for any YouTube host, so these were classified "video": red play styling, a play
-  // affordance, and a label reading "Tutorial" for a page that plays nothing. js/player.js
-  // parse() returns null for /results, so the play never had anywhere to go.
+  const source = text("js/site.js");
+  // 96 catalogue links point at youtube.com/results?search_query=... . A YouTube host test
+  // alone calls those "video": red play styling, a play affordance, and a label reading
+  // "Tutorial" for a page that plays nothing. js/player.js parse() returns null for
+  // /results, so the play never had anywhere to go.
   assert.match(source, /function isYouTubeSearch\(url\)/, "search links need their own classification");
   assert.match(source, /parsed\.pathname === "\/results"/, "a search is identified by its /results path");
-  assert.match(source, /if \(isYouTubeSearch\(url\)\) return "website";/, "a search must not classify as a video");
-  assert.match(source, /if \(isYouTubeSearch\(link\.url\)\) return "Search YouTube";/, "the label must say it is a search");
+  assert.match(source, /if \(isYouTubeSearch\(value\)\) return "website";/, "a search must not classify as a video");
   // The host check must be anchored: a bare dot would also match evilyoutubeXcom.
   assert.match(source, /\/\(\?:\^\|\\\.\)youtube\\\.com\$\/i/, "the host pattern must escape its dots");
+
+  const builder = text("tools/build-topics.mjs");
+  assert.match(builder, /isYouTubeSearch\(url\)\s*\?\s*"Search YouTube"/, "the generated label must say it is a search");
+  // And the generated pages must actually carry that classification.
+  const page = text("tools/files-and-remote-access/index.html");
+  assert.match(page, /class="link-button source-website source-brand-website"[^>]*youtube\.com\/results/, "a search link must render as a website, not a video");
 });
 
-test("catalog cards use one delegated listener rather than per-card binding", () => {
-  const source = text("js/catalog.js");
-  assert.match(source, /<div class="catalog-group-content"><\/div>/);
-  assert.match(source, /function renderGroup\(details\)[\s\S]*?groupEntries\.map\(\(entry\) => renderCard\(entry\)\)/);
-  assert.match(source, /root\.addEventListener\("click", handleCatalogClick\)/);
-  assert.doesNotMatch(source, /function bindCards\(/);
-  assert.match(source, /entriesBySaveId\.get\(button\.dataset\.save\)/);
+test("the generated pages and the runtime share one source-button vocabulary", () => {
+  // Three copies of these marks had already drifted. build-topics.mjs now evaluates the
+  // block in js/site.js rather than keeping a fourth.
+  const site = text("js/site.js");
+  assert.match(site, /\/\* pf:source-marks:start/);
+  assert.match(site, /\/\* pf:source-marks:end \*\//);
+  assert.match(text("tools/build-topics.mjs"), /site\.indexOf\("\/\* pf:source-marks:start"\)/);
+  for (const file of ["js/watch.js", "js/exams-page.js"]) {
+    assert.doesNotMatch(text(file), /sourceMarkParts\s*=\s*\{/, `${file} must not keep its own copy of the marks`);
+    assert.match(text(file), /PF\.sourceMark/, `${file} must use the shared mark renderer`);
+  }
 });
 
 test("PigBang appends the next page without rebuilding visible cards", () => {

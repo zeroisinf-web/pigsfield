@@ -9,9 +9,7 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 - Nursery to PhD learning paths with highlighted Teacher Training after PhD
 - PigBang educational media with real cover art for every entry and lazy, privacy-enhanced YouTube playback
 - Competitive Exams roadmaps, mock tests and subject collections
-- Vocational & Business resources shown directly
-- Digital Tools with six directly visible categories and practical tutorials
-- Expandable RTI, grievance, legal-aid and Make Govt Accountable categories
+- Vocational & Business, Digital Tools and Make Govt Accountable, each split into its own page per topic with practical tutorials
 - An always-available AI Studio with a choice of three hosted models and no visitor login, additional provider key or model download, for tutoring, images, documents, capability-gated browser voice previews and browser-made music
 - Persistent in-page Hindi translation: on-device where supported, otherwise through a rate-limited same-origin Cloudflare AI4Bharat route
 - Persistent AI Studio, Donate and Feedback controls
@@ -33,7 +31,7 @@ Then open `http://localhost:8741`.
 
 This static preview does not provide `/api/ai` or `/api/translate`; hosted text generation and fallback Hindi translation need the deployed Cloudflare Worker and its `AI` binding.
 
-After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first.
+After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first: it writes the per-topic pages **and** the index block on each hub, and `npm run build` fails if either is stale.
 
 ```bash
 npm run build:assets
@@ -89,7 +87,11 @@ The live catalog is in `js/data/`:
 - `pigbang.js` — PigBang educational media
 - `govt.js` — Make Govt Accountable resources
 
-Keep each link pointed at the original, lawful provider. Add a clear description, accurate price label and the most specific source URL available. The browser creates the cards, varied visual symbols, filters and source links from these data files. Every provider control is a genuine anchor, so desktop right-click and mobile press-and-hold expose the browser's normal open-in-new-tab and copy-link actions for that exact original URL.
+Keep each link pointed at the original, lawful provider. Add a clear description, accurate price label and the most specific source URL available.
+
+`tools/build-topics.mjs` turns these files into the pages under `/learn/`, `/skills/`, `/tools/` and `/rights/`: one page per topic, plus the card index on each hub. A resource is therefore in the served HTML, not assembled in the browser — search engines, AI answer engines, social previews and readers without JavaScript all get the same page. A group with fewer than three resources does not earn a page and is rendered on its hub instead, so nothing is dropped. PigBang and Competitive Exams still build their grids in the browser, from the same data files.
+
+Every provider control is a genuine anchor, so desktop right-click and mobile press-and-hold expose the browser's normal open-in-new-tab and copy-link actions for that exact original URL. Its colour and mark come from one place — the `pf:source-marks` block in `js/site.js`, which `tools/build-topics.mjs` evaluates at build time so a generated page and a runtime page cannot disagree.
 
 ## YouTube embeds and error 153
 
