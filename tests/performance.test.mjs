@@ -50,23 +50,21 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  // Raw keeps coming DOWN — 105.6 KiB before this run of work, 102.4 now — while the
-  // compressed figures creep up, and both facts have the same cause. What has been removed
-  // is repetitive and Brotli was already compressing it to almost nothing: a 12-column
-  // bento with per-card background overrides, the dark PigBang card treatment, the emoji
-  // icon tiles and their tint list, a duplicate .pitch-item tile, three tokens nothing
-  // read, the transparent bevel layers, an invisible fixed grid overlay and a dead hero
-  // poster. What replaced them is not repetitive: a gradient mesh, an artwork palette and
-  // one card system whose colour lives entirely in its panel.
-  //
-  // Checked for dead weight three times before moving these numbers. Every unreferenced
-  // selector that remains is composed at runtime (source-brand-${brand} and friends), so
-  // removing it would break the cards.
-  withinBudget("css/site.css", { raw: 103 * 1024, gzip: 24 * 1024, brotli: 23 * 1024 });
-  // +1 KiB Brotli for PF.getSaved/PF.replaceSaved, the small API js/account.js syncs through.
-  // +0.3 KiB for the header's scroll state, which is what lets the chrome carry no border
-  // until the page has moved and stop cutting the hero artwork off at the fold.
-  withinBudget("js/site.js", { raw: 82 * 1024, gzip: 24 * 1024, brotli: 21 * 1024 });
+  // The hub catalogue is gone, and its stylesheet went with it: the section and category
+  // accordions, their sticky summaries and offsets, the three-column resource grid, the
+  // generated card artwork and the domain plate underneath it — 8.4 KiB of rules that only
+  // ever painted a catalogue the site no longer assembles in the browser. Every selector
+  // left is either referenced in markup or composed at runtime (source-brand-${brand} and
+  // friends), checked by walking the file against every .html and .js in the repo.
+  withinBudget("css/site.css", { raw: 90 * 1024, gzip: 20 * 1024, brotli: 19 * 1024 });
+  // +4.4 KiB raw for the three things the deleted js/catalog.js used to carry on its own:
+  // the source-button vocabulary (now shared with js/watch.js, js/exams-page.js and, at
+  // build time, tools/build-topics.mjs, replacing three drifting copies), the delegated
+  // save button the generated pages need, and the table that points a search result at the
+  // page holding the resource. It is the one file that got bigger; every route got smaller,
+  // because /learn/ alone stopped shipping 122 KiB of catalogue data, catalogue runtime and
+  // player to render what its linked pages already serve as HTML.
+  withinBudget("js/site.js", { raw: 88 * 1024, gzip: 25 * 1024, brotli: 23 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
   // pixel-identically. This budget stops a future re-export shipping the full axes again.
@@ -81,36 +79,40 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   const raw = shell.reduce((sum, item) => sum + item.length, 0);
   const gzipped = shell.reduce((sum, item) => sum + gzipSize(item), 0);
   const compressed = shell.reduce((sum, item) => sum + brotliSize(item), 0);
-  // Raw is 4 KiB below the previous 205 KiB ceiling and the ceiling moves down with it.
-  // Compressed moved the other way for the reason above the stylesheet budget: unique SVG
-  // path data replaced repetitive rules that Brotli was compressing to almost nothing.
-  // The stylesheet's 1.5 KiB saving went back into the markup: six cards now carry a
-  // category, a title, a line of copy and their own artwork panel instead of an icon and a
-  // heading, which is the card system the whole redesign rests on.
-  assert.ok(raw <= 203 * 1024, `home render shell is ${kib(raw)} raw; budget is 203 KiB`);
-  assert.ok(gzipped <= 60 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 60 KiB`);
-  assert.ok(compressed <= 50 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 50 KiB`);
+  // The stylesheet gave up more than js/site.js took on, so the shell every page loads is
+  // smaller in all three measures than it was before the catalogue came out.
+  assert.ok(raw <= 196 * 1024, `home render shell is ${kib(raw)} raw; budget is 196 KiB`);
+  assert.ok(gzipped <= 52 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 52 KiB`);
+  assert.ok(compressed <= 48 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 48 KiB`);
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
-  // Re-baselined after the emoji-to-drawn-mark pass: these numbers are ~2% above what each
-  // route actually ships, so an accidental regression fails but a deliberate change does
-  // not need the table rewritten every time. Every route also got smaller in raw bytes than
-  // the previous baseline — the stylesheet lost more than the markup gained.
+  // Re-baselined after the hub catalogues were replaced by links to the pages that already
+  // held the same resources. These numbers are ~2% above what each route actually ships, so
+  // an accidental regression fails but a deliberate change does not need the table rewritten
+  // every time. The four hubs are the point of the exercise: /learn/ went from 418 KiB raw
+  // and 167 KiB Brotli to 285 and 138, /rights/ from 438 and 171 to 285 and 138 — a whole
+  // catalogue's data, its runtime and the YouTube player, none of which a hub needs to list
+  // seven links. Every other route improved too, from the stylesheet alone.
   const routes = [
-    ["index.html", 309, 147],
-    ["learn/index.html", 418, 167],
-    ["skills/index.html", 359, 157],
-    ["tools/index.html", 364, 157],
-    ["rights/index.html", 438, 171],
-    ["exams/index.html", 384, 165],
-    ["watch/index.html", 531, 199],
-    ["about/index.html", 299, 144],
-    ["editorial/index.html", 296, 143],
-    ["accessibility/index.html", 296, 143],
-    ["privacy/index.html", 300, 144],
-    ["submit/index.html", 296, 143],
-    ["ai/index.html", 296, 143]
+    ["index.html", 303, 145],
+    ["learn/index.html", 289, 141],
+    ["skills/index.html", 287, 141],
+    ["tools/index.html", 289, 141],
+    ["rights/index.html", 289, 141],
+    ["exams/index.html", 375, 164],
+    ["watch/index.html", 521, 198],
+    ["about/index.html", 291, 142],
+    ["editorial/index.html", 288, 141],
+    ["accessibility/index.html", 288, 141],
+    ["privacy/index.html", 292, 143],
+    ["submit/index.html", 288, 141],
+    ["ai/index.html", 287, 141],
+    // The generated topic pages carry the resources themselves, and still land well under
+    // what the hub used to cost to list them.
+    ["learn/nursery-to-class-5/index.html", 331, 145],
+    ["learn/teacher-training/index.html", 333, 145],
+    ["rights/information-and-records/index.html", 304, 144]
   ];
 
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {

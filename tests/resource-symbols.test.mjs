@@ -102,9 +102,8 @@ test("card indexes and legacy seeds cannot affect resource identity", () => {
   assert.equal(PF.resourceEmoji("Mathematics practice", "resource-1", "video"), PF.resourceEmoji("Mathematics practice", "resource-999", "video"));
 });
 
-test("catalog and PigBang share one resolver and emit one main content symbol", () => {
+test("PigBang uses the shared resolver and emits one main content symbol", () => {
   const renderers = [
-    ["catalog.js", "resourceSymbol"],
     ["watch.js", "watchSymbol"]
   ];
 

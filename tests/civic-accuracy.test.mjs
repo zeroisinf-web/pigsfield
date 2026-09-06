@@ -87,15 +87,21 @@ test("the CIC contact matches the Commission's own published facilitation desk",
 });
 
 test("catalogue warnings render above the fold of a card, not inside the collapsed guide", () => {
-  const source = fs.readFileSync(path.join(ROOT, "js", "catalog.js"), "utf8");
+  const source = fs.readFileSync(path.join(ROOT, "tools", "build-topics.mjs"), "utf8");
   // A warning a reader has to open a <details> to find is not a warning.
-  assert.match(source, /item\.warning \? `<p class="resource-warning" role="note">\$\{PF\.escapeHtml\(item\.warning\)\}<\/p>`/, "warnings must render as their own element on the card");
-  const card = source.match(/const markup = `<article class="resource-card"[\s\S]*?<\/article>`;/)?.[0] || "";
-  assert.ok(card, "renderCard markup not found");
+  assert.match(source, /item\.warning \? `<p class="resource-warning" role="note">\$\{esc\(item\.warning\)\}<\/p>`/, "warnings must render as their own element on the card");
+  const card = source.match(/return `<article class="topic-item"[\s\S]*?<\/article>`;/)?.[0] || "";
+  assert.ok(card, "the generated card markup was not found");
   const warningAt = card.indexOf("resource-warning");
   const guideAt = card.indexOf("renderExtra");
   assert.ok(warningAt !== -1 && guideAt !== -1, "card must contain both the warning slot and the practical guide");
   assert.ok(warningAt < guideAt, "the warning must come before the collapsible practical guide");
+
+  // And it has to survive into the page a reader actually gets.
+  const page = fs.readFileSync(path.join(ROOT, "rights", "information-and-records", "index.html"), "utf8");
+  const article = page.match(/<article class="topic-item"[^>]*>[\s\S]*?resource-warning[\s\S]*?<\/article>/)?.[0] || "";
+  assert.ok(article, "no generated card carries a warning any more");
+  assert.ok(article.indexOf("resource-warning") < article.indexOf("Practical guide"), "a served warning must precede the practical guide");
 });
 
 test("every catalogue warning is styled to be seen in both themes", () => {

@@ -3,7 +3,7 @@ import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { TOPICS, build as buildTopics } from "./build-topics.mjs";
+import { DESTINATIONS, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
@@ -488,7 +488,6 @@ function checkBannedContent(files) {
       if (pattern.test(source)) fail(file, `legacy absolute-free claim at line ${firstLineNumber(source, pattern)}`);
     }
 
-    if (rel === "js/catalog.js") continue; // This file intentionally names blocked hosts in its safety list.
     for (const pattern of BANNED_DOMAIN_PATTERNS) {
       if (pattern.test(source)) fail(file, `blocked media domain at line ${firstLineNumber(source, pattern)}`);
     }
@@ -530,10 +529,9 @@ function checkCssContract() {
     [/\.resource-emoji-card\b/, "missing varied resource-symbol styles"],
     [/\.site-nav\s+a\[data-pigbang-link\]/, "missing highlighted PigBang navigation treatment"],
     [/body\[data-page=["']watch["']\]/, "missing scoped dark PigBang OTT theme"],
-    [/\.catalog-group-summary\b/, "missing nested category collapse styles"],
-    [/\.catalog-section\[open\]\s*>\s*summary[\s\S]{0,600}position:\s*sticky/, "open catalog summaries must remain sticky while their content scrolls"],
+    [/\.topic-index\b[\s\S]{0,400}grid-template-columns/, "missing hub topic-index card grid"],
+    [/\.topic-sources\b[\s\S]{0,400}grid-template-columns/, "provider buttons must lay out in columns rather than a ragged wrap"],
     [/@supports\s+selector\(details::details-content\)/, "missing progressive native details animation"],
-    [/--catalog-group-sticky-top\s*:/, "missing nested sticky accordion offset"],
     [/@media\s*\(prefers-reduced-motion:\s*reduce\)/, "missing reduced-motion fallback for the dimensional layer"],
     [/--depth-high\s*:/, "missing shared depth tokens"]
   ];
@@ -769,7 +767,7 @@ function checkExperienceContracts() {
     check(!/(?:PF\.(?:share|openShare)|navigator\.share|data-share(?:\b|-)|source-share-button|id=["']share-dialog["']|class=["'][^"']*\bshare-(?:grid|option)\b)/i.test(source), file, "custom sharing UI or runtime code must not return");
   }
 
-  for (const name of ["catalog.js", "watch.js", "exams-page.js"]) {
+  for (const name of ["watch.js", "exams-page.js"]) {
     const file = path.join(ROOT, "js", name);
     const source = fs.readFileSync(file, "utf8");
     const providerAnchors = [...source.matchAll(/<a\b[^>]*class=["'][^"']*\blink-button\b[^"']*["'][^>]*>/g)].map((match) => match[0]);
@@ -785,8 +783,7 @@ function checkExperienceContracts() {
     check(/event\.button\s*!==\s*0/.test(source) && /event\.ctrlKey/.test(source) && /event\.metaKey/.test(source) && /event\.shiftKey/.test(source) && /event\.altKey/.test(source), file, "modified and non-primary link activation must remain browser-native");
     check(/event\.preventDefault\(\)[\s\S]{0,160}PF\.YouTube\.play\(anchor\.href/.test(source), file, "only plain YouTube activation should open the in-site player");
     if (name !== "exams-page.js") {
-      const functionName = name === "catalog.js" ? "resourceSymbol" : "watchSymbol";
-      const symbolRenderer = source.match(new RegExp(`function\\s+${functionName}\\(entry\\)\\s*\\{([\\s\\S]*?)\\n  \\}`))?.[1] || "";
+      const symbolRenderer = source.match(/function\s+watchSymbol\(entry\)\s*\{([\s\S]*?)\n  \}/)?.[1] || "";
       check(/PF\.resourceSymbolFor\s*\(/.test(symbolRenderer), file, "card renderer must use the shared deterministic resource symbol resolver");
       check(/\btitle\s*:/.test(symbolRenderer) && /\burls\s*:/.test(symbolRenderer) && /\btype\s*:|\btype\s*\n/.test(symbolRenderer), file, "shared symbol resolver needs canonical title, original URLs and resource type");
       check(!/(?:entry\.id|itemIndex|sectionIndex|groupIndex)/.test(symbolRenderer), file, "card indexes must never seed resource symbols");
@@ -796,41 +793,53 @@ function checkExperienceContracts() {
     check(!/(?:\bsource-action\b|\bresource-scene\b|\bwatch-scene\b|\bwatch-initials\b|\bresource-emoji-inline\b)/.test(source), file, "provider controls and cards must not emit duplicate symbols");
   }
 
-  const catalogFile = path.join(ROOT, "js", "catalog.js");
-  const catalog = fs.readFileSync(catalogFile, "utf8");
-  check(/collapsibleGroups/.test(catalog) && /data-catalog-group/.test(catalog), catalogFile, "catalog does not support category-level expand and collapse");
-  check(/class=["']catalog-groups["'][^>]*data-accordion-scope/.test(catalog), catalogFile, "nested catalog categories need an independent accordion scope");
-  check(/directSections/.test(catalog) && /catalog-direct-section/.test(catalog), catalogFile, "catalog does not support a titled section with its groups shown directly");
-  check(/function resourceIdFor\([\s\S]*?section\.resourceIdSection \|\| sectionIndex \+ 1/.test(catalog), catalogFile, "catalog resource IDs must honor preserved section metadata");
-  check(/const saveId = `\$\{section\.saveKey \|\| key\}:\$\{id\}`/.test(catalog) && /entriesBySaveId\.set\(saveId, entry\)/.test(catalog) && /const saveId = entry\.saveId/.test(catalog), catalogFile, "catalog cards must honor preserved saved-item namespaces");
-  check(/function redirectLegacyTeacherTrainingHash\([\s\S]*?key !== ["']teach["'][\s\S]*?PF\.path\(["']learn["']\)[\s\S]*?target\.origin !== location\.origin[\s\S]*?location\.replace\(target\.href\)/.test(catalog), catalogFile, "legacy Teacher Training hashes must redirect safely from skills to learn");
-  check(/const headingTag = directSections \? ["']h3["'] : ["']h2["']/.test(catalog) && /<h2 class=["']catalog-direct-title["']>/.test(catalog), catalogFile, "direct catalog groups must nest H3 headings beneath their H2 section title");
-  check(/document\.readyState === ["']loading["'][\s\S]*?DOMContentLoaded["'], revealHash, \{ once: true \}/.test(catalog), catalogFile, "initial catalog deep links must reveal after shared accordion initialization");
-  check(!/(?:Expand all|Collapse all|catalog-expand|data-expand-groups|details\[0\]\.open\s*=\s*true)/i.test(catalog), catalogFile, "catalogs must start closed and cannot bypass one-open behavior");
+  // The hubs no longer re-render their catalogue: every resource lives on the generated
+  // page that owns it, and these guarantee the split stayed lossless.
+  const hubRoutes = ["learn", "skills", "tools", "rights"];
+  for (const route of hubRoutes) {
+    const file = path.join(ROOT, route, "index.html");
+    const source = fs.readFileSync(file, "utf8");
+    check(/<!--topic-index:start-->[\s\S]*?<!--topic-index:end-->/.test(source), file, "hub is missing its generated topic index");
+    check(/class=["']topic-card["']/.test(source), file, "hub must link every generated page as a card");
+    check(!/id=["']catalog-(?:root|sections|filters|search)["']/.test(source), file, "the duplicated hub catalogue must not return");
+    check(!/js\/(?:catalog|player|data\/)/.test(source), file, "a hub must not load the catalogue data, its runtime or the player");
+  }
   check(/function genericSearchEntries\([\s\S]*?`\$\{item\.title\}-\$\{section\.resourceIdSection\s*\|\|\s*(?:sectionIndex\s*\+\s*1|1\s*\+\s*sectionIndex)\}-/.test(site), siteFile, "global search resource URLs must honor preserved section metadata");
+  check(/const topicRoutes = \{/.test(site), siteFile, "global search needs the topic route table to link past the hub");
+  // The table in js/site.js and the one in tools/build-topics.mjs describe the same split,
+  // so a topic added to one and not the other is a search result pointing at nothing.
+  const routeTable = site.match(/const topicRoutes = \{[\s\S]*?\n  \};/)?.[0] || "";
+  for (const destination of DESTINATIONS) {
+    const module = destination.module;
+    const declared = routeTable.match(new RegExp(`${module}: \\{ by: "(section|group)", slugs: \\[([^\\]]*)\\] \\}`));
+    check(Boolean(declared), siteFile, `topicRoutes has no entry for the ${module} catalogue`);
+    if (!declared) continue;
+    check(declared[1] === (destination.splitBy === "section" ? "section" : "group"), siteFile, `topicRoutes splits ${module} differently from build-topics.mjs`);
+    const slugs = declared[2].split(",").map((value) => value.trim().replace(/^"|"$/g, "")).filter(Boolean);
+    check(
+      JSON.stringify(slugs) === JSON.stringify(destination.topics.map((topic) => topic.slug)),
+      siteFile,
+      `topicRoutes slugs for ${module} do not match tools/build-topics.mjs`
+    );
+  }
+
+  const staticSaveButtons = /\[data-save\]\[data-save-title\]/;
+  check(staticSaveButtons.test(site), siteFile, "generated pages need their save buttons hydrated and delegated");
+  const savedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
+  check(/data-save="school:[a-z0-9-]+" data-save-title=/.test(savedTopicPage), path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "topic cards must keep the catalogue's saved-item namespace");
+
   const examsFile = path.join(ROOT, "js", "exams-page.js");
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
   check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
-  const accordionPages = [
-    ["index.html", /class=["']faq-list["'][^>]*data-accordion-scope/],
-    ...["learn", "skills", "tools", "rights"].map((route) => [`${route}/index.html`, /id=["']catalog-sections["'][^>]*data-accordion-scope/])
-  ];
-  accordionPages.forEach(([name, pattern]) => {
+  const faqFile = path.join(ROOT, "index.html");
+  check(/class=["']faq-list["'][^>]*data-accordion-scope/.test(fs.readFileSync(faqFile, "utf8")), faqFile, "expandable peers need an explicit accordion scope");
+  for (const name of ["index.html", ...hubRoutes.map((route) => `${route}/index.html`)]) {
     const file = path.join(ROOT, ...name.split("/"));
     const source = fs.readFileSync(file, "utf8");
-    check(pattern.test(source), file, "expandable peers need an explicit accordion scope");
     check(!/<details\b[^>]*\sopen(?:\s|=|>)/i.test(source), file, "authored disclosures must be closed initially");
     check(!/(?:Expand all|Collapse all|catalog-expand)/i.test(source), file, "expand-all controls conflict with one-open accordion behavior");
-  });
-  for (const route of ["tools", "rights"]) {
-    const file = path.join(ROOT, route, "index.html");
-    check(/data-collapsible-groups=["']true["']/.test(fs.readFileSync(file, "utf8")), file, "category collapse is not enabled on this catalog");
-  }
-  for (const route of ["skills", "tools", "rights"]) {
-    const file = path.join(ROOT, route, "index.html");
-    check(/data-direct-sections=["']true["']/.test(fs.readFileSync(file, "utf8")), file, "catalog sections must render directly on this route");
   }
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");

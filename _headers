@@ -33,7 +33,7 @@
   # cdn.cloudflare.steamstatic.com were dropped when PigBang and the player moved to
   # the same-origin /api/poster route, which is the point of that route: the browser
   # contacts nobody to paint a card. style-src needs 'unsafe-inline' only because of
-  # the style="--visual-hue:..." attributes written in js/catalog.js and js/watch.js.
+  # the style="--visual-hue:..." attribute written in js/watch.js.
   # Promote to Content-Security-Policy once the browser console reports no violations.
   Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://image.pollinations.ai; font-src 'self'; connect-src 'self' https://image.pollinations.ai; frame-src https://www.youtube-nocookie.com https://www.youtube.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
 

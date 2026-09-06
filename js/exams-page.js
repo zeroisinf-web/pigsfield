@@ -9,14 +9,6 @@
 
     const escapeHtml = PF.escapeHtml;
     const list = (value) => Array.isArray(value) ? value : [];
-    const sourceMarkParts = {
-      youtube: '<span class="source-mark-body"><span class="source-mark-play"></span></span>',
-      "google-play": '<span class="source-mark-play-triangle source-mark-play-triangle-a"></span><span class="source-mark-play-triangle source-mark-play-triangle-b"></span><span class="source-mark-play-triangle source-mark-play-triangle-c"></span>',
-      "apple-store": '<span class="source-mark-apple-fruit"></span><span class="source-mark-apple-leaf"></span>',
-      app: '<span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span>',
-      document: '<span class="source-mark-page"><span class="source-mark-page-fold"></span><span class="source-mark-page-line"></span><span class="source-mark-page-line"></span></span>',
-      website: '<span class="source-mark-globe"><span class="source-mark-globe-axis"></span><span class="source-mark-globe-ring"></span></span>'
-    };
 
     function cleanUrl(value) {
       if (typeof value !== "string") return "";
@@ -41,25 +33,10 @@
       }
     }
 
-    function sourceType(value) {
-      if (PF.YouTube && PF.YouTube.isYouTube(value)) return "video";
-      if (/play\.google|apps\.apple|microsoft\.com\/store|apps\.microsoft/i.test(value)) return "app";
-      if (/\.pdf(?:$|\?)/i.test(value)) return "document";
-      return "website";
-    }
-
-    function sourceBrand(url, type) {
-      const lower = String(url || "").toLowerCase();
-      if (type === "video" && /(?:youtube\.com|youtu\.be|youtube-nocookie\.com)/.test(lower)) return "youtube";
-      if (/play\.google\.com/.test(lower)) return "google-play";
-      if (/apps\.apple\.com/.test(lower)) return "apple-store";
-      return type === "app" ? "app" : type;
-    }
-
-    function sourceMark(url, type) {
-      const brand = sourceBrand(url, type);
-      return `<span class="source-icon source-mark source-mark-${brand}" aria-hidden="true">${sourceMarkParts[brand] || sourceMarkParts.website}</span>`;
-    }
+    // Classification, brand names and marks come from the pf:source-marks block in js/site.js.
+    const sourceType = PF.classifySource;
+    const sourceBrand = PF.sourceBrand;
+    const sourceMark = PF.sourceMark;
 
     function isYouTubePlayable(value) {
       try {

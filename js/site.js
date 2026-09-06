@@ -42,6 +42,18 @@
     govt: "rights"
   };
 
+  // Where a catalogue entry actually lives. tools/build-topics.mjs splits each destination
+  // into its own pages — by section for /learn/, by group everywhere else — so a search
+  // result points at the page holding the resource instead of at the hub. A group with too
+  // few resources for a page of its own has no slug here and falls back to the hub, which
+  // still lists it. tools/validate-site.mjs fails the build if this drifts from DESTINATIONS.
+  const topicRoutes = {
+    school: { by: "section", slugs: ["nursery-to-class-5", "class-6-to-8", "class-9-to-12", "undergraduate", "postgraduate", "phd-and-research", "teacher-training"] },
+    teach: { by: "group", slugs: ["government-skill-portals", "corporate-training", "coding-platforms"] },
+    tools: { by: "group", slugs: ["ai-tools", "privacy-and-browsers", "files-and-remote-access", "creative-tools", "research-tools"] },
+    govt: { by: "group", slugs: ["information-and-records", "anti-corruption", "courts-and-legal-remedies", "commissions-and-regulators", "grievance-portals", "social-audit", "parliament-and-representatives", "media-and-fraud-reporting", "criminal-and-financial-law", "digital-governance"] }
+  };
+
   const dataLabels = {
     school: "Nursery to PhD",
     teach: "Vocational & Business",
@@ -62,7 +74,7 @@
   const TRANSLATION_SKIP_SELECTOR = [
     "script", "style", "noscript", "template", "pre", "code", "kbd", "samp",
     "[translate='no']", "[contenteditable]:not([contenteditable='false'])",
-    "[aria-hidden='true']", ".resource-domain", ".brand-lockup", "#site-toast",
+    "[aria-hidden='true']", ".brand-lockup", "#site-toast",
     "#translation-help-dialog"
   ].join(",");
 
@@ -111,6 +123,66 @@
   PF.path = function (key) {
     return base + (pageMap[key] || "");
   };
+
+  /* pf:source-marks:start
+   * One source-button vocabulary for the whole site. It used to live three times over —
+   * js/catalog.js, js/watch.js and js/exams-page.js each carried their own copy of the
+   * same marks, the same host tests and the same brand names, and they had already drifted.
+   * tools/build-topics.mjs evaluates this exact slice when it generates the static topic
+   * pages, so a generated page and a runtime page cannot disagree about what a YouTube
+   * link looks like.
+   */
+  const SOURCE_MARK_PARTS = {
+    youtube: '<span class="source-mark-body"><span class="source-mark-play"></span></span>',
+    "google-play": '<span class="source-mark-play-triangle source-mark-play-triangle-a"></span><span class="source-mark-play-triangle source-mark-play-triangle-b"></span><span class="source-mark-play-triangle source-mark-play-triangle-c"></span>',
+    "apple-store": '<span class="source-mark-apple-fruit"></span><span class="source-mark-apple-leaf"></span>',
+    app: '<span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span>',
+    document: '<span class="source-mark-page"><span class="source-mark-page-fold"></span><span class="source-mark-page-line"></span><span class="source-mark-page-line"></span></span>',
+    website: '<span class="source-mark-globe"><span class="source-mark-globe-axis"></span><span class="source-mark-globe-ring"></span></span>'
+  };
+  const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be", "youtube-nocookie.com", "www.youtube-nocookie.com"]);
+
+  // A youtube.com/results link is a search, not a video: 96 catalogue links point there,
+  // and treating them as video gives a red play affordance to a page that plays nothing.
+  function isYouTubeSearch(url) {
+    try {
+      const parsed = new URL(url);
+      return /(?:^|\.)youtube\.com$/i.test(parsed.hostname) && parsed.pathname === "/results";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function classifySource(url) {
+    const value = String(url || "");
+    if (isYouTubeSearch(value)) return "website";
+    try {
+      const parsed = new URL(value);
+      if (parsed.protocol === "https:" && YOUTUBE_HOSTS.has(parsed.hostname.toLowerCase())) return "video";
+    } catch (_) {}
+    if (/play\.google|apps\.apple|microsoft\.com\/store|apps\.microsoft/i.test(value)) return "app";
+    if (/\.pdf(?:$|\?)|drive\.google\.com|docs\.google\.com/i.test(value)) return "document";
+    return "website";
+  }
+
+  function sourceBrand(url, type) {
+    const lower = String(url || "").toLowerCase();
+    if (type === "video" && /(?:youtube\.com|youtu\.be|youtube-nocookie\.com)/.test(lower)) return "youtube";
+    if (/play\.google\.com/.test(lower)) return "google-play";
+    if (/apps\.apple\.com/.test(lower)) return "apple-store";
+    return type === "app" ? "app" : type;
+  }
+
+  function sourceMark(url, type) {
+    const brand = sourceBrand(url, type);
+    return '<span class="source-icon source-mark source-mark-' + brand + '" aria-hidden="true">' + (SOURCE_MARK_PARTS[brand] || SOURCE_MARK_PARTS.website) + "</span>";
+  }
+
+  PF.isYouTubeSearch = isYouTubeSearch;
+  PF.classifySource = classifySource;
+  PF.sourceBrand = sourceBrand;
+  PF.sourceMark = sourceMark;
+  /* pf:source-marks:end */
 
   PF.safeUrl = function (value, protocols = ["https:", "http:"]) {
     try {
@@ -1213,6 +1285,41 @@
     PF.applyLanguageTo(list);
   }
 
+  /* Save buttons on pages that are plain HTML.
+   *
+   * The generated topic pages under /learn/, /skills/, /tools/ and /rights/ ship their
+   * cards as markup, so there is no page module to bind a heart to. A button that carries
+   * its own title and section is therefore hydrated and delegated here instead. Buttons
+   * rendered by a page module (PigBang) describe themselves through that module and carry
+   * no data-save-title, so they are left to it.
+   */
+  function staticSaveState(button) {
+    const isSaved = PF.isSaved(button.dataset.save);
+    button.classList.toggle("is-saved", isSaved);
+    button.textContent = isSaved ? "\u2665" : "\u2661";
+    button.setAttribute("aria-pressed", String(isSaved));
+    button.setAttribute("aria-label", `${isSaved ? "Remove" : "Save"} ${button.dataset.saveTitle || "this resource"}`);
+  }
+
+  function initStaticSaveButtons() {
+    const buttons = qsa("[data-save][data-save-title]");
+    if (!buttons.length) return;
+    buttons.forEach(staticSaveState);
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest && event.target.closest("[data-save][data-save-title]");
+      if (!button) return;
+      PF.toggleSaved({
+        id: button.dataset.save,
+        title: button.dataset.saveTitle,
+        description: button.dataset.saveDescription || "",
+        section: button.dataset.saveSection || "Pigsfield",
+        // A save id is "<catalogue>:<anchor>", and the anchor is the card's own element id.
+        url: `${location.origin}${location.pathname}#${encodeURIComponent(button.dataset.save.split(":").pop())}`
+      });
+    });
+    document.addEventListener("pf:saved-changed", () => qsa("[data-save][data-save-title]").forEach(staticSaveState));
+  }
+
   PF.openExternal = function (url, title = "Resource") {
     const safe = PF.safeUrl(url);
     if (!safe) {
@@ -1279,11 +1386,13 @@
       (section.groups || []).forEach((group, groupIndex) => {
         (group.items || []).forEach((item, itemIndex) => {
           const id = PF.slug(`${item.title}-${section.resourceIdSection||1+sectionIndex}-${1+groupIndex}-${1+itemIndex}`);
+          const route = topicRoutes[key];
+          const slug = route ? route.slugs[route.by === "section" ? sectionIndex : groupIndex] : "";
           entries.push({
             title: item.title || item.desc || "Resource",
             description: item.desc || group.title || section.title || "",
             section: dataLabels[key],
-            url: `${PF.path(dataPages[key])}#${encodeURIComponent(id)}`,
+            url: `${PF.path(dataPages[key])}${slug ? `${slug}/` : ""}#${encodeURIComponent(id)}`,
             haystack: `${item.title || ""} ${item.desc || ""} ${group.title || ""} ${section.title || ""}`.toLowerCase()
           });
         });
@@ -1428,7 +1537,7 @@
   function detailsKind(details) {
     const explicit = details.getAttribute("data-accordion-key");
     if (explicit) return `key:${explicit}`;
-    const kinds = ["catalog-section", "catalog-group", "exam-panel", "faq-item", "resource-notes"];
+    const kinds = ["exam-panel", "faq-item", "resource-notes"];
     return kinds.find((kind) => details.classList.contains(kind)) || "generic-details";
   }
 
@@ -1786,6 +1895,7 @@
     dialogMarkup();
     initializeAccordions();
     bindUi();
+    initStaticSaveButtons();
     setTheme(root.dataset.theme || initialTheme());
     if (savedLanguage() === "hi") restoreSavedHindi();
     else setLanguageState("en");
