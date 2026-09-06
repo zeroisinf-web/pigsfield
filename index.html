@@ -26,9 +26,9 @@
   <meta name="twitter:title" content="Free Education, Vocational Resources &amp; Digital Tools | Pigsfield">
   <meta name="twitter:description" content="Explore Pigsfield's six free-first destinations for learning, media, exams, vocational capability, digital tools and public accountability.">
   <link rel="preload" href="assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site.css">
-  <script defer src="js/site.js"></script><script defer src="js/account.js"></script>
-  <script defer src="js/home.js"></script>
+  <link rel="stylesheet" href="css/site.css?v=9a2819835f7a">
+  <script defer src="js/site.js?v=108a5429244b"></script><script defer src="js/account.js?v=60764f19b142"></script>
+  <script defer src="js/home.js?v=ff46b8412dc6"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -89,38 +89,30 @@
 
   <main id="main-content">
     <section class="home-hero">
-      <div class="hero-mesh" aria-hidden="true"></div>
+
       <div class="container hero-stack">
-        <span class="eyebrow">Free-first · Direct to source · No Pigsfield account</span>
-        <h1>Education within <em>everyone’s reach.</em></h1>
-        <p class="hero-lede">Nursery-to-PhD learning, educational media, competitive exams, vocational skills, digital tools and public-accountability resources — organized for India, and always linking straight to the original provider.</p>
+        <span class="eyebrow">A world of learning. Open to everyone.</span>
+        <h1>Follow your curiosity.<br><em>Find your next chapter.</em></h1>
+        <p class="hero-lede">From your first lesson to your next big idea. Discover free-first education, films, skills and tools — brought together for India, open to the world.</p>
         <div class="hero-actions">
-          <button class="button brand" type="button" data-open-search>Search 880+ resources</button>
-          <a class="button ghost" href="#explore">Browse the six paths</a>
+          <button class="button brand" type="button" data-open-search>Find something to learn</button>
+          <a class="button ghost" href="#explore">Explore the collection <span aria-hidden="true">↘</span></a>
         </div>
         <a class="hero-guide" href="https://youtu.be/2k7OOZZlNrg?si=vMCzk67HAuWQx-g1" target="_blank" rel="noopener noreferrer" data-home-video data-title="How to use Pigsfield">
           <span class="hero-guide-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9.5 7.8 7 4.2-7 4.2V7.8Z"/></svg></span>
           <span>How to use Pigsfield <small>2 min · opens on YouTube</small></span>
         </a>
-        <div class="visitor-signal" id="visitor-counter" aria-live="polite">
-          <span class="visitor-pulse" aria-hidden="true"></span>
-          <span class="visitor-copy">
-            <span class="visitor-figures">
-              <span class="visitor-figure"><strong data-visitor-rolling>—</strong> <span>visits in the last 30 days</span></span>
-              <span class="visitor-figure"><strong data-visitor-total>—</strong> <span>since we started</span></span>
-            </span>
-            <small data-visitor-note>Best-effort, usually one check-in per browser each day. No account or visitor profile.</small>
-          </span>
-        </div>
+
       </div>
     </section>
 
     <section class="section band" id="explore" aria-labelledby="explore-title">
       <div class="container">
-        <div class="band-head"><span class="section-kicker">Six paths</span><h2 id="explore-title">Start where you are.</h2><p>Every path opens the original provider. Nothing here is hosted by Pigsfield.</p></div>
+        <div class="band-head"><div><span class="section-kicker">The collection / 01—06</span><h2 id="explore-title">Where will curiosity take you?</h2></div><p>Six ways to learn, create and move forward.<br>Always straight to the original source.</p></div>
+        <div class="path-filters" role="group" aria-label="Filter learning paths" hidden><button type="button" class="path-filter" data-path-filter="all" aria-pressed="true">All paths <span>6</span></button><button type="button" class="path-filter" data-path-filter="learn exams">Learn &amp; prepare</button><button type="button" class="path-filter" data-path-filter="watch">Watch &amp; discover</button><button type="button" class="path-filter" data-path-filter="skills tools">Build &amp; create</button><button type="button" class="path-filter" data-path-filter="rights">Know your rights</button></div><p class="sr-only" data-path-status role="status"></p>
         <div class="path-grid">
           <a class="path-card" data-path="learn" href="learn/">
-            <span class="path-art" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4.4h5.6A3.4 3.4 0 0 1 12 6.7a3.4 3.4 0 0 1 3.4-2.3H21v13.5h-5.6a3 3 0 0 0-2.6 1.5h-1.6a3 3 0 0 0-2.6-1.5H3V4.4Zm2 2v9.5h3.6c.9 0 1.7.2 2.4.6V7.9a1.6 1.6 0 0 0-1.4-1.5H5Zm14 0h-4.6A1.6 1.6 0 0 0 13 7.9v8.6c.7-.4 1.5-.6 2.4-.6H19V6.4Z"/></svg></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-learn.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
               <span class="path-label">Learning</span>
               <h3>Nursery to PhD</h3>
@@ -129,16 +121,16 @@
             </span>
           </a>
           <a class="path-card" data-path="watch" href="watch/" data-pigbang-link>
-            <span class="path-art" aria-hidden="true"><img src="assets/pigbang-logo-nav.webp" alt="" width="64" height="64" loading="lazy" decoding="async"></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-watch.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
-              <span class="path-label">Educational media</span>
+              <span class="path-label"><img class="path-brand" src="assets/pigbang-logo-nav.webp" alt="" width="20" height="20" loading="lazy" decoding="async"> Educational media</span>
               <h3>PigBang</h3>
               <p>A searchable educational watchlist with in-site YouTube playback.</p>
               <span class="path-meta"><span>580+ entries</span><span class="path-go">Watch<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.6 4.6 11.2 6l5 5H3.4v2h12.8l-5 5 1.4 1.4L20 12l-7.4-7.4Z"/></svg></span></span>
             </span>
           </a>
           <a class="path-card" data-path="exams" href="exams/">
-            <span class="path-art" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill-rule="evenodd"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2.1a7.9 7.9 0 1 1 0 15.8 7.9 7.9 0 0 1 0-15.8Zm0 2.7a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4Zm0 2.1a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2Z"/></svg></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-exams.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
               <span class="path-label">Preparation</span>
               <h3>Competitive Exams</h3>
@@ -147,7 +139,7 @@
             </span>
           </a>
           <a class="path-card" data-path="skills" href="skills/">
-            <span class="path-art" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill-rule="evenodd"><path d="M9.6 2.6h4.8a2.6 2.6 0 0 1 2.6 2.6v1.5H20a2.4 2.4 0 0 1 2.4 2.4V19a2.4 2.4 0 0 1-2.4 2.4H4A2.4 2.4 0 0 1 1.6 19V9.1A2.4 2.4 0 0 1 4 6.7h3V5.2a2.6 2.6 0 0 1 2.6-2.6Zm0 2.1a.5.5 0 0 0-.5.5v1.5h5.8V5.2a.5.5 0 0 0-.5-.5H9.6ZM3.7 8.8v10.5h16.6V8.8H3.7Zm7.2 2.9h2.2v2h2v2.2h-2v2h-2.2v-2h-2v-2.2h2v-2Z"/></svg></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-skills.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
               <span class="path-label">Capability</span>
               <h3>Vocational &amp; Business</h3>
@@ -156,7 +148,7 @@
             </span>
           </a>
           <a class="path-card" data-path="tools" href="tools/">
-            <span class="path-art" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill-rule="evenodd"><path d="M3.2 3.2h7.4v7.4H3.2V3.2Zm2.1 2.1v3.2h3.2V5.3H5.3Zm8.1-2.1h7.4v7.4h-7.4V3.2Zm2.1 2.1v3.2h3.2V5.3h-3.2ZM3.2 13.4h7.4v7.4H3.2v-7.4Zm2.1 2.1v3.2h3.2v-3.2H5.3Zm11.8-2.4a4.1 4.1 0 1 1 0 8.2 4.1 4.1 0 0 1 0-8.2Z"/></svg></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-tools.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
               <span class="path-label">Digital tools</span>
               <h3>Digital Tools</h3>
@@ -165,7 +157,7 @@
             </span>
           </a>
           <a class="path-card" data-path="rights" href="rights/">
-            <span class="path-art" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill-rule="evenodd"><path d="M11 2.4h2v1.9l7.3 1.9-.5 2-1.4-.4 3.2 7.1c0 2.4-2 4.2-4.4 4.2s-4.4-1.8-4.4-4.2l3.2-7.1-3-.8v12.4h4.6v2H6.4v-2H11V9l-3 .8 3.2 7.1c0 2.4-2 4.2-4.4 4.2S2.4 19.3 2.4 16.9L5.6 9.8l-1.4.4-.5-2L11 6.3V2.4ZM6.8 12.2l-1.6 3.6h3.2l-1.6-3.6Zm10.4 0-1.6 3.6h3.2l-1.6-3.6Z"/></svg></span>
+            <span class="path-art" aria-hidden="true"><img src="assets/path-rights.svg" alt="" width="600" height="360" loading="lazy" decoding="async"></span>
             <span class="path-body">
               <span class="path-label">Accountability</span>
               <h3>Make Govt Accountable</h3>
@@ -177,11 +169,11 @@
       </div>
     </section>
 
-    <section class="section alt" id="why">
+    <section class="section" id="why">
       <div class="container pitch-grid">
         <div class="pitch-statement">
-          <span class="section-kicker">The problem we solve</span>
-          <blockquote>Excellent resources exist. Access still fails when people cannot find the right next step.</blockquote>
+          <span class="section-kicker">Open doors, not barriers</span>
+          <blockquote>Good resources are everywhere. Let’s make them easier to reach.</blockquote>
         </div>
         <div class="pitch-list">
           <article class="pitch-item"><b><svg viewBox="0 0 24 24" aria-hidden="true" fill-rule="evenodd"><path d="M12 1.8a10.2 10.2 0 1 0 0 20.4 10.2 10.2 0 0 0 0-20.4Zm0 2.1a8.1 8.1 0 1 1 0 16.2 8.1 8.1 0 0 1 0-16.2Zm4.6 3.5-7 2.8-2.8 7 7-2.8 2.8-7ZM12 10.8a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z"/></svg></b><div><h3>Useful knowledge is scattered</h3><p>Government portals, universities, channels, apps and public-interest organizations each hold part of the answer. Pigsfield brings the paths together without copying ownership.</p></div></article>
@@ -194,7 +186,7 @@
 
     <section class="section alt" id="faq">
       <div class="container narrow">
-        <div class="section-head"><div><span class="section-kicker">Questions</span><h2>Clear before clever.</h2></div></div>
+        <div class="section-head"><div><span class="section-kicker">Questions</span><h2>A few things worth knowing.</h2></div></div>
         <div class="faq-list" data-accordion-scope>
           <details class="faq-item"><summary>Is every resource free?</summary><div><p>Pigsfield is free to browse and prioritizes free and public options. Some third-party films, apps or courses are paid or may require an account; those labels come from the catalog and should be checked at the original source.</p></div></details>
           <details class="faq-item"><summary>Does Pigsfield own these courses and videos?</summary><div><p>No. Pigsfield is a discovery and guidance layer. Copyright and availability remain with each original provider.</p></div></details>
@@ -219,6 +211,16 @@
     </section>
   </main>
 
+  <div class="container community-signal">        <div class="visitor-signal" id="visitor-counter" aria-live="polite">
+          <span class="visitor-pulse" aria-hidden="true"></span>
+          <span class="visitor-copy">
+            <span class="visitor-figures">
+              <span class="visitor-figure"><strong data-visitor-rolling>—</strong> <span>visits in the last 30 days</span></span>
+              <span class="visitor-figure"><strong data-visitor-total>—</strong> <span>since we started</span></span>
+            </span>
+            <small data-visitor-note>Best-effort, usually one check-in per browser each day. No account or visitor profile.</small>
+          </span>
+        </div></div>
   <footer data-site-footer></footer>
 </body>
 </html>

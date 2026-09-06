@@ -1,9 +1,7 @@
 @font-face {
   font-family: "Google Sans Flex";
   font-style: normal;
-  /* Matches the trimmed axis in the woff2: nothing on the site paints below 400 or
-     above 900, and advertising a range the file no longer carries makes a browser
-     synthesise weights instead of using real ones. */
+
   font-weight: 400 900;
   font-display: swap;
   src: url("../assets/google-sans-flex-latin.woff2") format("woff2");
@@ -12,21 +10,15 @@
 :root {
   color-scheme: light;
 
-  /* Canvas and surfaces.
-     The page used to be cream (#f4f1e8) with a brighter-than-white card on it. That is a
-     warm, papery look and it is the opposite of the reference: labs.google is a plain white
-     canvas with soft neutral-grey surfaces raised on it, and colour arrives only through
-     artwork. Same two roles, inverted relationship — --paper is now the lighter of the two. */
-  --paper: #ffffff;
-  --paper-strong: #f4f4f2;
+
+  --paper: #faf9f6;
+  --paper-strong: #f0efec;
   --ink: #191b1c;
   --ink-soft: #5a6160;
   --line: #e4e5e2;
   --line-strong: #c2c5c1;
 
-  /* One warm primary — Pigsfield's own — and a spectrum around it. The spectrum is not
-     decoration: it is what the gradient mesh and every card's artwork are built from, which
-     is how the reference gets its colour without tinting a single surface. */
+
   --brand: #f2542d;
   --brand-deep: #c3350f;
   --green: #0f7a63;
@@ -38,7 +30,6 @@
   --rose: #ff5f9e;
   --focus: #1a73e8;
 
-  /* Elevation is nearly absent by design; separation comes from tone and space. */
   --shadow-sm: 0 1px 2px rgba(20, 22, 24, 0.06);
   --shadow-lg: 0 24px 64px rgba(20, 22, 24, 0.12);
   --surface-top: rgba(255, 255, 255, 0.6);
@@ -47,8 +38,7 @@
   --depth-high: 0 2px 10px rgba(20, 22, 24, 0.07);
   --glow-brand: color-mix(in srgb, var(--brand) 16%, transparent);
 
-  /* Larger and rounder. A 24px card and a fully round control are the shapes that read as
-     this design language before any colour is seen. */
+
   --radius-sm: 0.875rem;
   --radius: 1.5rem;
   --radius-lg: 2rem;
@@ -62,23 +52,13 @@
   --font-sans: "Google Sans Flex", "Google Sans", "Noto Sans Devanagari", system-ui, sans-serif;
   --font-serif: var(--font-sans);
 
-  /* Label colour for a solid accent fill. White only reads on a DARK fill, and the accent
-     tokens deliberately get lighter in dark mode, so hardcoding #fff put white text on a
-     pale fill: .button.brand measured 2.64:1 and .button.secondary 2.14:1 in dark, both
-     failing WCAG AA. The label is therefore chosen per theme against its own fill.
-     --fill-ink is not theme-swapped: it is the near-black used on any bright fill, and
-     clears 4.5:1 on every accent in all three themes (worst case 5.05:1). */
+
   --fill-ink: #0d1714;
-  --on-brand: var(--fill-ink);   /* #f2542d is bright -> 5.29:1 */
-  --on-green: #fff;              /* #0f7a63 is dark   -> 5.27:1 */
-  --on-green-deep: #fff;         /* #0a4a3d is dark   -> 9.94:1 */
-}
+  --on-brand: var(--fill-ink);   --on-green: #fff;              --on-green-deep: #fff;       }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --on-brand: var(--fill-ink);   /* #ff7a55 -> 7.10:1 */
-  --on-green: var(--fill-ink);   /* #4fd3ae -> 9.79:1 */
-  --on-green-deep: var(--fill-ink); /* #b6f0dd is bright -> 14.35:1 */
+  --on-brand: var(--fill-ink);   --on-green: var(--fill-ink);   --on-green-deep: var(--fill-ink); /* #b6f0dd is bright -> 14.35:1 */
   --paper: #0e0f11;
   --paper-strong: #17181b;
   --ink: #f2f3f4;
@@ -110,9 +90,7 @@ html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 1rem)
 body {
   margin: 0;
   min-width: 19rem;
-  /* Plain canvas. Colour arrives through artwork and the hero mesh, not as a wash over
-     every page — two radial glows behind all content was what made the old site read as
-     one continuous tinted scroll rather than composed sections. */
+
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -164,10 +142,6 @@ p { color: var(--ink-soft); }
   border: 0 !important;
 }
 
-/* Section labels are plain uppercase text, not a bordered chip with a sparkle in it.
-   --ink-soft is a colour for the page's own canvas, so on an inverted surface the label is
-   derived from whatever text colour it inherits instead: on the mission band and the
-   PigBang hero it was resolving to near-black on near-black. */
 .eyebrow, .section-kicker {
   display: inline-block;
   margin-bottom: 1rem;
@@ -232,24 +206,19 @@ p { color: var(--ink-soft); }
 .icon-button:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 4px 12px rgba(16, 36, 30, 0.08); }
 .icon-button:active { transform: scale(0.95); }
 
-/* Header
-   A full-width bar that sits on the page rather than a pill floating above it. The floating
-   capsule drew a hard outline across the top of every screen and boxed the hero's gradient
-   in; the reference keeps its chrome almost invisible — a hairline that only appears once
-   you have scrolled past the hero — so the artwork is the first thing seen. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
   min-height: var(--header-h);
   border-bottom: 1px solid transparent;
-  background: color-mix(in srgb, var(--paper) 78%, transparent);
-  backdrop-filter: blur(18px) saturate(1.3);
+  background: var(--paper);
+  backdrop-filter: none;
   transition: border-color 220ms ease, background 220ms ease;
 }
 .site-header[data-scrolled="true"] {
   border-bottom-color: var(--line);
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: var(--paper);
 }
 
 .header-inner {
@@ -336,11 +305,6 @@ p { color: var(--ink-soft); }
 
 /* Home */
 
-/* Two figures, not one. A rolling 30-day window says whether the site is being used now; an
-   all-time total says how far it has reached. Neither answers the other's question, and the
-   old single "check-ins this month" number reset to nearly nothing every 1st of the month.
-   It sits under the hero actions, where it reads as evidence for the claim above it rather
-   than as a banner strip a visitor has to scroll past to reach the page. */
 .visitor-signal {
   display: flex;
   max-width: 100%;
@@ -379,56 +343,6 @@ p { color: var(--ink-soft); }
 .visitor-copy small { color: var(--ink-soft); font-size: 0.68rem; line-height: 1.35; }
 .visitor-signal[data-state="unavailable"] { display: none; }
 
-.home-hero {
-  position: relative;
-  overflow: clip;
-  padding: clamp(3rem, 7vw, 7rem) 0 clamp(3rem, 6vw, 6rem);
-}
-
-/* The gradient mesh.
-   This is the single element that carries the design language: a plain white page, and one
-   soft field of colour behind the headline. It replaces a flat tint over the whole document
-   plus a decorative ring — neither of which said anything, and the tint made every section
-   read as one continuous scroll.
-   Built from five wide radial stops rather than a blurred image: a filter: blur() over a
-   viewport-sized layer is a real per-frame cost, and a radial gradient with soft stops is
-   already soft for free. It drifts slowly, and holds still for anyone who asked it to. */
-.hero-mesh {
-  position: absolute;
-  z-index: -1;
-  inset: -30% -15% auto;
-  height: 150%;
-  pointer-events: none;
-  opacity: 0.55;
-  background:
-    radial-gradient(38rem 30rem at 14% 20%, color-mix(in srgb, var(--violet) 55%, transparent), transparent 68%),
-    radial-gradient(34rem 28rem at 80% 14%, color-mix(in srgb, var(--azure) 52%, transparent), transparent 66%),
-    radial-gradient(36rem 30rem at 64% 74%, color-mix(in srgb, var(--brand) 50%, transparent), transparent 68%),
-    radial-gradient(30rem 26rem at 24% 80%, color-mix(in srgb, var(--saffron) 48%, transparent), transparent 68%),
-    radial-gradient(28rem 24rem at 94% 66%, color-mix(in srgb, var(--rose) 40%, transparent), transparent 68%);
-  animation: mesh-drift 32s ease-in-out infinite alternate;
-  will-change: transform;
-}
-[data-theme="dark"] .hero-mesh { opacity: 0.42; }
-@keyframes mesh-drift {
-  from { transform: translate3d(-2%, -1.5%, 0) scale(1.04); }
-  to { transform: translate3d(2.5%, 2%, 0) scale(1.14); }
-}
-
-.home-hero h1 {
-  max-width: 13ch;
-  margin-bottom: 1rem;
-  font-family: var(--font-serif);
-  font-size: clamp(2.55rem, 5.7vw, 5.6rem);
-  font-weight: 700;
-  letter-spacing: -0.052em;
-  line-height: 0.93;
-}
-
-.home-hero h1 em { color: var(--brand); font-style: normal; }
-.hero-lede { max-width: 45rem; margin-bottom: 1.15rem; font-size: clamp(0.96rem, 1.35vw, 1.1rem); line-height: 1.55; }
-
-
 .section { padding: clamp(4.5rem, 9vw, 8.5rem) 0; }
 .section.alt { background: var(--paper-strong); }
 .section-head {
@@ -443,8 +357,7 @@ p { color: var(--ink-soft); }
 .page-hero h1 {
   margin-bottom: 0;
   font-family: var(--font-serif);
-  /* 700/-0.05em tracks one.google.com's display setting (84px/700/-4px). The variable font
-     already carries wght 400-900, so this costs nothing extra to download. */
+
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 0.98;
@@ -458,12 +371,6 @@ p { color: var(--ink-soft); }
   gap: 1.5rem;
 }
 
-/* Cards lead with artwork, not with a label.
-   Every card is now structurally identical — a coloured panel, then a category, a title, a
-   line of copy and a destination — and the colour lives entirely in the panel. That is the
-   reference's whole card system, and it replaces a 12-column bento in which one card was
-   filled brand-orange, one was filled ink-dark and four were plain, so the row read as four
-   unrelated designs rather than one set. */
 .path-card {
   position: relative;
   display: flex;
@@ -479,29 +386,10 @@ p { color: var(--ink-soft); }
 .path-card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: var(--shadow-lg); }
 .path-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
-.path-art {
-  display: grid;
-  aspect-ratio: 16 / 10;
-  place-items: center;
-  background: linear-gradient(140deg, var(--art-a, #dfe3ea), var(--art-b, #c9d3e4) 55%, var(--art-c, #e7dcf3));
-  /* Near-black, not white. Measured against every stop below, a white mark clears 3:1 on
-     none of these gradients (worst case 1.55:1 on the amber) while --fill-ink clears it on
-     all of them, worst case 3.47:1. tests/contrast.test.mjs holds that line. */
-  color: var(--fill-ink);
-  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+.path-art { display: grid; aspect-ratio: 5 / 3; overflow: hidden; background: var(--paper-strong); color: var(--fill-ink); }
 .path-card:hover .path-art { transform: scale(1.035); }
 .path-art svg { width: 3.4rem; height: 3.4rem; fill: currentColor; }
-.path-art img { width: 3.6rem; height: 3.6rem; object-fit: contain; }
-
-/* One pair of stops per destination. The panel is the only place a card carries colour, so
-   these are the palette doing its actual job rather than decorating a surface. */
-.path-card[data-path="learn"] { --art-a: #ff9a3c; --art-b: #f2542d; --art-c: #ff5f9e; }
-.path-card[data-path="watch"] { --art-a: #3a1440; --art-b: #8f1a3f; --art-c: #1c0814; }
-.path-card[data-path="exams"] { --art-a: #5fa8ff; --art-b: #2f6fed; --art-c: #7a5cf0; }
-.path-card[data-path="skills"] { --art-a: #35d0a5; --art-b: #0f7a63; --art-c: #2f6fed; }
-.path-card[data-path="tools"] { --art-a: #a58cff; --art-b: #7a5cf0; --art-c: #2f6fed; }
-.path-card[data-path="rights"] { --art-a: #ffc75c; --art-b: #ffb42e; --art-c: #f2542d; }
+.path-art img { width: 100%; height: 100%; object-fit: cover; }
 
 .path-body { display: flex; flex: 1; flex-direction: column; padding: 1.35rem 1.4rem 1.25rem; }
 .path-label {
@@ -1008,10 +896,7 @@ summary::-webkit-details-marker { display: none; }
   flex-direction: column;
   gap: 0.45rem;
 }
-/* The dock stays on every page, so it has to be quiet. Three saturated fills — orange,
-   gradient-blue and bottle-green — stacked in the corner were the loudest thing on a page
-   whose whole point is that colour lives in the artwork. They are one neutral surface now,
-   with the primary action alone carrying the accent. */
+
 .support-action {
   display: inline-flex;
   min-height: 2.6rem;
@@ -1059,10 +944,6 @@ summary::-webkit-details-marker { display: none; }
 .toast:empty { display: none; }
 .toast.show:not(:empty) { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 
-/* Dimensional layer
-   Depth is CSS-native and intentionally restrained: no canvas, WebGL or
-   constantly running animation. Fine pointers receive a subtle tilt while
-   touch layouts keep the same layered surfaces without movement. */
 .brand-lockup img { filter: drop-shadow(0 7px 8px color-mix(in srgb, var(--green) 22%, transparent)); }
 
 .icon-button,.search-trigger,.lang-toggle,.filter-chip,.card-tool{ box-shadow: 0 5px 12px rgba(16, 36, 30, 0.06); transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
@@ -1080,8 +961,7 @@ summary::-webkit-details-marker { display: none; }
   isolation: isolate;
   overflow: clip;
 }
-/* Interior pages get the same mesh, quieter and pushed to one side, so they read as the
-   same site without competing with their own content. */
+
 .page-hero::before,
 .info-page::before {
   content: "";
@@ -1184,7 +1064,7 @@ summary::-webkit-details-marker { display: none; }
 }
 .watch-art { box-shadow: none; text-shadow: 0 2px 0 rgba(255, 255, 255, 0.16), 0 12px 22px rgba(0, 0, 0, 0.34); }
 .source-icon { box-shadow: 0 3px 7px rgba(0, 0, 0, 0.12); }
-.table-scroll { }
+
 .data-table th { background: linear-gradient(145deg, color-mix(in srgb, var(--ink) 88%, var(--green)), var(--ink)); }
 
 .site-dialog,
@@ -1197,9 +1077,6 @@ summary::-webkit-details-marker { display: none; }
 .player-dialog[open] { animation: dialog-rise 220ms cubic-bezier(0.2, 0.75, 0.25, 1); }
 .dialog-head { background: linear-gradient(180deg, var(--surface-top), transparent); }
 
-.support-dock { perspective: 50rem; }
-/* Drawn marks, not emoji: the dock never scrolls away, so a glyph that changes shape,
-   weight and colour per operating system is visible on every page of every visit. */
 .ui-icon,
 .ai-icon {
   display: inline-block;
@@ -1209,8 +1086,7 @@ summary::-webkit-details-marker { display: none; }
   fill: currentColor;
   vertical-align: -0.15em;
 }
-/* Headings and labels that carry a mark line it up with the text instead of stacking it —
-   the global "img, svg, video { display: block }" reset above would otherwise break them. */
+
 #global-ai-title,
 .ai-launchpad-title { display: flex; align-items: center; gap: 0.45rem; }
 #global-ai-title .ui-icon { width: 1.9rem; height: 1.9rem; color: var(--brand); }
@@ -1302,8 +1178,7 @@ summary::-webkit-details-marker { display: none; }
 .ai-model-tag { display: flex; align-items: center; gap: 0.4rem; min-width: 0; font-size: 0.82rem; font-weight: 600; color: var(--ink); }
 .model-icon { color: var(--brand); }
 .model-status-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
-/* The model chooser reads as a label with a caret, not a form control dropped into a
-   toolbar: three named options, the cheapest first, and the choice is remembered. */
+
 .ai-model-field { min-width: 0; }
 .ai-model-select {
   max-width: 100%;
@@ -1320,14 +1195,8 @@ summary::-webkit-details-marker { display: none; }
 }
 .ai-model-select:hover { background-color: color-mix(in srgb, var(--ink) 6%, transparent); }
 .ai-model-select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-/* A select paints its own popup with the OS palette, so its options need real colours in
-   both themes rather than inheriting a transparent surface. */
+
 .ai-model-select option { background: var(--paper-strong); color: var(--ink); }
-
-/* One line-art set for every studio control, sized to the label beside it and inheriting
-   its colour. These replaced emoji, which rendered at a different weight, colour and
-   baseline on every platform. */
-
 
 /* Segmented Mode Toggle */
 .ai-mode-toggle { display: flex; background: color-mix(in srgb, var(--ink) 6%, var(--paper)); padding: 3px; border-radius: 2rem; border: 1px solid var(--line); }
@@ -1357,8 +1226,7 @@ summary::-webkit-details-marker { display: none; }
 .ai-msg-content { position: relative; padding: 0.75rem 0.95rem; border-radius: 0.85rem; font-size: 0.9rem; line-height: 1.5; }
 .ai-msg-user .ai-msg-content { background: var(--brand); color: var(--on-brand); border-bottom-right-radius: 0.25rem; }
 .ai-msg-assistant .ai-msg-content { background: var(--paper); border: 1px solid var(--line); color: var(--ink); border-bottom-left-radius: 0.25rem; }
-/* Which model wrote an answer belongs with the answer: the picker may have moved on by the
-   time it is read back. */
+
 .ai-msg-actions { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.55rem; }
 .ai-msg-model { font-size: 0.68rem; font-weight: 650; letter-spacing: 0.02em; text-transform: uppercase; color: var(--ink-soft); }
 .ai-copy-btn { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: auto; padding: 0.2rem 0.5rem; background: color-mix(in srgb, var(--ink) 5%, transparent); border: 1px solid var(--line); border-radius: 0.4rem; font-size: 0.72rem; color: var(--ink-soft); cursor: pointer; transition: all 0.15s ease; }
@@ -1508,11 +1376,7 @@ summary::-webkit-details-marker { display: none; }
 .source-mark-globe-axis { position: absolute; top: -0.13rem; left: 50%; width: 0.38rem; height: 1.16rem; border-inline: 0.1rem solid #fff; border-radius: 50%; transform: translateX(-50%); }
 .source-mark-globe-ring { position: absolute; top: 50%; left: -0.13rem; width: 1.16rem; height: 0.38rem; border-block: 0.1rem solid #fff; border-radius: 50%; transform: translateY(-50%); }
 .watch-art { position: relative; overflow: hidden; }
-/* Real cover art replaces the generated symbol rather than being stamped on top of it. The
-   symbol is the fallback: it is painted first so a card is never empty while the poster
-   loads, and js/watch.js sets .has-art the moment one decodes. A blocked or 404 poster
-   removes the image and leaves the symbol, so the card still looks deliberate.
-   width/height are set on the element so the row reserves its space before art arrives. */
+
 .watch-art-img {
   position: absolute;
   inset: 0;
@@ -1622,9 +1486,6 @@ summary::-webkit-details-marker { display: none; }
 .catalog-group-content { padding: 1rem; }
 .catalog-group-summary:focus-visible { outline: 3px solid var(--focus); outline-offset: -4px; }
 
-/* Accordion behavior
-   Only substantial navigation panels become sticky. Small "Practical guide"
-   disclosures inside resource cards remain in normal flow. */
 .catalog-section[open] > summary,
 .faq-item[open] > summary,
 .exam-panel[open] > summary,
@@ -1702,8 +1563,6 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
   outline-offset: -4px;
 }
 
-/* Animate native details content where the browser exposes its content box.
-   Unsupported browsers retain the fully functional instant native behavior. */
 @supports selector(details::details-content) {
   :root { interpolate-size: allow-keywords; }
   .catalog-section::details-content,
@@ -1816,11 +1675,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
 .footer-bottom { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 0.75rem; }
 
 /* PigBang destinations and dark educational OTT route */
-/* PigBang stays marked in the nav, but as a mark rather than a slab.
-   It was a dark red capsule with its own gradient and drop shadow, sitting in a bar whose
-   other seven links are plain text — the single loudest object above the fold, and the
-   thing that most made the chrome look assembled from two different sites. The logo plus a
-   tint identifies it just as well at a fraction of the weight. */
+
 .site-nav a[data-pigbang-link] {
   position: relative;
   display: inline-flex;
@@ -1873,10 +1728,7 @@ body[data-page="watch"] .catalog-group[open] > .catalog-group-summary {
 
 body[data-page="watch"] {
   color-scheme: dark;
-  --on-brand: var(--fill-ink);   /* #ff3150 -> 5.05:1 */
-  --on-green: var(--fill-ink);   /* #6ee7b7 -> 11.98:1 */
-  --on-green-deep: #fff;         /* #123c35 is dark -> 12.18:1 */
-  --paper: #07090f;
+  --on-brand: var(--fill-ink);   --on-green: var(--fill-ink);   --on-green-deep: #fff;         --paper: #07090f;
   --paper-strong: #101621;
   --ink: #f7f9fc;
   --ink-soft: #aeb8c8;
@@ -2063,9 +1915,8 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 
 @media (prefers-reduced-motion: reduce) {
   body[data-page="watch"] .watch-card { transform: none; }
-  /* The mesh still paints; it just stops moving. Removing the colour as well would take the
-     page's only piece of art away from the people who asked for less motion. */
-  .hero-mesh { animation: none; transform: scale(1.08); }
+
+
 }
 
 @media (forced-colors: active) {
@@ -2254,10 +2105,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 .topic-sources .link-button { width: auto; }
 .topic-host { color: var(--ink-soft); font-weight: 500; }
 
-/* Visible scope/eligibility warning on a catalogue card. Deliberately NOT inside the
-   collapsed "Practical guide" details: a warning nobody opens is not a warning. Used
-   where following a link incorrectly costs the reader money — e.g. filing a state RTI
-   on the central portal, which is returned without a fee refund. */
 .resource-warning {
   margin: 0 0 0.75rem;
   padding: 0.6rem 0.75rem;
@@ -2270,8 +2117,6 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 }
 [data-theme="dark"] .resource-warning { border-left-color: #ffb066; background: color-mix(in srgb, #ffb066 14%, transparent); }
 
-/* Optional sign-in, shown only inside the saved-list dialog. Deliberately quiet: an account
-   is a convenience for moving a list between devices, not something to push at anyone. */
 .account-strip {
   margin-bottom: 1rem;
   padding: 0.85rem;
@@ -2301,20 +2146,13 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
 .account-message[data-tone="ok"] { color: var(--green); }
 .account-message[data-tone="error"] { color: var(--brand); }
 
-/* Above-the-fold pass (phones)
-   -------------------------------------------------------------------------------------
-   Measured on a 375x812 phone before this block: the hero ran 467px, the search field sat
-   at 958px and the first resource card at 1202px — a screen and a half of scrolling past a
-   headline before reaching anything a visitor actually came for. The hero had no mobile
-   treatment at all, so a phone was rendering desktop-scale padding and display type.
-   Nothing here changes the desktop layout. */
+/* Above-the-fold pass (phones) */
 @media (max-width: 52rem) {
   .page-hero { padding: 2rem 0 1.4rem; }
   .page-hero h1 { max-width: 18ch; margin-bottom: 0.7rem; font-size: clamp(2.1rem, 8.5vw, 3.1rem); }
   .page-hero .lede { font-size: 1rem; line-height: 1.5; }
   .page-hero .eyebrow { margin-bottom: 0.5rem; }
 
-  /* The topic chips are a genuine shortcut, so they stay above the fold — just tighter. */
   .stage-nav-band { padding-top: 0; padding-bottom: 1.2rem; }
   .stage-nav-title { margin-bottom: 0.7rem; font-size: 1rem; }
   .stage-nav { gap: 0.45rem; }
@@ -2323,96 +2161,85 @@ body[data-page="watch"] .player-head { border-bottom: 1px solid rgba(255, 255, 2
   .explorer { padding-top: 0.6rem; }
   .explorer-toolbar { margin-bottom: 0.8rem; }
 
-  /* Homepage. The six destinations are the site; on a phone they began at 999px, below a
-     visitor counter, a headline, a paragraph and a 304px video card. The tutorial keeps its
-     place but stops outranking the thing people came to choose from. */
-  .home-hero { padding: 1.5rem 0 1.2rem; }
+
+.home-hero { padding: 1.5rem 0 1.2rem; }
   .home-hero h1 { max-width: 16ch; margin-bottom: 0.65rem; font-size: clamp(2.1rem, 9vw, 3rem); }
   .hero-lede { margin-bottom: 0.9rem; font-size: 0.95rem; }
 
 }
 
-/* Editorial layout pass
-   -------------------------------------------------------------------------------------
-   Token tweaks alone did not change how the site reads. What separates labs.google and
-   one.google.com from a directory is structure: a centred hero with real air around it,
-   sections divided by soft bands rather than borders, and cards given room to breathe.
-   This changes the layout to match. The palette is untouched. */
-
-/* --- Hero: centred, generous, one.google.com's shape ------------------------------- */
-.home-hero { padding: clamp(3.5rem, 7vw, 8rem) 0 clamp(3rem, 6vw, 7rem); }
-.hero-stack {
-  display: grid;
-  justify-items: center;
-  gap: 1.4rem;
-  max-width: 60rem;
-  text-align: center;
+/* Homepage: quiet canvas, expressive type, illustrated destinations. */
+.home-hero { position: relative; padding: clamp(2rem, 4vw, 3.5rem) 0 2.5rem; }
+.hero-stack { display: grid; justify-items: center; text-align: center; gap: 1.35rem; }
+.hero-stack .eyebrow { margin: 0; color: var(--ink-soft); font-size: 0.76rem; letter-spacing: 0.09em; }
+.home-hero h1 { max-width: none; margin: 0; font-size: clamp(3rem, 6.7vw, 6rem); font-weight: 500; letter-spacing: -0.065em; line-height: 1.04; }
+.home-hero h1 em { font-style: normal; color: var(--green); }
+.hero-lede { max-width: 39rem; margin: 0; font-size: 1.08rem; line-height: 1.6; }
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.65rem; margin-top: 0.35rem; }
+.hero-actions .button { min-height: 3.25rem; padding: 0.75rem 1.5rem; font-size: 0.94rem; font-weight: 600; }
+.hero-actions .button.brand { background: var(--ink); color: var(--paper); }
+.hero-actions .button.ghost { border-color: var(--line-strong); }
+.hero-guide { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--ink-soft); font-size: 0.8rem; text-decoration: none; }
+.hero-guide:hover { color: var(--ink); text-decoration: underline; }
+.hero-guide small { margin-left: 0.4rem; font-size: 0.7rem; }
+.hero-guide-mark { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border: 1px solid var(--line-strong); border-radius: 50%; }
+.hero-guide-mark svg { width: 1rem; height: 1rem; fill: currentColor; }
+.section { padding: clamp(3rem, 5.5vw, 5rem) 0; }
+.section.band { padding-top: 2rem; }
+.band-head { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1.7rem; }
+.band-head .section-kicker { margin-bottom: 0.7rem; }
+.band-head h2 { margin: 0; max-width: 22ch; font-size: clamp(1.9rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.045em; }
+.band-head p { margin: 0; font-size: 0.9rem; }
+.path-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.8rem; }
+.path-filters[hidden], .path-card[hidden] { display: none; }
+.path-filter { border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.6rem 1rem; min-height: 44px; background: transparent; color: var(--ink-soft); font-size: 0.85rem; cursor: pointer; }
+.path-filter:hover { border-color: var(--ink); color: var(--ink); }
+.path-filter[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.path-filter span { opacity: 0.7; margin-left: 0.65rem; }
+.path-card { border: 0; border-radius: 1.25rem; background: var(--paper-strong); }
+.path-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.path-card:hover .path-art { transform: none; }
+.path-body { padding: 1.5rem; }
+.path-label { font-size: 0.65rem; font-weight: 600; }
+.path-brand { display: inline-block; width: 1.1rem; height: 1.1rem; vertical-align: middle; margin-right: 0.25rem; }
+.path-card h3 { font-size: 1.55rem; font-weight: 550; letter-spacing: -0.035em; }
+.path-card p { font-size: 0.88rem; }
+.path-meta { padding-top: 0.9rem; border-top: 1px solid var(--line); font-size: 0.75rem; }
+.path-go { gap: 0.6rem; }
+.pitch-statement blockquote { font-weight: 500; }
+.pitch-item h3 { font-weight: 600; letter-spacing: -0.02em; }
+.section-head h2 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 500; max-width: 23ch; }
+.mission-band { background: #dedfc9; color: #202a23; }
+.mission-band h2 { font-weight: 500; }
+.mission-band .section-kicker { color: inherit; }
+.mission-band .button.ghost { color: #202a23; border-color: #899381; background: transparent; }
+.community-signal { padding-bottom: 1rem; }
+.community-signal .visitor-signal { width: fit-content; margin: 0 auto; border: 0; background: transparent; }
+@media (min-width: 36.01rem) {
+  .support-dock { display: flex; flex-direction: row; align-items: center; gap: 0.2rem; padding: 0.3rem; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-sm); }
+  .support-action { min-width: 0; padding: 0.65rem 0.85rem; border: 0; box-shadow: none; }
 }
-.hero-stack .eyebrow { margin-bottom: 0; }
-.home-hero h1 {
-  max-width: 16ch;
-  margin-bottom: 0;
-  /* one.google.com sets 84px; this tops out a little higher because the line is shorter. */
-  font-size: clamp(2.9rem, 7.4vw, 6.4rem);
-  line-height: 0.95;
-}
-.hero-lede {
-  max-width: 44rem;
-  margin-bottom: 0;
-  font-size: clamp(1rem, 1.35vw, 1.18rem);
-  line-height: 1.6;
-}
-.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-top: 0.5rem; }
-.hero-actions .button { min-height: 3.25rem; padding-inline: 1.6rem; font-size: 0.98rem; }
-
-/* The tutorial becomes one quiet line under the fold-defining actions, not a poster. */
-.hero-guide {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin-top: 0.6rem;
-  padding: 0.5rem 1.1rem 0.5rem 0.5rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-  color: var(--ink);
-  font-size: 0.86rem;
-  font-weight: 650;
-  text-decoration: none;
-  transition: background 160ms ease;
-}
-.hero-guide:hover { background: color-mix(in srgb, var(--ink) 11%, transparent); }
-.hero-guide small { display: block; color: var(--ink-soft); font-size: 0.72rem; font-weight: 500; }
-.hero-guide-mark {
-  display: grid;
-  width: 2.1rem;
-  height: 2.1rem;
-  place-items: center;
-  border-radius: 999px;
-  background: var(--brand);
-  color: var(--on-brand);
-}
-.hero-guide-mark svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
-
-/* --- Bands replace borders as the way sections are separated ----------------------- */
-.section { padding: clamp(3.5rem, 6.5vw, 7rem) 0; }
-.section.band { background: var(--paper-strong); }
-.band-head {
-  display: grid;
-  justify-items: center;
-  gap: 0.7rem;
-  max-width: 46rem;
-  margin: 0 auto clamp(2.25rem, 4vw, 3.5rem);
-  text-align: center;
-}
-.band-head h2 { margin-bottom: 0; font-size: clamp(2rem, 4.2vw, 3.4rem); }
-.band-head p { margin-bottom: 0; max-width: 40rem; color: var(--ink-soft); }
-
+@media (min-width: 70.01rem) { .container { width: min(calc(100% - 5rem), var(--content)); } .site-nav a { padding-inline: 0.65rem; white-space: nowrap; } }
+@media (min-width: 36.01rem) and (max-width: 62rem) { .path-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 52rem) {
-  .home-hero { padding: 1.75rem 0 1.4rem; }
-  .hero-stack { gap: 1rem; text-align: left; justify-items: start; }
-  .home-hero h1 { max-width: 18ch; font-size: clamp(2.1rem, 9vw, 3rem); }
-  .hero-actions { justify-content: flex-start; width: 100%; }
-  .hero-actions .button { flex: 1 1 auto; min-height: 3rem; }
-  .band-head { justify-items: start; text-align: left; margin-bottom: 1.5rem; }
-  .path-card { min-height: 0; }
+  .home-hero { padding: 1.5rem 0 1.2rem; }
+  .hero-stack { gap: 1rem; }
+  .home-hero h1 { max-width: none; font-size: clamp(2.5rem, 7.8vw, 4rem); }
+  .hero-stack .eyebrow { font-size: 0.62rem; }
+  .hero-lede { font-size: 0.95rem; max-width: 32rem; }
+  .hero-actions .button { padding-inline: 1.05rem; min-height: 2.85rem; font-size: 0.8rem; }
+  .band-head { display: block; }
+  .band-head p { margin-top: 0.75rem; }
+  .path-filters { flex-wrap: nowrap; overflow-x: auto; padding: 3px 3px 8px; margin-inline: -3px; }
+  .path-filter { flex: none; font-size: 0.78rem; }
+  .container { width: min(calc(100% - 2rem), var(--content)); }
+  .hero-guide small { display: none; }
+  .path-body { padding: 1.25rem; }
+}
+@media (max-width: 36rem) {
+  .home-hero h1 { font-size: clamp(1.8rem, 7.4vw, 2.5rem); }
+  .hero-lede { font-size: 0.9rem; }
+  .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; width: 100%; }
+  .hero-actions .button { padding-inline: 0.75rem; font-size: 0.75rem; }
+  .band-head h2 { font-size: 1.85rem; }
 }

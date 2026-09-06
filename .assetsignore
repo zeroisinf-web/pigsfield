@@ -13,7 +13,6 @@ tools/*.mjs
 .assetsignore
 .gitattributes
 .gitignore
-CNAME
 LICENSE
 README.md
 SEO-GROWTH.md

@@ -289,7 +289,9 @@ export function build({ root = ROOT, check = false } = {}) {
       const file = path.join(root, destination.dest, topic.slug, "index.html");
       const html = renderTopicPage(destination, topic, source);
       if (check) {
-        if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== html) stale.push(`/${destination.dest}/${topic.slug}/`);
+        // Asset versions are stamped separately and verified by build-assets --check.
+        const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8").replace(/\?v=[a-f0-9]{12}(?=")/g, "") : "";
+        if (current !== html) stale.push(`/${destination.dest}/${topic.slug}/`);
         continue;
       }
       fs.mkdirSync(path.dirname(file), { recursive: true });

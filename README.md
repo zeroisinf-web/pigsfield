@@ -23,7 +23,7 @@ The catalog is **free-first**, not a promise that every third-party resource is 
 
 ## Run locally
 
-The interface is dependency-free. Serve the repository root instead of opening files directly so service workers and embeds behave as they will in production:
+The interface is dependency-free. The homepage uses original SVG illustrations, responsive path filters and a shared light/dark theme. Serve the repository root instead of opening files directly so service workers and embeds behave as they will in production:
 
 ```bash
 python -m http.server 8741
@@ -33,9 +33,11 @@ Then open `http://localhost:8741`.
 
 This static preview does not provide `/api/ai` or `/api/translate`; hosted text generation and fallback Hindi translation need the deployed Cloudflare Worker and its `AI` binding.
 
-Run the repository checks with:
+After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first.
 
 ```bash
+npm run build:assets
+npm run build:sw
 npm run build
 npm test
 ```
@@ -115,6 +117,12 @@ have been a visitor. The probe uses a YouTube video id, the one source resolved 
 reading a provider's page, so a failure means the endpoint is broken rather than a provider
 having declined to answer a crawler. A provider blocking us is a cached 404 and a card that
 keeps its generated symbol: working as designed, and not something to fail a build over.
+
+Every page now uses content-versioned CSS and JavaScript URLs. This prevents a new document
+from rendering with an older stylesheet cached by a browser, CDN or service worker.
+`build:assets` stamps all 38 pages, and `build` rejects stale versions. The production check
+also verifies the homepage's asset references and the actual bytes returned for each version;
+a current service-worker digest alone cannot prove the browser received the new interface.
 
 So a green `main` now means the site is serving that commit and PigBang's cover art works. A
 failure in either is a deployment problem, not a code problem: check Workers Builds for the

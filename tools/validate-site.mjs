@@ -746,7 +746,7 @@ function checkExperienceContracts() {
   check(/data-visitor-rolling/.test(home) && /data-visitor-total/.test(home), homeFile, "the counter must show both the rolling window and the all-time total");
   check(/Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
   check(/href=["']https:\/\/youtu\.be\/2k7OOZZlNrg\?si=vMCzk67HAuWQx-g1["'][^>]*target=["']_blank["'][^>]*rel=["']noopener noreferrer["'][^>]*data-home-video/.test(home), homeFile, "homepage tutorial must keep its exact native YouTube link");
-  check(!/src=["']js\/player\.js["']/.test(home) && /src=["']js\/home\.js["']/.test(home), homeFile, "homepage must keep the player lazy and load only its small dedicated runtime");
+  check(!/src=["']js\/player\.js(?:\?[^"']*)?["']/.test(home) && /src=["']js\/home\.js(?:\?v=[a-f0-9]{12})?["']/.test(home), homeFile, "homepage must keep the player lazy and load only its small dedicated runtime");
   check(!/first-of-its-kind/i.test(home), homeFile, "homepage introduction must not make an unsupported first-of-its-kind claim");
 
   const homeRuntimeFile = path.join(ROOT, "js", "home.js");

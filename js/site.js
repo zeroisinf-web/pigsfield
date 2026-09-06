@@ -927,15 +927,15 @@
       <div class="container header-inner">
         <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}" aria-label="Pigsfield home">
           <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="38" height="38" decoding="async">
-          <span>Pigsfield<small>India's open learning map</small></span>
+          <span>Pigsfield</span>
         </a>
         <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
-          ${navLink("learn", "Nursery to PhD")}
+          ${navLink("learn", "Learn")}
           ${navLink("watch", "PigBang")}
-          ${navLink("exams", "Competitive Exams")}
-          ${navLink("skills", "Vocational & Business")}
-          ${navLink("tools", "Digital Tools")}
-          ${navLink("rights", "Make Govt Accountable")}
+          ${navLink("exams", "Exams")}
+          ${navLink("skills", "Skills")}
+          ${navLink("tools", "Tools")}
+          ${navLink("rights", "Rights")}
           ${navLink("about", "About")}
         </nav>
         <div class="header-actions">

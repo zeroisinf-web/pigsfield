@@ -1,21 +1,6 @@
 name: Validate Pigsfield
 
-# Production is Cloudflare Workers, deployed from main by Cloudflare Workers Builds — see
-# wrangler.jsonc and the README. GitHub's job is to say whether a change is safe, not to
-# publish a second copy of the site.
-#
-# This replaces the old "Validate and deploy" workflow, which also pushed the repository to
-# GitHub Pages. That produced a second live copy at zeroisinf-web.github.io/pigsfield/ with
-# no Worker attached, so /api/ai, /api/translate and /api/visitors were all dead there while
-# the pages themselves looked complete. It self-canonicalised to pigsfield.com, so the SEO
-# damage was limited, but a half-working public mirror is not something to keep by accident.
-#
-# To finish removing it, switch Pages off in Settings -> Pages -> Source: None. Deleting this
-# workflow alone stops future deploys but leaves the last one published. The .nojekyll file
-# that went with it has been deleted too — it only ever meant anything to Pages.
-#
-# To restore Pages deployment, revert this file to the previous pages.yml.
-
+# Cloudflare Workers Builds deploys main. This workflow validates and checks the live site.
 on:
   push:
     branches: [main]

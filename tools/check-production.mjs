@@ -1,4 +1,6 @@
 import { shellDigest } from "./build-sw.mjs";
+import fs from "node:fs";
+import crypto from "node:crypto";
 
 const PRODUCTION_ORIGIN = "https://pigsfield.com";
 const PRODUCTION_HOME = `${PRODUCTION_ORIGIN}/`;
@@ -341,6 +343,17 @@ async function checkDeployedBuild() {
     const source = await readTextLimited(response, 256 * 1024);
     seen = source.match(/const\s+CACHE\s*=\s*"pigsfield-([0-9a-f]+)"/)?.[1] || "(no digest found)";
     if (seen === expected) {
+      // A current sw.js alone did not catch an old stylesheet in the CDN/browser cache.
+      // Verify both the HTML references and the exact bytes at their versioned URLs.
+      const home = await readTextLimited(await fetchWithRetry(PRODUCTION_HOME));
+      const local = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+      const assets = [...local.matchAll(/(?:href|src)="([^"?:]+\.(?:css|js)\?v=([a-f0-9]{12}))"/g)];
+      await Promise.all(assets.map(async ([, asset, version]) => {
+        if (!home.includes(asset)) throw new Error(`Production HTML does not reference ${asset}`);
+        const bytes = await readTextLimited(await fetchWithRetry(new URL(asset, PRODUCTION_HOME)));
+        const actual = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 12);
+        if (actual !== version) throw new Error(`Production ${asset} is stale: received ${actual}`);
+      }));
       console.log(`[pass] production is serving this commit's shell (digest ${expected})`);
       return;
     }

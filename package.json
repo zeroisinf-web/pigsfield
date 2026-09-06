@@ -4,7 +4,8 @@
   "private": true,
   "description": "Pigsfield \u2014 a free-first learning, skills and citizen-resource map for India.",
   "scripts": {
-    "build": "node tools/validate-site.mjs",
+    "build": "node tools/build-assets.mjs --check && node tools/validate-site.mjs",
+    "build:assets": "node tools/build-assets.mjs",
     "build:topics": "node tools/build-topics.mjs",
     "build:sitemap": "node tools/build-sitemap.mjs",
     "build:sw": "node tools/build-sw.mjs",
