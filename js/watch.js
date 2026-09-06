@@ -66,7 +66,7 @@
     });
   });
 
-  const levels = Array.from(new Set(entries.flatMap((entry) => entry.item.classes || []))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const levels = LEVEL_SHELVES.map(([level]) => level).filter((level) => entries.some((entry) => entry.classes.includes(level)));
 
   function cleanUrl(value) {
     try {
@@ -121,18 +121,7 @@
   const sourceBrand = PF.sourceBrand;
   const sourceMark = PF.sourceMark;
 
-  // Real cover art for every entry, resolved same-origin by /api/poster.
-  //
-  // Deriving artwork from the link itself only ever worked for two providers — a YouTube
-  // video id and a Steam app id — so most of the grid fell back to a generated tile. Every
-  // provider here publishes cover art as Open Graph metadata for link previews, and the
-  // Worker reads it at the edge and streams the image back from this origin. The browser
-  // therefore makes no third-party request to paint a card, and the image is lazy so a card
-  // that is never scrolled to never costs anything.
-  //
-  // Entries carry several links. Preference goes to the one whose provider publishes the
-  // most representative art: a specific video or title page over a store listing, and a
-  // store listing over a channel or a bare homepage.
+  // Same-origin artwork: prefer specific titles and videos over provider homepages.
   const ARTWORK_PREFERENCE = [
     /(?:youtube\.com\/watch|youtu\.be\/|youtube\.com\/(?:shorts|live|embed)\/)/i,
     /(?:netflix\.com|hotstar\.com|primevideo\.com|amazon\.[a-z.]+\/(?:gp\/video|dp)|jiocinema\.com|sonyliv\.com|zee5\.com|mubi\.com|criterion|apple\.com\/[a-z-]+\/movie)/i,
@@ -157,6 +146,18 @@
     // 16:9 at the size the tile actually paints, so the row reserves its space before the
     // image arrives and nothing below it jumps.
     return { src: `/api/poster?u=${encodeURIComponent(source)}`, width: 480, height: 270 };
+  }
+
+  // Capture is required: image load and error events do not bubble.
+  function bindArtwork(target) {
+    target.addEventListener("error", (event) => {
+      const image = event.target;
+      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
+    }, true);
+    target.addEventListener("load", (event) => {
+      const image = event.target;
+      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.parentElement.classList.add("has-art");
+    }, true);
   }
 
   function watchSymbol(entry) {
@@ -201,10 +202,6 @@
       .join("")}</div>`;
   }
 
-  function entryLinks(entry) {
-    return entrySources(entry);
-  }
-
   function card(entry) {
     const item = entry.item;
     const saveId = `pigbang:${entry.id}`;
@@ -228,7 +225,7 @@
         ${price ? `<span class="tag ${priceClass}">${PF.escapeHtml(price)}</span>` : `<span class="tag">Check source</span>`}
         ${item.subject ? `<span class="tag">${PF.escapeHtml(item.subject)}</span>` : ""}
       </div>
-      <h3>${PF.escapeHtml(item.name || "Untitled")}</h3>
+      <h3><button class="watch-card-title" type="button" data-detail="${PF.escapeHtml(entry.id)}">${PF.escapeHtml(item.name || "Untitled")}</button></h3>
       ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
       <div class="resource-actions">${entrySources(entry)}</div>
     </article>`;
@@ -236,16 +233,7 @@
     return markup;
   }
 
-  /* ---------------------------------------------------------------------------
-   * The OTT surface: a billboard, then shelves.
-   *
-   * PigBang held 589 titles behind three chip rows and one flat grid, which is a database
-   * view — you had to know what you wanted before it showed you anything. A streaming
-   * service answers the opposite question, so the default view is now browsing: one
-   * featured title, then shelves you scroll sideways. The grid is still here, and it is
-   * what a search or a filter switches to, because that is when a flat ranked list is
-   * actually the right shape.
-   * ------------------------------------------------------------------------- */
+  // Browse shelves by default; filters and search use the paginated grid.
 
   function levelText(entry) {
     return (entry.classes || []).join(" · ");
@@ -278,7 +266,7 @@
         ? `<a class="ott-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${PF.escapeHtml(item.name || "this title")} at its source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.6l-8.3 8.3 1.4 1.4L19 6.4V10h2V3h-7Zm5 16H5V5h5V3H3v18h18v-7h-2v5Z"/></svg></a>`
         : "";
     const price = priceText(entry);
-    return `<li class="ott-tile">
+    return `<li class="ott-tile" data-entry-id="${PF.escapeHtml(saveId)}">
       <div class="ott-art watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}
         <div class="ott-tile-overlay">
           <div class="ott-tile-actions">
@@ -287,58 +275,67 @@
             <button class="ott-tile-info" type="button" data-detail="${PF.escapeHtml(entry.id)}" aria-label="More details about ${PF.escapeHtml(item.name || "this title")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
           </div>
           <div class="ott-tile-pills">
-            <span class="ott-pill-hd">HD</span>
+
             <span class="ott-pill-level">${PF.escapeHtml(price)}</span>
           </div>
         </div>
       </div>
       <button class="ott-tile-title" type="button" data-detail="${PF.escapeHtml(entry.id)}">${PF.escapeHtml(item.name || "Untitled")}</button>
-      <p class="ott-tile-meta"><span class="ott-badge-mini">HD</span> ${PF.escapeHtml([levelText(entry), priceText(entry)].filter(Boolean).join(" · "))}</p>
+      <p class="ott-tile-meta">${PF.escapeHtml([levelText(entry), priceText(entry)].filter(Boolean).join(" · "))}</p>
     </li>`;
   }
 
   function shelves() {
     const list = [];
+    const spotlight = ["Our Planet", "Cosmos: A Spacetime Odyssey", "Planet Earth II", "Veritasium", "Kurzgesagt"].map((name) => entries.find((entry) => entry.item.name === name)).filter(Boolean);
+    if (spotlight.length) list.push({ id: "spotlight", title: "Start with a little wonder", entries: spotlight });
     const savedItems = (typeof PF.getSaved === "function" ? PF.getSaved() : []).filter((savedItem) => String(savedItem.id || "").startsWith("pigbang:"));
     const savedEntries = savedItems.map((savedItem) => entriesBySaveId.get(savedItem.id)).filter(Boolean);
     if (savedEntries.length) {
-      list.push({ id: "my-list", title: "⭐ My List & Watchlist", entries: savedEntries, filter: { tab: "all" } });
+      list.push({ id: "my-list", title: "Your watchlist", entries: savedEntries, filter: { tab: "my-list" } });
     }
     const free = entries.filter((entry) => entry.price === "free");
-    if (free.length) list.push({ id: "free", title: "🔥 Free to Stream", entries: free, filter: { price: "free" } });
+    if (free.length) list.push({ id: "free", title: "Free to explore", entries: free, filter: { price: "free" } });
     (data.tabs || []).forEach((tab) => {
       const tabEntries = entriesByTab.get(tab.id) || [];
-      const titles = { movies: "🎬 Films & Documentaries", channels: "📺 Channels & Masterclasses", apps: "📱 Interactive Learning Apps" };
+      const titles = { movies: "Stories worth your time", channels: "Meet your next great teacher", apps: "Make learning hands-on" };
       if (tabEntries.length) list.push({ id: `tab-${tab.id}`, title: titles[tab.id] || tabLabels[tab.id] || tab.id, entries: tabEntries, filter: { tab: tab.id } });
     });
     LEVEL_SHELVES.forEach(([level, title]) => {
       const forLevel = entries.filter((entry) => entry.classes.includes(level));
-      if (forLevel.length >= 8) list.push({ id: `level-${PF.slug(level)}`, title: `🎓 ${title}`, entries: forLevel, filter: { level } });
+      if (forLevel.length >= 8) list.push({ id: `level-${PF.slug(level)}`, title, entries: forLevel, filter: { level } });
     });
     return list;
   }
 
   const shelfEntries = new Map();
 
-  function buildRows() {
-    const list = shelves();
-    list.forEach((shelf) => shelfEntries.set(shelf.id, shelf));
-    rowsTarget.innerHTML = list.map((shelf) => `<section class="ott-row" data-shelf="${PF.escapeHtml(shelf.id)}">
+  function shelfMarkup(shelf) {
+    return `<section class="ott-row" data-shelf="${PF.escapeHtml(shelf.id)}">
       <div class="ott-row-head">
         <h2>${PF.escapeHtml(shelf.title)}</h2>
-        <button class="ott-row-all" type="button" data-shelf-all="${PF.escapeHtml(shelf.id)}">See all ${shelf.entries.length}</button>
+        ${shelf.filter ? `<button class="ott-row-all" type="button" data-shelf-all="${PF.escapeHtml(shelf.id)}" aria-label="View all: ${PF.escapeHtml(shelf.title)}">View all <span aria-hidden="true">${shelf.entries.length} →</span></button>` : `<span class="ott-row-caption">The PigBang selection</span>`}
       </div>
       <div class="ott-row-scroll">
         <button class="ott-row-arrow" type="button" data-scroll="-1" aria-label="Scroll ${PF.escapeHtml(shelf.title)} left" hidden>‹</button>
         <ul class="ott-row-track" aria-label="${PF.escapeHtml(shelf.title)}"></ul>
         <button class="ott-row-arrow next" type="button" data-scroll="1" aria-label="Scroll ${PF.escapeHtml(shelf.title)} right" hidden>›</button>
       </div>
-    </section>`).join("");
+    </section>`;
+  }
+
+  let rowObserver;
+  function buildRows() {
+    if (rowObserver) rowObserver.disconnect();
+    shelfEntries.clear();
+    const list = shelves();
+    list.forEach((shelf) => shelfEntries.set(shelf.id, shelf));
+    rowsTarget.innerHTML = list.map(shelfMarkup).join("");
 
     // Shelves fill when they are about to be seen. Thirteen shelves of twenty tiles is 260
     // cards, and a browser asked to lay all of them out before the first paint is a browser
     // that paints late.
-    const observer = "IntersectionObserver" in window
+    const observer = rowObserver = "IntersectionObserver" in window
       ? new IntersectionObserver((records) => {
         records.forEach((record) => {
           if (!record.isIntersecting) return;
@@ -362,6 +359,36 @@
     track.dataset.filled = "true";
     updateArrows(row);
     if (PF.applyLanguageTo) PF.applyLanguageTo(track);
+  }
+
+  function refreshSavedShelf() {
+    const shelf = shelves().find((item) => item.id === "my-list");
+    let row = rowsTarget.querySelector('[data-shelf="my-list"]');
+    const active = document.activeElement;
+    const focusWasInside = row && row.contains(active);
+    const focusedSave = focusWasInside && active.dataset.save;
+    const position = row?.querySelector(".ott-row-track").scrollLeft || 0;
+    if (!shelf) {
+      row?.remove();
+      shelfEntries.delete("my-list");
+      if (focusWasInside) tabButtons.find((button) => button.dataset.tab === "my-list")?.focus({ preventScroll: true });
+      return;
+    }
+    shelfEntries.set(shelf.id, shelf);
+    if (!row) {
+      rowsTarget.insertAdjacentHTML("afterbegin", shelfMarkup(shelf));
+      row = rowsTarget.querySelector('[data-shelf="my-list"]');
+    }
+    const track = row.querySelector(".ott-row-track");
+    track.dataset.filled = "false";
+    fillRow(row);
+    track.scrollLeft = position;
+    row.querySelector("[data-shelf-all]").innerHTML = `View all <span aria-hidden="true">${shelf.entries.length} →</span>`;
+    updateArrows(row);
+    if (focusWasInside) {
+      const target = focusedSave && track.querySelector(`[data-save="${CSS.escape(focusedSave)}"]`);
+      (target || row.querySelector("[data-shelf-all]")).focus({ preventScroll: true });
+    }
   }
 
   function updateArrows(row) {
@@ -410,13 +437,9 @@
     return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
-  /* The billboard: one title, chosen by the day rather than at random, so a visitor who
-   * comes back in an hour is not shown a different front page for no reason. */
+  /* A deliberate editorial selection with a direct, privacy-enhanced player. */
   function featuredEntry() {
-    const candidates = entries.filter((entry) => entry.item.desc && artworkUrl(entry) && entryUrls(entry).length);
-    if (!candidates.length) return null;
-    const day = Math.floor(Date.now() / 86400000);
-    return candidates[day % candidates.length];
+    return entries.find((entry) => entry.item.name === "Our Planet") || entries.find((entry) => entry.item.desc && artworkUrl(entry));
   }
 
   function buildBillboard() {
@@ -432,12 +455,11 @@
       ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(play)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7.5 8 4.5-8 4.5v-9Z"/></svg> Play</a>`
       : `<a class="button brand ott-hero-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`;
     const media = document.querySelector("#watch-billboard-media");
-    if (media && art) media.innerHTML = `<img src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" decoding="async" referrerpolicy="no-referrer">`;
+    if (media) media.addEventListener("error", (event) => { if (event.target instanceof HTMLImageElement) event.target.remove(); }, true);
+    if (media && art) media.innerHTML = `<img src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">`;
     featured.innerHTML = `<div class="ott-billboard-badges">
-        <span class="ott-badge ott-badge-netflix">PIGBANG ORIGINAL</span>
-        <span class="ott-badge ott-badge-quality">HD</span>
+        <span class="ott-badge">Featured on PigBang</span>
         <span class="ott-badge ott-badge-free">${PF.escapeHtml(priceText(entry))}</span>
-        <span class="ott-badge ott-badge-top10">#1 Featured</span>
       </div>
       <h2 class="ott-billboard-title">${PF.escapeHtml(item.name || "PigBang")}</h2>
       <p class="ott-billboard-meta">
@@ -463,22 +485,18 @@
     detailDialog = document.createElement("dialog");
     detailDialog.className = "site-dialog wide ott-detail";
     detailDialog.id = "watch-detail-dialog";
+    detailDialog.setAttribute("aria-labelledby", "watch-detail-title");
     document.body.appendChild(detailDialog);
     detailDialog.addEventListener("click", (event) => { if (event.target === detailDialog) detailDialog.close(); });
     detailDialog.addEventListener("click", (event) => {
       if (event.target.closest && event.target.closest("[data-close-dialog]")) detailDialog.close();
     });
-    detailDialog.addEventListener("click", handleGridClick);
-    // Same artwork contract as the shelves: drop a poster that will not load, and let the
-    // generated symbol out of the way when one does.
-    detailDialog.addEventListener("error", (event) => {
-      const image = event.target;
-      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
-    }, true);
-    detailDialog.addEventListener("load", (event) => {
-      const image = event.target;
-      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.parentElement.classList.add("has-art");
-    }, true);
+    detailDialog.addEventListener("click", (event) => {
+      const related = event.target.closest && event.target.closest("[data-detail]");
+      if (related) { openDetail(entriesById.get(related.dataset.detail)); return; }
+      handleGridClick(event);
+    });
+    bindArtwork(detailDialog);
     return detailDialog;
   }
 
@@ -497,17 +515,19 @@
         ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`
         : "";
 
-    const similar = (entriesByTab.get(entry.tab) || []).filter((other) => other.id !== entry.id).slice(0, 3);
+    const subjects = String(item.subject || "").toLowerCase().split(/[, &]+/).filter(Boolean);
+    const relevance = (other) => subjects.filter((subject) => String(other.item.subject || "").toLowerCase().includes(subject)).length * 4 + other.classes.filter((level) => entry.classes.includes(level)).length;
+    const similar = (entriesByTab.get(entry.tab) || []).filter((other) => other.id !== entry.id && relevance(other) > 0).sort((a, b) => relevance(b) - relevance(a)).slice(0, 3);
     const similarMarkup = similar.length ? `<div class="ott-similar-section">
-      <h3 class="ott-similar-title">More Like This</h3>
+      <h3 class="ott-similar-title">Keep exploring</h3>
       <div class="ott-similar-grid">
         ${similar.map((other) => {
           const oArt = artworkFor(other);
-          return `<div class="ott-similar-card" data-detail="${PF.escapeHtml(other.id)}" role="button" tabindex="0">
+          return `<button class="ott-similar-card" type="button" data-detail="${PF.escapeHtml(other.id)}">
             <div class="ott-art watch-art watch-art-${other.tab}" style="--visual-hue:${visualHue(other.item.name)}">${watchSymbol(other)}${oArt ? `<img class="watch-art-img" src="${PF.escapeHtml(oArt.src)}" width="${oArt.width}" height="${oArt.height}" alt="" loading="lazy">` : ""}</div>
             <p class="ott-similar-name">${PF.escapeHtml(other.item.name || "Title")}</p>
-            <p class="ott-similar-meta">${PF.escapeHtml(priceText(other))}</p>
-          </div>`;
+            <span class="ott-similar-meta">${PF.escapeHtml(priceText(other))}</span>
+          </button>`;
         }).join("")}
       </div>
     </div>` : "";
@@ -518,11 +538,10 @@
         <button class="icon-button ott-detail-close" type="button" data-close-dialog aria-label="Close details">×</button>
         <div class="ott-detail-hero-body">
           <div class="ott-billboard-badges">
-            <span class="ott-badge ott-badge-netflix">PIGBANG ORIGINAL</span>
-            <span class="ott-badge ott-badge-quality">HD</span>
-            <span class="ott-badge ott-badge-free">${PF.escapeHtml(priceText(entry))}</span>
+            <span class="ott-badge">In the PigBang collection</span>
+                <span class="ott-badge ott-badge-free">${PF.escapeHtml(priceText(entry))}</span>
           </div>
-          <h2>${PF.escapeHtml(item.name || "PigBang")}</h2>
+          <h2 id="watch-detail-title">${PF.escapeHtml(item.name || "PigBang")}</h2>
           <div class="ott-detail-cta">
             ${primary}
             <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
@@ -538,13 +557,17 @@
         </div>
         ${item.desc ? `<p class="ott-detail-desc">${PF.escapeHtml(item.desc)}</p>` : ""}
         <div class="ott-detail-sources-box">
-          <h4 class="ott-sources-head">Resource Links &amp; Actions</h4>
+          <h4 class="ott-sources-head">Watch at the original source</h4>
           ${entrySources(entry)}
         </div>
         ${similarMarkup}
       </div>`;
+    dialog.scrollTop = 0;
     if (PF.applyLanguageTo) PF.applyLanguageTo(dialog);
-    if (typeof dialog.showModal === "function") { if (!dialog.open) dialog.showModal(); }
+    if (typeof dialog.showModal === "function") {
+      if (!dialog.open) dialog.showModal();
+      else dialog.querySelector("[data-close-dialog]").focus({ preventScroll: true });
+    }
     else dialog.setAttribute("open", "");
   }
 
@@ -553,6 +576,9 @@
   }
 
   function handleGridClick(event) {
+    if (event.target.closest && event.target.closest("[data-reset]")) { resetFilters(); return; }
+    const detail = event.target.closest && event.target.closest("[data-detail]");
+    if (detail) { openDetail(entriesById.get(detail.dataset.detail)); return; }
     const anchor = event.target.closest && event.target.closest("a[data-youtube-play]");
     if (anchor) {
       if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -572,6 +598,7 @@
       b.classList.toggle("is-saved", saved);
       b.textContent = saved ? "♥" : "♡";
       b.setAttribute("aria-pressed", String(saved));
+      b.setAttribute("aria-label", `${saved ? "Remove from" : "Save to"} your list`);
     });
   }
 
@@ -593,7 +620,13 @@
     const browse = browsing();
     if (rowsTarget) rowsTarget.hidden = !browse;
     if (resultsTarget) resultsTarget.hidden = browse;
-    if (featured) featured.hidden = !browse;
+    if (billboard) billboard.hidden = !browse;
+    const reset = document.querySelector("#watch-reset");
+    if (reset) reset.hidden = browse;
+    const context = document.querySelector("#watch-context");
+    if (context) context.textContent = activeTab === "my-list" ? "Your saved discoveries" : input.value.trim() ? 'Results for “' + input.value.trim() + '”' : browse ? "Explore the collection" : "Explore your selection";
+    const filterCount = document.querySelector("#watch-filter-count");
+    if (filterCount) filterCount.textContent = [activePrice, activeLevel].filter((value) => value !== "all").length || "";
     if (browse) {
       countTarget.textContent = `${entries.length} titles`;
       return;
@@ -602,8 +635,9 @@
     const shown = filtered.slice(0, visible);
     countTarget.textContent = `${filtered.length} ${filtered.length === 1 ? "result" : "results"}`;
     moreButton.hidden = shown.length >= filtered.length;
+    moreButton.textContent = `Load ${Math.min(PAGE_SIZE, Math.max(0, filtered.length - shown.length))} more`;
     if (!shown.length) {
-      grid.innerHTML = `<div class="empty-state"><strong>No close match</strong><p>Try another level, price or fewer search words.</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><strong>${activeTab === "my-list" ? "Your next discovery belongs here." : "No titles found."}</strong><p>${activeTab === "my-list" ? "Save a title with the heart button and come back to it whenever you like." : "Try fewer words, another subject, or clear your filters."}</p><button class="button ghost" type="button" data-reset>Explore all titles</button></div>`;
       if (PF.applyLanguageTo) PF.applyLanguageTo(grid);
       return;
     }
@@ -638,7 +672,7 @@
   }
 
   function buildFilters() {
-    tabsTarget.innerHTML = [["all", "Browse all"], ["my-list", "⭐ My List"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
+    tabsTarget.innerHTML = [["all", "Discover"], ["my-list", "My list"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
       .map(([id, label]) => `<button class="filter-chip${id === activeTab ? " active" : ""}" type="button" data-tab="${PF.escapeHtml(id)}" aria-pressed="${id === activeTab}">${PF.escapeHtml(label)}</button>`).join("");
     tabButtons = Array.from(tabsTarget.querySelectorAll("[data-tab]"));
     tabsTarget.addEventListener("click", (event) => {
@@ -673,7 +707,8 @@
   }
 
   function revealHash() {
-    const id = decodeURIComponent(location.hash.slice(1));
+    let id;
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
     if (!id) return;
     const entry = entriesById.get(id);
     if (!entry) return;
@@ -699,6 +734,15 @@
     });
   }
 
+  function resetFilters() {
+    clearTimeout(searchTimer);
+    input.value = "";
+    activeTab = activeLevel = activePrice = "all";
+    visible = PAGE_SIZE;
+    syncFilterButtons();
+    render();
+  }
+  document.querySelector("#watch-reset")?.addEventListener("click", resetFilters);
   buildFilters();
   buildBillboard();
   buildRows();
@@ -717,33 +761,10 @@
       const row = event.target.closest && event.target.closest(".ott-row");
       if (row) updateArrows(row);
     }, true);
-    // Artwork failures and arrivals are handled for the shelves exactly as for the grid.
-    rowsTarget.addEventListener("error", (event) => {
-      const image = event.target;
-      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
-    }, true);
-    rowsTarget.addEventListener("load", (event) => {
-      const image = event.target;
-      if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.parentElement.classList.add("has-art");
-    }, true);
+    bindArtwork(rowsTarget);
     window.addEventListener("resize", () => rowsTarget.querySelectorAll(".ott-row").forEach(updateArrows));
   }
-  // Artwork is third-party and will sometimes 404 or be blocked. "error" does not bubble,
-  // so this listens in the capture phase and drops the image, revealing the generated
-  // symbol underneath instead of an empty tile.
-  grid.addEventListener("error", (event) => {
-    const image = event.target;
-    if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) image.remove();
-  }, true);
-  // The generated symbol is the fallback, so it stays painted until real art arrives — at
-  // which point it must get out of the way rather than sit on top of the poster. "load"
-  // does not bubble either, hence the capture phase.
-  grid.addEventListener("load", (event) => {
-    const image = event.target;
-    if (image instanceof HTMLImageElement && image.classList.contains("watch-art-img")) {
-      image.parentElement.classList.add("has-art");
-    }
-  }, true);
+  bindArtwork(grid);
   grid.addEventListener("click", handleGridClick);
   input.addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { visible = PAGE_SIZE; render(); }, 160); });
   moreButton.addEventListener("click", () => {
@@ -752,13 +773,25 @@
     render(appendFrom, currentMatches);
   });
   window.addEventListener("hashchange", revealHash);
-  document.addEventListener("pf:saved-changed", (event) => {
-    document.querySelectorAll(`[data-save="${CSS.escape(event.detail.id)}"]`).forEach((button) => {
-      const saved = PF.isSaved(event.detail.id);
+  document.addEventListener("pf:saved-changed", () => {
+    document.querySelectorAll("[data-save]").forEach((button) => {
+      const saved = PF.isSaved(button.dataset.save);
       button.classList.toggle("is-saved", saved);
       button.textContent = saved ? "♥" : "♡";
       button.setAttribute("aria-pressed", String(saved));
+      button.setAttribute("aria-label", `${saved ? "Remove from" : "Save to"} your list`);
     });
+    refreshSavedShelf();
+    if (activeTab === "my-list") {
+      const active = document.activeElement;
+      const restoreFocus = grid.contains(active);
+      const savedId = active?.dataset.save;
+      render();
+      if (restoreFocus) {
+        const target = savedId && grid.querySelector(`[data-save="${CSS.escape(savedId)}"]`);
+        (target || grid.querySelector("[data-save], [data-reset]") || input).focus({ preventScroll: true });
+      }
+    }
   });
   revealHash();
 })();
