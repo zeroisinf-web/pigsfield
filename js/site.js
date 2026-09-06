@@ -193,6 +193,12 @@
     }
   };
 
+  /* pf:resource-symbols:start
+   * The deterministic symbol a resource is drawn with — its organization's mark where one
+   * is known, otherwise its subject, otherwise its kind. tools/build-topics.mjs evaluates
+   * this slice at build time so the symbol printed into a generated page is the same one
+   * js/watch.js resolves at runtime, from the same table.
+   */
   const RESOURCE_ORGANIZATIONS = [
     { key: "ncert", symbol: "📚", match: /\bncert\b|epathshala|ncert\.nic\.in|epathshala\.nic\.in/ },
     { key: "swayam-nptel", symbol: "🎓", match: /\bswayam\b|\bnptel\b|swayam\.gov\.in|nptel\.ac\.in/ },
@@ -355,6 +361,7 @@
   PF.resourceEmoji = function (text, _seed, type, urls) {
     return PF.resourceSymbolFor({ title: text, type, urls });
   };
+  /* pf:resource-symbols:end */
 
   // Clear pf-recent-v2: a log of opened resources that nothing read back. See git log.
   try { localStorage.removeItem("pf-recent-v2"); } catch (_) {}
@@ -985,6 +992,22 @@
 
   setTheme(initialTheme());
 
+  /* The six pillars, named once.
+   *
+   * The header called them Learn / PigBang / Exams / Skills / Tools / Rights while the
+   * footer, the home cards and every page title called them by their real names, so the
+   * same destination had two names depending on where a reader was standing. There is one
+   * list now and everything that names a pillar reads it. */
+  const PILLARS = [
+    { key: "learn", name: "Nursery to PhD", blurb: "Books, courses, lectures, teacher training and research support, stage by stage." },
+    { key: "watch", name: "PigBang", blurb: "The educational OTT: films, shows, channels, playlists and learning apps." },
+    { key: "exams", name: "Competitive Exams", blurb: "NCERT roadmaps, mock tests and UPSC, RAS and SSC preparation." },
+    { key: "skills", name: "Vocational & Business", blurb: "Government and industry training, coding and employability." },
+    { key: "tools", name: "Digital Tools", blurb: "AI, research, privacy, file and creative tools with tutorials." },
+    { key: "rights", name: "Make Govt Accountable", blurb: "RTI, grievance, legal aid and accountability routes." }
+  ];
+  PF.pillars = PILLARS;
+
   function navLink(key, label) {
     const current = page === key ? ' aria-current="page"' : "";
     const pigbang = key === "watch" ? " data-pigbang-link" : "";
@@ -1001,14 +1024,8 @@
           <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="38" height="38" decoding="async">
           <span>Pigsfield</span>
         </a>
-        <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
-          ${navLink("learn", "Learn")}
-          ${navLink("watch", "PigBang")}
-          ${navLink("exams", "Exams")}
-          ${navLink("skills", "Skills")}
-          ${navLink("tools", "Tools")}
-          ${navLink("rights", "Rights")}
-          ${navLink("about", "About")}
+        <nav class="site-nav" id="site-nav" aria-label="The six pillars">
+          ${PILLARS.map((pillar) => navLink(pillar.key, pillar.name)).join("")}
         </nav>
         <div class="header-actions">
           <button class="search-trigger" type="button" data-open-search aria-label="Search all Pigsfield resources">
@@ -1018,7 +1035,7 @@
           <button class="icon-button lang-toggle" type="button" data-lang-toggle translate="no" aria-label="Translate this page to Hindi" title="Translate this page to Hindi">हिन्दी</button>
           <span class="sr-only" id="translation-live-status" role="status" aria-live="polite" translate="no"></span>
           <button class="icon-button" type="button" data-theme-toggle aria-label="Change theme">☾</button>
-          <button class="icon-button menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation">≡</button>
+          <button class="icon-button menu-toggle" type="button" data-open-menu aria-controls="site-sidebar" aria-haspopup="dialog" aria-label="Open menu">≡</button>
         </div>
       </div>`;
   }
@@ -1072,7 +1089,7 @@
           <div>
             <div class="footer-title">Explore</div>
             <div class="footer-links">
-              ${navLink("learn", "Nursery to PhD")}${navLink("watch", "PigBang")}${navLink("exams", "Competitive Exams")}${navLink("skills", "Vocational & Business")}${navLink("tools", "Digital Tools")}${navLink("rights", "Make Govt Accountable")}
+              ${PILLARS.map((pillar) => navLink(pillar.key, pillar.name)).join("")}
             </div>
           </div>
           <div>
@@ -1099,11 +1116,36 @@
   function dialogMarkup() {
     const mount = document.createElement("div");
     mount.innerHTML = `
-      <aside class="support-dock" aria-label="AI studio, support and feedback">
+      <aside class="support-dock support-dock-left" aria-label="AI studio">
         <button class="support-action ai-action" type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z"/></svg></span> AI Studio</button>
-        <button class="support-action" type="button" data-open-donate><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z"/></svg> Donate</button>
-        <button class="support-action feedback" type="button" data-open-feedback><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z"/></svg> Feedback</button>
       </aside>
+      <aside class="support-dock support-dock-right" aria-label="Support and feedback">
+        <div class="support-action support-pair">
+          <button type="button" data-open-donate><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z"/></svg> Donate</button>
+          <span class="support-divider" aria-hidden="true"></span>
+          <button type="button" data-open-feedback><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z"/></svg> Feedback</button>
+        </div>
+      </aside>
+
+      <dialog class="site-sidebar" id="site-sidebar" aria-labelledby="site-sidebar-title">
+        <div class="sidebar-head">
+          <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}" aria-label="Pigsfield home">
+            <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <span>Pigsfield</span>
+          </a>
+          <button class="icon-button" type="button" data-close-dialog aria-label="Close menu">×</button>
+        </div>
+        <div class="sidebar-body">
+          <h2 class="sidebar-title" id="site-sidebar-title">Six pillars</h2>
+          <nav class="sidebar-nav" aria-labelledby="site-sidebar-title">
+            ${PILLARS.map((pillar) => `<a href="${escapeHtml(PF.path(pillar.key))}"${pillar.key === "watch" ? " data-pigbang-link" : ""}${page === pillar.key ? ' aria-current="page"' : ""}><span>${escapeHtml(pillar.name)}</span><small>${escapeHtml(pillar.blurb)}</small></a>`).join("")}
+          </nav>
+          <h2 class="sidebar-title" id="site-sidebar-more">About Pigsfield</h2>
+          <nav class="sidebar-nav sidebar-nav-plain" aria-labelledby="site-sidebar-more">
+            ${navLink("about", "Why Pigsfield")}${navLink("editorial", "How we choose resources")}${navLink("submit", "Suggest a resource")}${navLink("accessibility", "Accessibility")}${navLink("privacy", "Privacy & terms")}
+          </nav>
+        </div>
+      </dialog>
 
       <dialog class="site-dialog ai-studio-dialog" id="ai-studio-dialog" aria-labelledby="global-ai-title">
         <div class="dialog-head ai-dialog-head">
@@ -1817,20 +1859,11 @@
     qsa("[data-theme-toggle]").forEach((button) => button.addEventListener("click", () => setTheme(root.dataset.theme === "dark" ? "light" : "dark")));
     qsa("[data-lang-toggle]").forEach((button) => button.addEventListener("click", toggleLanguage));
 
-    const menu = qs("#site-nav");
-    const toggle = qs(".menu-toggle");
-    if (toggle && menu) {
-      toggle.addEventListener("click", () => {
-        const open = menu.classList.toggle("open");
-        toggle.setAttribute("aria-expanded", String(open));
-        toggle.textContent = open ? "×" : "≡";
-      });
-      qsa("a", menu).forEach((link) => link.addEventListener("click", () => {
-        menu.classList.remove("open");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.textContent = "≡";
-      }));
-    }
+    // The three-line button opens the sidebar. It is a <dialog>, so Escape, the backdrop
+    // click, the focus trap and returning focus to the button are the platform's job
+    // rather than three more listeners here.
+    qsa("[data-open-menu]").forEach((button) => button.addEventListener("click", () => showDialog(qs("#site-sidebar"))));
+    qsa("#site-sidebar a").forEach((link) => link.addEventListener("click", () => closeDialog(qs("#site-sidebar"))));
 
     qsa("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => closeDialog(button.closest("dialog"))));
     qsa("dialog").forEach((dialog) => dialog.addEventListener("click", (event) => {

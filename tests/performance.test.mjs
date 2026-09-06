@@ -50,21 +50,20 @@ function localDependencies(htmlFile) {
 
 test("the navigation shell stays small enough for a fast first visit", () => {
   withinBudget("index.html", { raw: 25 * 1024, gzip: 8 * 1024, brotli: 6 * 1024 });
-  // The hub catalogue is gone, and its stylesheet went with it: the section and category
-  // accordions, their sticky summaries and offsets, the three-column resource grid, the
-  // generated card artwork and the domain plate underneath it — 8.4 KiB of rules that only
-  // ever painted a catalogue the site no longer assembles in the browser. Every selector
-  // left is either referenced in markup or composed at runtime (source-brand-${brand} and
-  // friends), checked by walking the file against every .html and .js in the repo.
-  withinBudget("css/site.css", { raw: 90 * 1024, gzip: 20 * 1024, brotli: 19 * 1024 });
-  // +4.4 KiB raw for the three things the deleted js/catalog.js used to carry on its own:
-  // the source-button vocabulary (now shared with js/watch.js, js/exams-page.js and, at
-  // build time, tools/build-topics.mjs, replacing three drifting copies), the delegated
-  // save button the generated pages need, and the table that points a search result at the
-  // page holding the resource. It is the one file that got bigger; every route got smaller,
-  // because /learn/ alone stopped shipping 122 KiB of catalogue data, catalogue runtime and
-  // player to render what its linked pages already serve as HTML.
-  withinBudget("js/site.js", { raw: 88 * 1024, gzip: 25 * 1024, brotli: 23 * 1024 });
+  // The hub catalogue is gone and its stylesheet went with it — the section and category
+  // accordions, their sticky summaries, the three-column resource grid and the generated
+  // card artwork, 8.4 KiB of rules that only painted a catalogue the site no longer
+  // assembles in the browser. Some of that saving is spent again here, on things a reader
+  // sees: the PigBang billboard and its shelves, the menu sidebar, and the three-lane
+  // provider buttons on the generated pages.
+  withinBudget("css/site.css", { raw: 99 * 1024, gzip: 22 * 1024, brotli: 21 * 1024 });
+  // js/site.js carries what js/catalog.js used to carry alone — the source-button
+  // vocabulary and the resource-symbol table, now shared with js/watch.js, js/exams-page.js
+  // and, at build time, tools/build-topics.mjs — plus the delegated save button the
+  // generated pages need, the table that points a search result at the page holding the
+  // resource, and the one list of six pillar names that the header, the sidebar and the
+  // footer all read.
+  withinBudget("js/site.js", { raw: 90 * 1024, gzip: 26 * 1024, brotli: 24 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
   // pixel-identically. This budget stops a future re-export shipping the full axes again.
@@ -79,11 +78,12 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   const raw = shell.reduce((sum, item) => sum + item.length, 0);
   const gzipped = shell.reduce((sum, item) => sum + gzipSize(item), 0);
   const compressed = shell.reduce((sum, item) => sum + brotliSize(item), 0);
-  // The stylesheet gave up more than js/site.js took on, so the shell every page loads is
-  // smaller in all three measures than it was before the catalogue came out.
-  assert.ok(raw <= 196 * 1024, `home render shell is ${kib(raw)} raw; budget is 196 KiB`);
-  assert.ok(gzipped <= 52 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 52 KiB`);
-  assert.ok(compressed <= 48 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 48 KiB`);
+  // Removing the hub catalogue took the shell down to 193 KiB raw; the OTT surface, the
+  // sidebar and the pillar table put 12 back. That is the ceiling: the next feature pays
+  // for itself out of something else.
+  assert.ok(raw <= 206 * 1024, `home render shell is ${kib(raw)} raw; budget is 206 KiB`);
+  assert.ok(gzipped <= 53 * 1024, `home render shell is ${kib(gzipped)} gzip; budget is 53 KiB`);
+  assert.ok(compressed <= 50 * 1024, `home render shell is ${kib(compressed)} Brotli; budget is 50 KiB`);
 });
 
 test("each route keeps its directly referenced payload within a mobile-safe ceiling", () => {
@@ -95,24 +95,24 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
   // catalogue's data, its runtime and the YouTube player, none of which a hub needs to list
   // seven links. Every other route improved too, from the stylesheet alone.
   const routes = [
-    ["index.html", 303, 145],
-    ["learn/index.html", 289, 141],
-    ["skills/index.html", 287, 141],
-    ["tools/index.html", 289, 141],
-    ["rights/index.html", 289, 141],
-    ["exams/index.html", 375, 164],
-    ["watch/index.html", 521, 198],
-    ["about/index.html", 291, 142],
-    ["editorial/index.html", 288, 141],
-    ["accessibility/index.html", 288, 141],
-    ["privacy/index.html", 292, 143],
-    ["submit/index.html", 288, 141],
-    ["ai/index.html", 287, 141],
+    ["index.html", 314, 148],
+    ["learn/index.html", 301, 144],
+    ["skills/index.html", 299, 143],
+    ["tools/index.html", 301, 144],
+    ["rights/index.html", 301, 144],
+    ["exams/index.html", 387, 166],
+    ["watch/index.html", 550, 204],
+    ["about/index.html", 303, 145],
+    ["editorial/index.html", 300, 144],
+    ["accessibility/index.html", 300, 144],
+    ["privacy/index.html", 305, 146],
+    ["submit/index.html", 300, 144],
+    ["ai/index.html", 300, 144],
     // The generated topic pages carry the resources themselves, and still land well under
     // what the hub used to cost to list them.
-    ["learn/nursery-to-class-5/index.html", 331, 145],
-    ["learn/teacher-training/index.html", 333, 145],
-    ["rights/information-and-records/index.html", 304, 144]
+    ["learn/nursery-to-class-5/index.html", 350, 148],
+    ["learn/teacher-training/index.html", 352, 148],
+    ["rights/information-and-records/index.html", 317, 147]
   ];
 
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {

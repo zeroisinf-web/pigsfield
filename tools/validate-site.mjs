@@ -823,6 +823,32 @@ function checkExperienceContracts() {
     );
   }
 
+  // One name per pillar, in one place. The header used to call them Learn / Exams / Skills
+  // while the footer and every page title used their real names, so a destination had two
+  // names depending on where the reader was standing.
+  const pillarTable = site.match(/const PILLARS = \[[\s\S]*?\n  \];/)?.[0] || "";
+  check(Boolean(pillarTable), siteFile, "js/site.js must declare the six pillars in one list");
+  const pillarNames = [...pillarTable.matchAll(/name: "([^"]+)"/g)].map((match) => match[1]);
+  check(
+    JSON.stringify(pillarNames) === JSON.stringify(["Nursery to PhD", "PigBang", "Competitive Exams", "Vocational & Business", "Digital Tools", "Make Govt Accountable"]),
+    siteFile,
+    `the six pillars must keep their canonical names, found ${JSON.stringify(pillarNames)}`
+  );
+  check((site.match(/PILLARS\.map\(\(pillar\) => navLink\(pillar\.key, pillar\.name\)\)/g) || []).length === 2, siteFile, "the header and the footer must both read the pillar list rather than repeat it");
+  check(/<dialog class="site-sidebar" id="site-sidebar"/.test(site), siteFile, "the three-line button needs a sidebar dialog to open");
+  check(/data-open-menu/.test(site) && /showDialog\(qs\("#site-sidebar"\)\)/.test(site), siteFile, "the menu button must open the sidebar");
+  check(/support-dock-left/.test(site) && /support-dock-right/.test(site) && /support-pair/.test(site), siteFile, "the dock must be split, with donate and feedback paired");
+
+  const watchFile = path.join(ROOT, "watch", "index.html");
+  const watchSource = fs.readFileSync(watchFile, "utf8");
+  check(/id=["']watch-billboard["']/.test(watchSource) && /id=["']watch-rows["']/.test(watchSource), watchFile, "PigBang needs its billboard and its shelves");
+  const watchRuntime = fs.readFileSync(path.join(ROOT, "js", "watch.js"), "utf8");
+  check(/function shelves\(/.test(watchRuntime) && /IntersectionObserver/.test(watchRuntime), path.join(ROOT, "js", "watch.js"), "PigBang shelves must exist and fill lazily");
+
+  const laneBuilder = fs.readFileSync(path.join(ROOT, "tools", "build-topics.mjs"), "utf8");
+  check(/topic-lane-\$\{lane\}/.test(laneBuilder) && /\["web", "video", "app"\]/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "provider links must be laid out as web, video and app lanes");
+  check(/class="topic-symbol"/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "a resource card must carry its own symbol beside the title");
+
   const staticSaveButtons = /\[data-save\]\[data-save-title\]/;
   check(staticSaveButtons.test(site), siteFile, "generated pages need their save buttons hydrated and delegated");
   const savedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
