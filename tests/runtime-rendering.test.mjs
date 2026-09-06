@@ -61,7 +61,11 @@ test("the generated pages and the runtime share one source-button vocabulary", (
   const site = text("js/site.js");
   assert.match(site, /\/\* pf:source-marks:start/);
   assert.match(site, /\/\* pf:source-marks:end \*\//);
-  assert.match(text("tools/build-topics.mjs"), /site\.indexOf\("\/\* pf:source-marks:start"\)/);
+  const builder = text("tools/build-topics.mjs");
+  assert.match(builder, /siteBlock\(root, "source-marks"\)/);
+  // The resource symbol comes from the same file for the same reason.
+  assert.match(site, /\/\* pf:resource-symbols:start/);
+  assert.match(builder, /siteBlock\(root, "resource-symbols"\)/);
   for (const file of ["js/watch.js", "js/exams-page.js"]) {
     assert.doesNotMatch(text(file), /sourceMarkParts\s*=\s*\{/, `${file} must not keep its own copy of the marks`);
     assert.match(text(file), /PF\.sourceMark/, `${file} must use the shared mark renderer`);

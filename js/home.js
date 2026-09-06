@@ -9,23 +9,6 @@
   const guide = document.querySelector("[data-home-video]");
   let playerPromise = null;
 
-  const filters = document.querySelector(".path-filters");
-  if (filters) {
-    filters.hidden = false;
-    filters.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-path-filter]");
-      if (!button) return;
-      const selected = button.dataset.pathFilter.split(" ");
-      let count = 0;
-      document.querySelectorAll(".path-card").forEach((card) => {
-        card.hidden = selected[0] !== "all" && !selected.includes(card.dataset.path);
-        if (!card.hidden) count += 1;
-      });
-      filters.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      document.querySelector("[data-path-status]").textContent = `${count} ${count === 1 ? "path" : "paths"} shown`;
-    });
-  }
-
   function loadPlayer() {
     if (PF.YouTube && typeof PF.YouTube.play === "function") return Promise.resolve(PF.YouTube);
     if (playerPromise) return playerPromise;

@@ -148,17 +148,25 @@ export function sourceFor(data, destination, topic) {
 /** The source-button vocabulary, lifted straight out of js/site.js rather than copied.
  *  A generated topic page and a runtime page therefore cannot disagree about what a
  *  YouTube link, a store link or a PDF looks like. */
-function sourceHelpers(root = ROOT) {
+function siteBlock(root, name) {
   const site = fs.readFileSync(path.join(root, "js", "site.js"), "utf8");
-  const start = site.indexOf("/* pf:source-marks:start");
-  const end = site.indexOf("/* pf:source-marks:end */");
-  if (start < 0 || end <= start) throw new Error("js/site.js no longer marks its shared source-button block");
+  const start = site.indexOf(`/* pf:${name}:start`);
+  const end = site.indexOf(`/* pf:${name}:end */`);
+  if (start < 0 || end <= start) throw new Error(`js/site.js no longer marks its pf:${name} block`);
+  return site.slice(start, end);
+}
+
+function siteHelpers(root = ROOT) {
   const context = vm.createContext({ PF: {}, URL });
-  vm.runInContext(`${site.slice(start, end)}\n;globalThis.helpers = { classifySource, sourceBrand, sourceMark, isYouTubeSearch };`, context);
+  vm.runInContext(
+    `${siteBlock(root, "source-marks")}\n${siteBlock(root, "resource-symbols")}\n` +
+    ";globalThis.helpers = { classifySource, sourceBrand, sourceMark, isYouTubeSearch, resourceSymbolFor: PF.resourceSymbolFor };",
+    context
+  );
   return context.helpers;
 }
 
-const { classifySource, sourceBrand, sourceMark, isYouTubeSearch } = sourceHelpers();
+const { classifySource, sourceBrand, sourceMark, isYouTubeSearch, resourceSymbolFor } = siteHelpers();
 
 /** Mirrors PF.slug in js/site.js. tests/catalog-compatibility.test.mjs pins the result. */
 function slug(value) {
@@ -213,23 +221,55 @@ function hostOf(url) {
   }
 }
 
-/** One provider button: its brand mark, what it is, and where it goes. */
-function renderSource(pair) {
+/** "Google Play" reads better than "google-play" in a button's accessible name. */
+const BRAND_NAMES = {
+  youtube: "YouTube",
+  "google-play": "Google Play",
+  "apple-store": "the App Store",
+  app: "its app store",
+  document: "a document",
+  website: "the provider's site"
+};
+
+/** One provider button.
+ *
+ *  A web link is the only one that needs words: which site it goes to is the thing a
+ *  reader is choosing between. A YouTube link and a store link are already saying it with
+ *  a mark everyone recognizes, so writing "youtube.com" beside the YouTube mark, in a lane
+ *  that only ever holds YouTube links, is the same fact three times. Those buttons carry
+ *  their name for assistive technology instead. */
+function renderSource(pair, title) {
   const split = pair.indexOf("|");
   const label = pair.slice(0, split);
   const url = pair.slice(split + 1);
   const host = hostOf(url);
   const type = classifySource(url);
   const brand = sourceBrand(url, type);
-  const text = isYouTubeSearch(url)
-    ? "Search YouTube"
-    : label && !/^(url|link|website|web)$/i.test(label)
-      ? label
-      : host;
-  // The host is the second column, so it is worth showing only when it says something the
-  // label does not. "ncert.nic.in — ncert.nic.in" was the old output for most links.
-  const trailer = text.toLowerCase() === host.toLowerCase() ? "" : `<span class="topic-host">${esc(host)}</span>`;
-  return `<a class="link-button source-${type} source-brand-${brand}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${sourceMark(url, type)}<span class="source-label">${esc(text)}</span>${trailer}</a>`;
+  const mark = sourceMark(url, type);
+  const attributes = `href="${esc(url)}" target="_blank" rel="noopener noreferrer"`;
+  if (type === "video" || type === "app") {
+    const where = BRAND_NAMES[brand] || host;
+    const action = type === "video" ? "Watch" : "Get";
+    return `<a class="link-button source-icon-only source-${type} source-brand-${brand}" ${attributes} aria-label="${esc(`${action} ${title} on ${where}`)}" title="${esc(host)}">${mark}</a>`;
+  }
+  // A youtube.com/results link is a search page, not a video, and its host would say the
+  // opposite of what it does.
+  const text = isYouTubeSearch(url) ? "Search YouTube" : host;
+  return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} title="${esc(label || host)}">${mark}<span class="source-label">${esc(text)}</span></a>`;
+}
+
+/** Web on the left, YouTube in the middle, apps on the right — in fixed tracks, so the
+ *  three lanes line up down the page instead of starting wherever the last button ended. */
+function renderSources(item) {
+  const lanes = { web: [], video: [], app: [] };
+  for (const pair of item.urls) {
+    const url = pair.slice(pair.indexOf("|") + 1);
+    const type = classifySource(url);
+    lanes[type === "video" || type === "app" ? type : "web"].push(renderSource(pair, item.title));
+  }
+  return `<div class="topic-sources">${["web", "video", "app"]
+    .map((lane) => `<div class="topic-lane topic-lane-${lane}">${lanes[lane].join("")}</div>`)
+    .join("")}</div>`;
 }
 
 /** The step-by-step notes some resources carry: who to complain to, which form, which
@@ -242,13 +282,22 @@ function renderExtra(extra) {
     .join("")}</div></details>`;
 }
 
+/** The symbol a resource is drawn with: its organization's mark where one is known. It is
+ *  resolved from the same table js/watch.js uses, so NCERT is the same 📚 everywhere. */
+function resourceSymbol(item) {
+  const urls = item.urls.map((pair) => pair.slice(pair.indexOf("|") + 1));
+  const types = urls.map(classifySource);
+  const type = types.includes("video") ? "video" : types.includes("app") ? "app" : types[0] || "website";
+  return resourceSymbolFor({ title: item.title, urls, type });
+}
+
 function renderResources(source, sectionName) {
   return topicPayload(source)
     .map((item) => {
       const save = item.saveId
         ? `<button class="card-tool" type="button" data-save="${esc(item.saveId)}" data-save-title="${esc(item.title)}" data-save-section="${esc(sectionName)}" aria-pressed="false" aria-label="Save ${esc(item.title)}">\u2661</button>`
         : "";
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><h3>${esc(item.title)}</h3>${save}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}<div class="topic-sources">${item.urls.map(renderSource).join("")}</div>${renderExtra(item.extra)}</article>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${save}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
     })
     .join("\n        ");
 }

@@ -117,6 +117,6 @@ test("generated pages nest one H3 per resource beneath the page H1", () => {
   const page = read("learn/nursery-to-class-5/index.html");
   const headings = (page.match(/<h1>/g) || []).length;
   assert.equal(headings, 1);
-  assert.equal((page.match(/<article class="topic-item"/g) || []).length, (page.match(/<div class="topic-item-head"><h3>/g) || []).length);
+  assert.equal((page.match(/<article class="topic-item"/g) || []).length, (page.match(/<span class="topic-symbol" aria-hidden="true">[^<]*<\/span><h3>/g) || []).length);
   assert.doesNotMatch(page, /<h2 class="catalog-direct-title">/);
 });
