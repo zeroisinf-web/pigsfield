@@ -53,6 +53,14 @@ test("a YouTube search link is not dressed up as a video", () => {
   // And the generated pages must actually carry that classification.
   const page = text("tools/files-and-remote-access/index.html");
   assert.match(page, /class="link-button source-website source-brand-website"[^>]*youtube\.com\/results/, "a search link must render as a website, not a video");
+  const lanes = [...page.matchAll(/<div class="topic-lane topic-lane-(web|video|app)">([\s\S]*?)<\/div>/g)];
+  const searchLanes = lanes.filter(([, , html]) => html.includes("youtube.com/results"));
+  assert.ok(searchLanes.length > 0);
+  for (const [, lane, html] of searchLanes) {
+    assert.equal(lane, "video", "YouTube searches belong in the YouTube column");
+    assert.match(html, /Search YouTube/);
+    assert.doesNotMatch(html, /data-youtube-play/);
+  }
 });
 
 test("the generated pages and the runtime share one source-button vocabulary", () => {
