@@ -241,26 +241,25 @@ const BRAND_NAMES = {
   website: "the provider's site"
 };
 
-/** One provider button.
- *
- *  A web link is the only one that needs words: which site it goes to is the thing a
- *  reader is choosing between. A YouTube link and a store link are already saying it with
- *  a mark everyone recognizes, so writing "youtube.com" beside the YouTube mark, in a lane
- *  that only ever holds YouTube links, is the same fact three times. Those buttons carry
- *  their name for assistive technology instead. */
+function sourceType(url, label) {
+  const type = classifySource(url);
+  return type === "website" && /^(app|apps|android|ios)\b/i.test(label.trim()) ? "app" : type;
+}
+
+/** Rectangular provider controls retain a visible label beside their mark. */
 function renderSource(pair, title) {
   const split = pair.indexOf("|");
   const label = pair.slice(0, split);
   const url = pair.slice(split + 1);
   const host = hostOf(url);
-  const type = classifySource(url);
+  const type = sourceType(url, label);
   const brand = sourceBrand(url, type);
   const mark = sourceMark(url, type);
   const attributes = `href="${esc(url)}" target="_blank" rel="noopener noreferrer"`;
   if (type === "video" || type === "app") {
-    const where = BRAND_NAMES[brand] || host;
+    const where = brand === "app" ? "the provider’s app page" : BRAND_NAMES[brand] || host;
     const action = type === "video" ? "Watch" : "Get";
-    return `<a class="link-button source-icon-only source-${type} source-brand-${brand}" ${attributes} aria-label="${esc(`${action} ${title} on ${where}`)}" title="${esc(host)}">${mark}</a>`;
+    return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} aria-label="${esc(`${action} ${title} on ${where}`)}" title="${esc(host)}">${mark}<span class="source-label">${esc(brand === "app" ? "Get app" : where)}</span></a>`;
   }
   // A youtube.com/results link is a search page, not a video, and its host would say the
   // opposite of what it does.
@@ -274,11 +273,11 @@ function renderSources(item) {
   const lanes = { web: [], video: [], app: [] };
   for (const pair of item.urls) {
     const url = pair.slice(pair.indexOf("|") + 1);
-    const type = classifySource(url);
+    const type = sourceType(url, pair.slice(0, pair.indexOf("|")));
     lanes[type === "video" || type === "app" ? type : "web"].push(renderSource(pair, item.title));
   }
   return `<div class="topic-sources">${["web", "video", "app"]
-    .map((lane) => `<div class="topic-lane topic-lane-${lane}">${lanes[lane].join("")}</div>`)
+    .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)
     .join("")}</div>`;
 }
 

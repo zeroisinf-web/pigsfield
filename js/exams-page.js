@@ -27,7 +27,7 @@
     function sourceName(value) {
       try {
         const host = new URL(value).hostname.replace(/^www\./i, "");
-        return /(?:youtube|youtu\.be|play\.google|apps\.apple)/i.test(host) ? "" : host;
+        return /(?:youtube|youtu\.be)/i.test(host) ? "YouTube" : /play\.google/i.test(host) ? "Google Play" : /apps\.apple/i.test(host) ? "App Store" : host;
       } catch (_) {
         return "";
       }
@@ -61,7 +61,7 @@
       const brand = sourceBrand(url, type);
       const safeTitle = title || "Exam resource";
       const playback = playable ? ` data-youtube-play data-title="${escapeHtml(safeTitle)}"` : "";
-      const sourceLink = `<a class="link-button source-${escapeHtml(type)} source-brand-${escapeHtml(brand)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playback} aria-label="${escapeHtml(`${action} ${safeTitle}`)}">${sourceMark(url, type)}<span>${escapeHtml(safeTitle)}</span></a>`;
+      const sourceLink = `<a class="link-button source-${escapeHtml(type)} source-brand-${escapeHtml(brand)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playback} aria-label="${escapeHtml(`${action} ${safeTitle}`)}">${sourceMark(url, type)}<span class="source-label">${escapeHtml(safeTitle)}</span></a>`;
       return `<span class="source-link-pair">${sourceLink}</span>`;
     }
 
@@ -80,10 +80,11 @@
         ["marathon", "Marathon"],
         ["books", "Book"]
       ];
-      return groups.map(([key, label]) => {
+      if (!groups.some(([key]) => list(item && item[key]).length)) return "";
+      return `<div class="exam-resource-groups">${groups.map(([key, label]) => {
         const links = linkRow(item && item[key], label);
-        return links ? `<div><h5>${escapeHtml(`${label}${list(item[key]).length === 1 ? "" : "s"}`)}</h5>${links}</div>` : "";
-      }).join("");
+        return `<div class="exam-resource-group"><span class="source-lane-label">${label}</span>${links || `<span class="source-empty">Not listed</span>`}</div>`;
+      }).join("")}</div>`;
     }
 
     function panelBody(description, body) {

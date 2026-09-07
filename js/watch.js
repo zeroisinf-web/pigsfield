@@ -180,10 +180,10 @@
     const mark = sourceMark(url, type);
     if (type === "video") {
       const playAttr = playable ? ` data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"` : "";
-      return `<a class="link-button source-icon-only source-video source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playAttr} aria-label="Watch ${PF.escapeHtml(item.name || "title")} on YouTube" title="${PF.escapeHtml(host)}">${mark}</a>`;
+      return `<a class="link-button source-video source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playAttr} aria-label="Watch ${PF.escapeHtml(item.name || "title")} on YouTube" title="${PF.escapeHtml(host)}">${mark}<span class="source-label">YouTube</span></a>`;
     }
     if (type === "app") {
-      return `<a class="link-button source-icon-only source-app source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" aria-label="Get ${PF.escapeHtml(item.name || "title")} on ${PF.escapeHtml(host)}" title="${PF.escapeHtml(host)}">${mark}</a>`;
+      return `<a class="link-button source-app source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" aria-label="Get ${PF.escapeHtml(item.name || "title")} on ${PF.escapeHtml(host)}" title="${PF.escapeHtml(host)}">${mark}<span class="source-label">${PF.escapeHtml(host)}</span></a>`;
     }
     return `<a class="link-button source-${type} source-brand-${brand}" href="${PF.escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${PF.escapeHtml(host)}">${mark}<span class="source-label">${PF.escapeHtml(host)}</span></a>`;
   }
@@ -198,7 +198,7 @@
       lanes[type === "video" || type === "app" ? type : "web"].push(renderEntrySource(url, item));
     }
     return `<div class="topic-sources" aria-label="Resource links">${["web", "video", "app"]
-      .map((lane) => `<div class="topic-lane topic-lane-${lane}">${lanes[lane].join("")}</div>`)
+      .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)
       .join("")}</div>`;
   }
 
@@ -437,9 +437,25 @@
     return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
-  /* A deliberate editorial selection with a direct, privacy-enhanced player. */
+  const FEATURED_TITLES = ["Our Planet", "Cosmos: A Spacetime Odyssey", "Planet Earth II", "The Thinking Game", "My Octopus Teacher", "The Farthest — Voyager", "Super 30"];
+  const featuredEntries = FEATURED_TITLES.map((name) => entries.find((entry) => entry.item.name === name)).filter(Boolean);
+  let featuredIndex = 0;
+
+  // One timer, explicit pause, and no changes while the visitor is using a title.
+  function createRotation({ count, show, blocked, schedule = setInterval, cancel = clearInterval, paused = false }) {
+    let index = 0;
+    let stopped = paused;
+    function move(direction) {
+      index = (index + direction + count) % count;
+      show(index);
+      return index;
+    }
+    const timer = schedule(() => { if (!stopped && !blocked()) move(1); }, 6000);
+    return { move, pause(value) { stopped = value; }, isPaused: () => stopped, destroy() { cancel(timer); } };
+  }
+
   function featuredEntry() {
-    return entries.find((entry) => entry.item.name === "Our Planet") || entries.find((entry) => entry.item.desc && artworkUrl(entry));
+    return featuredEntries[featuredIndex] || entries.find((entry) => entry.item.desc && artworkUrl(entry));
   }
 
   function buildBillboard() {
@@ -455,7 +471,6 @@
       ? `<a class="button brand ott-hero-play" href="${PF.escapeHtml(play)}" target="_blank" rel="noopener noreferrer" data-youtube-play data-title="${PF.escapeHtml(item.name || "PigBang")}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7.5 8 4.5-8 4.5v-9Z"/></svg> Play</a>`
       : `<a class="button brand ott-hero-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer">Open at the source</a>`;
     const media = document.querySelector("#watch-billboard-media");
-    if (media) media.addEventListener("error", (event) => { if (event.target instanceof HTMLImageElement) event.target.remove(); }, true);
     if (media && art) media.innerHTML = `<img src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">`;
     featured.innerHTML = `<div class="ott-billboard-badges">
         <span class="ott-badge">Featured on PigBang</span>
@@ -475,6 +490,49 @@
         <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
       </div>`;
     if (PF.applyLanguageTo) PF.applyLanguageTo(featured);
+  }
+
+  function initRotation() {
+    if (!billboard || featuredEntries.length < 2) return;
+    const position = document.querySelector("#watch-feature-position");
+    const pause = document.querySelector("#watch-feature-pause");
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let hovering = false;
+    let inView = true;
+    const rotation = createRotation({ count: featuredEntries.length, paused: motion.matches,
+      blocked: () => hovering || !inView || document.hidden || billboard.hidden || featured.contains(document.activeElement) || Boolean(document.querySelector("dialog[open]")),
+      show: (index) => {
+        featuredIndex = index;
+        buildBillboard();
+        position.textContent = `${index + 1} / ${featuredEntries.length}`;
+        position.setAttribute("aria-label", `Featured title ${index + 1} of ${featuredEntries.length}: ${featuredEntry().item.name}`);
+      }
+    });
+    function syncPause() {
+      const paused = rotation.isPaused();
+      pause.textContent = paused ? "Resume" : "Pause";
+      pause.setAttribute("aria-label", paused ? "Resume featured rotation" : "Pause featured rotation");
+      pause.setAttribute("aria-pressed", String(paused));
+      featured.setAttribute("aria-live", paused ? "polite" : "off");
+    }
+    pause.addEventListener("click", () => { rotation.pause(!rotation.isPaused()); syncPause(); });
+    billboard.querySelectorAll("[data-feature-step]").forEach((button) => button.addEventListener("click", () => {
+      rotation.pause(true);
+      rotation.move(Number(button.dataset.featureStep));
+      syncPause();
+    }));
+    billboard.addEventListener("pointerenter", (event) => { if (event.pointerType === "mouse") hovering = true; });
+    billboard.addEventListener("pointerleave", () => { hovering = false; });
+    motion.addEventListener("change", () => { rotation.pause(motion.matches); syncPause(); });
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(([record]) => { inView = record.isIntersecting; });
+      observer.observe(billboard);
+    }
+    document.querySelector("#watch-billboard-media").addEventListener("error", (event) => {
+      if (event.target instanceof HTMLImageElement) event.target.remove();
+    }, true);
+    window.addEventListener("pagehide", (event) => { if (!event.persisted) rotation.destroy(); });
+    syncPause();
   }
 
   /* More info: everything the shelf tile could not say, including every original link. */
@@ -745,6 +803,7 @@
   document.querySelector("#watch-reset")?.addEventListener("click", resetFilters);
   buildFilters();
   buildBillboard();
+  initRotation();
   buildRows();
   render();
   if (billboard) billboard.addEventListener("click", (event) => {

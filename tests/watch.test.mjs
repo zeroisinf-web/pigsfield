@@ -45,7 +45,7 @@ function harness() {
   const source = read('js/watch.js');
   const boot = source.indexOf('  document.querySelector("#watch-reset")?.addEventListener');
   assert.ok(boot > 0);
-  vm.runInContext(source.slice(0, boot) + 'PF.watchTest = { entries, shelves, matches, applyShelfFilter, resetFilters, tile, card, openDetail, revealHash, render }; })();', sandbox);
+  vm.runInContext(source.slice(0, boot) + 'PF.watchTest = { entries, shelves, matches, applyShelfFilter, resetFilters, tile, card, openDetail, revealHash, render, createRotation, featuredEntries }; })();', sandbox);
   return { api: PF.watchTest, nodes, saved, document, sandbox };
 }
 
@@ -130,4 +130,40 @@ test('malformed shared URL fragments do not crash browsing', () => {
   const { api, sandbox } = harness();
   sandbox.location.hash = '#%E0%A4%A';
   assert.doesNotThrow(() => api.revealHash());
+});
+
+
+test('featured collection resolves exactly seven distinct catalog titles with sources', () => {
+  const { api } = harness();
+  assert.equal(api.featuredEntries.length, 7);
+  assert.equal(new Set(api.featuredEntries.map(e => e.id)).size, 7);
+  assert.ok(api.featuredEntries.every(e => e.item.urls.length && e.item.desc));
+});
+
+test('featured rotation advances every six seconds, wraps, pauses and respects interaction', () => {
+  const { api } = harness();
+  let tick, interval, blocked = false, cancelled;
+  const shown = [];
+  const rotation = api.createRotation({ count: 7, show: i => shown.push(i), blocked: () => blocked,
+    schedule(fn, ms) { tick = fn; interval = ms; return 42; }, cancel(id) { cancelled = id; } });
+  assert.equal(interval, 6000);
+  for (let i = 0; i < 7; i++) tick();
+  assert.deepEqual(shown, [1, 2, 3, 4, 5, 6, 0]);
+  blocked = true; tick(); assert.equal(shown.length, 7);
+  blocked = false; rotation.pause(true); tick(); assert.equal(shown.length, 7);
+  assert.equal(rotation.isPaused(), true);
+  rotation.pause(false); tick(); assert.equal(shown.at(-1), 1);
+  rotation.move(-1); rotation.move(-1); assert.equal(shown.at(-1), 6);
+  rotation.destroy(); assert.equal(cancelled, 42);
+});
+
+test('reduced-motion rotation starts paused but permits manual navigation', () => {
+  const { api } = harness();
+  let tick;
+  const shown = [];
+  const rotation = api.createRotation({ count: 7, paused: true, show: i => shown.push(i), blocked: () => false,
+    schedule(fn) { tick = fn; }, cancel() {} });
+  tick(); assert.equal(shown.length, 0);
+  rotation.move(1); assert.deepEqual(shown, [1]);
+  rotation.pause(false); tick(); assert.deepEqual(shown, [1, 2]);
 });
