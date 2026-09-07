@@ -133,12 +133,12 @@
    * link looks like.
    */
   const SOURCE_MARK_PARTS = {
-    youtube: '<span class="source-mark-body"><span class="source-mark-play"></span></span>',
-    "google-play": '<span class="source-mark-play-triangle source-mark-play-triangle-a"></span><span class="source-mark-play-triangle source-mark-play-triangle-b"></span><span class="source-mark-play-triangle source-mark-play-triangle-c"></span>',
-    "apple-store": '<span class="source-mark-apple-fruit"></span><span class="source-mark-apple-leaf"></span>',
-    app: '<span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span><span class="source-mark-app-tile"></span>',
-    document: '<span class="source-mark-page"><span class="source-mark-page-fold"></span><span class="source-mark-page-line"></span><span class="source-mark-page-line"></span></span>',
-    website: '<span class="source-mark-globe"><span class="source-mark-globe-axis"></span><span class="source-mark-globe-ring"></span></span>'
+    "youtube": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"5\" fill=\"#e62117\"/><path d=\"m10 8 6 4-6 4Z\" fill=\"white\"/></svg>",
+    "google-play": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><path d=\"M3 2v20l11-10Z\" fill=\"#00a9e0\"/><path d=\"m3 2 14 8-3 2Z\" fill=\"#00c06b\"/><path d=\"m14 12 3 2 5-2-5-2Z\" fill=\"#ffcf00\"/><path d=\"m3 22 14-8-3-2Z\" fill=\"#f24c55\"/></svg>",
+    "apple-store": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><rect width=\"24\" height=\"24\" rx=\"5\" fill=\"#147ce5\"/><path d=\"m9 5 10 16M15 5 5 21M4 15h16\" stroke=\"white\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>",
+    "app": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><g fill=\"currentColor\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></g></svg>",
+    "document": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><path d=\"M5 2h9l5 5v15H5ZM14 2v6h5M8 12h8M8 16h8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linejoin=\"round\"/></svg>",
+    "website": "<svg viewBox=\"0 0 24 24\" focusable=\"false\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><ellipse cx=\"12\" cy=\"12\" rx=\"4\" ry=\"9\"/><path d=\"M3 12h18\"/></g></svg>"
   };
   const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be", "youtube-nocookie.com", "www.youtube-nocookie.com"]);
 

@@ -47,6 +47,16 @@ body[data-page="watch"] .ott-hero-info:hover { background: #484e50; }
 .ott-hero-save { display: grid; width: 3rem; height: 3rem; place-items: center; border: 1px solid #8c9592; border-radius: 50%; background: #202729; color: #fff; font-size: 1.1rem; }
 .ott-hero-save.is-saved, .ott-tile .card-tool.is-saved { background: #642d35; color: #fff; border-color: #ff8f9a; }
 .ott-hero-foot { position: absolute; bottom: 1.8rem; inset-inline: 0; display: flex; justify-content: space-between; color: #bfc5c1; font-size: .68rem; letter-spacing: .07em; }
+.ott-carousel-bar { position: absolute; bottom: 1.25rem; inset-inline: 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.ott-carousel-caption { color: #d7dedb; font-size: .75rem; }
+.ott-carousel-controls { display: flex; align-items: center; gap: .4rem; }
+.ott-carousel-controls button { min-width: 2.75rem; height: 2.75rem; padding: .3rem .75rem; border: 1px solid #a5aeb7; border-radius: .35rem; background: #161b22; color: #fff; font-size: .75rem; cursor: pointer; }
+.ott-carousel-controls [data-feature-step] { font-size: 1.5rem; }
+#watch-feature-position { padding-inline: .6rem; color: #e2e7ee; font-size: .75rem; font-variant-numeric: tabular-nums; }
+#watch-featured { min-height: 26rem; }
+#watch-featured .ott-billboard-title { font-size: clamp(2.7rem, 5.2vw, 4.8rem); max-width: 19ch; }
+.ott-billboard-media img { animation: featured-arrive 450ms ease; }
+@keyframes featured-arrive { from { opacity: 0; } to { opacity: 1; } }
 body[data-page="watch"] .explorer { background: var(--paper); padding: 1.5rem 0 5rem; }
 .watch-section-intro { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 0 0 1.4rem; }
 .watch-section-intro h2 { margin: 0; font-size: 1.65rem; font-weight: 550; letter-spacing: -.04em; }
@@ -114,10 +124,9 @@ body[data-page="watch"] .watch-card p { color: #bdc2ca; font-size: .8rem; }
 body[data-page="watch"] .tag { background: #292e35; color: #d3d8df; border-color: #434b56; font-size: .65rem; }
 body[data-page="watch"] .tag.free { color: #a0dec5; background: #20382e; }
 body[data-page="watch"] .tag.paid { color: #edcf9e; background: #383023; }
-body[data-page="watch"] .topic-sources { display: flex; flex-wrap: wrap; gap: .5rem; border-color: #40464e; }
-body[data-page="watch"] .topic-lane { min-width: 0; max-width: 100%; }
-body[data-page="watch"] .topic-sources .link-button { max-width: 100%; min-height: 2.75rem; font-size: .7rem; }
-body[data-page="watch"] .topic-sources .source-icon-only { width: 2.75rem; min-width: 2.75rem; justify-content: center; }
+body[data-page="watch"] .topic-sources { border-color: #4d5664; }
+
+body[data-page="watch"] .topic-sources .link-button { max-width: 100%; border-color: #697687; background: #20262f; color: #f2f5f9; font-size: .74rem; }
 body[data-page="watch"] .watch-card .resource-topline { gap: .5rem; }
 body[data-page="watch"] .watch-card .card-tool { width: 2.75rem; height: 2.75rem; }
 .watch-grid > .empty-state { grid-column: 1 / -1; padding: 4rem 1rem; }
@@ -161,6 +170,11 @@ body[data-page="watch"] :focus-visible { outline: 2px solid #c7d9ff; outline-off
   .ott-tile:hover .ott-art { transform: none; }
 }
 @media (max-width: 52rem) {
+  #watch-featured { min-height: 27rem; }
+  #watch-featured .ott-billboard-title { font-size: clamp(2.2rem, 8vw, 3.8rem); }
+  .ott-carousel-bar { position: static; padding-bottom: 1.2rem; }
+  .ott-carousel-caption { display: none; }
+  .ott-carousel-controls { margin-left: auto; }
   body[data-page="watch"] .container { width: calc(100% - 2rem); }
   .watch-masthead { min-height: 4.1rem; }
   .watch-wordmark { font-size: 1.05rem; }
