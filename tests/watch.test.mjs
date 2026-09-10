@@ -92,6 +92,8 @@ test('all catalog titles preserve their source anchors without invented ownershi
   assert.equal(api.entries.length, 589);
   for (const entry of api.entries) {
     const card = api.card(entry);
+    assert.doesNotMatch(card, /topic-sources|topic-lane|source-lane-label|Not listed/);
+    assert.match(card, entry.item.urls?.length ? /ott-source-actions/ : /ott-source-status/);
     for (const raw of entry.item.urls || []) {
       const url = new URL(raw);
       for (const name of [...url.searchParams.keys()]) if (/^utm_/i.test(name)) url.searchParams.delete(name);
@@ -107,6 +109,8 @@ test('related titles are native keyboard buttons and clicking one replaces the d
   api.openDetail(api.entries.find((e) => e.item.name === 'Our Planet'));
   const dialog = document.dialog;
   assert.equal(dialog.attributes['aria-labelledby'], 'watch-detail-title');
+  assert.match(dialog.innerHTML, /ott-source-actions/);
+  assert.doesNotMatch(dialog.innerHTML, /topic-sources|topic-lane|source-lane-label|Not listed/);
   const related = dialog.innerHTML.match(/<button class="ott-similar-card" type="button" data-detail="([^"]+)"/);
   assert.ok(related);
   const target = { closest: (selector) => selector === '[data-detail]' ? { dataset: { detail: related[1] } } : null };
