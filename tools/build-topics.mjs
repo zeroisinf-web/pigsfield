@@ -274,7 +274,8 @@ function renderSources(item) {
   for (const pair of item.urls) {
     const url = pair.slice(pair.indexOf("|") + 1);
     const type = sourceType(url, pair.slice(0, pair.indexOf("|")));
-    lanes[type === "video" || type === "app" ? type : "web"].push(renderSource(pair, item.title));
+    const lane = isYouTubeSearch(url) ? "video" : type === "video" || type === "app" ? type : "web";
+    lanes[lane].push(renderSource(pair, item.title));
   }
   return `<div class="topic-sources">${["web", "video", "app"]
     .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)

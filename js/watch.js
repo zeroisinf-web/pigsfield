@@ -108,6 +108,7 @@
   }
 
   function sourceLabel(url) {
+    if (PF.isYouTubeSearch(url)) return "Search YouTube";
     let host = "Original source";
     try { host = new URL(url).hostname.replace(/^www\./, ""); } catch (_) {}
     if (/play\.google/.test(host)) return "Play Store";
@@ -195,7 +196,8 @@
     const lanes = { web: [], video: [], app: [] };
     for (const url of urls) {
       const type = sourceType(url);
-      lanes[type === "video" || type === "app" ? type : "web"].push(renderEntrySource(url, item));
+      const lane = PF.isYouTubeSearch(url) ? "video" : type === "video" || type === "app" ? type : "web";
+      lanes[lane].push(renderEntrySource(url, item));
     }
     return `<div class="topic-sources" aria-label="Resource links">${["web", "video", "app"]
       .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)

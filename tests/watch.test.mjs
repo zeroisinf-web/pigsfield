@@ -35,6 +35,7 @@ function harness() {
   const PF = {
     slug: (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     escapeHtml: (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
+    isYouTubeSearch: (value) => { const url = new URL(value); return /(?:^|\.)youtube\.com$/.test(url.hostname) && url.pathname === '/results'; },
     isSaved: (id) => saved.has(id), getSaved: () => [...saved.values()],
     resourceSymbolFor: () => '◇', classifySource: () => 'website', sourceBrand: () => 'website', sourceMark: () => '<svg></svg>'
   };
