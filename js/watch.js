@@ -190,18 +190,9 @@
   }
 
   function entrySources(entry) {
-    const item = entry.item;
     const urls = entryUrls(entry);
-    if (!urls.length) return `<div class="topic-sources"><span class="link-button"><span>Source is being reviewed</span></span></div>`;
-    const lanes = { web: [], video: [], app: [] };
-    for (const url of urls) {
-      const type = sourceType(url);
-      const lane = PF.isYouTubeSearch(url) ? "video" : type === "video" || type === "app" ? type : "web";
-      lanes[lane].push(renderEntrySource(url, item));
-    }
-    return `<div class="topic-sources" aria-label="Resource links">${["web", "video", "app"]
-      .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)
-      .join("")}</div>`;
+    if (!urls.length) return '<p class="ott-source-status">Source is being reviewed</p>';
+    return `<div class="ott-source-actions" role="group" aria-label="Watch and download options">${urls.map((url) => renderEntrySource(url, entry.item)).join("")}</div>`;
   }
 
   function card(entry) {
