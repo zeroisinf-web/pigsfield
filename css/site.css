@@ -1114,3 +1114,16 @@ body[data-page="watch"] {
   .exam-resource-group { display: flex; flex-direction: column; }
   .exam-resource-group .source-lane-label { padding-top: 0; }
 }
+
+/* The AI comparison scrolls inside the dock on narrow screens. */
+.ai-rankings { min-width: 0; margin-block: 0.75rem; }
+.ai-rankings h3 { font-size: 1rem; margin-block: 0.5rem; }
+.ai-rankings p { font-size: 0.78rem; line-height: 1.5; margin-block: 0.5rem; }
+.ai-rankings-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 0.5rem; }
+.ai-rankings-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.8rem; }
+.ai-rankings-table caption { text-align: left; padding: 0.5rem; }
+.ai-rankings-table th, .ai-rankings-table td { padding: 0.55rem; text-align: left; border-bottom: 1px solid var(--line); }
+.ai-rankings-table th { background: var(--paper); }
+.ai-rankings-table td:nth-child(n+3) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ai-launchpad details summary { cursor: pointer; font-size: 0.8rem; }
+.ai-launchpad-group { flex-wrap: wrap; }

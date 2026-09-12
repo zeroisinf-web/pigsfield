@@ -63,12 +63,28 @@
             <span class="pill-label">LLM Rankings</span>
             <span class="pill-badge">Top</span>
           </a>
-          <a class="ai-ext-pill featured" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer" title="Open Qwen Chat">
-            <img class="pill-logo" src="/assets/qwen-symbol.png" alt="" width="18" height="18" aria-hidden="true">
-            <span class="pill-label">Qwen.ai</span>
-            <span class="pill-badge">Featured</span>
+          <a class="ai-ext-pill featured" href="https://indus.sarvam.ai/" target="_blank" rel="noopener noreferrer">
+            <span class="pill-label">Indus · Sarvam</span><span class="pill-badge">Featured</span>
+          </a>
+          <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer">
+            <span class="pill-label">Duck.ai</span><span class="pill-badge">Featured</span>
           </a>
         </div>
+        <section class="ai-rankings" aria-label="AI model comparison">
+          <h3>Top 7 companies · responses within 35 seconds</h3>
+          <p>Highest intelligence first, one qualifying model per listed company. Ties use lower cost, then faster response.</p>
+          <div class="ai-rankings-scroll" tabindex="0" role="region" aria-label="Model comparison table">
+            <table class="ai-rankings-table">
+              <caption>Artificial Analysis benchmark comparison</caption>
+              <thead><tr><th scope="col">Company / website</th><th scope="col">Model</th><th scope="col">Intelligence index</th><th scope="col">Cost / task (USD)</th><th scope="col">Total response (s)</th></tr></thead>
+              <tbody data-rankings-body></tbody>
+            </table>
+          </div>
+          <p data-rankings-status role="status">Loading verified rankings…</p>
+          <button type="button" class="button small" data-refresh-rankings>Refresh rankings</button>
+          <p>Source: <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>. Checks for updates hourly while in use. Benchmark cost and end-to-end time are not chat subscription prices or guaranteed website speeds; the exact model may not be offered in the linked chat app.</p>
+        </section>
+        <details><summary>All AI websites</summary>
         <div class="ai-launchpad-scroll">
           <a class="ai-ext-pill" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/claude-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Claude
@@ -97,10 +113,11 @@
           <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/zai-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Z.ai
           </a>
-          <a class="ai-ext-pill" href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer">
+          <a class="ai-ext-pill" href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer">
             <img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> DeepSeek
           </a>
         </div>
+        </details>
       </div>
 
       <div class="creator-layout">
@@ -302,6 +319,50 @@
     }
   }
 
+  function initRankings(root) {
+    const body = root.querySelector("[data-rankings-body]");
+    const status = root.querySelector("[data-rankings-status]");
+    const refresh = root.querySelector("[data-refresh-rankings]");
+    if (!body || !status || !refresh) return;
+    let loading = false;
+    async function load() {
+      if (loading) return;
+      loading = true;
+      refresh.disabled = true;
+      try {
+        const response = await fetch("/api/model-rankings", { signal: AbortSignal.timeout(25000), cache: "no-store" });
+        if (!response.ok) throw new Error("Unavailable");
+        const data = await response.json();
+        if (!Array.isArray(data.models) || !data.models.length || !Number.isFinite(Date.parse(data.updatedAt))) throw new Error("Invalid rankings");
+        const rows = data.models.map(model => {
+          const row = element("tr");
+          const company = element("td");
+          const link = element("a", "", model.company);
+          const url = new URL(model.website);
+          if (url.protocol !== "https:") throw new Error("Invalid website");
+          link.href = url.href;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          company.append(link);
+          row.append(company, element("td", "", model.name), element("td", "", model.intelligence), element("td", "", "$" + model.cost.toFixed(2)), element("td", "", model.seconds.toFixed(2)));
+          return row;
+        });
+        body.replaceChildren(...rows);
+        const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
+        status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${rows.length < 7 ? " Only " + rows.length + " companies have verified qualifying results." : ""}`;
+      } catch (_) {
+        status.textContent = body.children.length ? "Refresh unavailable — showing previously loaded data. Try again shortly." : "Rankings unavailable. Open Artificial Analysis or try refreshing shortly.";
+      } finally {
+        loading = false;
+        refresh.disabled = false;
+      }
+    }
+    refresh.addEventListener("click", load);
+    load();
+    // Refresh a long-running open studio without making background requests in hidden tabs.
+    window.setInterval(() => { if (document.visibilityState === "visible" && root.getClientRects().length) load(); }, 3600000);
+  }
+
   function init(scope) {
     // scope is usually an element, but the DOMContentLoaded path below passes `document`,
     // which has querySelector and no matches(). Calling it threw on every /ai/ load, which
@@ -315,6 +376,7 @@
     if (!root) return null;
     if (root.dataset.aiStudioV2Initialized === "true") return root;
 
+    initRankings(root);
     let currentMode = "chat";
     let currentModel = savedModel();
     const thread = root.querySelector("#ai-chat-thread");
