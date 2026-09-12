@@ -274,8 +274,22 @@ else on the site is affected.
    picker in AI Studio. A name the account cannot use answers 502 rather than failing
    silently, so check this first if Ask AI is reachable but never answers.
 
-Run `node --test tests/ask.test.mjs` to check the request shape, the video guard, the
-unconfigured path and the upstream failure handling.
+**What the provider actually allows.** Two limits were measured against the live API and
+decide how well this works in production:
+
+- *Video input is a separate entitlement.* A key without it answers `403 "The caller does
+  not have permission"` to the YouTube part, in about a tenth of a second, and the notes are
+  then written from the title and the page text — which the answer says at the top rather
+  than implying it watched anything. The refusal is remembered for the life of the isolate,
+  so it costs one extra call once, not one on every request.
+- *The free tier allows 5 generate-content requests per minute* on `gemini-3.8-flash`.
+  Opening the panel spends one (the suggestions) and each question spends one, so a handful
+  of simultaneous visitors will see "Ask AI is busy right now". Enable billing on the Google
+  Cloud project behind the key before this is in front of real traffic. A quota error is
+  never retried — the retry would spend the allowance that just ran out.
+
+Run `node --test tests/ask.test.mjs` to check the request shape, the video guard, the quota
+behaviour, the unconfigured path and the upstream failure handling.
 
 ### AI launchpad model comparison
 

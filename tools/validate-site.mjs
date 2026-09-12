@@ -949,7 +949,9 @@ function checkExperienceContracts() {
   // Gemini fetches a fileUri itself, so an unchecked address here is this endpoint fetching
   // whatever a caller names. Only a YouTube video id ever gets through.
   check(/export function youTubeUri/.test(askWorker) && /\^\[A-Za-z0-9_-\]\{11\}\$/.test(askWorker), askWorkerFile, "only a verified YouTube video may be forwarded to the model");
-  check(!/["']sk-|AIza/.test(askWorker), askWorkerFile, "no provider key may be committed");
+  // Both shapes a Google credential arrives in — the AIza… API key and the AQ.… token — plus
+  // the sk- prefix every other provider uses.
+  check(!/["'](?:sk-|AIza|AQ\.[A-Za-z0-9_-]{10})/.test(askWorker), askWorkerFile, "no provider key may be committed");
   const workerIndex = fs.readFileSync(path.join(ROOT, "worker", "index.mjs"), "utf8");
   check(/url\.pathname === "\/api\/ask"/.test(workerIndex), path.join(ROOT, "worker", "index.mjs"), "the Worker must route /api/ask");
 

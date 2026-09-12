@@ -208,6 +208,17 @@ export function parseSuggestions(text) {
     .slice(0, 4);
 }
 
+// Video input is refused outright on some keys and tiers: the call comes back 403 in about
+// a tenth of a second, before any work is done. Retrying it on every notes request would
+// spend two of a minute's allowance to learn the same thing twice, so the first refusal is
+// remembered for the life of the isolate and the video is simply not attached again.
+let videoRefused = false;
+
+/** Test seam: the refusal is process-wide state, so a test must be able to clear it. */
+export function resetVideoSupport() {
+  videoRefused = false;
+}
+
 export async function handleAsk(request, env, fetcher = fetch) {
   if (request.method !== "POST") return json({ error: "Use POST for Ask AI requests." }, 405);
   if (!sameOriginRequest(request)) return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
@@ -238,11 +249,17 @@ export async function handleAsk(request, env, fetcher = fetch) {
   }
 
   try {
-    let response = await call(Boolean(uri));
+    let sentVideo = Boolean(uri) && !videoRefused;
+    let response = await call(sentVideo);
     // A model that cannot read video, or a video that cannot be read, answers 4xx. The
     // question is still answerable from the page text, so it is asked again without it
-    // rather than handed back as a failure.
-    if (uri && !response.ok && response.status >= 400 && response.status < 500) response = await call(false);
+    // rather than handed back as a failure — but never on a 429, where a second call spends
+    // another unit of the very allowance that just ran out.
+    if (sentVideo && !response.ok && response.status >= 400 && response.status < 500 && response.status !== 429) {
+      videoRefused = true;
+      sentVideo = false;
+      response = await call(false);
+    }
     if (!response.ok) {
       if (response.status === 429) return json({ error: "Ask AI is busy right now. Try again in a minute." }, 429);
       // A 400 here is this endpoint's own request being wrong — most often a model name the
@@ -256,7 +273,7 @@ export async function handleAsk(request, env, fetcher = fetch) {
       return suggestions.length ? json({ suggestions }) : json({ suggestions: [] });
     }
     if (!text) return json({ error: "Ask AI returned no usable answer. Try rephrasing." }, 502);
-    return json({ text, usedVideo: Boolean(uri), engine: "google-gemini" });
+    return json({ text, usedVideo: sentVideo, engine: "google-gemini" });
   } catch (_) {
     return json({ error: "Ask AI is temporarily unavailable. Please try again shortly." }, 503);
   }

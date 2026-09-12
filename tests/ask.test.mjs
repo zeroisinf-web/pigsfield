@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  handleAsk, pageBrief, geminiRequest, parseSuggestions, youTubeUri,
+  handleAsk, pageBrief, geminiRequest, parseSuggestions, youTubeUri, resetVideoSupport,
   MAX_PAGE_CHARACTERS, DEFAULT_GEMINI_MODEL
 } from '../worker/ask.mjs';
 
@@ -76,6 +76,7 @@ test('the route refuses anything but a same-origin POST, and says when it is unc
 });
 
 test('a chat answer carries the model text and never the key', async () => {
+  resetVideoSupport();
   let seen;
   const response = await handleAsk(
     post({ mode: 'chat', page: { title: 'Ohm law' }, messages: [{ role: 'user', text: 'explain this' }] }),
@@ -101,19 +102,49 @@ test('a configured model name overrides the default and is sanitised', async () 
   assert.ok(seen.endsWith('/gemini-4-flash....admin:generateContent'), seen);
 });
 
-test('a video the model cannot read is retried without it rather than failed', async () => {
+const videoPage = { title: 'Lesson', video: { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' } };
+
+test('a video the model cannot read is retried without it, then not attempted again', async () => {
+  resetVideoSupport();
   const calls = [];
+  const withVideo = (init) => JSON.parse(init.body).contents[0].parts.some((part) => part.fileData);
   const response = await handleAsk(
-    post({ mode: 'notes', page: { title: 'Lesson', video: { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' } }, messages: [] }),
+    post({ mode: 'notes', page: videoPage, messages: [] }),
     { GEMINI_API_KEY: 'k' },
     async (url, init) => {
-      calls.push(JSON.parse(init.body).contents[0].parts.some((part) => part.fileData));
-      return calls.length === 1 ? new Response('{}', { status: 400 }) : reply('# Notes');
+      calls.push(withVideo(init));
+      // Live Gemini answers 403 "caller does not have permission" to a YouTube part on a
+      // key that is not entitled to video input, in about a tenth of a second.
+      return calls.length === 1 ? new Response('{}', { status: 403 }) : reply('# Notes');
     }
   );
   assert.deepEqual(calls, [true, false], 'the retry must drop the video part');
   assert.equal(response.status, 200);
-  assert.match((await response.json()).text, /# Notes/);
+  const data = await response.json();
+  assert.match(data.text, /# Notes/);
+  assert.equal(data.usedVideo, false, 'the answer must not claim it watched the video');
+
+  // The refusal is remembered: a second request spends one call, not two.
+  const second = [];
+  await handleAsk(
+    post({ mode: 'notes', page: videoPage, messages: [] }),
+    { GEMINI_API_KEY: 'k' },
+    async (url, init) => { second.push(withVideo(init)); return reply('# Notes again'); }
+  );
+  assert.deepEqual(second, [false], 'a known refusal must not be retried on every request');
+});
+
+test('a quota error is never retried, because the retry spends the allowance that ran out', async () => {
+  resetVideoSupport();
+  let calls = 0;
+  const response = await handleAsk(
+    post({ mode: 'notes', page: videoPage, messages: [] }),
+    { GEMINI_API_KEY: 'k' },
+    async () => { calls += 1; return new Response('{}', { status: 429 }); }
+  );
+  assert.equal(calls, 1, '429 must not trigger the without-video retry');
+  assert.equal(response.status, 429);
+  assert.match((await response.json()).error, /busy/i);
 });
 
 test('upstream failures are reported without leaking their shape', async () => {
