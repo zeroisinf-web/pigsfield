@@ -237,7 +237,7 @@ Pigsfield is volunteer-led. Growth should come from usefulness, trustworthy sour
 
 The studio highlights Indus and Duck.ai; Qwen remains in “All AI websites”.
 `GET /api/model-rankings` reads the public [Artificial Analysis leaderboard](https://artificialanalysis.ai/leaderboards/models)
-and selects up to seven distinct companies represented in the launchpad. Only rows with
+and selects up to seven qualifying models across companies (multiple models per company are allowed). Only rows with
 numeric intelligence, cost per task (USD), and total response time at or below 35 seconds
 qualify. Sort order is intelligence descending, cost ascending, then response time ascending.
 The linked chat website may not expose the exact benchmark model/configuration.
@@ -252,5 +252,6 @@ The bundled snapshot was parsed from the public leaderboard during implementatio
 The scraper checks column names and rejects missing/provisional metrics instead of inventing
 values. Source markup or column changes may require updating `worker/model-rankings.mjs`;
 the UI will report stale/unavailable data until that is repaired. Company aliases and chat
-links are maintained in that module. New model names for known companies sync automatically.
+links are maintained in that module. New models and companies sync automatically; unknown
+companies link to the source leaderboard. Mobile comparison rows stack into labeled cards.
 Run `node --test tests/model-rankings.test.mjs` to check selection, caching, and failure behavior.

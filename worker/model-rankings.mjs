@@ -39,7 +39,7 @@ export function parseRankings(html, now = new Date()) {
       }
       if (!columns) continue;
       const [name, creator, intelligenceText, costText, secondsText] = columns.map(i => cells[i] || '');
-      const company = COMPANIES[key(creator)];
+      const company = COMPANIES[key(creator)] || (creator ? [creator, SOURCE] : null);
       const intelligence = number(intelligenceText), cost = number(costText), seconds = number(secondsText);
       // Missing values and provisional (*) scores cannot silently become zero.
       if (!company || !name || intelligence === null || cost === null || seconds === null || seconds <= 0 || seconds > 35) continue;
@@ -49,7 +49,12 @@ export function parseRankings(html, now = new Date()) {
   if (!found) throw new Error('Leaderboard table unavailable');
   candidates.sort((a, b) => b.intelligence - a.intelligence || a.cost - b.cost || a.seconds - b.seconds || a.name.localeCompare(b.name));
   const seen = new Set();
-  const models = candidates.filter(m => !seen.has(m.company) && seen.add(m.company)).slice(0, 7);
+  const models = candidates.filter(m => {
+    const identity = m.company + ":" + m.name;
+    if (seen.has(identity)) return false;
+    seen.add(identity);
+    return true;
+  }).slice(0, 7);
   if (!models.length) throw new Error('No verified qualifying models');
   return { source: SOURCE, updatedAt: now.toISOString(), models };
 }
@@ -60,7 +65,7 @@ export async function handleModelRankings(request, env, cache = globalThis.cache
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
   const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers });
   if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
-  const cacheKey = new Request(new URL('/api/model-rankings', request.url));
+  const cacheKey = new Request(new URL('/api/model-rankings?selection=models-v2', request.url));
   let previous;
   try { previous = await (await cache?.match(cacheKey))?.json(); } catch (_) { /* recover via source */ }
   if (previous && Date.now() - Date.parse(previous.updatedAt) < 3600000) return json({ ...previous, stale: false });
