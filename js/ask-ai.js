@@ -210,6 +210,16 @@
 
   // ---- Talking to the endpoint ---------------------------------------------------------
 
+  // The provider meters per minute, and the suggestion round fires on its own. Without a
+  // shared cooldown an exhausted allowance stays exhausted: every open spends another
+  // request on suggestions the learner never asked for, and the question they did ask is
+  // the one that gets refused.
+  let cooldownUntil = 0;
+  /** Page signature -> suggestions, for the life of the tab. */
+  const suggestionCache = new Map();
+  const coolingDown = () => Date.now() < cooldownUntil;
+  const cooldownSeconds = () => Math.max(1, Math.ceil((cooldownUntil - Date.now()) / 1000));
+
   async function ask(payload, timeoutMs) {
     const controller = new AbortController();
     const timer = window.setTimeout(() => controller.abort(), timeoutMs || 60000);
@@ -222,6 +232,12 @@
         signal: controller.signal
       });
       const data = await response.json().catch(() => null);
+      if (response.status === 429) {
+        cooldownUntil = Date.now() + 60000;
+        const error = new Error("Ask AI has used its free allowance for this minute. Wait about a minute and ask again.");
+        error.quota = true;
+        throw error;
+      }
       if (!response.ok) throw new Error((data && data.error) || "Ask AI could not answer just now.");
       return data || {};
     } catch (error) {
@@ -417,12 +433,31 @@
       }
     }
 
-    async function loadSuggestions() {
+    /** What the suggestions were computed from. Same signature, same suggestions. */
+    function pageSignature(source) {
+      return [source.url, (source.video && source.video.url) || "", source.headings.slice(0, 3).join("|")].join("::");
+    }
+
+    async function loadSuggestions(force) {
+      const signature = pageSignature(page);
+      const cached = suggestionCache.get(signature);
+      if (!force && cached) {
+        renderSuggestions(cached);
+        return;
+      }
+      // An automatic round must never be what empties the allowance a question needs.
+      if (!force && coolingDown()) {
+        suggestions.hidden = true;
+        suggestions.replaceChildren();
+        return;
+      }
       suggestions.hidden = false;
       suggestions.replaceChildren(element("span", "ask-chip is-loading", "Looking at this page…"));
       try {
         const data = await ask({ mode: "suggest", page, messages: [] }, 30000);
-        renderSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+        const list = Array.isArray(data.suggestions) ? data.suggestions : [];
+        suggestionCache.set(signature, list);
+        renderSuggestions(list);
       } catch (_) {
         // A failed suggestion round is not worth an error message: the composer still works.
         suggestions.hidden = true;
@@ -433,6 +468,11 @@
     async function submit(text) {
       const question = String(text || "").trim().slice(0, MAX_PROMPT_LENGTH);
       if (!question || busy) return;
+      if (coolingDown()) {
+        addMessage("user", `<p>${escapeHtml(question)}</p>`);
+        addMessage("error", `<p><strong>Out of free allowance.</strong> Ask AI can answer a few questions a minute on the free tier. Try again in about ${cooldownSeconds()} seconds.</p>`);
+        return;
+      }
       stopSpeaking();
       addMessage("user", `<p>${escapeHtml(question)}</p>`);
       history = history.concat({ role: "user", text: question }).slice(-MAX_TURNS);
@@ -454,6 +494,10 @@
 
     async function makeNotes() {
       if (busy) return;
+      if (coolingDown()) {
+        addMessage("error", `<p><strong>Out of free allowance.</strong> Notes need one full request. Try again in about ${cooldownSeconds()} seconds.</p>`);
+        return;
+      }
       refreshContext();
       const subject = (page.video && page.video.title) || page.headings[0] || page.title;
       const pending = addPending(page.video ? "Watching and writing notes — this can take a minute…" : "Writing notes from this page…");
@@ -523,7 +567,12 @@
     }
 
     if (notesBtn) notesBtn.addEventListener("click", makeNotes);
-    if (recheckBtn) recheckBtn.addEventListener("click", () => { refreshContext(); loadSuggestions(); });
+    function reread(force) {
+      refreshContext();
+      loadSuggestions(force);
+    }
+    rereadPage = reread;
+    if (recheckBtn) recheckBtn.addEventListener("click", () => reread(true));
 
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && !event.shiftKey) {
@@ -561,13 +610,15 @@
     return init(root);
   }
 
+  /** Set by init(), so re-opening can re-read the page without pretending to be a click. */
+  let rereadPage = null;
+
   /** Re-read the page each time the panel is opened: the learner has usually moved on. */
   function refreshAskAI(target) {
     const mountTarget = typeof target === "string" ? document.querySelector(target) : target;
     const root = mountTarget && mountTarget.querySelector("[data-ask-root]");
     if (!root) return null;
-    const recheck = root.querySelector("[data-ask-recheck]");
-    if (recheck) recheck.click();
+    if (typeof rereadPage === "function") rereadPage(false);
     return root;
   }
 

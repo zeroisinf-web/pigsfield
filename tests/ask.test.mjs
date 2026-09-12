@@ -92,6 +92,23 @@ test('a chat answer carries the model text and never the key', async () => {
   assert.ok(!JSON.stringify(data).includes('test-key'), 'the key must never reach the browser');
 });
 
+test('the suggestion round can be pointed at its own model, which has its own allowance', async () => {
+  resetVideoSupport();
+  const seen = [];
+  const env = { GEMINI_API_KEY: 'k', GEMINI_MODEL: 'gemini-main', GEMINI_SUGGEST_MODEL: 'gemini-lite' };
+  const record = async (url) => { seen.push(url.split('/').pop()); return reply('[]'); };
+  await handleAsk(post({ mode: 'suggest', page: { title: 'A page' }, messages: [] }), env, record);
+  await handleAsk(post({ mode: 'chat', messages: [{ role: 'user', text: 'hi' }] }), env, record);
+  assert.deepEqual(seen, ['gemini-lite:generateContent', 'gemini-main:generateContent']);
+
+  // Unset, suggestions ride the main model exactly as before.
+  const shared = [];
+  await handleAsk(post({ mode: 'suggest', page: { title: 'A page' }, messages: [] }),
+    { GEMINI_API_KEY: 'k', GEMINI_MODEL: 'gemini-main' },
+    async (url) => { shared.push(url.split('/').pop()); return reply('[]'); });
+  assert.deepEqual(shared, ['gemini-main:generateContent']);
+});
+
 test('a configured model name overrides the default and is sanitised', async () => {
   let seen;
   await handleAsk(
