@@ -8,6 +8,9 @@
   const IMAGE_MODEL = "sana";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const AI_MODEL_STORAGE_KEY = "pigsfield-ai-model-v1";
+  // Mirrors MAX_COMPANIES in worker/model-rankings.mjs: the comparison lists one model for
+  // each of the ten highest-placed companies, so a short table is worth explaining.
+  const RANKED_COMPANIES = 10;
 
   // The three hosted models worker/index.mjs accepts. Every one of them runs on the same
   // same-origin endpoint, so the studio's promise holds whichever is chosen: no visitor
@@ -30,7 +33,7 @@
 
   const studioStyle = document.createElement("link");
   studioStyle.rel = "stylesheet";
-  studioStyle.href = assetUrl("css/ai-studio.css?v=6efa0076bfe2");
+  studioStyle.href = assetUrl("css/ai-studio.css?v=d820564bbb66");
   document.head.append(studioStyle);
 
   // One line-art set, drawn to the same 24-grid and inheriting currentColor, replaces the
@@ -49,7 +52,24 @@
     expand: '<path d="M14 3.2v1.9h3.6l-7.3 7.3 1.3 1.3 7.3-7.3v3.6h1.9V3.2H14ZM5 5.1h4.6V3.2H4.4a1.2 1.2 0 0 0-1.2 1.2v15.2a1.2 1.2 0 0 0 1.2 1.2h15.2a1.2 1.2 0 0 0 1.2-1.2v-5.2h-1.9V19H5V5.1Z"/>',
     alert: '<path d="M12 2.6 1.4 21h21.2L12 2.6Zm.9 14.7h-1.8v-1.8h1.8v1.8Zm0-3.6h-1.8V9.8h1.8v3.9Z"/>',
     bolt: '<path d="M13.4 2 4.6 13.4h5.3L9.1 22l9-11.9h-5.4L13.4 2Z"/>',
-    model: '<path d="M12 2.4 3 7.1v9.8l9 4.7 9-4.7V7.1L12 2.4Zm0 2.2 6.4 3.3L12 11.2 5.6 7.9 12 4.6ZM4.9 9.6l6.2 3.2v6.1l-6.2-3.2V9.6Zm8.1 9.3v-6.1l6.1-3.2v6.1L13 18.9Z"/>'
+    model: '<path d="M12 2.4 3 7.1v9.8l9 4.7 9-4.7V7.1L12 2.4Zm0 2.2 6.4 3.3L12 11.2 5.6 7.9 12 4.6ZM4.9 9.6l6.2 3.2v6.1l-6.2-3.2V9.6Zm8.1 9.3v-6.1l6.1-3.2v6.1L13 18.9Z"/>',
+    arrow: '<path d="M7.6 5.4h11v11h-1.9V8.6L6.9 18.4 5.6 17.1l9.8-9.8H7.6V5.4Z"/>',
+    refresh: '<path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"/>'
+  };
+
+  // One row of the comparison is one company, so each row carries that company's own mark.
+  // A company the leaderboard names that has no local mark gets a monogram instead of a
+  // broken image: new labs appear on that table without a deployment.
+  const COMPANY_MARKS = {
+    "Anthropic": { file: "claude-symbol.svg" },
+    "OpenAI": { file: "chatgpt-symbol.svg", mono: true },
+    "Google": { file: "gemini-symbol.svg" },
+    "SpaceXAI": { file: "grok-symbol.svg", mono: true },
+    "Moonshot AI": { file: "kimi-symbol.svg", mono: true },
+    "Meta": { file: "meta-symbol.svg" },
+    "Alibaba": { file: "qwen-symbol.svg" },
+    "Z AI": { file: "zai-symbol.svg", mono: true },
+    "DeepSeek": { file: "deepseek-symbol.svg" }
   };
 
   function icon(name, extraClass) {
@@ -58,72 +78,86 @@
 
   const STUDIO_MARKUP = `
     <div data-ai-studio-root class="ai-studio-v2">
-      <div class="ai-launchpad" aria-label="External AI Launchpad">
-        <div class="ai-launchpad-header">
-          <span class="ai-launchpad-title">${icon("bolt")} Discover & compare</span>
+      <section class="ai-panel ai-launchpad" aria-label="External AI launchpad">
+        <div class="ai-panel-head">
+          <span class="ai-launchpad-title">${icon("bolt")} Discover &amp; compare</span>
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
-            <img class="pill-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="18" height="18" aria-hidden="true">
-            <span class="pill-label">LLM Rankings</span>
-            <span class="pill-description">Independent benchmarks ↗</span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="24" height="24" aria-hidden="true"></span>
+            <span class="pill-text"><span class="pill-label">LLM Rankings</span><span class="pill-description">Independent benchmarks</span></span>
+            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
-          <a class="ai-ext-pill featured" href="https://indus.sarvam.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-label">Indus</span><span class="pill-description">By Sarvam ↗</span>
+          <a class="ai-ext-pill featured" href="https://indus.sarvam.ai/" target="_blank" rel="noopener noreferrer" title="Open Indus by Sarvam">
+            <span class="pill-logo-tile pill-monogram" aria-hidden="true">इ</span>
+            <span class="pill-text"><span class="pill-label">Indus</span><span class="pill-description">By Sarvam</span></span>
+            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
-          <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-label">Duck.ai</span><span class="pill-description">By DuckDuckGo ↗</span>
+          <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer" title="Open Duck.ai by DuckDuckGo">
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg" alt="" width="24" height="24" aria-hidden="true"></span>
+            <span class="pill-text"><span class="pill-label">Duck.ai</span><span class="pill-description">By DuckDuckGo</span></span>
+            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
         </div>
-        <section class="ai-rankings" aria-label="AI model comparison">
-          <h3>Intelligence, without the wait.</h3>
-          <p>Top 7 models · up to 35 seconds · any company.</p>
-          <div class="ai-rankings-scroll">
-            <table class="ai-rankings-table" role="table">
-              <caption class="sr-only">Top seven models ranked by intelligence, then cost and response time</caption>
-              <thead role="rowgroup"><tr role="row"><th scope="col">Model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
-              <tbody data-rankings-body role="rowgroup"></tbody>
-            </table>
-          </div>
-          <p data-rankings-status role="status">Loading verified rankings…</p>
-          <button type="button" class="button small" data-refresh-rankings>Refresh rankings</button>
-          <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. Rank by intelligence, then lower cost and faster response. Multiple models from the same company can qualify. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
-        </section>
-        <details><summary>All AI websites</summary>
         <div class="ai-launchpad-scroll">
           <a class="ai-ext-pill" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/claude-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Claude
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/claude-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Claude</span>
           </a>
           <a class="ai-ext-pill" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/chatgpt-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> ChatGPT
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/chatgpt-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">ChatGPT</span>
           </a>
           <a class="ai-ext-pill" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Gemini
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Gemini</span>
           </a>
           <a class="ai-ext-pill" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/google-aistudio-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Google AI Studio
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/google-aistudio-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Google AI Studio</span>
           </a>
           <a class="ai-ext-pill" href="https://grok.com/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/grok-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Grok
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/grok-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Grok</span>
           </a>
           <a class="ai-ext-pill" href="https://www.kimi.com/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/kimi-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Kimi
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/kimi-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Kimi</span>
           </a>
           <a class="ai-ext-pill" href="https://www.meta.ai/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/meta-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Meta AI
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/meta-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Meta AI</span>
           </a>
           <a class="ai-ext-pill" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/qwen-symbol.png" alt="" width="16" height="16" aria-hidden="true"> Qwen
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/qwen-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Qwen</span>
           </a>
           <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/zai-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> Z.ai
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/zai-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">Z.ai</span>
           </a>
           <a class="ai-ext-pill" href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="16" height="16" aria-hidden="true"> DeepSeek
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-label">DeepSeek</span>
           </a>
         </div>
-        </details>
-      </div>
+      </section>
+
+      <section class="ai-panel ai-rankings" aria-label="AI model comparison">
+        <div class="ai-panel-head">
+          <h3>Intelligence, without the wait.</h3>
+          <button type="button" class="ai-refresh-btn" data-refresh-rankings>${icon("refresh")} <span>Refresh</span></button>
+        </div>
+        <div class="ai-rankings-scroll">
+          <table class="ai-rankings-table" role="table">
+            <caption class="sr-only">One model per company: each company's most intelligent model that answers end to end within 35 seconds</caption>
+            <thead role="rowgroup"><tr role="row"><th scope="col">Company &amp; model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
+            <tbody data-rankings-body role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p data-rankings-status role="status">Loading verified rankings…</p>
+        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. Each company is represented once, by its most intelligent model that answers end to end within 35 seconds; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
+      </section>
 
       <div class="creator-layout">
         <div class="ai-control-bar">
@@ -209,23 +243,33 @@
       .slice(0, 50) || "pigsfield-ai";
   }
 
+  // Block-level output carries its own blank lines from the moment it is produced, so the
+  // paragraph pass below sees each block as its own chunk and the newline-to-<br> rule never
+  // fires inside a list, a heading or a code block. Without that, list items arrived
+  // separated by a stray <br> and a full list margin each, which is what made a plain
+  // three-bullet answer look like three unrelated fragments.
+  const blockHtml = (html) => `\n\n${html}\n\n`;
+
   function formatMarkdown(text) {
     let escaped = escapeHtml(text);
     escaped = escaped.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
-      return `<pre class="ai-code-block"><code>${code.trim()}</code></pre>`;
+      return blockHtml(`<pre class="ai-code-block"><code>${code.trim()}</code></pre>`);
     });
     escaped = escaped.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
-    escaped = escaped.replace(/^### (.*$)/gim, '<h4 class="ai-msg-h3">$1</h4>');
-    escaped = escaped.replace(/^## (.*$)/gim, '<h3 class="ai-msg-h2">$1</h3>');
-    escaped = escaped.replace(/^# (.*$)/gim, '<h2 class="ai-msg-h1">$1</h2>');
+    escaped = escaped.replace(/^### (.*$)/gim, (match, heading) => blockHtml(`<h4 class="ai-msg-h3">${heading}</h4>`));
+    escaped = escaped.replace(/^## (.*$)/gim, (match, heading) => blockHtml(`<h3 class="ai-msg-h2">${heading}</h3>`));
+    escaped = escaped.replace(/^# (.*$)/gim, (match, heading) => blockHtml(`<h2 class="ai-msg-h1">${heading}</h2>`));
     escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     escaped = escaped.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    escaped = escaped.replace(/^\s*[-*]\s+(.*$)/gim, '<li class="ai-msg-li">$1</li>');
-    escaped = escaped.replace(/(<li class="ai-msg-li">[\s\S]*?<\/li>)/g, '<ul class="ai-msg-ul">$1</ul>');
-    const paragraphs = escaped.split(/\n\n+/);
-    return paragraphs.map(p => {
-      if (p.startsWith('<pre') || p.startsWith('<h') || p.startsWith('<ul')) return p;
-      return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+    escaped = escaped.replace(/^[ \t]*[-*]\s+(.*$)/gim, '<li class="ai-msg-li">$1</li>');
+    escaped = escaped.replace(/(?:<li class="ai-msg-li">[\s\S]*?<\/li>\s*)+/g, (run) => {
+      return blockHtml(`<ul class="ai-msg-ul">${run.replace(/<\/li>\s*<li/g, '</li><li').trim()}</ul>`);
+    });
+    return escaped.split(/\n\n+/).map((paragraph) => {
+      const chunk = paragraph.trim();
+      if (!chunk) return '';
+      if (/^<(?:pre|ul|h[1-4])\b/.test(chunk)) return chunk;
+      return `<p>${chunk.replace(/\n/g, '<br>')}</p>`;
     }).join('');
   }
 
@@ -324,6 +368,45 @@
     }
   }
 
+  /** The company's own mark, or its initial when the leaderboard names a lab we have none for. */
+  function companyMark(company) {
+    const mark = COMPANY_MARKS[company];
+    const tile = element("span", "ai-ranking-logo");
+    if (!mark) {
+      tile.classList.add("pill-monogram");
+      tile.textContent = String(company || "?").trim().charAt(0).toUpperCase() || "?";
+      tile.setAttribute("aria-hidden", "true");
+      return tile;
+    }
+    const image = element("img", "pill-logo" + (mark.mono ? " is-mono" : ""));
+    image.src = assetUrl("assets/" + mark.file);
+    image.alt = "";
+    image.width = 24;
+    image.height = 24;
+    image.loading = "lazy";
+    image.setAttribute("aria-hidden", "true");
+    tile.append(image);
+    return tile;
+  }
+
+  /** A metric cell: its small-screen label, the value, and — for the index — a share bar. */
+  function metricCell(label, value, share) {
+    const cell = element("td", "ai-ranking-metric");
+    cell.setAttribute("role", "cell");
+    const metricLabel = element("span", "ai-metric-label", label);
+    metricLabel.setAttribute("aria-hidden", "true");
+    cell.append(metricLabel, element("strong", "", value));
+    if (Number.isFinite(share)) {
+      const meter = element("span", "ai-meter");
+      meter.setAttribute("aria-hidden", "true");
+      const fill = element("span", "ai-meter-fill");
+      fill.style.width = Math.max(6, Math.min(100, share * 100)).toFixed(1) + "%";
+      meter.append(fill);
+      cell.append(meter);
+    }
+    return cell;
+  }
+
   function initRankings(root) {
     const body = root.querySelector("[data-rankings-body]");
     const status = root.querySelector("[data-rankings-status]");
@@ -334,11 +417,15 @@
       if (loading) return;
       loading = true;
       refresh.disabled = true;
+      root.querySelector(".ai-rankings")?.classList.add("is-loading");
       try {
         const response = await fetch("/api/model-rankings", { signal: AbortSignal.timeout(25000), cache: "no-store" });
         if (!response.ok) throw new Error("Unavailable");
         const data = await response.json();
         if (!Array.isArray(data.models) || !data.models.length || !Number.isFinite(Date.parse(data.updatedAt))) throw new Error("Invalid rankings");
+        // The bar is read against the leading model, so the spread between labs is visible
+        // on a scale that never advertises an absolute score the source does not publish.
+        const leader = data.models.reduce((best, model) => Math.max(best, model.intelligence), 0) || 1;
         const rows = data.models.map((model, index) => {
           const row = element("tr");
           row.setAttribute("role", "row");
@@ -350,26 +437,31 @@
           link.href = url.href;
           link.target = "_blank";
           link.rel = "noopener noreferrer";
-          company.append(element("span", "ai-ranking-rank", String(index + 1).padStart(2, "0")), link, element("span", "ai-ranking-company", model.company));
-          row.append(company);
-          for (const [label, value] of [["Intelligence", model.intelligence], ["USD / task", "$" + model.cost.toFixed(2)], ["Total time", model.seconds.toFixed(2) + " s"]]) {
-            const cell = element("td", "ai-ranking-metric");
-            cell.setAttribute("role", "cell");
-            const metricLabel = element("span", "ai-metric-label", label);
-            metricLabel.setAttribute("aria-hidden", "true");
-            cell.append(metricLabel, element("strong", "", value));
-            row.append(cell);
-          }
+          const identity = element("span", "ai-ranking-identity");
+          identity.append(link, element("span", "ai-ranking-company", model.company));
+          // The row lays out inside the cell rather than as the cell, so the first column
+          // still participates in table layout and stays aligned with its heading.
+          const inner = element("span", "ai-ranking-model-inner");
+          inner.append(element("span", "ai-ranking-rank", String(index + 1).padStart(2, "0")), companyMark(model.company), identity);
+          company.append(inner);
+          row.append(
+            company,
+            metricCell("Intelligence", model.intelligence, model.intelligence / leader),
+            metricCell("USD / task", "$" + model.cost.toFixed(2)),
+            metricCell("Total time", model.seconds.toFixed(2) + " s")
+          );
           return row;
         });
         body.replaceChildren(...rows);
         const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
-        status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${rows.length < 7 ? " Only " + rows.length + " models have verified qualifying results." : ""}`;
+        const shortfall = rows.length < RANKED_COMPANIES ? ` Only ${rows.length} ${rows.length === 1 ? "company has" : "companies have"} verified qualifying results.` : "";
+        status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${shortfall}`;
       } catch (_) {
         status.textContent = body.children.length ? "Refresh unavailable — showing previously loaded data. Try again shortly." : "Rankings unavailable. Open Artificial Analysis or try refreshing shortly.";
       } finally {
         loading = false;
         refresh.disabled = false;
+        root.querySelector(".ai-rankings")?.classList.remove("is-loading");
       }
     }
     refresh.addEventListener("click", load);
