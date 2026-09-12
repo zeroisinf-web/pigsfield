@@ -233,6 +233,64 @@ The interface is keyboard navigable, responsive, reduced-motion aware and design
 
 Pigsfield is volunteer-led. Growth should come from usefulness, trustworthy sources, accessibility and community correction—not inflated claims or search-engine tricks.
 
+### Ask AI
+
+Ask AI sits beside AI Studio in the persistent dock on every page. It reads the page a
+learner already has open — title, breadcrumb, headings and visible text, plus the YouTube
+item if one is playing — and opens with three or four things worth doing on *that* page,
+before anything is typed. It answers by text or by voice, and turns a video into revision
+notes that save as a PDF through the browser's own print dialogue.
+
+`js/ask-ai.js` builds its own dialog on first open, the way `js/player.js` does, so nothing
+about the panel weighs on a first visit that never opens it. Voice uses the browser's
+`SpeechRecognition` and `speechSynthesis`; where a browser has neither, those controls are
+hidden rather than offered and then failing. There is no PDF library — the site's CSP allows
+no third-party script, and a print stylesheet reflows for A4 and Letter without one.
+
+`POST /api/ask` (`worker/ask.mjs`) is same-origin only, rate limited on the same buckets as
+`/api/ai`, and bounded at 24 KB of request body and 6,000 characters of page text. The page
+is passed to the model inside a `<page_context>` block with an instruction that says to treat
+it as information about the page and never as instructions — a page about prompt injection is
+a page, not a command. When a YouTube video is on the page its address is attached so the
+notes come from the video itself; only a verified 11-character video id is ever forwarded,
+because Gemini fetches that address itself. If the model or the video refuses, the request is
+retried without it and the answer says which it worked from.
+
+**Providing the key.** Ask AI answers 503 "not configured" until a key is set, and nothing
+else on the site is affected.
+
+1. Create an API key at [Google AI Studio](https://aistudio.google.com/apikey).
+2. Store it as a Worker secret — it is never committed, and never reaches the browser:
+   ```
+   npx wrangler secret put GEMINI_API_KEY
+   ```
+3. Optionally pin the model. `DEFAULT_GEMINI_MODEL` in `worker/ask.mjs` is what ships;
+   set `GEMINI_MODEL` to override it without a code deploy, either as a plain var in
+   `wrangler.jsonc` or in the Cloudflare dashboard:
+   ```
+   npx wrangler secret put GEMINI_MODEL
+   ```
+   Use the exact id from Google's model list — `models.list` on the Gemini API, or the model
+   picker in AI Studio. A name the account cannot use answers 502 rather than failing
+   silently, so check this first if Ask AI is reachable but never answers.
+
+**What the provider actually allows.** Two limits were measured against the live API and
+decide how well this works in production:
+
+- *Video input is a separate entitlement.* A key without it answers `403 "The caller does
+  not have permission"` to the YouTube part, in about a tenth of a second, and the notes are
+  then written from the title and the page text — which the answer says at the top rather
+  than implying it watched anything. The refusal is remembered for the life of the isolate,
+  so it costs one extra call once, not one on every request.
+- *The free tier allows 5 generate-content requests per minute* on `gemini-3.8-flash`.
+  Opening the panel spends one (the suggestions) and each question spends one, so a handful
+  of simultaneous visitors will see "Ask AI is busy right now". Enable billing on the Google
+  Cloud project behind the key before this is in front of real traffic. A quota error is
+  never retried — the retry would spend the allowance that just ran out.
+
+Run `node --test tests/ask.test.mjs` to check the request shape, the video guard, the quota
+behaviour, the unconfigured path and the upstream failure handling.
+
 ### AI launchpad model comparison
 
 The studio highlights Indus and Duck.ai above a row of ten AI chat sites, each carrying that

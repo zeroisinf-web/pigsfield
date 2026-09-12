@@ -1113,17 +1113,24 @@
       </div>`;
   }
 
+  /** The dock and dialog heads all draw from one 24-grid; this is that tag, written once. */
+  const uiIcon = (d) => `<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
+
   function dialogMarkup() {
     const mount = document.createElement("div");
     mount.innerHTML = `
-      <aside class="support-dock support-dock-left" aria-label="AI studio">
-        <button class="support-action ai-action" type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z"/></svg></span> AI Studio</button>
+      <aside class="support-dock support-dock-left" aria-label="AI studio and assistant">
+        <div class="support-action support-pair ai-pair">
+          <button type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</button>
+          <span class="support-divider" aria-hidden="true"></span>
+          <button type="button" data-open-ask>${uiIcon('M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 15.8a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.6-5.3c-.7.5-.8.8-.8 1.3h-1.7c0-1.2.4-1.8 1.3-2.4.8-.5 1-.8 1-1.3 0-.6-.5-1-1.2-1s-1.2.4-1.3 1.1H9.2c.1-1.6 1.3-2.7 3-2.7s2.9 1 2.9 2.5c0 1-.5 1.6-1.5 2.2Z')} Ask AI</button>
+        </div>
       </aside>
       <aside class="support-dock support-dock-right" aria-label="Support and feedback">
         <div class="support-action support-pair">
-          <button type="button" data-open-donate><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z"/></svg> Donate</button>
+          <button type="button" data-open-donate>${uiIcon('M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z')} Donate</button>
           <span class="support-divider" aria-hidden="true"></span>
-          <button type="button" data-open-feedback><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z"/></svg> Feedback</button>
+          <button type="button" data-open-feedback>${uiIcon('M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z')} Feedback</button>
         </div>
       </aside>
 
@@ -1149,7 +1156,7 @@
 
       <dialog class="site-dialog ai-studio-dialog" id="ai-studio-dialog" aria-labelledby="global-ai-title">
         <div class="dialog-head ai-dialog-head">
-          <h2 id="global-ai-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z"/></svg> AI Studio</h2>
+          <h2 id="global-ai-title">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')} AI Studio</h2>
           <button class="icon-button" type="button" data-close-dialog aria-label="Close AI studio">×</button>
         </div>
         <div class="dialog-body ai-dialog-body">
@@ -1221,12 +1228,16 @@
     if (focusTarget) setTimeout(() => focusTarget.focus(), 30);
   }
 
+  PF.showDialog = showDialog;
+
   function closeDialog(dialog) {
     if (!dialog) return;
-    if (dialog.id === "ai-studio-dialog" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    if (dialog.id === "ask-ai-dialog" && "speechSynthesis" in window) window.speechSynthesis.cancel();
     if (typeof dialog.close === "function") dialog.close();
     else dialog.removeAttribute("open");
   }
+
+  PF.closeDialog = closeDialog;
 
   let toastTimer;
   PF.toast = function (message) {
@@ -1396,7 +1407,7 @@
     if (!dialog || !mount) return;
     showDialog(dialog);
     if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js?v=05fa09e42cd2")
+      aiStudioPromise = loadScript("js/ai-studio.js?v=80060312b3bc")
         .then(() => {
           if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
           mount.replaceChildren();
@@ -1414,6 +1425,21 @@
     await aiStudioPromise;
   }
   PF.openAIStudio = openAIStudio;
+
+  // The panel builds its own dialog on first open, so nothing about it weighs on the
+  // navigation shell except this button and this loader.
+  let askAIPromise = null;
+  function openAskAI() {
+    if (!askAIPromise) {
+      askAIPromise = loadScript("js/ask-ai.js?v=8dbc4315c2e5").catch((error) => {
+        askAIPromise = null;
+        PF.toast("Ask AI could not start. Check your connection and try again.");
+        throw error;
+      });
+    }
+    return askAIPromise.then(() => PF.askAI && PF.askAI.open()).catch(() => {});
+  }
+  PF.openAskAI = openAskAI;
 
   function loadData(key) {
     window.PF_DATA = window.PF_DATA || {};
@@ -1877,6 +1903,7 @@
     qsa("[data-open-search]").forEach((button) => button.addEventListener("click", () => openSearch()));
     qsa("[data-open-saved]").forEach((button) => button.addEventListener("click", () => { renderSaved(); showDialog(qs("#saved-dialog")); }));
     qsa("[data-open-ai]").forEach((button) => button.addEventListener("click", openAIStudio));
+    qsa("[data-open-ask]").forEach((button) => button.addEventListener("click", openAskAI));
     qsa("[data-open-donate]").forEach((button) => button.addEventListener("click", () => showDialog(qs("#donate-dialog"))));
     qsa("[data-open-feedback]").forEach((button) => button.addEventListener("click", () => showDialog(qs("#feedback-dialog"))));
     qsa("[data-copy]").forEach((button) => button.addEventListener("click", () => PF.copy(button.dataset.copy)));

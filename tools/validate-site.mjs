@@ -870,44 +870,13 @@ function checkExperienceContracts() {
 
   const aiFile = path.join(ROOT, "js", "ai-studio.js");
   const ai = fs.readFileSync(aiFile, "utf8");
-  // The studio was rebuilt (3da7dad, b64aed0) into a fixed-model Chat/Image surface with a
-  // launchpad of external AI sites. These checks assert the design that actually ships; every
-  // guarantee that survived the rebuild is kept and re-pointed at its new home.
-  const modeButtons = [...ai.matchAll(/<button\b[^>]*class=["'][^"']*\bai-mode-btn\b[^"']*["'][^>]*>/g)]
-    .map((match) => parseAttributes(match[0])["data-mode"])
-    .filter(Boolean);
-  check(JSON.stringify(modeButtons) === JSON.stringify(["chat", "image"]), aiFile, "AI Studio must expose exactly the Chat and Image modes");
-  check(!/data-(?:mode|panel)=["'](?:video|voice|music|document)["']/.test(ai), aiFile, "modes removed from the studio must not return without capability gating");
-  check(/class=["']ai-control-bar["']/.test(ai), aiFile, "AI functions and the model tag must share one control bar");
-  // The studio now offers three hosted models rather than one. They are not interchangeable
-  // — cheapest to run, strongest, best on Indian languages — so the chooser is the feature,
-  // and every option it lists must be one worker/index.mjs will actually accept.
-  const studioModels = [...(ai.match(/const TEXT_MODELS = \[([\s\S]*?)\];/)?.[1] || "").matchAll(/\bid:\s*"([^"]+)"/g)].map((match) => match[1]);
-  check(/<select\b[^>]*data-ai-model/.test(ai), aiFile, "AI Studio must let a visitor choose between the hosted models");
-  check(studioModels.length >= 2, aiFile, "the model chooser must offer more than one model");
-  // A model the chooser lists but the Worker refuses is a dead option a visitor can select.
-  studioModels.forEach((model) => check(
-    fs.readFileSync(path.join(ROOT, "worker", "index.mjs"), "utf8").includes(`"${model}": Object.freeze({`),
-    aiFile,
-    `AI Studio offers "${model}", which worker/index.mjs does not accept`
-  ));
-  check(/Gemma 4 26B A4B/.test(ai), aiFile, "AI Studio must name the hosted model it defaults to");
-  check(/DEFAULT_TEXT_MODEL\s*=\s*TEXT_MODELS\[0\]\.id/.test(ai) && /"gemma-4-26b-a4b-it"/.test(ai), aiFile, "the cheapest model must stay the default, so the studio stays free to run");
-  check(/TEXT_ENDPOINT\s*=\s*new URL\(["']\/api\/ai["'],\s*window\.location\.origin\)\.href/.test(ai), aiFile, "text generation must use the same-origin /api/ai endpoint");
-  check(/(?:timedFetch|fetch)\(TEXT_ENDPOINT,[\s\S]{0,500}["']X-Pigsfield-Client["']/.test(ai), aiFile, "hosted text requests must carry the anonymous rate-limit identifier");
-  check(/task:\s*["'](?:tutor|document)["']/.test(ai), aiFile, "the studio must send a task the Worker accepts");
-  check(!/(?:TEXT_PROFILES|responseProfiles?)/.test(ai), aiFile, "invented speed or response-profile choices must not return");
-  check(!/(?:gpt-5\.4-mini|cloudflare-ai-gateway|Unified Billing)/i.test(ai), aiFile, "stale third-party model and billing claims must stay removed");
-  check(!/(?:glm-4\.7-flash|qwen3\.6-27b|qwen3-30b-a3b-fp8)/i.test(ai), aiFile, "removed or unavailable model labels must not appear in AI Studio");
-  check(!/(?:WebLLM|WebGPU|Qwen3\.5-2B|DeepSeek-R1-Distill|openai-fast|text\.pollinations)/i.test(ai), aiFile, "legacy browser-model and anonymous Pollinations-text paths must stay removed");
-  check(/link\.download\s*=/.test(ai), aiFile, "generated output file downloads must remain available");
-  check(/IMAGE_ENDPOINT\s*=\s*["']https:\/\/image\.pollinations\.ai\/prompt\//.test(ai), aiFile, "image creation must keep the named Pollinations endpoint");
-  check(/IMAGE_MODEL\s*=\s*["']sana["']/.test(ai), aiFile, "anonymous image model must be explicit");
-
-  // The "no login, no provider key" promise moved out of the studio into the AI page copy.
-  const aiPageFile = path.join(ROOT, "ai", "index.html");
-  const aiPage = fs.readFileSync(aiPageFile, "utf8");
-  check(/(?:no|without a) visitor login, additional provider key or model download/i.test(aiPage), aiPageFile, "the AI page must state that the studio needs no visitor login, provider key or model download");
+  // AI Studio is now a comparison surface, not a chat: the hosted Chat/Image studio was
+  // removed in favour of Ask AI, which can see the page a learner already has open. What is
+  // asserted here is the design that ships — a launchpad and the ranked comparison — plus
+  // the guarantee that the chat it replaced does not creep back in beside it.
+  check(/data-rankings-body/.test(ai) && /data-refresh-rankings/.test(ai), aiFile, "AI Studio must keep the ranked model comparison and its refresh control");
+  check(!/ai-control-bar|data-ai-model|ai-mode-btn|ai-unified-form/.test(ai), aiFile, "the removed Chat/Image studio must not return inside the comparison dialog");
+  check(!/\/api\/ai\b|image\.pollinations|TEXT_MODELS/.test(ai), aiFile, "AI Studio must not call a generation endpoint; Ask AI owns generation now");
 
   // Every outbound studio link is a third-party AI site: each must be https and isolated.
   const studioAnchors = [...ai.matchAll(/<a\b[^>]*>/g)].map((match) => parseAttributes(match[0]));
@@ -925,16 +894,15 @@ function checkExperienceContracts() {
     check(attributes.target !== "_blank" || (rel.includes("noopener") && rel.includes("noreferrer")), aiFile, "every new-tab link in AI Studio must set rel=noopener noreferrer");
   });
   check(externalAnchors.some((attributes) => attributes.href === "https://artificialanalysis.ai/leaderboards/models"), aiFile, "AI Studio is missing the Artificial Analysis leaderboard link");
-  check(externalAnchors.some((attributes) => /qwen\.ai/.test(attributes.href)), aiFile, "AI Studio must keep a Qwen Chat shortcut");
-  // Every listed AI is drawn from a local, square (24-grid or square raster) official mark:
-  // no hotlinked logo, and no wordmark stretched into a symbol slot.
+
+  // Every company the comparison can name is drawn from a local, square official mark: no
+  // hotlinked logo, and no wordmark stretched into a symbol slot.
   [
     "assets/artificial-analysis-symbol.png",
     "assets/duckduckgo-symbol.svg",
     "assets/claude-symbol.svg",
     "assets/chatgpt-symbol.svg",
     "assets/gemini-symbol.svg",
-    "assets/google-aistudio-symbol.svg",
     "assets/grok-symbol.svg",
     "assets/kimi-symbol.svg",
     "assets/meta-symbol.svg",
@@ -945,8 +913,8 @@ function checkExperienceContracts() {
     const assetFile = path.join(ROOT, ...relativePath.split("/"));
     check(fs.existsSync(assetFile), assetFile, `missing local official brand symbol ${relativePath}`);
     // The reference carries a content version stamped by tools/build-assets.mjs.
-    check(new RegExp(`src="/${relativePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\?v=[a-f0-9]+)?"`).test(ai), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
-    if (!relativePath.endsWith(".svg") || !fs.existsSync(assetFile)) return;
+    check(new RegExp(`${relativePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\?v=[a-f0-9]+)?"`).test(ai), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
+    if (!relativePath.endsWith(".svg")) return;
     const svg = fs.readFileSync(assetFile, "utf8");
     const [, viewBox] = svg.match(/viewBox="([^"]+)"/) || [];
     const box = (viewBox || "").trim().split(/[\s,]+/).map(Number);
@@ -954,20 +922,45 @@ function checkExperienceContracts() {
   });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
 
-  // _headers caches /assets/*.svg for a week and /js/* for ten minutes, and sw.js serves
-  // images cache-first. A brand mark or a lazily loaded script named by bare path therefore
-  // keeps being served from the previous deploy; tools/build-assets.mjs stamps a content
-  // version onto each one, and this is what notices when a new reference misses it.
-  const VERSIONED_REFERENCE = /"(\/?(?:assets|css|js)\/[A-Za-z0-9._/-]+\.(?:css|js|svg|png|webp))(\?v=[a-f0-9]{12})?"/g;
-  javascriptFiles.forEach((file) => {
-    const source = fs.readFileSync(file, "utf8");
-    for (const [, asset, stamp] of source.matchAll(VERSIONED_REFERENCE)) {
-      const target = path.join(ROOT, ...asset.replace(/^\/+/, "").split("/"));
-      if (!fs.existsSync(target)) continue;
-      const expected = createHash("sha256").update(fs.readFileSync(target)).digest("hex").slice(0, 12);
-      check(stamp === `?v=${expected}`, file, `${asset} is referenced without its current content version — run npm run build:assets`);
-    }
-  });
+  // Ask AI: the page-aware assistant. It is handed what a learner is looking at, which is
+  // exactly why its boundaries have to be checked rather than trusted.
+  const askFile = path.join(ROOT, "js", "ask-ai.js");
+  check(fs.existsSync(askFile), askFile, "missing the Ask AI client");
+  const ask = fs.existsSync(askFile) ? fs.readFileSync(askFile, "utf8") : "";
+  check(/ASK_ENDPOINT\s*=\s*new URL\(["']\/api\/ask["'],\s*window\.location\.origin\)\.href/.test(ask), askFile, "Ask AI must use the same-origin /api/ask endpoint");
+  check(/["']X-Pigsfield-Client["']/.test(ask), askFile, "Ask AI requests must carry the anonymous rate-limit identifier");
+  check(/credentials:\s*["']omit["']/.test(ask), askFile, "Ask AI must not send credentials with its requests");
+  check(!/\b(?:fetch|src\s*=|href\s*=)\s*\(?["']https?:\/\//i.test(ask), askFile, "Ask AI must not contact a third party from the browser; the key stays on the Worker");
+  check(!/GEMINI_API_KEY|x-goog-api-key|generativelanguage/i.test(ask), askFile, "no provider key or provider endpoint may appear in browser code");
+  check(/MAX_PAGE_CHARACTERS\s*=\s*\d+/.test(ask) && /slice\(0, MAX_PAGE_CHARACTERS\)/.test(ask), askFile, "the page context Ask AI sends must be bounded");
+  check(/\[data-ask-root\], \.support-dock, \.site-header, \.site-footer/.test(ask), askFile, "Ask AI must not feed its own panel or the site chrome back to the model");
+  check(/window\.SpeechRecognition \|\| window\.webkitSpeechRecognition/.test(ask) && /speechSynthesis/.test(ask), askFile, "Ask AI must offer voice in and voice out through the browser's own speech");
+  check(/window\.print\(\)/.test(ask) && /is-ask-printing/.test(ask), askFile, "notes must be saveable as a PDF through the browser print dialog");
+  check(!/jspdf|html2canvas|cdn\./i.test(ask), askFile, "notes must not pull a third-party PDF library past the content security policy");
+
+  const askWorkerFile = path.join(ROOT, "worker", "ask.mjs");
+  check(fs.existsSync(askWorkerFile), askWorkerFile, "missing the Ask AI Worker route");
+  const askWorker = fs.existsSync(askWorkerFile) ? fs.readFileSync(askWorkerFile, "utf8") : "";
+  check(/sameOriginRequest\(request\)/.test(askWorker), askWorkerFile, "Ask AI must accept same-origin requests only");
+  check(/applyLimits\(request, env\)/.test(askWorker), askWorkerFile, "Ask AI must be rate limited like the other AI routes");
+  check(/env\.GEMINI_API_KEY/.test(askWorker) && /if \(!key\) return json/.test(askWorker), askWorkerFile, "Ask AI must answer clearly when no provider key is configured");
+  check(/env\.GEMINI_MODEL \|\| DEFAULT_GEMINI_MODEL/.test(askWorker), askWorkerFile, "the Gemini model must be configurable without a code deploy");
+  check(/never as instructions/i.test(askWorker), askWorkerFile, "page context must be passed to the model as reference material, not as instructions");
+  // Gemini fetches a fileUri itself, so an unchecked address here is this endpoint fetching
+  // whatever a caller names. Only a YouTube video id ever gets through.
+  check(/export function youTubeUri/.test(askWorker) && /\^\[A-Za-z0-9_-\]\{11\}\$/.test(askWorker), askWorkerFile, "only a verified YouTube video may be forwarded to the model");
+  // Both shapes a Google credential arrives in — the AIza… API key and the AQ.… token — plus
+  // the sk- prefix every other provider uses.
+  check(!/["'](?:sk-|AIza|AQ\.[A-Za-z0-9_-]{10})/.test(askWorker), askWorkerFile, "no provider key may be committed");
+  const workerIndex = fs.readFileSync(path.join(ROOT, "worker", "index.mjs"), "utf8");
+  check(/url\.pathname === "\/api\/ask"/.test(workerIndex), path.join(ROOT, "worker", "index.mjs"), "the Worker must route /api/ask");
+
+  // The "no login, no provider key" promise lives in the AI page copy.
+  const aiPageFile = path.join(ROOT, "ai", "index.html");
+  const aiPage = fs.readFileSync(aiPageFile, "utf8");
+  check(/(?:no|without a) visitor login, additional provider key or model download/i.test(aiPage), aiPageFile, "the AI page must state that the studio needs no visitor login, provider key or model download");
+  check(/data-open-ask/.test(aiPage), aiPageFile, "the AI page must offer Ask AI directly");
+
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
 

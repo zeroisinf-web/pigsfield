@@ -23,6 +23,13 @@
   //   npx wrangler secret put ACCOUNT_PEPPER
   // then add, with the real id printed by d1 create:
   //   "d1_databases": [{ "binding": "DB", "database_name": "pigsfield", "database_id": "<id>" }],
+  // Ask AI needs one secret and accepts one optional override. Neither is declared here,
+  // because a secret must not be committed and the model id is deployment-specific:
+  //   npx wrangler secret put GEMINI_API_KEY     # from https://aistudio.google.com/apikey
+  //   npx wrangler secret put GEMINI_MODEL       # optional; overrides DEFAULT_GEMINI_MODEL
+  // Without GEMINI_API_KEY, /api/ask answers a clear "not configured" and the rest of the
+  // site is unaffected. See README.
+  //
   // The daily AI spend ceiling is also opt-in. Without AI_BUDGET the per-address rate
   // limits still apply but nothing bounds the day's total spend, so add this once the
   // Durable Object migration is accepted:
