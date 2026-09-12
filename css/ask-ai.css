@@ -327,10 +327,92 @@
 .ask-send-btn:disabled { opacity: .5; cursor: progress; }
 .ask-note { margin: 0; padding-inline: .3rem; color: var(--ink-soft); font-size: .7rem; }
 
-/* --- Dialog ---------------------------------------------------------------- */
+/* --- The panel ------------------------------------------------------------- */
 
-.ask-dialog { width: min(44rem, calc(100% - 1.25rem)); max-height: min(94vh, 54rem); border-radius: 1.35rem; }
-.ask-dialog-body { max-height: calc(94vh - 5rem); padding: 1rem; }
+/* Docked, never modal. The page keeps its own scroll and its own clicks, so a learner can
+   read, scroll and play a video with this open beside them — which is the whole point of an
+   assistant that answers about what is on the screen. */
+.ask-panel {
+  position: fixed;
+  z-index: 129;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(26rem, 100%);
+  border-left: 1px solid var(--line);
+  background: var(--paper-strong);
+  color: var(--ink);
+  box-shadow: -18px 0 48px -28px color-mix(in srgb, var(--ink) 60%, transparent);
+  animation: askPanelIn 200ms cubic-bezier(.16, 1, .3, 1);
+}
+@keyframes askPanelIn { from { transform: translateX(12px); opacity: 0; } }
+.ask-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  padding: .85rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-strong);
+}
+.ask-panel-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.ask-panel-title .ask-icon { width: 1.15rem; height: 1.15rem; color: var(--brand); }
+.ask-panel-close {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.ask-panel-close:hover { color: var(--ink); border-color: var(--line-strong); }
+.ask-panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: .85rem; }
+.ask-panel .ask-thread { max-height: none; flex: 1; }
+.ask-panel .ask-root { min-height: 100%; }
+
+/* Wide screens give the panel its own column rather than letting it cover the reading it
+   is describing; the dock and the video step aside by the same amount. */
+@media (min-width: 60rem) {
+  body.has-ask-panel { --ask-inset: 26rem; padding-right: var(--ask-inset); }
+  body.has-ask-panel .support-dock-right { right: calc(0.85rem + var(--ask-inset)); }
+  body.has-ask-panel .player-dialog { translate: calc(var(--ask-inset) / -2) 0; max-width: calc(100vw - var(--ask-inset) - 1.2rem); }
+}
+/* Narrow screens get a bottom sheet, so the page above it stays readable. */
+@media (max-width: 59.99rem) {
+  .ask-panel {
+    top: auto;
+    left: 0;
+    height: min(78vh, 34rem);
+    width: auto;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -18px 48px -28px color-mix(in srgb, var(--ink) 60%, transparent);
+    animation: askSheetIn 220ms cubic-bezier(.16, 1, .3, 1);
+  }
+  @keyframes askSheetIn { from { transform: translateY(16px); opacity: 0; } }
+  body.has-ask-panel .support-dock { display: none; }
+  .ask-panel-body { padding: .65rem; }
+}
+
 .ask-loading {
   display: grid;
   min-height: 16rem;
@@ -343,12 +425,6 @@
 }
 .ask-loading strong { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; }
 .ask-loading span { color: var(--ink-soft); font-size: .85rem; }
-@media (max-width: 480px) {
-  .ask-dialog { width: calc(100% - .5rem); max-height: 96vh; border-radius: 1rem; }
-  .ask-dialog-body { max-height: calc(96vh - 4.8rem); padding: .65rem; }
-  .ask-thread { max-height: 42vh; padding: .7rem; }
-  .ask-msg { max-width: 96%; }
-}
 
 /* --- The printable notes sheet --------------------------------------------- */
 

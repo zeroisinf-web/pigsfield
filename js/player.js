@@ -132,6 +132,7 @@
   let activePlayer = null;
   let activeIframe = null;
   let activePlaylistSignature = "";
+  let veil = null;
 
   function ensureDialog() {
     if (dialog) return dialog;
@@ -158,6 +159,11 @@
         <span>If playback is blocked by the owner, age settings or a privacy extension, use the original source.</span>
         <a class="button small ghost" id="player-source" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
       </div>`;
+    veil = document.createElement("div");
+    veil.className = "player-veil";
+    veil.hidden = true;
+    veil.addEventListener("click", close);
+    document.body.appendChild(veil);
     document.body.appendChild(dialog);
     playerStage = dialog.querySelector("#player-stage");
     frameHost = dialog.querySelector("#player-frame");
@@ -274,7 +280,13 @@
     activeIframe = null;
     if (frameHost) frameHost.textContent = "";
     resetPlaylist();
+    if (veil) veil.hidden = true;
+    document.removeEventListener("keydown", escapeToClose);
     if (dialog && dialog.open) dialog.close();
+  }
+
+  function escapeToClose(event) {
+    if (event.key === "Escape") close();
   }
 
   function playerError(code) {
@@ -317,7 +329,9 @@
     iframe.src = embedUrl(media);
     activeIframe = iframe;
     frameHost.appendChild(iframe);
-    dialog.showModal();
+    if (veil) veil.hidden = false;
+    dialog.show();
+    document.addEventListener("keydown", escapeToClose);
 
     try {
       const YT = await loadApi();

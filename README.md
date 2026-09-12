@@ -241,8 +241,15 @@ item if one is playing — and opens with three or four things worth doing on *t
 before anything is typed. It answers by text or by voice, and turns a video into revision
 notes that save as a PDF through the browser's own print dialogue.
 
-`js/ask-ai.js` builds its own dialog on first open, the way `js/player.js` does, so nothing
-about the panel weighs on a first visit that never opens it. Voice uses the browser's
+`js/ask-ai.js` builds its own panel on first open, so nothing about it weighs on a first
+visit that never opens it. The panel is deliberately **not** a modal dialog: Ask AI answers
+about what is on the screen, and a modal makes the page behind it inert and paints a
+backdrop over it — which took away the lesson being asked about, and hid the support dock
+with it. It docks to the right on a wide screen (the page and the video step aside by the
+same amount) and rises as a bottom sheet on a phone, and the page keeps its own scroll and
+its own clicks throughout. The video player is non-modal for the same reason, with a
+`.player-veil` element doing what `::backdrop` used to: it dims and closes on a click, but
+the dock and the panel sit above it, so a learner can watch and ask at once. Voice uses the browser's
 `SpeechRecognition` and `speechSynthesis`; where a browser has neither, those controls are
 hidden rather than offered and then failing. There is no PDF library — the site's CSP allows
 no third-party script, and a print stylesheet reflows for A4 and Letter without one.
