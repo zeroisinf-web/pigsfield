@@ -63,7 +63,12 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   // generated pages need, the table that points a search result at the page holding the
   // resource, and the one list of six pillar names that the header, the sidebar and the
   // footer all read.
-  withinBudget("js/site.js", { raw: 90 * 1024, gzip: 26 * 1024, brotli: 24 * 1024 });
+  // Raw moved 90 -> 91 KiB when Ask AI put a second button in the persistent dock. Its panel
+  // and dialog are not here — js/ask-ai.js builds those on first open — so what the shell
+  // gained is the button, one loader and a shared uiIcon() that paid for part of it. The
+  // gzip and Brotli ceilings are deliberately unchanged: those are the bytes a visitor waits
+  // for, and they remain the binding constraint.
+  withinBudget("js/site.js", { raw: 91 * 1024, gzip: 26 * 1024, brotli: 24 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
   // pixel-identically. This budget stops a future re-export shipping the full axes again.

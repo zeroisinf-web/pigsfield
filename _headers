@@ -28,14 +28,16 @@
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   # Report-Only for now so a mistake cannot black out the site. Every origin below
   # is one the code actually contacts: youtube.com for the IFrame API in
-  # js/player.js, youtube-nocookie.com for the embed, and image.pollinations.ai for
-  # AI Studio images. Cover art no longer needs an exception at all — i.ytimg.com and
+  # js/player.js and youtube-nocookie.com for the embed. image.pollinations.ai left
+  # with the AI Studio image mode; Ask AI is answered by the Worker at /api/ask, so
+  # the browser contacts no model provider at all. Cover art no longer needs an
+  # exception either — i.ytimg.com and
   # cdn.cloudflare.steamstatic.com were dropped when PigBang and the player moved to
   # the same-origin /api/poster route, which is the point of that route: the browser
   # contacts nobody to paint a card. style-src needs 'unsafe-inline' only because of
   # the style="--visual-hue:..." attribute written in js/watch.js.
   # Promote to Content-Security-Policy once the browser console reports no violations.
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://image.pollinations.ai; font-src 'self'; connect-src 'self' https://image.pollinations.ai; frame-src https://www.youtube-nocookie.com https://www.youtube.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
 
 # HTML must stay revalidated so a deploy is visible immediately.
 /
