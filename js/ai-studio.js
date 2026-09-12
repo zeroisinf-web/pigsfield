@@ -28,6 +28,11 @@
     return base.replace(/\/+$/, "") + "/" + path.replace(/^\/+/, "");
   }
 
+  const studioStyle = document.createElement("link");
+  studioStyle.rel = "stylesheet";
+  studioStyle.href = assetUrl("css/ai-studio.css?v=6efa0076bfe2");
+  document.head.append(studioStyle);
+
   // One line-art set, drawn to the same 24-grid and inheriting currentColor, replaces the
   // emoji that used to stand in for every control. Emoji are a different typeface on every
   // platform: they arrived at whatever weight and colour the OS felt like, sat off the
@@ -55,34 +60,34 @@
     <div data-ai-studio-root class="ai-studio-v2">
       <div class="ai-launchpad" aria-label="External AI Launchpad">
         <div class="ai-launchpad-header">
-          <span class="ai-launchpad-title">${icon("bolt")} Quick AI Launchpad</span>
+          <span class="ai-launchpad-title">${icon("bolt")} Discover & compare</span>
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
             <img class="pill-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="18" height="18" aria-hidden="true">
             <span class="pill-label">LLM Rankings</span>
-            <span class="pill-badge">Top</span>
+            <span class="pill-description">Independent benchmarks ↗</span>
           </a>
           <a class="ai-ext-pill featured" href="https://indus.sarvam.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-label">Indus · Sarvam</span><span class="pill-badge">Featured</span>
+            <span class="pill-label">Indus</span><span class="pill-description">By Sarvam ↗</span>
           </a>
           <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-label">Duck.ai</span><span class="pill-badge">Featured</span>
+            <span class="pill-label">Duck.ai</span><span class="pill-description">By DuckDuckGo ↗</span>
           </a>
         </div>
         <section class="ai-rankings" aria-label="AI model comparison">
-          <h3>Top 7 companies · responses within 35 seconds</h3>
-          <p>Highest intelligence first, one qualifying model per listed company. Ties use lower cost, then faster response.</p>
-          <div class="ai-rankings-scroll" tabindex="0" role="region" aria-label="Model comparison table">
-            <table class="ai-rankings-table">
-              <caption>Artificial Analysis benchmark comparison</caption>
-              <thead><tr><th scope="col">Company / website</th><th scope="col">Model</th><th scope="col">Intelligence index</th><th scope="col">Cost / task (USD)</th><th scope="col">Total response (s)</th></tr></thead>
-              <tbody data-rankings-body></tbody>
+          <h3>Intelligence, without the wait.</h3>
+          <p>Top 7 models · up to 35 seconds · any company.</p>
+          <div class="ai-rankings-scroll">
+            <table class="ai-rankings-table" role="table">
+              <caption class="sr-only">Top seven models ranked by intelligence, then cost and response time</caption>
+              <thead role="rowgroup"><tr role="row"><th scope="col">Model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
+              <tbody data-rankings-body role="rowgroup"></tbody>
             </table>
           </div>
           <p data-rankings-status role="status">Loading verified rankings…</p>
           <button type="button" class="button small" data-refresh-rankings>Refresh rankings</button>
-          <p>Source: <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>. Checks for updates hourly while in use. Benchmark cost and end-to-end time are not chat subscription prices or guaranteed website speeds; the exact model may not be offered in the linked chat app.</p>
+          <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. Rank by intelligence, then lower cost and faster response. Multiple models from the same company can qualify. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
         </section>
         <details><summary>All AI websites</summary>
         <div class="ai-launchpad-scroll">
@@ -150,8 +155,8 @@
         <div class="ai-chat-thread" id="ai-chat-thread" aria-live="polite">
           <div class="ai-thread-welcome" id="ai-welcome-box">
             <div class="welcome-icon">${icon("spark")}</div>
-            <h3>What would you like to create or learn today?</h3>
-            <p>Type a question in <strong>Chat</strong> mode or switch the toggle to <strong>Image</strong> mode to generate AI artwork. No account, no key, nothing to download.</p>
+            <h3>A little curiosity. A new possibility.</h3>
+            <p>Ask a question, work through an idea, or create an image. Start here—no account needed.</p>
           </div>
         </div>
 
@@ -334,22 +339,32 @@
         if (!response.ok) throw new Error("Unavailable");
         const data = await response.json();
         if (!Array.isArray(data.models) || !data.models.length || !Number.isFinite(Date.parse(data.updatedAt))) throw new Error("Invalid rankings");
-        const rows = data.models.map(model => {
+        const rows = data.models.map((model, index) => {
           const row = element("tr");
-          const company = element("td");
-          const link = element("a", "", model.company);
+          row.setAttribute("role", "row");
+          const company = element("td", "ai-ranking-model");
+          company.setAttribute("role", "cell");
+          const link = element("a", "ai-ranking-name", model.name);
           const url = new URL(model.website);
           if (url.protocol !== "https:") throw new Error("Invalid website");
           link.href = url.href;
           link.target = "_blank";
           link.rel = "noopener noreferrer";
-          company.append(link);
-          row.append(company, element("td", "", model.name), element("td", "", model.intelligence), element("td", "", "$" + model.cost.toFixed(2)), element("td", "", model.seconds.toFixed(2)));
+          company.append(element("span", "ai-ranking-rank", String(index + 1).padStart(2, "0")), link, element("span", "ai-ranking-company", model.company));
+          row.append(company);
+          for (const [label, value] of [["Intelligence", model.intelligence], ["USD / task", "$" + model.cost.toFixed(2)], ["Total time", model.seconds.toFixed(2) + " s"]]) {
+            const cell = element("td", "ai-ranking-metric");
+            cell.setAttribute("role", "cell");
+            const metricLabel = element("span", "ai-metric-label", label);
+            metricLabel.setAttribute("aria-hidden", "true");
+            cell.append(metricLabel, element("strong", "", value));
+            row.append(cell);
+          }
           return row;
         });
         body.replaceChildren(...rows);
         const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
-        status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${rows.length < 7 ? " Only " + rows.length + " companies have verified qualifying results." : ""}`;
+        status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${rows.length < 7 ? " Only " + rows.length + " models have verified qualifying results." : ""}`;
       } catch (_) {
         status.textContent = body.children.length ? "Refresh unavailable — showing previously loaded data. Try again shortly." : "Rankings unavailable. Open Artificial Analysis or try refreshing shortly.";
       } finally {

@@ -2,20 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseRankings, handleModelRankings } from '../worker/model-rankings.mjs';
 const html = rows => `<table><tr>${['Model','Creator','Artificial Analysis Intelligence Index','Cost per TaskUSD','TotalResponse (s)'].map(c => `<th>${c}</th>`).join('')}</tr>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
-test('filters total response, preserves zero cost, deduplicates company and breaks ties', () => {
+test('filters total response, preserves zero cost, allows repeated companies and breaks ties', () => {
   const data = parseRankings(html([
     ['Slow','OpenAI',99,1,35.01], ['Missing','Meta',95,1,'--'], ['Provisional','Google','90*',1,10],
     ['A','OpenAI',80,2,35], ['B','OpenAI',80,0,34], ['C','Anthropic',81,3,33],
     ['D','xAI',79,1,30], ['E','SpaceXAI',78,1,29]
   ]));
-  assert.deepEqual(data.models.map(m => m.name), ['C','B','D']);
+  assert.deepEqual(data.models.map(m => m.name), ['C','B','A','D','E']);
   assert.equal(data.models[1].cost, 0);
 });
-test('caps at seven distinct listed companies and accepts exactly 35 seconds', () => {
-  const creators = ['OpenAI','Anthropic','Meta','Google','Alibaba','Z AI','DeepSeek','Kimi','xAI'];
+test('caps at seven models and accepts exactly 35 seconds', () => {
+  const creators = ['OpenAI','OpenAI','Anthropic','Anthropic','New Lab','Z AI','DeepSeek','Kimi','xAI'];
   const data = parseRankings(html(creators.map((c,i) => [`Model ${i}`,c,90-i,1,35])));
   assert.equal(data.models.length, 7);
-  assert.equal(new Set(data.models.map(m => m.company)).size, 7);
+  assert.equal(new Set(data.models.map(m => m.company)).size, 5);
 });
 test('fails closed when source markup or metrics disappear', () => {
   assert.throws(() => parseRankings('<html>Challenge</html>'));

@@ -1,0 +1,66 @@
+/* Calm, responsive studio: every panel fits its available width. */
+.ai-studio-v2 { gap: 1.5rem; min-width: 0; container-type: inline-size; }
+.ai-studio-v2 *, .ai-studio-v2 *::before, .ai-studio-v2 *::after { box-sizing: border-box; }
+.ai-launchpad { padding: clamp(.85rem, 3vw, 1.75rem); gap: 1rem; background: var(--paper-strong); border-radius: 1rem; min-width: 0; }
+.ai-launchpad-title { letter-spacing: .12em; font-size: .7rem; }
+.ai-launchpad-group { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.ai-launchpad-group .featured { display: flex; flex-wrap: wrap; justify-content: flex-start; align-content: center; min-width: 0; min-height: 4.5rem; padding: .85rem; border-radius: .7rem; background: var(--paper); box-shadow: none; border: 1px solid var(--line); white-space: normal; }
+.ai-launchpad-group .featured:hover { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 5%, var(--paper)); }
+.pill-description { display: block; flex-basis: 100%; color: var(--ink-soft); font-size: .7rem; font-weight: 400; }
+.ai-launchpad-scroll { display: flex; flex-wrap: wrap; overflow: visible; gap: .5rem; padding-top: .75rem; }
+.ai-launchpad-scroll .ai-ext-pill { min-height: 2.75rem; border-radius: .5rem; white-space: normal; }
+.ai-rankings { min-width: 0; }
+.ai-rankings h3 { font-family: var(--font-serif); font-size: clamp(1.45rem, 4vw, 2rem); font-weight: 500; line-height: 1.15; margin: .25rem 0 .65rem; letter-spacing: -.025em; }
+.ai-rankings p { font-size: .78rem; color: var(--ink-soft); line-height: 1.6; margin-block: .65rem; }
+.ai-rankings-scroll { width: 100%; margin-block: 1.1rem; }
+.ai-rankings-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .85rem; }
+.ai-rankings-table th { text-align: left; color: var(--ink-soft); font-size: .7rem; font-weight: 500; padding: .65rem .5rem; border-bottom: 1px solid var(--line); }
+.ai-rankings-table th:first-child { width: 49%; }
+.ai-rankings-table td { padding: .9rem .5rem; border-bottom: 1px solid var(--line); vertical-align: middle; overflow-wrap: anywhere; }
+.ai-ranking-model { position: relative; padding-left: 2.3rem !important; }
+.ai-ranking-rank { position: absolute; left: .3rem; top: 1rem; font-size: .7rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ai-ranking-name { display: block; color: var(--ink); font-weight: 600; text-decoration: none; line-height: 1.4; }
+.ai-ranking-name:hover { color: var(--brand); text-decoration: underline; }
+.ai-ranking-company { display: block; margin-top: .2rem; color: var(--ink-soft); font-size: .72rem; }
+.ai-ranking-metric strong { font-weight: 500; font-variant-numeric: tabular-nums; }
+.ai-metric-label { display: none; }
+.ai-launchpad details summary { cursor: pointer; font-size: .78rem; padding-block: .65rem; color: var(--ink-soft); }
+.ai-rankings [data-refresh-rankings] { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; min-height: 2.75rem; }
+.ai-methodology { margin-top: .5rem; }
+.ai-control-bar { flex-wrap: wrap; gap: .65rem; padding: .85rem; border-radius: .85rem; }
+.ai-model-tag { flex: 1 1 15rem; max-width: 100%; }
+.ai-model-field { flex: 1; min-width: 0; }
+.ai-model-select { width: 100%; min-height: 2.75rem; }
+.ai-mode-btn, .ai-clear-btn { min-height: 2.75rem; }
+.ai-chat-thread { background: var(--paper-strong); padding: 1rem; min-width: 0; }
+.ai-thread-welcome { padding: 2.5rem .75rem; }
+.ai-thread-welcome h3 { font-family: var(--font-serif); font-size: clamp(1.35rem, 4vw, 1.9rem); line-height: 1.2; font-weight: 500; }
+.ai-thread-welcome p { color: var(--ink-soft); line-height: 1.6; }
+.ai-studio-v2 .creator-layout, .ai-studio-v2 .ai-input-wrapper, .ai-studio-v2 .ai-unified-form { min-width: 0; }
+.ai-studio-v2 textarea { max-width: 100%; }
+.ai-studio-v2 pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+@container (max-width: 620px) {
+  .ai-launchpad-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-launchpad-group .featured:first-child { grid-column: 1 / -1; min-height: 3rem; }
+  .ai-launchpad-group .featured:first-child .pill-description { flex-basis: auto; margin-left: auto; }
+  .ai-rankings-table, .ai-rankings-table tbody { display: block; }
+  .ai-rankings-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+  .ai-rankings-table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: .9rem; margin-bottom: .65rem; border: 1px solid var(--line); border-radius: .75rem; background: var(--paper); }
+  .ai-rankings-table td { display: block; padding: .25rem 0; border: 0; min-width: 0; }
+  .ai-rankings-table .ai-ranking-model { grid-column: 1 / -1; padding: 0 0 .85rem 1.85rem !important; }
+  .ai-ranking-rank { top: .25rem; left: 0; }
+  .ai-ranking-metric { border-top: 1px solid var(--line) !important; padding-top: .65rem !important; }
+  .ai-metric-label { display: block; font-size: .64rem; color: var(--ink-soft); margin-bottom: .25rem; }
+  .ai-ranking-metric strong { font-size: .9rem; }
+  .ai-control-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .ai-model-tag { grid-column: 1 / -1; }
+  .ai-mode-toggle { width: fit-content; max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .ai-studio-dialog .dialog-body { padding: .65rem; }
+  .ai-studio-dialog .dialog-head { padding: .85rem; }
+  .ai-launchpad { padding: .85rem; }
+}
+
+.ai-msg, .ai-msg-content { min-width: 0; overflow-wrap: anywhere; }
+.ai-msg-actions { flex-wrap: wrap; }
