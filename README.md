@@ -276,6 +276,7 @@ else on the site is affected.
    `wrangler.jsonc` or in the Cloudflare dashboard:
    ```
    npx wrangler secret put GEMINI_MODEL
+   npx wrangler secret put GEMINI_SUGGEST_MODEL   # optional; own quota for suggestions
    ```
    Use the exact id from Google's model list — `models.list` on the Gemini API, or the model
    picker in AI Studio. A name the account cannot use answers 502 rather than failing
@@ -289,11 +290,19 @@ decide how well this works in production:
   then written from the title and the page text — which the answer says at the top rather
   than implying it watched anything. The refusal is remembered for the life of the isolate,
   so it costs one extra call once, not one on every request.
-- *The free tier allows 5 generate-content requests per minute* on `gemini-3.8-flash`.
-  Opening the panel spends one (the suggestions) and each question spends one, so a handful
-  of simultaneous visitors will see "Ask AI is busy right now". Enable billing on the Google
-  Cloud project behind the key before this is in front of real traffic. A quota error is
-  never retried — the retry would spend the allowance that just ran out.
+- *The free tier allows 5 generate-content requests per minute* on `gemini-3.8-flash`, and
+  it is metered per model (`limit: 5, model: …`). **Enabling billing on the Google Cloud
+  project behind the key is the real fix**; everything below only makes the allowance go
+  further.
+
+  The client spends as little of it as it can: suggestions are cached per page for the life
+  of the tab, so re-opening the panel on the same page costs nothing (five opens on one page
+  went from five requests to one), and a 429 starts a one-minute cooldown during which
+  neither the automatic suggestion round nor a question is sent — it says how long is left
+  instead. A quota error is never retried either, since the retry would spend the allowance
+  that just ran out. Set `GEMINI_SUGGEST_MODEL` to a lighter model to give the automatic
+  round its own allowance so it stops competing with the questions people actually ask;
+  unset, it uses the same model and nothing changes.
 
 Run `node --test tests/ask.test.mjs` to check the request shape, the video guard, the quota
 behaviour, the unconfigured path and the upstream failure handling.

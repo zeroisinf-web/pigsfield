@@ -944,7 +944,10 @@ function checkExperienceContracts() {
   check(/sameOriginRequest\(request\)/.test(askWorker), askWorkerFile, "Ask AI must accept same-origin requests only");
   check(/applyLimits\(request, env\)/.test(askWorker), askWorkerFile, "Ask AI must be rate limited like the other AI routes");
   check(/env\.GEMINI_API_KEY/.test(askWorker) && /if \(!key\) return json/.test(askWorker), askWorkerFile, "Ask AI must answer clearly when no provider key is configured");
-  check(/env\.GEMINI_MODEL \|\| DEFAULT_GEMINI_MODEL/.test(askWorker), askWorkerFile, "the Gemini model must be configurable without a code deploy");
+  check(/env\.GEMINI_MODEL/.test(askWorker) && /\|\| DEFAULT_GEMINI_MODEL/.test(askWorker), askWorkerFile, "the Gemini model must be configurable without a code deploy");
+  // The provider meters its free allowance per model, so the automatic suggestion round must
+  // be able to spend a different one than the questions a learner actually asks.
+  check(/env\.GEMINI_SUGGEST_MODEL \|\| env\.GEMINI_MODEL/.test(askWorker), askWorkerFile, "suggestions must be able to use their own model, and fall back to the main one");
   check(/never as instructions/i.test(askWorker), askWorkerFile, "page context must be passed to the model as reference material, not as instructions");
   // Gemini fetches a fileUri itself, so an unchecked address here is this endpoint fetching
   // whatever a caller names. Only a YouTube video id ever gets through.

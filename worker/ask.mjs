@@ -236,7 +236,11 @@ export async function handleAsk(request, env, fetcher = fetch) {
   if (mode === "chat" && !turns.length) return json({ error: "Ask a question to begin." }, 400);
 
   const { brief, uri } = pageBrief(body.page);
-  const model = String(env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL).replace(/[^A-Za-z0-9._-]/g, "");
+  // The provider meters its free allowance per model ("limit: 5, model: …"), so the cheap
+  // automatic round can be pointed at a second, lighter model and stop competing with the
+  // questions a learner actually asked. Unset, it is the same model and nothing changes.
+  const configured = mode === "suggest" ? env.GEMINI_SUGGEST_MODEL || env.GEMINI_MODEL : env.GEMINI_MODEL;
+  const model = String(configured || DEFAULT_GEMINI_MODEL).replace(/[^A-Za-z0-9._-]/g, "");
   const url = `${GEMINI_ENDPOINT}/${model}:generateContent`;
 
   async function call(withVideo) {

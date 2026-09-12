@@ -1430,7 +1430,7 @@
   let askAIPromise = null;
   function openAskAI() {
     if (!askAIPromise) {
-      askAIPromise = loadScript("js/ask-ai.js?v=0d177eb8ade2").catch((error) => {
+      askAIPromise = loadScript("js/ask-ai.js?v=3783174d9542").catch((error) => {
         askAIPromise = null;
         PF.toast("Ask AI could not start. Check your connection and try again.");
         throw error;
