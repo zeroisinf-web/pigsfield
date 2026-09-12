@@ -235,23 +235,38 @@ Pigsfield is volunteer-led. Growth should come from usefulness, trustworthy sour
 
 ### AI launchpad model comparison
 
-The studio highlights Indus and Duck.ai; Qwen remains in “All AI websites”.
+The studio highlights Indus and Duck.ai above a row of ten AI chat sites, each carrying that
+company's own square brand mark from `assets/*-symbol.svg`. The four marks that are drawn in
+a single flat black are tagged `is-mono` and inverted in the dark theme, because an `<img>`
+cannot inherit the page's text colour.
+
 `GET /api/model-rankings` reads the public [Artificial Analysis leaderboard](https://artificialanalysis.ai/leaderboards/models)
-and selects up to seven qualifying models across companies (multiple models per company are allowed). Only rows with
-numeric intelligence, cost per task (USD), and total response time at or below 35 seconds
-qualify. Sort order is intelligence descending, cost ascending, then response time ascending.
-The linked chat website may not expose the exact benchmark model/configuration.
+and lists **one model per company: each company's most intelligent model that answers end to
+end within 35 seconds, for the ten highest-placed companies** (`MAX_SECONDS` and
+`MAX_COMPANIES` in `worker/model-rankings.mjs`). Only rows with numeric intelligence, cost
+per task (USD), and total response time at or below 35 seconds qualify; ties are settled by
+lower cost, then faster response, then name. A leaderboard's top is usually three labs
+listing six configurations of the same two models, which told a visitor nothing about who
+else is worth opening — one row per company answers that instead. The linked chat website
+may not expose the exact benchmark model/configuration.
+
+`selectModels()` is exported and idempotent, so cached and bundled selections written under
+an earlier rule are re-read through the current one instead of being served as stored.
 
 No API key or scheduled job is required. The Cloudflare Worker refreshes on requests after
 one hour, coalesces simultaneous requests in an isolate, and keeps a seven-day edge cache.
 The open studio refreshes hourly while visible and also offers a refresh button. If the
 source cannot be read, the Worker serves cached data or `assets/model-rankings.json`, marked
 stale with its original timestamp. There is a one-minute retry cooldown after failures.
-The bundled snapshot was parsed from the public leaderboard during implementation.
+The bundled snapshot was parsed from the public leaderboard during implementation; it was
+captured under the older seven-row rule, so it only holds verified rows for the companies
+that were in that top seven, and the fallback shows correspondingly fewer companies rather
+than inventing numbers for the rest.
 
 The scraper checks column names and rejects missing/provisional metrics instead of inventing
 values. Source markup or column changes may require updating `worker/model-rankings.mjs`;
 the UI will report stale/unavailable data until that is repaired. Company aliases and chat
 links are maintained in that module. New models and companies sync automatically; unknown
-companies link to the source leaderboard. Mobile comparison rows stack into labeled cards.
+companies link to the source leaderboard and show a monogram where no local brand mark
+exists. Mobile comparison rows stack into labeled cards.
 Run `node --test tests/model-rankings.test.mjs` to check selection, caching, and failure behavior.

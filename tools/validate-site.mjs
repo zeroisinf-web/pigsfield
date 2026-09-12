@@ -926,10 +926,30 @@ function checkExperienceContracts() {
   });
   check(externalAnchors.some((attributes) => attributes.href === "https://artificialanalysis.ai/leaderboards/models"), aiFile, "AI Studio is missing the Artificial Analysis leaderboard link");
   check(externalAnchors.some((attributes) => /qwen\.ai/.test(attributes.href)), aiFile, "AI Studio must keep a Qwen Chat shortcut");
-  ["assets/artificial-analysis-symbol.png", "assets/qwen-symbol.png"].forEach((relativePath) => {
+  // Every listed AI is drawn from a local, square (24-grid or square raster) official mark:
+  // no hotlinked logo, and no wordmark stretched into a symbol slot.
+  [
+    "assets/artificial-analysis-symbol.png",
+    "assets/duckduckgo-symbol.svg",
+    "assets/claude-symbol.svg",
+    "assets/chatgpt-symbol.svg",
+    "assets/gemini-symbol.svg",
+    "assets/google-aistudio-symbol.svg",
+    "assets/grok-symbol.svg",
+    "assets/kimi-symbol.svg",
+    "assets/meta-symbol.svg",
+    "assets/qwen-symbol.svg",
+    "assets/zai-symbol.svg",
+    "assets/deepseek-symbol.svg"
+  ].forEach((relativePath) => {
     const assetFile = path.join(ROOT, ...relativePath.split("/"));
     check(fs.existsSync(assetFile), assetFile, `missing local official brand symbol ${relativePath}`);
     check(ai.includes(`src="/${relativePath}"`), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
+    if (!relativePath.endsWith(".svg") || !fs.existsSync(assetFile)) return;
+    const svg = fs.readFileSync(assetFile, "utf8");
+    const [, viewBox] = svg.match(/viewBox="([^"]+)"/) || [];
+    const box = (viewBox || "").trim().split(/[\s,]+/).map(Number);
+    check(box.length === 4 && box[2] > 0 && box[2] === box[3], assetFile, `${relativePath} must be a square brand mark, not a wordmark`);
   });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
