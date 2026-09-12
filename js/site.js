@@ -1123,7 +1123,7 @@
         <div class="support-action support-pair ai-pair">
           <button type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</button>
           <span class="support-divider" aria-hidden="true"></span>
-          <button type="button" data-open-ask>${uiIcon('M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 15.8a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.6-5.3c-.7.5-.8.8-.8 1.3h-1.7c0-1.2.4-1.8 1.3-2.4.8-.5 1-.8 1-1.3 0-.6-.5-1-1.2-1s-1.2.4-1.3 1.1H9.2c.1-1.6 1.3-2.7 3-2.7s2.9 1 2.9 2.5c0 1-.5 1.6-1.5 2.2Z')} Ask AI</button>
+          <button type="button" data-open-ask aria-expanded="false" aria-controls="ask-ai-panel">${uiIcon('M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 15.8a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.6-5.3c-.7.5-.8.8-.8 1.3h-1.7c0-1.2.4-1.8 1.3-2.4.8-.5 1-.8 1-1.3 0-.6-.5-1-1.2-1s-1.2.4-1.3 1.1H9.2c.1-1.6 1.3-2.7 3-2.7s2.9 1 2.9 2.5c0 1-.5 1.6-1.5 2.2Z')} Ask AI</button>
         </div>
       </aside>
       <aside class="support-dock support-dock-right" aria-label="Support and feedback">
@@ -1232,7 +1232,6 @@
 
   function closeDialog(dialog) {
     if (!dialog) return;
-    if (dialog.id === "ask-ai-dialog" && "speechSynthesis" in window) window.speechSynthesis.cancel();
     if (typeof dialog.close === "function") dialog.close();
     else dialog.removeAttribute("open");
   }
@@ -1431,13 +1430,13 @@
   let askAIPromise = null;
   function openAskAI() {
     if (!askAIPromise) {
-      askAIPromise = loadScript("js/ask-ai.js?v=8dbc4315c2e5").catch((error) => {
+      askAIPromise = loadScript("js/ask-ai.js?v=0d177eb8ade2").catch((error) => {
         askAIPromise = null;
         PF.toast("Ask AI could not start. Check your connection and try again.");
         throw error;
       });
     }
-    return askAIPromise.then(() => PF.askAI && PF.askAI.open()).catch(() => {});
+    return askAIPromise.then(() => PF.askAI && PF.askAI.toggle()).catch(() => {});
   }
   PF.openAskAI = openAskAI;
 

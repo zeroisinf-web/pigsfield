@@ -23,7 +23,7 @@
 
   const askStyle = document.createElement("link");
   askStyle.rel = "stylesheet";
-  askStyle.href = assetUrl("css/ask-ai.css?v=d1f8ac9aad2f");
+  askStyle.href = assetUrl("css/ask-ai.css?v=ef695939bebb");
   document.head.append(askStyle);
 
   const ICONS = {
@@ -572,49 +572,75 @@
   }
 
   /**
-   * The dialog is built here rather than in the navigation shell, the way js/player.js
-   * builds the video dialog: nothing about this panel weighs on a first visit that never
-   * opens it.
+   * A panel, not a dialog. Ask AI is for asking *about what is on the screen*, so a modal —
+   * which makes the page behind it inert and paints a backdrop over it — took away the very
+   * thing being asked about: the lesson could not be scrolled, the video could not be
+   * paused, and the dock disappeared. This docks to the side instead and leaves the page
+   * entirely alive: read, scroll, play, and ask, at the same time.
    */
-  let dialog = null;
-  function ensureDialog() {
-    if (dialog) return dialog;
-    dialog = document.createElement("dialog");
-    dialog.className = "site-dialog ask-dialog";
-    dialog.id = "ask-ai-dialog";
-    dialog.setAttribute("aria-labelledby", "ask-ai-title");
-    dialog.innerHTML = `
-      <div class="dialog-head">
-        <h2 id="ask-ai-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS.spark}</svg> Ask AI</h2>
-        <button class="icon-button" type="button" data-close-dialog aria-label="Close Ask AI">×</button>
+  let panel = null;
+  function ensurePanel() {
+    if (panel) return panel;
+    panel = document.createElement("aside");
+    panel.className = "ask-panel";
+    panel.id = "ask-ai-panel";
+    panel.hidden = true;
+    panel.setAttribute("aria-label", "Ask AI");
+    panel.innerHTML = `
+      <div class="ask-panel-head">
+        <h2 class="ask-panel-title"><svg class="ask-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS.spark}</svg> Ask AI</h2>
+        <button class="ask-panel-close" type="button" data-ask-close aria-label="Close Ask AI">×</button>
       </div>
-      <div class="dialog-body ask-dialog-body"><div data-ask-mount></div></div>`;
-    document.body.appendChild(dialog);
-    dialog.querySelector("[data-close-dialog]").addEventListener("click", () => {
-      stopSpeaking();
-      if (typeof PF.closeDialog === "function") PF.closeDialog(dialog);
-      else if (typeof dialog.close === "function") dialog.close();
-    });
-    dialog.addEventListener("close", stopSpeaking);
-    return dialog;
+      <div class="ask-panel-body"><div data-ask-mount></div></div>`;
+    document.body.appendChild(panel);
+    panel.querySelector("[data-ask-close]").addEventListener("click", () => close());
+    return panel;
   }
 
-  /** Read the page, then cover it: the panel must never describe itself back to the model. */
+  function isOpen() {
+    return Boolean(panel) && !panel.hidden;
+  }
+
+  function close() {
+    if (!isOpen()) return;
+    stopSpeaking();
+    panel.hidden = true;
+    document.body.classList.remove("has-ask-panel");
+    document.removeEventListener("keydown", escapeToClose);
+    document.querySelectorAll("[data-open-ask]").forEach((button) => button.setAttribute("aria-expanded", "false"));
+  }
+
+  function escapeToClose(event) {
+    if (event.key === "Escape") close();
+  }
+
+  /** Read the page, then sit beside it — never over it. */
   function open() {
-    const host = ensureDialog();
+    const host = ensurePanel();
     const mount = host.querySelector("[data-ask-mount]");
     const mounted = Boolean(mount.querySelector("[data-ask-root]"));
     if (!mounted) mountAskAI(mount);
-    if (typeof PF.showDialog === "function") PF.showDialog(host);
-    else if (typeof host.showModal === "function") host.showModal();
-    else host.setAttribute("open", "");
+    host.hidden = false;
+    document.body.classList.add("has-ask-panel");
+    document.addEventListener("keydown", escapeToClose);
+    document.querySelectorAll("[data-open-ask]").forEach((button) => button.setAttribute("aria-expanded", "true"));
     // On a second open the learner has almost certainly moved on, so re-read what is there.
     if (mounted) refreshAskAI(mount);
     if (typeof PF.applyLanguageTo === "function") PF.applyLanguageTo(host);
+    // Only on a wide screen: on a phone, focusing throws up the keyboard and scrolls the
+    // "here is what I can see" line out of the sheet before it has been read.
+    const input = host.querySelector("[data-ask-input]");
+    if (input && window.matchMedia("(min-width: 60rem)").matches) window.setTimeout(() => input.focus(), 40);
     return host;
+  }
+
+  /** The dock button is a toggle: pressing it again puts the panel away. */
+  function toggle() {
+    if (isOpen()) { close(); return null; }
+    return open();
   }
 
   PF.mountAskAI = mountAskAI;
   PF.refreshAskAI = refreshAskAI;
-  PF.askAI = { mount: mountAskAI, refresh: refreshAskAI, open, readPage };
+  PF.askAI = { mount: mountAskAI, refresh: refreshAskAI, open, close, toggle, isOpen, readPage };
 })();
