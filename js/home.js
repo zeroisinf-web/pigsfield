@@ -14,7 +14,7 @@
     if (playerPromise) return playerPromise;
     playerPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "js/player.js";
+      script.src = "js/player.js?v=fa443615d49a";
       script.async = true;
       script.onload = () => PF.YouTube && typeof PF.YouTube.play === "function"
         ? resolve(PF.YouTube)

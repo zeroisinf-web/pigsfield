@@ -241,14 +241,15 @@ a single flat black are tagged `is-mono` and inverted in the dark theme, because
 cannot inherit the page's text colour.
 
 `GET /api/model-rankings` reads the public [Artificial Analysis leaderboard](https://artificialanalysis.ai/leaderboards/models)
-and lists **one model per company: each company's most intelligent model that answers end to
-end within 35 seconds, for the ten highest-placed companies** (`MAX_SECONDS` and
-`MAX_COMPANIES` in `worker/model-rankings.mjs`). Only rows with numeric intelligence, cost
-per task (USD), and total response time at or below 35 seconds qualify; ties are settled by
-lower cost, then faster response, then name. A leaderboard's top is usually three labs
-listing six configurations of the same two models, which told a visitor nothing about who
-else is worth opening — one row per company answers that instead. The linked chat website
-may not expose the exact benchmark model/configuration.
+and lists **the ten most intelligent models that answer end to end within 35 seconds, with at
+most two from any one company** (`MAX_MODELS`, `MAX_SECONDS` and `MAX_PER_COMPANY` in
+`worker/model-rankings.mjs`). Only rows with numeric intelligence, cost per task (USD), and
+total response time at or below 35 seconds qualify; ties are settled by lower cost, then
+faster response, then name. A leaderboard's top is usually three labs listing six
+configurations of the same two models, which told a visitor nothing about who else is worth
+opening. The cap of two keeps a lab's genuine second entry — a cheaper or faster
+configuration is a real choice — without letting one lab fill the table. The linked chat
+website may not expose the exact benchmark model/configuration.
 
 `selectModels()` is exported and idempotent, so cached and bundled selections written under
 an earlier rule are re-read through the current one instead of being served as stored.
@@ -259,9 +260,9 @@ The open studio refreshes hourly while visible and also offers a refresh button.
 source cannot be read, the Worker serves cached data or `assets/model-rankings.json`, marked
 stale with its original timestamp. There is a one-minute retry cooldown after failures.
 The bundled snapshot was parsed from the public leaderboard during implementation; it was
-captured under the older seven-row rule, so it only holds verified rows for the companies
-that were in that top seven, and the fallback shows correspondingly fewer companies rather
-than inventing numbers for the rest.
+captured when only the top seven rows were kept, so it holds verified rows for fewer
+companies than the table can show, and the fallback lists correspondingly fewer models
+rather than inventing numbers for the rest.
 
 The scraper checks column names and rejects missing/provisional metrics instead of inventing
 values. Source markup or column changes may require updating `worker/model-rankings.mjs`;
@@ -270,3 +271,23 @@ links are maintained in that module. New models and companies sync automatically
 companies link to the source leaderboard and show a monogram where no local brand mark
 exists. Mobile comparison rows stack into labeled cards.
 Run `node --test tests/model-rankings.test.mjs` to check selection, caching, and failure behavior.
+
+### Asset versions
+
+`npm run build:assets` stamps `?v=<12 hex of sha256>` onto every local reference to a
+stylesheet, script or brand asset — in HTML **and inside JavaScript** — and
+`npm run build` fails if any stamp is stale. Run it before `npm run build:sw`, because the
+service worker's cache name is a digest of the shell files it precaches.
+
+The JavaScript half exists because a deploy could otherwise land without being visible.
+`_headers` gives `/js/*` ten minutes plus a day of stale-while-revalidate and
+`/assets/*.svg` a week plus a month, and `sw.js` serves images cache-first — so
+`js/site.js` loading `js/ai-studio.js` by bare path, and `js/ai-studio.js` naming each brand
+mark by bare path, meant a replaced logo kept being served from the previous deploy for
+days. Only the font is safe to pin hard, because it is replaced by filename rather than
+edited in place; everything else now gets that same property from its URL.
+
+Stamping runs to a fixed point: versioning `js/ai-studio.js` changes its own content, which
+`js/site.js` refers to, which every page refers to. Adding a new reference needs nothing but
+the bare path — the build stamps it, and `tools/validate-site.mjs` reports any that is
+missing or stale.
