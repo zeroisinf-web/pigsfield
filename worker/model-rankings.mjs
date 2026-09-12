@@ -1,11 +1,13 @@
 // Read the public leaderboard's displayed metrics, not undocumented API fields.
 export const SOURCE = 'https://artificialanalysis.ai/leaderboards/models';
-// One table row per company: the most intelligent model that finishes end to end inside
-// MAX_SECONDS, for the MAX_COMPANIES highest-placed companies. A leaderboard's top is
-// usually three labs listing six configurations of the same two models, which told a
-// visitor nothing about who else is worth opening. A company appears once or not at all.
+// The MAX_MODELS most intelligent models that finish end to end inside MAX_SECONDS, with at
+// most MAX_PER_COMPANY of them from any one company. A leaderboard's top is usually three
+// labs listing six configurations of the same two models, which told a visitor nothing about
+// who else is worth opening; a cap of two keeps a lab's genuine second entry — a cheaper or
+// faster configuration is a real choice — without letting one lab fill the table.
 export const MAX_SECONDS = 35;
-export const MAX_COMPANIES = 10;
+export const MAX_MODELS = 10;
+export const MAX_PER_COMPANY = 2;
 const COMPANIES = {
   anthropic: ['Anthropic', 'https://claude.ai/new'],
   openai: ['OpenAI', 'https://chatgpt.com/'],
@@ -43,22 +45,37 @@ function better(a, b) {
   return b.intelligence - a.intelligence || a.cost - b.cost || a.seconds - b.seconds || a.name.localeCompare(b.name);
 }
 /**
- * Keep each company's single best qualifying model, then the leading MAX_COMPANIES of them.
- * Idempotent, so a cached or bundled selection can be re-read through it after the rule
- * changes without waiting for the source to be reachable again.
+ * Rank every qualifying model, then take the best `limit` of them while no company
+ * contributes more than `perCompany` entries. Idempotent, so a cached or bundled selection
+ * can be re-read through it after the rule changes without waiting for the source to be
+ * reachable again.
  */
-export function selectModels(candidates, limit = MAX_COMPANIES) {
-  const best = new Map();
+export function selectModels(candidates, limit = MAX_MODELS, perCompany = MAX_PER_COMPANY) {
+  const qualified = [];
+  const seen = new Set();
   for (const model of candidates || []) {
     if (!model || !model.name || !model.company || !model.website) continue;
     const { intelligence, cost, seconds } = model;
     // Missing values and provisional (*) scores cannot silently become zero.
     if (![intelligence, cost, seconds].every(Number.isFinite)) continue;
     if (seconds <= 0 || seconds > MAX_SECONDS) continue;
-    const held = best.get(model.company);
-    if (!held || better(model, held) < 0) best.set(model.company, model);
+    // The same configuration listed twice is one entry, not two of a company's allowance.
+    const identity = model.company + ":" + model.name;
+    if (seen.has(identity)) continue;
+    seen.add(identity);
+    qualified.push(model);
   }
-  return [...best.values()].sort(better).slice(0, limit);
+  qualified.sort(better);
+  const taken = new Map();
+  const models = [];
+  for (const model of qualified) {
+    const used = taken.get(model.company) || 0;
+    if (used >= perCompany) continue;
+    taken.set(model.company, used + 1);
+    models.push(model);
+    if (models.length === limit) break;
+  }
+  return models;
 }
 export function parseRankings(html, now = new Date()) {
   const candidates = [];
@@ -103,7 +120,7 @@ export async function handleModelRankings(request, env, cache = globalThis.cache
   // through the current one rather than served as they were stored.
   const reselect = data => data && { ...data, models: selectModels(data.models) };
   if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
-  const cacheKey = new Request(new URL('/api/model-rankings?selection=companies-v3', request.url));
+  const cacheKey = new Request(new URL('/api/model-rankings?selection=capped-v4', request.url));
   let previous;
   try { previous = reselect(await (await cache?.match(cacheKey))?.json()); } catch (_) { /* recover via source */ }
   if (previous?.models?.length && Date.now() - Date.parse(previous.updatedAt) < 3600000) return json({ ...previous, stale: false });

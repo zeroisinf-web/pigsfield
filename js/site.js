@@ -25,12 +25,12 @@
   };
 
   const dataScripts = {
-    school: "js/data/school.js",
-    teach: "js/data/teach.js",
-    tools: "js/data/tools.js",
-    exams: "js/data/exams.js",
-    pigbang: "js/data/pigbang.js",
-    govt: "js/data/govt.js"
+    school: "js/data/school.js?v=1dd425b231b5",
+    teach: "js/data/teach.js?v=591eca90da74",
+    tools: "js/data/tools.js?v=729f92db927f",
+    exams: "js/data/exams.js?v=f6be0ec7a33a",
+    pigbang: "js/data/pigbang.js?v=04fd284661b0",
+    govt: "js/data/govt.js?v=8588947b234b"
   };
 
   const dataPages = {
@@ -1021,7 +1021,7 @@
     mount.innerHTML = `
       <div class="container header-inner">
         <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}" aria-label="Pigsfield home">
-          <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="38" height="38" decoding="async">
+          <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="38" height="38" decoding="async">
           <span>Pigsfield</span>
         </a>
         <nav class="site-nav" id="site-nav" aria-label="The six pillars">
@@ -1071,7 +1071,7 @@
         <div class="footer-grid">
           <div class="footer-brand">
             <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}">
-              <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="38" height="38" loading="lazy" decoding="async">
+              <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="38" height="38" loading="lazy" decoding="async">
               <span>Pigsfield</span>
             </a>
             <p>Education within reach: learn freely, build practical capability and hold public systems to account. A volunteer-led, free-first discovery platform built for people across India.</p>
@@ -1130,7 +1130,7 @@
       <dialog class="site-sidebar" id="site-sidebar" aria-labelledby="site-sidebar-title">
         <div class="sidebar-head">
           <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}" aria-label="Pigsfield home">
-            <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp")}" alt="" width="34" height="34" loading="lazy" decoding="async">
+            <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="34" height="34" loading="lazy" decoding="async">
             <span>Pigsfield</span>
           </a>
           <button class="icon-button" type="button" data-close-dialog aria-label="Close menu">×</button>
@@ -1396,7 +1396,7 @@
     if (!dialog || !mount) return;
     showDialog(dialog);
     if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js")
+      aiStudioPromise = loadScript("js/ai-studio.js?v=05fa09e42cd2")
         .then(() => {
           if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
           mount.replaceChildren();

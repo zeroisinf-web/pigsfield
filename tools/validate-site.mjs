@@ -683,7 +683,7 @@ function checkExperienceContracts() {
   const siteFile = path.join(ROOT, "js", "site.js");
   const site = fs.readFileSync(siteFile, "utf8");
   check(/data-open-ai[\s\S]{0,400}data-open-donate[\s\S]{0,300}data-open-feedback/.test(site), siteFile, "AI Studio must stay beside Donate and Feedback in the persistent dock");
-  check(/loadScript\(["']js\/ai-studio\.js["']\)/.test(site), siteFile, "global AI Studio must lazy-load from every page");
+  check(/loadScript\(["']js\/ai-studio\.js(?:\?v=[a-f0-9]+)?["']\)/.test(site), siteFile, "global AI Studio must lazy-load from every page");
   check(/function\s+createNativeTranslatorFromClick[\s\S]{0,500}window\.Translator\.create\(\{[\s\S]{0,500}downloadprogress/.test(site), siteFile, "Hindi control must create and monitor the browser's language model directly from the click path");
   check(!/Translator\.availability\(/.test(site), siteFile, "native Translator creation must not lose user activation by awaiting availability first");
   check(/translatorInstance\.translate\(/.test(site), siteFile, "visible content must be translated in place by the browser model");
@@ -755,7 +755,7 @@ function checkExperienceContracts() {
   check(/Number\.isSafeInteger\(rolling\)[\s\S]{0,60}rolling\s*<\s*0/.test(homeRuntime), homeRuntimeFile, "homepage must reject a fabricated rolling count");
   check(/Number\.isSafeInteger\(total\)[\s\S]{0,60}total\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
   check(/dataset\.state\s*=\s*["']unavailable["']/.test(homeRuntime), homeRuntimeFile, "homepage must hide the count when its service is unavailable");
-  check(/event\.button\s*!==\s*0/.test(homeRuntime) && /script\.src\s*=\s*["']js\/player\.js["']/.test(homeRuntime) && /player\.play\(guide\.href/.test(homeRuntime), homeRuntimeFile, "plain tutorial activation must lazy-load the inbuilt player while modified clicks stay native");
+  check(/event\.button\s*!==\s*0/.test(homeRuntime) && /script\.src\s*=\s*["']js\/player\.js(?:\?v=[a-f0-9]+)?["']/.test(homeRuntime) && /player\.play\(guide\.href/.test(homeRuntime), homeRuntimeFile, "plain tutorial activation must lazy-load the inbuilt player while modified clicks stay native");
 
   const watchPageFile = path.join(ROOT, "watch", "index.html");
   const watchPage = fs.readFileSync(watchPageFile, "utf8");
@@ -944,7 +944,8 @@ function checkExperienceContracts() {
   ].forEach((relativePath) => {
     const assetFile = path.join(ROOT, ...relativePath.split("/"));
     check(fs.existsSync(assetFile), assetFile, `missing local official brand symbol ${relativePath}`);
-    check(ai.includes(`src="/${relativePath}"`), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
+    // The reference carries a content version stamped by tools/build-assets.mjs.
+    check(new RegExp(`src="/${relativePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\?v=[a-f0-9]+)?"`).test(ai), aiFile, `AI Studio must use the local official brand symbol ${relativePath}`);
     if (!relativePath.endsWith(".svg") || !fs.existsSync(assetFile)) return;
     const svg = fs.readFileSync(assetFile, "utf8");
     const [, viewBox] = svg.match(/viewBox="([^"]+)"/) || [];
@@ -952,6 +953,21 @@ function checkExperienceContracts() {
     check(box.length === 4 && box[2] > 0 && box[2] === box[3], assetFile, `${relativePath} must be a square brand mark, not a wordmark`);
   });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
+
+  // _headers caches /assets/*.svg for a week and /js/* for ten minutes, and sw.js serves
+  // images cache-first. A brand mark or a lazily loaded script named by bare path therefore
+  // keeps being served from the previous deploy; tools/build-assets.mjs stamps a content
+  // version onto each one, and this is what notices when a new reference misses it.
+  const VERSIONED_REFERENCE = /"(\/?(?:assets|css|js)\/[A-Za-z0-9._/-]+\.(?:css|js|svg|png|webp))(\?v=[a-f0-9]{12})?"/g;
+  javascriptFiles.forEach((file) => {
+    const source = fs.readFileSync(file, "utf8");
+    for (const [, asset, stamp] of source.matchAll(VERSIONED_REFERENCE)) {
+      const target = path.join(ROOT, ...asset.replace(/^\/+/, "").split("/"));
+      if (!fs.existsSync(target)) continue;
+      const expected = createHash("sha256").update(fs.readFileSync(target)).digest("hex").slice(0, 12);
+      check(stamp === `?v=${expected}`, file, `${asset} is referenced without its current content version — run npm run build:assets`);
+    }
+  });
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");
 

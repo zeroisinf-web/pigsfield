@@ -8,9 +8,9 @@
   const IMAGE_MODEL = "sana";
   const AI_CLIENT_STORAGE_KEY = "pigsfield-ai-client-v1";
   const AI_MODEL_STORAGE_KEY = "pigsfield-ai-model-v1";
-  // Mirrors MAX_COMPANIES in worker/model-rankings.mjs: the comparison lists one model for
-  // each of the ten highest-placed companies, so a short table is worth explaining.
-  const RANKED_COMPANIES = 10;
+  // Mirrors MAX_MODELS in worker/model-rankings.mjs: the comparison lists the ten most
+  // intelligent qualifying models, so a short table is worth explaining.
+  const RANKED_MODELS = 10;
 
   // The three hosted models worker/index.mjs accepts. Every one of them runs on the same
   // same-origin endpoint, so the studio's promise holds whichever is chosen: no visitor
@@ -57,19 +57,21 @@
     refresh: '<path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"/>'
   };
 
-  // One row of the comparison is one company, so each row carries that company's own mark.
-  // A company the leaderboard names that has no local mark gets a monogram instead of a
-  // broken image: new labs appear on that table without a deployment.
+  // Each comparison row carries its company's own mark. A company the leaderboard names that
+  // has no local mark gets a monogram instead of a broken image, so new labs appear on that
+  // table without a deployment. The paths are whole string literals on purpose:
+  // tools/build-assets.mjs stamps a content version onto each one, and without it a replaced
+  // logo keeps being served from the week-long asset cache in _headers.
   const COMPANY_MARKS = {
-    "Anthropic": { file: "claude-symbol.svg" },
-    "OpenAI": { file: "chatgpt-symbol.svg", mono: true },
-    "Google": { file: "gemini-symbol.svg" },
-    "SpaceXAI": { file: "grok-symbol.svg", mono: true },
-    "Moonshot AI": { file: "kimi-symbol.svg", mono: true },
-    "Meta": { file: "meta-symbol.svg" },
-    "Alibaba": { file: "qwen-symbol.svg" },
-    "Z AI": { file: "zai-symbol.svg", mono: true },
-    "DeepSeek": { file: "deepseek-symbol.svg" }
+    "Anthropic": { file: "assets/claude-symbol.svg?v=a4cc9a78d519" },
+    "OpenAI": { file: "assets/chatgpt-symbol.svg?v=8326d397d1d8", mono: true },
+    "Google": { file: "assets/gemini-symbol.svg?v=9294e427fb3e" },
+    "SpaceXAI": { file: "assets/grok-symbol.svg?v=365459438e4a", mono: true },
+    "Moonshot AI": { file: "assets/kimi-symbol.svg?v=93dd8dcaea08", mono: true },
+    "Meta": { file: "assets/meta-symbol.svg?v=0974e509d66b" },
+    "Alibaba": { file: "assets/qwen-symbol.svg?v=63e0c8b36a25" },
+    "Z AI": { file: "assets/zai-symbol.svg?v=a3988f0efa5d", mono: true },
+    "DeepSeek": { file: "assets/deepseek-symbol.svg?v=1f7d6dc2bdd3" }
   };
 
   function icon(name, extraClass) {
@@ -84,7 +86,7 @@
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/artificial-analysis-symbol.png" alt="" width="24" height="24" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/artificial-analysis-symbol.png?v=64685c6de905" alt="" width="24" height="24" aria-hidden="true"></span>
             <span class="pill-text"><span class="pill-label">LLM Rankings</span><span class="pill-description">Independent benchmarks</span></span>
             <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
@@ -94,50 +96,50 @@
             <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
           <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer" title="Open Duck.ai by DuckDuckGo">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg" alt="" width="24" height="24" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg?v=2fe1a0269c21" alt="" width="24" height="24" aria-hidden="true"></span>
             <span class="pill-text"><span class="pill-label">Duck.ai</span><span class="pill-description">By DuckDuckGo</span></span>
             <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
           </a>
         </div>
         <div class="ai-launchpad-scroll">
           <a class="ai-ext-pill" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/claude-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/claude-symbol.svg?v=a4cc9a78d519" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Claude</span>
           </a>
           <a class="ai-ext-pill" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/chatgpt-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/chatgpt-symbol.svg?v=8326d397d1d8" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">ChatGPT</span>
           </a>
           <a class="ai-ext-pill" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/gemini-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/gemini-symbol.svg?v=9294e427fb3e" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Gemini</span>
           </a>
           <a class="ai-ext-pill" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/google-aistudio-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/google-aistudio-symbol.svg?v=55fb9e7e8733" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Google AI Studio</span>
           </a>
           <a class="ai-ext-pill" href="https://grok.com/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/grok-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/grok-symbol.svg?v=365459438e4a" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Grok</span>
           </a>
           <a class="ai-ext-pill" href="https://www.kimi.com/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/kimi-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/kimi-symbol.svg?v=93dd8dcaea08" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Kimi</span>
           </a>
           <a class="ai-ext-pill" href="https://www.meta.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/meta-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/meta-symbol.svg?v=0974e509d66b" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Meta AI</span>
           </a>
           <a class="ai-ext-pill" href="https://qwen.ai/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/qwen-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/qwen-symbol.svg?v=63e0c8b36a25" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Qwen</span>
           </a>
           <a class="ai-ext-pill" href="https://z.ai/chat" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/zai-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo is-mono" src="/assets/zai-symbol.svg?v=a3988f0efa5d" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">Z.ai</span>
           </a>
           <a class="ai-ext-pill" href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/deepseek-symbol.svg" alt="" width="20" height="20" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/deepseek-symbol.svg?v=1f7d6dc2bdd3" alt="" width="20" height="20" aria-hidden="true"></span>
             <span class="pill-label">DeepSeek</span>
           </a>
         </div>
@@ -150,13 +152,13 @@
         </div>
         <div class="ai-rankings-scroll">
           <table class="ai-rankings-table" role="table">
-            <caption class="sr-only">One model per company: each company's most intelligent model that answers end to end within 35 seconds</caption>
+            <caption class="sr-only">The ten most intelligent models that answer end to end within 35 seconds, with at most two from any one company</caption>
             <thead role="rowgroup"><tr role="row"><th scope="col">Company &amp; model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
             <tbody data-rankings-body role="rowgroup"></tbody>
           </table>
         </div>
         <p data-rankings-status role="status">Loading verified rankings…</p>
-        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. Each company is represented once, by its most intelligent model that answers end to end within 35 seconds; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
+        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. The ten most intelligent models that answer end to end within 35 seconds, with at most two from any one company so a single lab cannot fill the table; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
       </section>
 
       <div class="creator-layout">
@@ -379,7 +381,7 @@
       return tile;
     }
     const image = element("img", "pill-logo" + (mark.mono ? " is-mono" : ""));
-    image.src = assetUrl("assets/" + mark.file);
+    image.src = assetUrl(mark.file);
     image.alt = "";
     image.width = 24;
     image.height = 24;
@@ -454,7 +456,7 @@
         });
         body.replaceChildren(...rows);
         const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
-        const shortfall = rows.length < RANKED_COMPANIES ? ` Only ${rows.length} ${rows.length === 1 ? "company has" : "companies have"} verified qualifying results.` : "";
+        const shortfall = rows.length < RANKED_MODELS ? ` Only ${rows.length} ${rows.length === 1 ? "model has" : "models have"} verified qualifying results.` : "";
         status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${shortfall}`;
       } catch (_) {
         status.textContent = body.children.length ? "Refresh unavailable — showing previously loaded data. Try again shortly." : "Rankings unavailable. Open Artificial Analysis or try refreshing shortly.";
