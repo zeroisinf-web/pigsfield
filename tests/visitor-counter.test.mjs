@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  DEFAULT_PRE_COUNTER_BASELINE,
   MonthlyVisitorCounter,
   ROLLING_WINDOW_DAYS,
+  SITE_LAUNCH_DATE,
+  VISITOR_EPOCH_MONTH,
   handleVisitors,
   indiaDay,
   indiaMonth,
@@ -14,7 +17,7 @@ import {
  * One Durable Object per name, so the legacy month objects and the current one are separate
  * stores — which is the whole point of the import path being tested below.
  */
-function counterEnvironment(seed = {}) {
+function counterEnvironment(seed = {}, { baseline = 0 } = {}) {
   const stores = new Map();
   const objectFor = (name) => {
     if (!stores.has(name)) {
@@ -35,6 +38,7 @@ function counterEnvironment(seed = {}) {
   };
   return {
     env: {
+      VISITOR_BASELINE_TOTAL: baseline,
       VISITOR_COUNTER: {
         getByName(name) {
           const { object } = objectFor(name);
@@ -142,11 +146,11 @@ test("the per-month totals from the previous scheme are carried into the all-tim
   // rolling counter shipped, which is neither a total nor since launch.
   const months = monthsSinceEpoch();
   assert.ok(months.length >= 1);
-  assert.equal(months[0], "2026-06");
+  assert.equal(months[0], "2026-02");
   assert.equal(months[months.length - 1], indiaMonth());
 
   const seed = {};
-  seed[`pigsfield-visitors-${months[0]}`] = { count: 900, startedAt: "2026-06-13T00:00:00.000Z" };
+  seed[`pigsfield-visitors-${months[0]}`] = { count: 900, startedAt: "2026-02-28T13:45:02.000Z" };
   seed[`pigsfield-visitors-${months[1] || months[0]}`] = { count: 350 };
   const { env } = counterEnvironment(seed);
 
@@ -154,7 +158,7 @@ test("the per-month totals from the previous scheme are carried into the all-tim
   const carried = months.length > 1 ? 1250 : 900;
   assert.equal(body.total, carried + 1, "the visit that triggered the import counts too");
   assert.equal(body.rolling, 1, "only today's check-in is inside the window");
-  assert.equal(body.startedAt, "2026-06-13T00:00:00.000Z", "the first check-in date survives the move");
+  assert.equal(body.startedAt, "2026-02-28T13:45:02.000Z", "the first check-in date survives the move");
 
   // Importing twice would double the total. A second visit carries no cookie, so it counts
   // as a new browser and legitimately adds one — but only one.
@@ -184,4 +188,51 @@ test("rejects foreign increments and fails closed without storage", async () => 
   const missing = await handleVisitors(visitorRequest(), {});
   assert.equal(missing.status, 503);
   assert.deepEqual(await missing.json(), { error: "Visitor count is not configured." });
+});
+
+test("counts from site launch date (28 Feb 2026) and normalizes late counter start dates", async () => {
+  assert.equal(VISITOR_EPOCH_MONTH, "2026-02");
+  assert.equal(SITE_LAUNCH_DATE, "2026-02-28T13:45:02.000Z");
+  assert.equal(DEFAULT_PRE_COUNTER_BASELINE, 700);
+
+  // Simulate an existing counter that was stamped on July 25, 2026
+  const seed = {
+    "pigsfield-visitors-all": {
+      total: 326,
+      imported: true,
+      startedAt: "2026-07-25T12:09:16.773Z"
+    }
+  };
+  const { env } = counterEnvironment(seed, { baseline: 0 });
+  const res = await handleVisitors(visitorRequest({ method: "GET", origin: "" }), env);
+  const body = await res.json();
+  assert.equal(body.startedAt, SITE_LAUNCH_DATE);
+  assert.equal(body.total, 326);
+});
+
+test("incorporates pre-counter baseline monotonically without double counting", async () => {
+  const seed = {
+    "pigsfield-visitors-all": {
+      total: 326,
+      imported: true,
+      startedAt: "2026-07-25T12:09:16.773Z"
+    }
+  };
+  // Apply baseline of 700
+  const { env } = counterEnvironment(seed, { baseline: 700 });
+  const first = await handleVisitors(visitorRequest({ method: "GET", origin: "" }), env);
+  const firstBody = await first.json();
+  assert.equal(firstBody.total, 1026);
+  assert.equal(firstBody.startedAt, SITE_LAUNCH_DATE);
+
+  // Subsequent visit should not re-add the baseline
+  const second = await handleVisitors(visitorRequest({ method: "GET", origin: "" }), env);
+  const secondBody = await second.json();
+  assert.equal(secondBody.total, 1026);
+
+  // An increment adds 1
+  const third = await handleVisitors(visitorRequest(), env);
+  const thirdBody = await third.json();
+  assert.equal(thirdBody.total, 1027);
+  assert.equal(thirdBody.counted, true);
 });

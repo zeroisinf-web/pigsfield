@@ -62,9 +62,12 @@ const VISITOR_COOKIE = "pf_visitor_day";
 const ROLLING_WINDOW_DAYS = 30;
 // A few days more than the window, so pruning is not knife-edge against a clock skew.
 const VISITOR_DAY_RETENTION = 45;
-// The month the counter started recording. Used once, to carry the per-month totals from
-// the previous scheme into the all-time figure rather than restarting it at zero.
-const VISITOR_EPOCH_MONTH = "2026-06";
+// The month the website first went live (first commit e6700c3 on 2026-02-28T19:15:02+05:30 IST).
+// Used to carry any per-month totals from previous schemes into the all-time figure.
+const VISITOR_EPOCH_MONTH = "2026-02";
+const SITE_LAUNCH_DATE = "2026-02-28T13:45:02.000Z";
+// Estimated baseline of visits between website launch (28 Feb 2026) and counter DO deployment (25 Jul 2026).
+const DEFAULT_PRE_COUNTER_BASELINE = 700;
 const BASE_INSTRUCTION = [
   "You are Pigsfield's free educational assistant for learners in India.",
   "Answer in the user's language, explain clearly, use practical examples, and distinguish facts from uncertainty.",
@@ -250,23 +253,27 @@ async function counterFetch(stub, path, method = "GET") {
  * passed so the object prunes to exactly what the Worker still considers current rather than
  * having to know the retention rule itself.
  */
-async function counterResponse(stub, increment) {
+async function counterResponse(stub, increment, baseline = 0) {
   const window = recentIndiaDays(ROLLING_WINDOW_DAYS);
   const keep = recentIndiaDays(VISITOR_DAY_RETENTION);
+  const baseParam = Number(baseline) > 0 ? `&baseline=${encodeURIComponent(Number(baseline))}` : "";
   const payload = increment
-    ? await counterFetch(stub, `/increment?day=${window[0]}&keep=${keep.join(",")}`, "POST")
-    : await counterFetch(stub, "/count");
+    ? await counterFetch(stub, `/increment?day=${window[0]}&keep=${keep.join(",")}${baseParam}`, "POST")
+    : await counterFetch(stub, `/count?${baseParam ? baseParam.slice(1) : ""}`);
 
   const total = Number(payload && payload.total);
   if (!Number.isSafeInteger(total) || total < 0) throw new Error("Invalid counter response");
   const days = payload && typeof payload.days === "object" && payload.days ? payload.days : {};
   const rolling = window.reduce((sum, day) => sum + (Number(days[day]) || 0), 0);
+  const startedAt = typeof payload.startedAt === "string" && payload.startedAt <= SITE_LAUNCH_DATE
+    ? payload.startedAt
+    : SITE_LAUNCH_DATE;
 
   return {
     total,
     rolling,
     imported: Boolean(payload && payload.imported),
-    startedAt: typeof payload.startedAt === "string" ? payload.startedAt : null
+    startedAt
   };
 }
 
@@ -289,7 +296,8 @@ async function importLegacyTotal(env, stub) {
       // A month that cannot be read contributes nothing rather than failing the import.
     }
   }
-  const query = `total=${carried}${startedAt ? `&startedAt=${encodeURIComponent(startedAt)}` : ""}`;
+  if (!startedAt || startedAt > SITE_LAUNCH_DATE) startedAt = SITE_LAUNCH_DATE;
+  const query = `total=${carried}&startedAt=${encodeURIComponent(startedAt)}`;
   await counterFetch(stub, `/seed?${query}`, "POST");
 }
 
@@ -311,14 +319,18 @@ async function handleVisitors(request, env) {
     increment = Boolean(limit.success);
   }
 
+  const configuredBaseline = env.VISITOR_BASELINE_TOTAL !== undefined || env.VISITOR_BASELINE !== undefined
+    ? Number(env.VISITOR_BASELINE_TOTAL ?? env.VISITOR_BASELINE) || 0
+    : DEFAULT_PRE_COUNTER_BASELINE;
+
   try {
     // One object now, not one per month: a rolling window has to read across months, and an
     // all-time total cannot live in a counter that is replaced every month.
     const stub = env.VISITOR_COUNTER.getByName("pigsfield-visitors-all");
-    let result = await counterResponse(stub, increment);
+    let result = await counterResponse(stub, increment, configuredBaseline);
     if (!result.imported) {
       await importLegacyTotal(env, stub);
-      result = await counterResponse(stub, false);
+      result = await counterResponse(stub, false, configuredBaseline);
     }
     const headers = increment ? { "Set-Cookie": visitorCookie(today) } : {};
     return json({
@@ -373,6 +385,28 @@ class MonthlyVisitorCounter {
     if (!days || typeof days !== "object") days = {};
     let startedAt = await this.state.storage.get("startedAt") || null;
     let imported = Boolean(await this.state.storage.get("imported"));
+    let baseline = Number(await this.state.storage.get("baseline")) || 0;
+
+    let storageUpdates = {};
+    let needsUpdate = false;
+
+    // Normalise start date to website launch if missing or set after launch.
+    if (!startedAt || startedAt > SITE_LAUNCH_DATE) {
+      startedAt = SITE_LAUNCH_DATE;
+      storageUpdates.startedAt = startedAt;
+      needsUpdate = true;
+    }
+
+    // Monotonically apply configured pre-counter baseline.
+    const targetBaseline = Math.max(0, Number(url.searchParams.get("baseline")) || 0);
+    if (targetBaseline > baseline) {
+      const added = targetBaseline - baseline;
+      total += added;
+      baseline = targetBaseline;
+      storageUpdates.total = total;
+      storageUpdates.baseline = baseline;
+      needsUpdate = true;
+    }
 
     if (request.method === "POST" && url.pathname === "/increment") {
       const day = url.searchParams.get("day") || "";
@@ -384,11 +418,9 @@ class MonthlyVisitorCounter {
       for (const key of Object.keys(days)) {
         if (!keep.has(key)) delete days[key];
       }
-      if (!startedAt) startedAt = new Date().toISOString();
-      await this.state.storage.put({ total, days, startedAt });
-    }
-
-    if (request.method === "POST" && url.pathname === "/seed") {
+      if (!startedAt || startedAt > SITE_LAUNCH_DATE) startedAt = SITE_LAUNCH_DATE;
+      await this.state.storage.put({ total, days, startedAt, baseline });
+    } else if (request.method === "POST" && url.pathname === "/seed") {
       // One-time carry-over of the per-month totals. Guarded so a retry cannot double it.
       const carried = Number(url.searchParams.get("total")) || 0;
       if (!imported) {
@@ -398,11 +430,14 @@ class MonthlyVisitorCounter {
         // has already stamped startedAt with today, and the counter started long before.
         const since = url.searchParams.get("startedAt");
         if (since && (!startedAt || since < startedAt)) startedAt = since;
-        await this.state.storage.put({ total, startedAt, imported });
+        if (!startedAt || startedAt > SITE_LAUNCH_DATE) startedAt = SITE_LAUNCH_DATE;
+        await this.state.storage.put({ total, startedAt, imported, baseline });
       }
+    } else if (needsUpdate) {
+      await this.state.storage.put(storageUpdates);
     }
 
-    return json({ total, days, startedAt, imported });
+    return json({ total, days, startedAt, imported, baseline });
   }
 }
 
@@ -639,7 +674,10 @@ export default {
 
 export {
   DEFAULT_MODEL,
+  DEFAULT_PRE_COUNTER_BASELINE,
   ROLLING_WINDOW_DAYS,
+  SITE_LAUNCH_DATE,
+  VISITOR_EPOCH_MONTH,
   monthsSinceEpoch,
   recentIndiaDays,
   handlePoster,

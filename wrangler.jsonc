@@ -14,6 +14,9 @@
   "ai": {
     "binding": "AI"
   },
+  "vars": {
+    "VISITOR_BASELINE_TOTAL": "700"
+  },
   // Optional accounts are OFF here on purpose. Every /api/auth route answers "not enabled"
   // without this binding and the sign-in panel never renders, so guest mode is the default
   // rather than a fallback. A placeholder database_id cannot deploy, so the binding is
