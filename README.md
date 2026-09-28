@@ -242,20 +242,21 @@ copy, the "since launch" total would start shrinking once the earliest months ag
 month Cloudflare no longer has and that was never copied is listed in `missingMonths` rather
 than counted as zero.
 
-**Setting it up.** Two values, both Worker secrets:
+**Setting it up.** One secret; the zone id is already in `wrangler.jsonc` under `vars`,
+because it only names the site and grants nothing on its own.
 
 1. **API token** — Cloudflare dashboard → *My Profile* → *API Tokens* → *Create Token* →
    *Create Custom Token*. Permissions: **Zone → Analytics → Read**. Zone Resources:
    **Include → Specific zone → pigsfield.com**. Nothing else; this token can read traffic
-   statistics and cannot change anything.
+   statistics and cannot change anything. Store it as a **Secret** (dashboard → Worker →
+   *Settings* → *Variables and Secrets*), or:
    ```
    npx wrangler secret put CF_ANALYTICS_TOKEN
    ```
-2. **Zone ID** — Cloudflare dashboard → *pigsfield.com* → *Overview*, right-hand column,
-   *Zone ID* (32 hexadecimal characters; not the account ID).
-   ```
-   npx wrangler secret put CF_ZONE_ID
-   ```
+2. If the site ever moves to another zone, change `CF_ZONE_ID` in `wrangler.jsonc`
+   (dashboard → the domain → *Overview*, right-hand column; 32 hexadecimal characters, not
+   the account ID). Do not also create a secret of the same name — a var and a secret
+   cannot share a binding name.
 3. Optional: `VISITORS_SINCE` (YYYY-MM-DD) to start counting from a later date. The default,
    `2026-02-01`, is earlier than launch on purpose — days before the site went live
    contribute nothing, and the response reports the first day that did.

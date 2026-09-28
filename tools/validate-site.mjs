@@ -1052,6 +1052,9 @@ function checkExperienceContracts() {
     check(/["']name["']\s*:\s*["']TRANSLATION_IP_RATE_LIMITER["'][\s\S]{0,220}["']namespace_id["']\s*:\s*["']2026080602["'][\s\S]{0,120}["']limit["']\s*:\s*96[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the separate translation network rate limit");
     const limiterNamespaces = [...wrangler.matchAll(/["']namespace_id["']\s*:\s*["']([^"']+)["']/g)].map((match) => match[1]);
     check(new Set(limiterNamespaces).size === limiterNamespaces.length, wranglerFile, "every rate-limit binding must use a unique namespace ID");
+    // A mistyped zone id would not fail anywhere loudly: configured() would just say no, and the
+    // homepage would quietly fall back to the check-in counter.
+    check(/["']vars["']\s*:\s*\{[\s\S]{0,200}["']CF_ZONE_ID["']\s*:\s*["'][a-f0-9]{32}["']/.test(wrangler), wranglerFile, "the Cloudflare zone id must be a 32-character hex id in vars");
     check(/["']name["']\s*:\s*["']VISITOR_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*60[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the visitor counter abuse limit");
   }
 }

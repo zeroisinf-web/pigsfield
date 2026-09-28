@@ -14,6 +14,12 @@
   "ai": {
     "binding": "AI"
   },
+  // Plain configuration, not secrets. A zone id only says *which* site; it grants nothing
+  // without a token, and it already appears in every dashboard URL for the zone. Keeping it
+  // here means the analytics token is the only thing that has to be set by hand.
+  "vars": {
+    "CF_ZONE_ID": "50e59ed61f73de386a8e94724c81c687"
+  },
   // Optional accounts are OFF here on purpose. Every /api/auth route answers "not enabled"
   // without this binding and the sign-in panel never renders, so guest mode is the default
   // rather than a fallback. A placeholder database_id cannot deploy, so the binding is
@@ -30,11 +36,11 @@
   // Without GEMINI_API_KEY, /api/ask answers a clear "not configured" and the rest of the
   // site is unaffected. See README.
   //
-  // The homepage visitor figures come from Cloudflare's own analytics once two secrets are
-  // set; until then the check-in counter below answers. The token needs only
-  // Zone → Analytics → Read on pigsfield.com. See README "Cloudflare's unique-visitor count".
+  // The homepage visitor figures come from Cloudflare's own analytics once the token is set
+  // (the zone id is in "vars" above); until then the check-in counter below answers. The
+  // token needs only Zone → Analytics → Read on pigsfield.com. See README "Cloudflare's
+  // unique-visitor count".
   //   npx wrangler secret put CF_ANALYTICS_TOKEN
-  //   npx wrangler secret put CF_ZONE_ID
   //
   // The daily AI spend ceiling is also opt-in. Without AI_BUDGET the per-address rate
   // limits still apply but nothing bounds the day's total spend, so add this once the
