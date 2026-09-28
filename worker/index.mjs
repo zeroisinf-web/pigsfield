@@ -1,6 +1,7 @@
 import { handleAccountRoute } from "./account-routes.mjs";
 import { handleModelRankings } from "./model-rankings.mjs";
 import { handleAsk } from "./ask.mjs";
+import { cloudflareVisitors, SNAPSHOT_OBJECT } from "./cloudflare-visitors.mjs";
 import { handlePoster } from "./poster.mjs";
 // Every model here is served by the Cloudflare Workers AI binding, which is what makes the
 // studio's promise true regardless of which one is picked: no visitor account, no additional
@@ -301,7 +302,7 @@ async function importLegacyTotal(env, stub) {
   await counterFetch(stub, `/seed?${query}`, "POST");
 }
 
-async function handleVisitors(request, env) {
+async function handleVisitors(request, env, options = {}) {
   if (!["GET", "POST"].includes(request.method)) return json({ error: "Use GET or POST for visitor-count requests." }, 405);
   if (request.method === "POST" && !sameOriginRequest(request)) {
     return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
@@ -333,6 +334,15 @@ async function handleVisitors(request, env) {
       result = await counterResponse(stub, false, configuredBaseline);
     }
     const headers = increment ? { "Set-Cookie": visitorCookie(today) } : {};
+    // Cloudflare's own count wins whenever it is configured and answers: it has been counting
+    // since the zone went live, months before these check-ins began. The check-ins keep
+    // running underneath, so the homepage still has a figure if the analytics token is never
+    // set or Cloudflare has nothing to give.
+    const cloudflare = await cloudflareVisitors(request, env, {
+      ...options,
+      store: env.VISITOR_COUNTER.getByName(SNAPSHOT_OBJECT)
+    }).catch(() => null);
+    if (cloudflare) return json({ ...cloudflare, counted: increment }, 200, headers);
     return json({
       total: result.total,
       rolling: result.rolling,
@@ -378,6 +388,25 @@ class MonthlyVisitorCounter {
         count: Number(await this.state.storage.get("count")) || 0,
         startedAt: await this.state.storage.get("startedAt") || null
       });
+    }
+
+    // Completed months of Cloudflare's unique-visitor count, copied here because Cloudflare
+    // keeps daily analytics for a limited time and the "since launch" total must not shrink
+    // when the earliest months age out. Only month keys and whole numbers are accepted.
+    if (url.pathname === "/cf-months") {
+      const months = await this.state.storage.get("cfMonths") || {};
+      if (request.method === "POST") {
+        let incoming = {};
+        try { incoming = (await request.json()).months || {}; } catch (_) { incoming = {}; }
+        for (const [month, entry] of Object.entries(incoming)) {
+          const uniques = Number(entry && entry.uniques);
+          if (!/^\d{4}-\d{2}$/.test(month) || !Number.isSafeInteger(uniques) || uniques < 0) continue;
+          const firstDay = /^\d{4}-\d{2}-\d{2}$/.test(String(entry.firstDay || "")) ? entry.firstDay : null;
+          months[month] = { uniques, firstDay };
+        }
+        await this.state.storage.put({ cfMonths: months });
+      }
+      return json({ months });
     }
 
     let total = Number(await this.state.storage.get("total")) || 0;
