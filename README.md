@@ -220,6 +220,49 @@ started rather than since this change shipped.
 
 It stores counts, a first-seen timestamp and nothing else: no per-visitor identifiers.
 
+### Cloudflare's unique-visitor count
+
+Once an analytics token is configured, `/api/visitors` answers with **Cloudflare's own
+count** instead, and the homepage shows *unique visitors this calendar month* and *unique
+visitors since the first day Cloudflare recorded traffic*. The check-in counter above keeps
+running underneath as the fallback, and is what the homepage shows until the token is set.
+The reason to prefer Cloudflare: it has been counting since the zone went live, months
+before the check-ins began in June 2026, and it is the number the Cloudflare dashboard shows.
+
+`worker/cloudflare-visitors.mjs` reads the GraphQL Analytics API dataset
+`httpRequests1dGroups` → `uniq.uniques`, one query per calendar month (UTC). The figure is
+Cloudflare's daily unique visitors **added up**: a person who returns on another day counts
+again, and automated traffic Cloudflare did not filter is included. The homepage says both,
+rather than implying a de-duplicated head count Cloudflare does not provide.
+
+The answer is cached at the edge for an hour, and a failed refresh serves the last good one
+marked stale. Each completed month is copied into the visitor Durable Object the first time it
+is read, because Cloudflare keeps daily analytics only for a limited period — without the
+copy, the "since launch" total would start shrinking once the earliest months aged out. A
+month Cloudflare no longer has and that was never copied is listed in `missingMonths` rather
+than counted as zero.
+
+**Setting it up.** Two values, both Worker secrets:
+
+1. **API token** — Cloudflare dashboard → *My Profile* → *API Tokens* → *Create Token* →
+   *Create Custom Token*. Permissions: **Zone → Analytics → Read**. Zone Resources:
+   **Include → Specific zone → pigsfield.com**. Nothing else; this token can read traffic
+   statistics and cannot change anything.
+   ```
+   npx wrangler secret put CF_ANALYTICS_TOKEN
+   ```
+2. **Zone ID** — Cloudflare dashboard → *pigsfield.com* → *Overview*, right-hand column,
+   *Zone ID* (32 hexadecimal characters; not the account ID).
+   ```
+   npx wrangler secret put CF_ZONE_ID
+   ```
+3. Optional: `VISITORS_SINCE` (YYYY-MM-DD) to start counting from a later date. The default,
+   `2026-02-01`, is earlier than launch on purpose — days before the site went live
+   contribute nothing, and the response reports the first day that did.
+
+Run `node --test tests/cloudflare-visitors.test.mjs` for the query shape, the month
+arithmetic, the snapshot, the stale path and the fallback.
+
 The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models) and [Qwen Chat](https://chat.qwen.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 
 ## Accessibility and privacy

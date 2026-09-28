@@ -3,8 +3,10 @@
 
   const PF = (window.PF = window.PF || {});
   const counter = document.querySelector("#visitor-counter");
-  const rollingTarget = counter && counter.querySelector("[data-visitor-rolling]");
+  const periodTarget = counter && counter.querySelector("[data-visitor-period]");
+  const periodLabel = counter && counter.querySelector("[data-visitor-period-label]");
   const totalTarget = counter && counter.querySelector("[data-visitor-total]");
+  const totalLabel = counter && counter.querySelector("[data-visitor-total-label]");
   const noteTarget = counter && counter.querySelector("[data-visitor-note]");
   const guide = document.querySelector("[data-home-video]");
   let playerPromise = null;
@@ -39,8 +41,16 @@
     }).format(date);
   }
 
+  /** "2026-09" → "September", read in UTC because Cloudflare's days are UTC days. */
+  function monthName(value) {
+    const match = /^(\d{4})-(\d{2})$/.exec(String(value || ""));
+    if (!match) return "";
+    const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+    return new Intl.DateTimeFormat("en-IN", { month: "long", timeZone: "UTC" }).format(date);
+  }
+
   async function loadVisitorCounts() {
-    if (!counter || !rollingTarget || !totalTarget) return;
+    if (!counter || !periodTarget || !totalTarget) return;
     try {
       const response = await fetch("/api/visitors", {
         method: "POST",
@@ -50,21 +60,34 @@
       });
       if (!response.ok) throw new Error("Visitor count unavailable");
       const data = await response.json();
-      const rolling = Number(data && data.rolling);
+      const fromCloudflare = data && data.source === "cloudflare";
+      // Cloudflare answers with a calendar month; the fallback check-in counter answers with
+      // a rolling 30 days. Each figure is labelled with what it actually covers.
+      const period = Number(data && (fromCloudflare ? data.monthUniques : data.rolling));
       const total = Number(data && data.total);
-      // The rolling window can legitimately be 0 on a quiet day; a total cannot, because
-      // this very request just added to it.
-      if (!Number.isSafeInteger(rolling) || rolling < 0) throw new Error("Invalid visitor count");
+      // The period can legitimately be 0 early on a quiet day; a total cannot, because
+      // this very visit is part of it.
+      if (!Number.isSafeInteger(period) || period < 0) throw new Error("Invalid visitor count");
       if (!Number.isSafeInteger(total) || total < 1) throw new Error("Invalid visitor total");
 
       const number = new Intl.NumberFormat("en-IN");
-      rollingTarget.textContent = number.format(rolling);
+      periodTarget.textContent = number.format(period);
       totalTarget.textContent = number.format(total);
-      const started = formatStartDate(data.startedAt);
-      if (noteTarget) {
-        noteTarget.textContent = started
-          ? `Best-effort, usually one check-in per browser each day. Counting since ${started}. No account or visitor profile.`
-          : "Best-effort, usually one check-in per browser each day. No account or visitor profile.";
+      if (fromCloudflare) {
+        const month = monthName(data.month);
+        const since = formatStartDate(data.firstDay);
+        if (periodLabel) periodLabel.textContent = month ? `unique visitors in ${month}` : "unique visitors this month";
+        if (totalLabel) totalLabel.textContent = since ? `unique visitors since ${since}` : "unique visitors since launch";
+        if (noteTarget) {
+          noteTarget.textContent = `Counted by Cloudflare: unique visitors on each day, added up — someone who returns on another day counts again, and some automated traffic is included. ${data.stale ? "Showing the last figures Cloudflare gave." : "Updated hourly."}`;
+        }
+      } else {
+        const started = formatStartDate(data.startedAt);
+        if (noteTarget) {
+          noteTarget.textContent = started
+            ? `Best-effort, usually one check-in per browser each day. Counting since ${started}. No account or visitor profile.`
+            : "Best-effort, usually one check-in per browser each day. No account or visitor profile.";
+        }
       }
       counter.dataset.state = "ready";
     } catch (_) {

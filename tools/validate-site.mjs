@@ -741,7 +741,10 @@ function checkExperienceContracts() {
   // Two figures, because they answer different questions and one cannot stand in for the
   // other: a rolling 30-day window says whether the site is being used now, an all-time
   // total says how far it has reached.
-  check(/data-visitor-rolling/.test(home) && /data-visitor-total/.test(home), homeFile, "the counter must show both the rolling window and the all-time total");
+  check(/data-visitor-period/.test(home) && /data-visitor-total/.test(home), homeFile, "the counter must show both a recent period and the all-time total");
+  // The figure's meaning depends on where it came from — a calendar month from Cloudflare, a
+  // rolling 30 days from the fallback — so its label has to be replaceable alongside it.
+  check(/data-visitor-period-label/.test(home) && /data-visitor-total-label/.test(home), homeFile, "each visitor figure needs a label that can say what it covers");
   check(/Best-effort/.test(home), homeFile, "visitor count must identify its best-effort definition");
   check(/href=["']https:\/\/youtu\.be\/2k7OOZZlNrg\?si=vMCzk67HAuWQx-g1["'][^>]*target=["']_blank["'][^>]*rel=["']noopener noreferrer["'][^>]*data-home-video/.test(home), homeFile, "homepage tutorial must keep its exact native YouTube link");
   check(!/src=["']js\/player\.js(?:\?[^"']*)?["']/.test(home) && /src=["']js\/home\.js(?:\?v=[a-f0-9]{12})?["']/.test(home), homeFile, "homepage must keep the player lazy and load only its small dedicated runtime");
@@ -752,7 +755,8 @@ function checkExperienceContracts() {
   check(/fetch\(["']\/api\/visitors["'][\s\S]{0,180}method:\s*["']POST["']/.test(homeRuntime), homeRuntimeFile, "homepage visitor count must use the live same-origin endpoint");
   // The rolling window may honestly be 0 on a quiet day; the all-time total may not, because
   // the request that reads it has just added to it.
-  check(/Number\.isSafeInteger\(rolling\)[\s\S]{0,60}rolling\s*<\s*0/.test(homeRuntime), homeRuntimeFile, "homepage must reject a fabricated rolling count");
+  check(/Number\.isSafeInteger\(period\)[\s\S]{0,60}period\s*<\s*0/.test(homeRuntime), homeRuntimeFile, "homepage must reject a fabricated period count");
+  check(/data\.source === "cloudflare"/.test(homeRuntime) && /Counted by Cloudflare/.test(homeRuntime), homeRuntimeFile, "homepage must say when its figures are Cloudflare's count");
   check(/Number\.isSafeInteger\(total\)[\s\S]{0,60}total\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
   check(/dataset\.state\s*=\s*["']unavailable["']/.test(homeRuntime), homeRuntimeFile, "homepage must hide the count when its service is unavailable");
   check(/event\.button\s*!==\s*0/.test(homeRuntime) && /script\.src\s*=\s*["']js\/player\.js(?:\?v=[a-f0-9]+)?["']/.test(homeRuntime) && /player\.play\(guide\.href/.test(homeRuntime), homeRuntimeFile, "plain tutorial activation must lazy-load the inbuilt player while modified clicks stay native");
@@ -1009,6 +1013,15 @@ function checkExperienceContracts() {
     check(/definition:\s*`Best-effort browser check-ins/.test(worker), workerFile, "visitor endpoint must describe the total honestly");
     check(/"rolling" covers the last \$\{ROLLING_WINDOW_DAYS\} days ending today/.test(worker), workerFile, "the endpoint must say which window the rolling figure covers");
     check(/automatedRequest\(request\)/.test(worker), workerFile, "visitor total must exclude recognizable automated requests");
+    const cloudflareFile = path.join(ROOT, "worker", "cloudflare-visitors.mjs");
+    const cloudflareSource = fs.existsSync(cloudflareFile) ? fs.readFileSync(cloudflareFile, "utf8") : "";
+    check(/cloudflareVisitors\(request, env/.test(worker), workerFile, "the visitor route must prefer Cloudflare's own count when it is configured");
+    check(/env\.CF_ANALYTICS_TOKEN/.test(cloudflareSource) && /env\.CF_ZONE_ID/.test(cloudflareSource), cloudflareFile, "the Cloudflare count must read its token and zone from Worker configuration");
+    check(/httpRequests1dGroups/.test(cloudflareSource) && /uniq \{ uniques \}/.test(cloudflareSource), cloudflareFile, "the Cloudflare count must use the daily unique-visitor dataset");
+    // Cloudflare ages daily analytics out; a completed month has to be kept or the "since
+    // launch" total shrinks on its own.
+    check(/\/cf-months/.test(cloudflareSource) && /url\.pathname === "\/cf-months"/.test(worker), cloudflareFile, "completed Cloudflare months must be snapshotted into durable storage");
+    check(/counted again/.test(cloudflareSource) && /automated traffic/.test(cloudflareSource), cloudflareFile, "the Cloudflare figure must say it re-counts returning visitors and includes some automated traffic");
     check(/env\.VISITOR_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "visitor increments need a separate abuse limit");
     check(!/(?:visitor|counter)[\s\S]{0,180}(?:storage\.put|INSERT)[\s\S]{0,80}(?:CF-Connecting-IP|User-Agent)/i.test(worker), workerFile, "visitor storage must not retain raw addresses or browser agents");
     check(/sameOriginRequest\(request\)/.test(worker), workerFile, "AI endpoint must reject cross-origin requests");
