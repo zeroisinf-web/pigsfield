@@ -257,9 +257,12 @@ because it only names the site and grants nothing on its own.
    (dashboard → the domain → *Overview*, right-hand column; 32 hexadecimal characters, not
    the account ID). Do not also create a secret of the same name — a var and a secret
    cannot share a binding name.
-3. Optional: `VISITORS_SINCE` (YYYY-MM-DD) to start counting from a later date. The default,
-   `2026-02-01`, is earlier than launch on purpose — days before the site went live
-   contribute nothing, and the response reports the first day that did.
+3. Optional: `VISITORS_SINCE` (YYYY-MM-DD) to start counting from a different date. The
+   default, `2026-02-28`, is the launch day — the same moment as `SITE_LAUNCH_DATE` for the
+   check-in counter, and a test keeps the two in step — so traffic the zone saw before the
+   site existed is not counted. The response reports the first day that actually had
+   visitors. The check-in counter's `VISITOR_BASELINE_TOTAL` estimate is never added to
+   Cloudflare's figures: Cloudflare counted that period itself.
 
 Run `node --test tests/cloudflare-visitors.test.mjs` for the query shape, the month
 arithmetic, the snapshot, the stale path and the fallback.

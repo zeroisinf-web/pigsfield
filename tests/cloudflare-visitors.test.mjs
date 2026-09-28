@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   CF_GRAPHQL,
+  DEFAULT_SINCE,
   configured,
   loadCloudflareVisitors,
   monthsBetween,
@@ -9,7 +10,7 @@ import {
   resetCloudflareVisitors,
   cloudflareVisitors
 } from "../worker/cloudflare-visitors.mjs";
-import { MonthlyVisitorCounter, handleVisitors } from "../worker/index.mjs";
+import { MonthlyVisitorCounter, SITE_LAUNCH_DATE, handleVisitors } from "../worker/index.mjs";
 
 const ZONE = "0123456789abcdef0123456789abcdef";
 const TOKEN = "test-analytics-token";
@@ -78,15 +79,20 @@ test("the current month stops at today, not at the end of the month", async () =
   assert.equal(calls[0].variables.until, "2026-09-28");
 });
 
-test("totals add every month since the first day with traffic, and name that day", async () => {
+test("counting starts on the launch day, the same one the check-in counter uses", () => {
+  assert.equal(DEFAULT_SINCE, SITE_LAUNCH_DATE.slice(0, 10));
+});
+
+test("totals add every month since launch, and name the first day with traffic", async () => {
+  // The 24th is before launch: traffic on the parked zone is not the site's audience.
   const table = { "2026-02-24": 40, "2026-02-28": 60, "2026-03-10": 300, "2026-09-01": 7, "2026-09-28": 3 };
   const { fetcher } = fakeCloudflare(table);
   const data = await loadCloudflareVisitors(env, { now: new Date("2026-09-28T12:00:00Z"), fetcher });
   assert.equal(data.source, "cloudflare");
   assert.equal(data.month, "2026-09");
   assert.equal(data.monthUniques, 10);
-  assert.equal(data.total, 410);
-  assert.equal(data.firstDay, "2026-02-24");
+  assert.equal(data.total, 370);
+  assert.equal(data.firstDay, "2026-02-28");
   assert.deepEqual(data.months.map((entry) => entry.month), ["2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"]);
   assert.match(data.definition, /counted again/);
   assert.ok(!JSON.stringify(data).includes(TOKEN), "the token must never reach the response");

@@ -17,9 +17,10 @@
 // Cloudflare keeps daily analytics for a limited period, so without the copy the "since
 // launch" total would start shrinking once the earliest months aged out of its retention.
 export const CF_GRAPHQL = "https://api.cloudflare.com/client/v4/graphql";
-// Earlier than the site is believed to have launched (late February 2026). Days before the
-// real launch contribute nothing, and the response reports the first day that did.
-export const DEFAULT_SINCE = "2026-02-01";
+// The UTC day the site went live — the same moment as SITE_LAUNCH_DATE in worker/index.mjs
+// (first commit, 2026-02-28 13:45 UTC; a test keeps the two in step). Anything Cloudflare saw
+// on the zone before that, such as crawlers on a parked domain, is not the site's audience.
+export const DEFAULT_SINCE = "2026-02-28";
 export const SNAPSHOT_OBJECT = "pigsfield-cloudflare-months";
 export const FRESH_FOR_MS = 3600000;
 
