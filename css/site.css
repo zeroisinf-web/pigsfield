@@ -1150,16 +1150,20 @@ body[data-page="watch"] {
   .topic-item h3 { font-size: .98rem; line-height: 1.25; }
   .topic-item p { margin-bottom: .5rem; font-size: .82rem; line-height: 1.42; }
   .card-tool { width: 2rem; height: 2rem; font-size: .8rem; }
-  /* Each lane is one labelled row whose links sit side by side and wrap. */
-  .topic-lane { position: relative; display: flex; flex-direction: row; flex-wrap: wrap; align-items: stretch; gap: .35rem; padding: .45rem 0 .45rem 3.6rem; }
-  .topic-lane .source-lane-label { position: absolute; top: .45rem; left: 0; width: 3.3rem; margin: 0; padding: 0; font-size: .56rem; line-height: 2.1rem; }
-  .topic-lane > .link-button { flex: 1 1 7.5rem; width: auto; }
-  .topic-sources .link-button, .exam-link-row .link-button { min-height: 2.1rem; gap: .4rem; padding: .35rem .55rem; font-size: .72rem; }
-  .source-label { line-height: 1.25; }
-  .source-empty { padding-block: 0; font-size: .68rem; line-height: 2.1rem; }
-  .topic-lane:has(> .source-empty) { padding-block: .3rem; }
-  .topic-lane:has(> .source-empty) .source-lane-label { top: .3rem; line-height: 1.4rem; }
-  .topic-lane > .source-empty { line-height: 1.4rem; }
+  /* Lanes stay side by side as columns, as on desktop: Web | YouTube | Apps and
+     Course | Marathon | Book, each with its links stacked underneath. */
+  .topic-sources, .exam-resource-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .3rem; padding: .55rem .35rem .6rem; }
+  .topic-lane:first-child, .exam-resource-group:first-child { padding-left: 0; }
+  .topic-lane:last-child, .exam-resource-group:last-child { padding-right: 0; }
+  .topic-lane + .topic-lane, .exam-resource-group + .exam-resource-group { border-top: 0; border-left: 1px solid var(--line); }
+  .source-lane-label { margin: 0; padding: 0; font-size: .56rem; letter-spacing: .06em; }
+  .exam-resource-group .exam-link-row { gap: .3rem; }
+  .topic-sources .link-button, .exam-link-row .link-button { min-height: 2.1rem; gap: .3rem; padding: .35rem .4rem; font-size: .66rem; }
+  .topic-sources .source-icon, .exam-link-row .source-icon { flex: 0 0 auto; width: .95rem; height: .95rem; }
+  .topic-sources .source-icon svg, .exam-link-row .source-icon svg { width: 100%; height: 100%; }
+  .source-label { line-height: 1.2; }
+  .source-empty { padding-block: .3rem; font-size: .64rem; line-height: 1.3; }
   .resource-card { min-height: 0; padding: .85rem; }
   .resource-card h3 { font-size: .96rem; }
   .resource-card p { margin-bottom: .6rem; font-size: .82rem; }
@@ -1177,8 +1181,8 @@ body[data-page="watch"] {
   .principle-card h3 { margin-bottom: .3rem; font-size: .98rem; }
   .principle-card p { margin-bottom: 0; font-size: .84rem; line-height: 1.45; }
   .prose-nav a { padding: .4rem 0; font-size: .8rem; }
-  .exam-panel-body { padding: .85rem; }
-  .exam-subject, .exam-subject:has(.exam-resource-groups) { padding: .85rem; }
+  .exam-panel-body { padding: .6rem; }
+  .exam-subject, .exam-subject:has(.exam-resource-groups) { padding: .75rem .7rem; }
   .principle-card { padding: .85rem; }
   .prose-grid { gap: 1rem; margin-top: 1.5rem; }
   .prose h2 { margin: 1.6rem 0 .6rem; font-size: 1.35rem; }
@@ -1207,4 +1211,6 @@ body[data-page="watch"] {
    so the two docks never overlap. */
 @media (max-width: 22rem) {
   .support-dock-right .support-pair button { font-size: 0; padding-inline: .55rem; }
+  .topic-sources .link-button, .exam-link-row .link-button { gap: .2rem; padding-inline: .28rem; font-size: .62rem; }
+  .topic-lane, .exam-resource-group { padding-inline: .25rem; }
 }
