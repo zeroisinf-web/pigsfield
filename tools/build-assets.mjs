@@ -35,9 +35,15 @@ function version(target) {
   return crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 12);
 }
 
-/** href="css/site.css" / src="../js/site.js", resolved against the page's own directory. */
+/**
+ * href="css/site.css" / src="../js/site.js" / src="assets/path-learn.svg", resolved against
+ * the page's own directory. SVG illustrations are matched on src only: an <img> is what the
+ * week-long /assets/* cache and the service worker's cache-first image route would otherwise
+ * keep stale after a redesign; validate-site.mjs pins the WebP logo paths exactly.
+ */
 function versionHtml(source, directory) {
-  return source.replace(/\b(href|src)="([^"?:]+\.(?:css|js))(?:\?v=[a-f0-9]+)?"/g, (match, attribute, asset) => {
+  return source.replace(/\b(href|src)="([^"?:]+\.(?:css|js)|[^"?:]+\.svg(?="|\?v=))(?:\?v=[a-f0-9]+)?"/g, (match, attribute, asset) => {
+    if (attribute === 'href' && !/\.(?:css|js)$/.test(asset)) return match;
     const hash = version(path.resolve(directory, asset));
     return hash ? `${attribute}="${asset}?v=${hash}"` : match;
   });

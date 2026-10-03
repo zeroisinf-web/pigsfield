@@ -13,13 +13,9 @@
 
   const studioStyle = document.createElement("link");
   studioStyle.rel = "stylesheet";
-  studioStyle.href = assetUrl("css/ai-studio.css?v=d820564bbb66");
+  studioStyle.href = assetUrl("css/ai-studio.css?v=18630eed4598");
   document.head.append(studioStyle);
 
-  // One line-art set, drawn to the same 24-grid and inheriting currentColor, replaces the
-  // emoji that used to stand in for every control. Emoji are a different typeface on every
-  // platform: they arrived at whatever weight and colour the OS felt like, sat off the
-  // baseline next to the label, and made a considered interface look improvised.
   // Line art drawn to one 24-grid and inheriting currentColor, rather than emoji: emoji are
   // a different typeface on every platform, arriving at whatever weight and colour the OS
   // felt like and sitting off the baseline beside the label.
