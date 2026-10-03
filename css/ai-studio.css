@@ -13,6 +13,18 @@
    rules here are the ones that paint.
    ============================================================================ */
 
+/* Base rules moved from css/site.css: only the studio uses them, so other pages no longer
+   download them. They sit first so the layer below still overrides them as before. */
+.ai-studio-v2 { display: flex; flex-direction: column; gap: 0.85rem; font-family: var(--font-sans); }
+.ai-launchpad { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.65rem 0.85rem; background: color-mix(in srgb, var(--paper-strong) 85%, transparent); border: 1px solid var(--line); border-radius: 0.85rem; }
+.ai-launchpad-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-soft); }
+.ai-launchpad-group { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ai-launchpad-scroll { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: thin; }
+.ai-ext-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.65rem; background: var(--paper); border: 1px solid var(--line); border-radius: 2rem; font-size: 0.8rem; font-weight: 500; color: var(--ink); text-decoration: none; white-space: nowrap; transition: all 0.15s ease; }
+.pill-logo { width: 1.1rem; height: 1.1rem; object-fit: contain; flex-shrink: 0; }
+.ai-ext-pill:hover { background: color-mix(in srgb, var(--brand) 10%, var(--paper)); border-color: color-mix(in srgb, var(--brand) 40%, transparent); transform: translateY(-1px); }
+.ai-ext-pill.featured { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 12%, var(--paper)), var(--paper)); border-color: color-mix(in srgb, var(--brand) 45%, transparent); font-weight: 600; box-shadow: 0 2px 6px color-mix(in srgb, var(--brand) 15%, transparent); }
+
 .ai-studio-v2 {
   --ai-surface: color-mix(in srgb, var(--ink) 3%, var(--paper));
   --ai-raised: var(--paper);
