@@ -53,7 +53,9 @@
       }
     }
 
-    function linkButtonFromClean(url, label) {
+    // `shown` replaces the visible text only; the accessible name and player title keep
+    // the full label, so a link under a "Marathon" column can read just "YouTube".
+    function linkButtonFromClean(url, label, shown) {
       const playable = isYouTubePlayable(url);
       const title = label || sourceName(url);
       const action = playable ? "Play" : "Open";
@@ -61,7 +63,7 @@
       const brand = sourceBrand(url, type);
       const safeTitle = title || "Exam resource";
       const playback = playable ? ` data-youtube-play data-title="${escapeHtml(safeTitle)}"` : "";
-      const sourceLink = `<a class="link-button source-${escapeHtml(type)} source-brand-${escapeHtml(brand)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playback} aria-label="${escapeHtml(`${action} ${safeTitle}`)}">${sourceMark(url, type)}<span class="source-label">${escapeHtml(safeTitle)}</span></a>`;
+      const sourceLink = `<a class="link-button source-${escapeHtml(type)} source-brand-${escapeHtml(brand)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"${playback} aria-label="${escapeHtml(`${action} ${safeTitle}`)}">${sourceMark(url, type)}<span class="source-label">${escapeHtml(shown || safeTitle)}</span></a>`;
       return `<span class="source-link-pair">${sourceLink}</span>`;
     }
 
@@ -69,7 +71,7 @@
       const links = list(urls).map((url) => {
         const clean = cleanUrl(url);
         const source = clean ? sourceName(clean) : "";
-        return clean ? linkButtonFromClean(clean, `${label}${source ? ` · ${source}` : ""}`) : "";
+        return clean ? linkButtonFromClean(clean, `${label}${source ? ` · ${source}` : ""}`, source) : "";
       }).filter(Boolean);
       return links.length ? `<div class="exam-link-row">${links.join("")}</div>` : "";
     }
