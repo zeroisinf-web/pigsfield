@@ -106,7 +106,8 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     ["tools/index.html", 301, 144],
     ["rights/index.html", 301, 144],
     ["exams/index.html", 387, 166],
-    ["watch/index.html", 550, 204],
+    // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules.
+    ["watch/index.html", 556, 204],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],
