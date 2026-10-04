@@ -262,3 +262,4 @@ body[data-page="watch"] :focus-visible { outline: 2px solid #c7d9ff; outline-off
   body[data-page="watch"] .watch-emoji { font-size: 1.6rem; }
   body[data-page="watch"] .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
 }
+@media (max-width: 48rem) { body[data-page="watch"] .header-actions .menu-toggle { display: none; } }

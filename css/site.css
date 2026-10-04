@@ -1151,3 +1151,118 @@ body[data-page="watch"] {
   .topic-sources .link-button, .exam-link-row .link-button { gap: .2rem; padding-inline: .28rem; font-size: .62rem; }
   .topic-lane, .exam-resource-group { padding-inline: .25rem; }
 }
+
+/* Liquid Glass: translucent, top-lit surfaces over a quiet colour field. Only floating
+   chrome blurs; cards do not, so long pages scroll cheaply on low-end phones. */
+:root {
+  --glass-fill: rgba(255, 255, 255, 0.58);
+  --glass-fill-strong: rgba(255, 255, 255, 0.8);
+  --glass-card: rgba(255, 255, 255, 0.74);
+  --glass-edge: rgba(255, 255, 255, 0.9);
+  --glass-rim: rgba(15, 23, 42, 0.08);
+  --glass-rim-strong: rgba(15, 23, 42, 0.16);
+  --glass-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.07);
+  --glass-float: 0 2px 6px rgba(15, 23, 42, 0.06), 0 16px 40px rgba(15, 23, 42, 0.14);
+  --glass-blur: blur(22px) saturate(180%);
+  --glass-tint-a: color-mix(in srgb, var(--azure) 15%, transparent);
+  --glass-tint-b: color-mix(in srgb, var(--brand) 12%, transparent);
+  --glass-tint-c: color-mix(in srgb, var(--green) 12%, transparent);
+  --glass-tint-d: color-mix(in srgb, var(--violet) 11%, transparent);
+  --radius-card: 1.25rem;
+  --tabbar-h: 3.9rem;
+}
+[data-theme="dark"] {
+  --glass-fill: rgba(40, 42, 48, 0.52);
+  --glass-fill-strong: rgba(30, 32, 37, 0.8);
+  --glass-card: rgba(32, 34, 40, 0.62);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-rim: rgba(255, 255, 255, 0.08);
+  --glass-rim-strong: rgba(255, 255, 255, 0.16);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.3);
+  --glass-float: 0 2px 8px rgba(0, 0, 0, 0.4), 0 18px 44px rgba(0, 0, 0, 0.5);
+  --glass-tint-a: color-mix(in srgb, var(--azure) 12%, transparent);
+  --glass-tint-b: color-mix(in srgb, var(--brand) 9%, transparent);
+  --glass-tint-c: color-mix(in srgb, var(--green) 9%, transparent);
+  --glass-tint-d: color-mix(in srgb, var(--violet) 10%, transparent);
+}
+
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background:
+  radial-gradient(60vmax 50vmax at 8% 4%, var(--glass-tint-a), transparent 62%),
+  radial-gradient(50vmax 44vmax at 96% 14%, var(--glass-tint-b), transparent 62%),
+  radial-gradient(56vmax 50vmax at 78% 96%, var(--glass-tint-c), transparent 62%),
+  radial-gradient(48vmax 44vmax at 2% 82%, var(--glass-tint-d), transparent 62%); }
+.section.alt, .site-footer { background: transparent; }
+
+.site-header { background: color-mix(in srgb, var(--paper) 72%, transparent); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-bottom-color: transparent; box-shadow: inset 0 -1px 0 var(--glass-rim); }
+.site-header[data-scrolled="true"] { background: color-mix(in srgb, var(--paper) 66%, transparent); box-shadow: inset 0 -1px 0 var(--glass-rim), 0 6px 24px rgba(15, 23, 42, 0.06); }
+.icon-button, .search-trigger, .lang-toggle { border: 1px solid var(--glass-rim-strong); background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-edge), 0 1px 2px rgba(15, 23, 42, 0.05); }
+.icon-button:hover, .search-trigger:hover { background: var(--glass-fill-strong); }
+.support-action { border-color: var(--glass-rim-strong); background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-float); }
+.support-action.ai-pair { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), var(--glass-float); }
+.site-dialog, .site-sidebar { border: 1px solid var(--glass-rim-strong); background: var(--glass-fill-strong); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-float); }
+.site-dialog { border-radius: 1.5rem; }
+.sidebar-head { background: transparent; }
+
+.path-card, .topic-card, .topic-item, .resource-card, .faq-item, .exam-panel, .exam-subject, .syllabus-item,
+.principle-card, .prose > section, .prose-nav, .mission-band, .account-strip, .saved-item, .global-result, .explorer-toolbar {
+  border: 1px solid var(--glass-rim); border-radius: var(--radius-card); background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-shadow); }
+[data-theme="dark"] .topic-item { border-color: var(--glass-rim); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-shadow); }
+.topic-item:hover, .topic-card:hover, .path-card:hover, .resource-card:hover { border-color: var(--glass-rim-strong); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-float); }
+.faq-item > summary, .exam-panel > summary { background: transparent; }
+.syllabus-item .syllabus-item, .exam-subject .syllabus-item { box-shadow: none; }
+.topic-symbol, .card-tool { border-color: var(--glass-rim-strong); background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-edge); }
+.card-tool.is-saved { border-color: var(--brand); background: var(--brand); }
+.topic-sources .link-button, .exam-link-row .link-button { border-color: var(--glass-rim-strong); border-radius: .7rem; background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-edge); }
+.topic-sources .link-button:hover, .exam-link-row .link-button:hover { background: var(--glass-fill-strong); border-color: var(--line-strong); }
+.button.ghost, .filter-chip { border-color: var(--glass-rim-strong); background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-edge), 0 1px 2px rgba(15, 23, 42, 0.05); }
+.button { border-radius: var(--radius-pill); }
+.search-field input { border-radius: 1rem; }
+.hero-guide { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 10px 28px color-mix(in srgb, var(--brand) 32%, transparent); }
+.explorer-toolbar { background: var(--glass-fill-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+/* Phones: a blurred full-width sticky bar scrolls badly on low-end Android. */
+@media (max-width: 52rem) {
+  .site-header, .site-header[data-scrolled="true"], .explorer-toolbar { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+@media (hover: none) {
+  .path-card:active, .topic-card:active, .link-button:active, .button:active, .icon-button:active, .tab-bar a:active, .tab-bar button:active { transform: scale(0.97); transition: transform 80ms ease; }
+}
+
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; }
+
+.tab-bar { display: none; }
+@media (max-width: 48rem) {
+  .tab-bar { position: fixed; left: 50%; bottom: calc(0.55rem + env(safe-area-inset-bottom, 0px)); z-index: 128; display: flex; width: min(calc(100% - 1.1rem), 27rem); min-height: var(--tabbar-h); padding: 0.3rem; border: 1px solid var(--glass-rim-strong); border-radius: var(--radius-pill); background: var(--glass-fill-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-float); transform: translateX(-50%); transition: transform 220ms cubic-bezier(.2, .8, .2, 1), min-height 220ms ease; }
+  .tab-bar a, .tab-bar button { display: grid; flex: 1 1 0; min-width: 0; place-items: center; align-content: center; gap: 0.12rem; padding: 0.3rem 0.1rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--ink-soft); cursor: pointer; font: inherit; font-size: 0.62rem; font-weight: 650; line-height: 1.1; text-decoration: none; }
+  .tab-bar svg { width: 1.45rem; height: 1.45rem; fill: currentColor; }
+  .tab-bar [aria-current="page"] { background: color-mix(in srgb, var(--ink) 8%, transparent); color: var(--ink); }
+  .tab-bar [aria-current="page"] svg { color: var(--brand); }
+  .tab-bar a:focus-visible, .tab-bar button:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+  html[data-scroll-dir="down"] .tab-bar { min-height: 3rem; }
+  html[data-scroll-dir="down"] .tab-bar span { display: none; }
+  html[data-scroll-dir="down"] .support-dock { opacity: 0; pointer-events: none; transform: translateY(0.75rem); }
+  .support-dock { bottom: calc(var(--tabbar-h) + 1.05rem + env(safe-area-inset-bottom, 0px)); transition: opacity 180ms ease, transform 180ms ease; }
+  .toast { bottom: calc(var(--tabbar-h) + 3.6rem + env(safe-area-inset-bottom, 0px)); }
+  .site-footer { padding-bottom: calc(var(--tabbar-h) + 5.5rem + env(safe-area-inset-bottom, 0px)); }
+  .header-actions .menu-toggle { display: none; }
+  body.has-ask-panel .tab-bar { display: none; }
+}
+@media (display-mode: standalone) {
+  .site-header { padding-top: env(safe-area-inset-top, 0px); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root, [data-theme="dark"] { --glass-fill: var(--paper-strong); --glass-fill-strong: var(--paper-strong); --glass-card: var(--paper-strong); }
+  .site-header, .support-action, .site-dialog, .site-sidebar, .tab-bar { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .site-header, .site-header[data-scrolled="true"] { background: var(--paper); }
+  body::before { display: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header, .site-header[data-scrolled="true"] { background: var(--paper); }
+  .tab-bar, .site-dialog, .site-sidebar, .support-action:not(.ai-pair) { background: var(--paper-strong); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+@media print { .tab-bar { display: none !important; } body::before { display: none; } }
