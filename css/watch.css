@@ -263,3 +263,5 @@ body[data-page="watch"] :focus-visible { outline: 2px solid #c7d9ff; outline-off
   body[data-page="watch"] .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
 }
 @media (max-width: 48rem) { body[data-page="watch"] .header-actions .menu-toggle { display: none; } }
+/* PigBang is always dark, so its glass is too. */
+body[data-page="watch"] { --glass-fill: rgba(40, 42, 48, 0.55); --glass-fill-strong: rgba(28, 30, 34, 0.82); --glass-edge: rgba(255, 255, 255, 0.12); --glass-rim: rgba(255, 255, 255, 0.08); --glass-rim-strong: rgba(255, 255, 255, 0.16); --glass-float: 0 2px 8px rgba(0, 0, 0, 0.4), 0 18px 44px rgba(0, 0, 0, 0.5); }

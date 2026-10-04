@@ -1135,18 +1135,14 @@
         ${tab("home", "Home", "home")}${tab("learn", "Learn", "learn")}${tab("watch", "PigBang", "watch")}${tab("exams", "Exams", "exams")}
         <button type="button" data-open-menu aria-controls="site-sidebar" aria-haspopup="dialog">${tabIcon("more")}<span>More</span></button>
       </nav>
-      <aside class="support-dock support-dock-left" aria-label="AI studio and assistant">
+      <aside class="support-dock support-dock-left" aria-label="AI Studio">
         <div class="support-action support-pair ai-pair">
           <button type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</button>
-          <span class="support-divider" aria-hidden="true"></span>
-          <button type="button" data-open-ask aria-expanded="false" aria-controls="ask-ai-panel">${uiIcon('M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 15.8a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.6-5.3c-.7.5-.8.8-.8 1.3h-1.7c0-1.2.4-1.8 1.3-2.4.8-.5 1-.8 1-1.3 0-.6-.5-1-1.2-1s-1.2.4-1.3 1.1H9.2c.1-1.6 1.3-2.7 3-2.7s2.9 1 2.9 2.5c0 1-.5 1.6-1.5 2.2Z')} Ask AI</button>
         </div>
       </aside>
-      <aside class="support-dock support-dock-right" aria-label="Support and feedback">
+      <aside class="support-dock support-dock-right" aria-label="Donate or give feedback">
         <div class="support-action support-pair">
-          <button type="button" data-open-donate>${uiIcon('M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z')} Donate</button>
-          <span class="support-divider" aria-hidden="true"></span>
-          <button type="button" data-open-feedback>${uiIcon('M20 4.8H4a1.2 1.2 0 0 0-1.2 1.2v9.2A1.2 1.2 0 0 0 4 16.4h3.1v3.3l3.9-3.3H20a1.2 1.2 0 0 0 1.2-1.2V6A1.2 1.2 0 0 0 20 4.8Z')} Feedback</button>
+          <button type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog">${uiIcon('M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z')} Donate or Feedback</button>
         </div>
       </aside>
 
@@ -1208,14 +1204,34 @@
         </div>
       </dialog>
 
-      <dialog class="site-dialog" id="donate-dialog" aria-labelledby="donate-title">
-        <div class="dialog-head"><h2 id="donate-title">Keep access open</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close donation details">×</button></div>
+      <dialog class="site-dialog" id="support-dialog" aria-labelledby="support-title">
+        <div class="dialog-head"><h2 id="support-title">You are why Pigsfield stays free</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close">×</button></div>
         <div class="dialog-body">
-          <p>Pigsfield is volunteer-led. A donation helps with research, review and keeping the platform available. Please verify the receiver name in your UPI app before paying.</p>
+          <p>No paywall, no ads, no sign-up. Pigsfield keeps going because people like you give a little, or tell us what to fix.</p>
+          <div class="action-grid">
+            <button class="action-option action-option-donate" type="button" data-open-donate><b aria-hidden="true">♥</b><span><strong>Donate</strong><small>Keep learning free for the next student</small></span></button>
+            <button class="action-option" type="button" data-open-feedback><b aria-hidden="true">✎</b><span><strong>Feedback</strong><small>Report a broken link, suggest a resource or share an idea</small></span></button>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog class="site-dialog" id="donate-dialog" aria-labelledby="donate-title">
+        <div class="dialog-head"><h2 id="donate-title">Someone is studying for free tonight</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close donation details">×</button></div>
+        <div class="dialog-body donate-body">
+          <p>Somewhere in India right now, a student is preparing for an exam on a borrowed phone and a weak signal. A teacher is looking for a lesson that will finally make sense to her class. Someone is filing an RTI for the very first time.</p>
+          <p>Pigsfield exists so none of them has to pay, sign up or be sold to just to find their way. It is volunteer-led, with no ads and no paywall, and it stays free only because people who found it useful help keep it running.</p>
+          <p class="donate-ask"><strong>If Pigsfield ever saved you time, money or confusion, please pass it forward.</strong> Whatever you give keeps the door open for the next person who has nowhere else to look.</p>
+          <div class="donate-amounts" role="group" aria-label="Choose an amount">
+            <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=51&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹51</a>
+            <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=101&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹101</a>
+            <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=251&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹251</a>
+            <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=501&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹501</a>
+          </div>
           <div class="upi-box">
             <div class="upi-code"><span>UPI ID</span><code>zeroisinf@ibl</code><button class="button small ghost" type="button" data-copy="zeroisinf@ibl">Copy</button></div>
-            <a class="button brand" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;cu=INR">Open a UPI app</a>
+            <a class="button brand" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;cu=INR">Give any amount with UPI</a>
           </div>
+          <p class="donate-note">Please check that the receiver name in your UPI app is right before paying. Thank you, truly.</p>
         </div>
       </dialog>
 
@@ -1443,18 +1459,6 @@
 
   // The panel builds its own dialog on first open, so nothing about it weighs on the
   // navigation shell except this button and this loader.
-  let askAIPromise = null;
-  function openAskAI() {
-    if (!askAIPromise) {
-      askAIPromise = loadScript("js/ask-ai.js?v=3783174d9542").catch((error) => {
-        askAIPromise = null;
-        PF.toast("Ask AI could not start. Check your connection and try again.");
-        throw error;
-      });
-    }
-    return askAIPromise.then(() => PF.askAI && PF.askAI.toggle()).catch(() => {});
-  }
-  PF.openAskAI = openAskAI;
 
   function loadData(key) {
     window.PF_DATA = window.PF_DATA || {};
@@ -1918,9 +1922,14 @@
     qsa("[data-open-search]").forEach((button) => button.addEventListener("click", () => openSearch()));
     qsa("[data-open-saved]").forEach((button) => button.addEventListener("click", () => { renderSaved(); showDialog(qs("#saved-dialog")); }));
     qsa("[data-open-ai]").forEach((button) => button.addEventListener("click", openAIStudio));
-    qsa("[data-open-ask]").forEach((button) => button.addEventListener("click", openAskAI));
-    qsa("[data-open-donate]").forEach((button) => button.addEventListener("click", () => showDialog(qs("#donate-dialog"))));
-    qsa("[data-open-feedback]").forEach((button) => button.addEventListener("click", () => showDialog(qs("#feedback-dialog"))));
+    const openFrom = (target) => (event) => {
+      const from = event.currentTarget.closest("dialog");
+      if (from && from.open) from.close();
+      showDialog(qs(target));
+    };
+    qsa("[data-open-support]").forEach((button) => button.addEventListener("click", openFrom("#support-dialog")));
+    qsa("[data-open-donate]").forEach((button) => button.addEventListener("click", openFrom("#donate-dialog")));
+    qsa("[data-open-feedback]").forEach((button) => button.addEventListener("click", openFrom("#feedback-dialog")));
     qsa("[data-copy]").forEach((button) => button.addEventListener("click", () => PF.copy(button.dataset.copy)));
 
     const globalForm = qs("#global-search-form");

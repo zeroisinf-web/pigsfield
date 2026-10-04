@@ -30,7 +30,7 @@ export const ROUTES = [
   // searches, and they carry the actual resources.
   ...TOPICS.map((topic) => ({ path: topic.route, lastmod: "2026-09-05", changefreq: HUB, priority: "0.7" })),
 
-  { path: "/ai/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },
+  { path: "/ai/", lastmod: "2026-10-04", changefreq: STATIC, priority: "0.7" },
   { path: "/about/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },
   { path: "/editorial/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.6" },
   { path: "/submit/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.5" },

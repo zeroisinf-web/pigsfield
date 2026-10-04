@@ -1,6 +1,5 @@
 import { handleAccountRoute } from "./account-routes.mjs";
 import { handleModelRankings } from "./model-rankings.mjs";
-import { handleAsk } from "./ask.mjs";
 import { cloudflareVisitors, SNAPSHOT_OBJECT } from "./cloudflare-visitors.mjs";
 import { handlePoster } from "./poster.mjs";
 // Every model here is served by the Cloudflare Workers AI binding, which is what makes the
@@ -685,8 +684,6 @@ export default {
     }
     if (url.pathname === "/api/model-rankings") return handleModelRankings(request, env);
     if (url.pathname === "/api/ai") return handleAI(request, env);
-    // Page-aware assistant, answered by Gemini. See worker/ask.mjs.
-    if (url.pathname === "/api/ask") return handleAsk(request, env);
     if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
     // Same-origin cover art for the catalog. See worker/poster.mjs for why it exists.
@@ -720,7 +717,6 @@ export {
   MonthlyVisitorCounter,
   TRANSLATION_MODEL,
   handleAI,
-  handleAsk,
   handleTranslate,
   handleVisitors,
   indiaDay,
