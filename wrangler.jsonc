@@ -14,14 +14,10 @@
   "ai": {
     "binding": "AI"
   },
-  // Plain configuration, not secrets. A zone id only says *which* site; it grants nothing
-  // without a token, and it already appears in every dashboard URL for the zone. Keeping it
-  // here means the analytics token is the only thing that has to be set by hand.
   // VISITOR_BASELINE_TOTAL is the estimated pre-counter visits added to the check-in
-  // counter's total; it never touches Cloudflare's figures, which cover that period natively.
+  // counter's total.
   "vars": {
-    "CF_ZONE_ID": "50e59ed61f73de386a8e94724c81c687",
-    "VISITOR_BASELINE_TOTAL": "700"
+    "VISITOR_BASELINE_TOTAL": "1000"
   },
   // Optional accounts are OFF here on purpose. Every /api/auth route answers "not enabled"
   // without this binding and the sign-in panel never renders, so guest mode is the default
@@ -32,12 +28,6 @@
   //   npx wrangler secret put ACCOUNT_PEPPER
   // then add, with the real id printed by d1 create:
   //   "d1_databases": [{ "binding": "DB", "database_name": "pigsfield", "database_id": "<id>" }],
-  // The homepage visitor figures come from Cloudflare's own analytics once the token is set
-  // (the zone id is in "vars" above); until then the check-in counter below answers. The
-  // token needs only Zone → Analytics → Read on pigsfield.com. See README "Cloudflare's
-  // unique-visitor count".
-  //   npx wrangler secret put CF_ANALYTICS_TOKEN
-  //
   // The daily AI spend ceiling is also opt-in. Without AI_BUDGET the per-address rate
   // limits still apply but nothing bounds the day's total spend, so add this once the
   // Durable Object migration is accepted:

@@ -206,9 +206,33 @@ stop and requests simply fail, so a ceiling would add nothing but a nicer error 
 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
-The homepage calls `/api/visitors` to show two best-effort figures: visits in the last 30
-days, and every visit since the counter started. A first-party, HTTP-only cookie stores the
-current India **day**, so the same browser is usually counted once a day.
+The homepage calls `/api/visitors` to show two best-effort figures of **real people**:
+
+- **Real visits in the last 30 days** — a rolling window ending today, re-read every minute
+  while the page is on screen. A first-party, HTTP-only cookie stores the current India
+  **day**, so the same browser is counted as a visit once a day.
+- **Real people since 14 March 2026** (`people`, `peopleSince`) — each browser once, ever. A
+  second HTTP-only cookie, `pf_person`, holds only `1` for up to 400 days. When per-browser
+  counting began (October 2026) this figure was seeded once from every check-in so far,
+  including the pre-counter estimate (`VISITOR_BASELINE_TOTAL`, raised from 700 to 1,000).
+  Those were visits, so a returning browser is in the seed more than once: a deliberately
+  generous estimate of the people before that date. A browser that still carries a day
+  cookie from before then is already in the seed and is not added again.
+
+Bots are kept out at both ends:
+
+- **In the page** (`js/home.js`), the figures are read with a `GET` that never counts. The
+  counting `POST` is sent only after a genuine tap, click, key press or scroll gesture while
+  the page is visible, and never when `navigator.webdriver` says the browser is automated.
+  Crawlers that do not run JavaScript, and most that do, never get that far.
+- **In the Worker** (`automatedRequest` in `worker/index.mjs`), a check-in is refused for a
+  missing or bot-like User-Agent (crawlers, SEO and uptime tools, AI fetchers, scripted HTTP
+  clients, headless browsers), for traffic from cloud and hosting networks (AWS, Google
+  Cloud, Azure, DigitalOcean, Hetzner and similar ASNs), and for Cloudflare-verified bots or
+  a low Bot Management score where the plan provides one.
+
+Someone who opens the homepage and leaves without touching it is not counted; that is the
+price of a figure that does not include crawlers.
 
 It used to be one figure counted per calendar month, which could not produce a rolling
 window — one check-in per browser per month puts everyone in the bucket for the 1st and
@@ -220,52 +244,10 @@ started rather than since this change shipped.
 
 It stores counts, a first-seen timestamp and nothing else: no per-visitor identifiers.
 
-### Cloudflare's unique-visitor count
-
-Once an analytics token is configured, `/api/visitors` answers with **Cloudflare's own
-count** instead, and the homepage shows *unique visitors this calendar month* and *unique
-visitors since the first day Cloudflare recorded traffic*. The check-in counter above keeps
-running underneath as the fallback, and is what the homepage shows until the token is set.
-The reason to prefer Cloudflare: it has been counting since the zone went live, months
-before the check-ins began in June 2026, and it is the number the Cloudflare dashboard shows.
-
-`worker/cloudflare-visitors.mjs` reads the GraphQL Analytics API dataset
-`httpRequests1dGroups` → `uniq.uniques`, one query per calendar month (UTC). The figure is
-Cloudflare's daily unique visitors **added up**: a person who returns on another day counts
-again, and automated traffic Cloudflare did not filter is included. The homepage says both,
-rather than implying a de-duplicated head count Cloudflare does not provide.
-
-The answer is cached at the edge for an hour, and a failed refresh serves the last good one
-marked stale. Each completed month is copied into the visitor Durable Object the first time it
-is read, because Cloudflare keeps daily analytics only for a limited period — without the
-copy, the "since launch" total would start shrinking once the earliest months aged out. A
-month Cloudflare no longer has and that was never copied is listed in `missingMonths` rather
-than counted as zero.
-
-**Setting it up.** One secret; the zone id is already in `wrangler.jsonc` under `vars`,
-because it only names the site and grants nothing on its own.
-
-1. **API token** — Cloudflare dashboard → *My Profile* → *API Tokens* → *Create Token* →
-   *Create Custom Token*. Permissions: **Zone → Analytics → Read**. Zone Resources:
-   **Include → Specific zone → pigsfield.com**. Nothing else; this token can read traffic
-   statistics and cannot change anything. Store it as a **Secret** (dashboard → Worker →
-   *Settings* → *Variables and Secrets*), or:
-   ```
-   npx wrangler secret put CF_ANALYTICS_TOKEN
-   ```
-2. If the site ever moves to another zone, change `CF_ZONE_ID` in `wrangler.jsonc`
-   (dashboard → the domain → *Overview*, right-hand column; 32 hexadecimal characters, not
-   the account ID). Do not also create a secret of the same name — a var and a secret
-   cannot share a binding name.
-3. Optional: `VISITORS_SINCE` (YYYY-MM-DD) to start counting from a different date. The
-   default, `2026-02-28`, is the launch day — the same moment as `SITE_LAUNCH_DATE` for the
-   check-in counter, and a test keeps the two in step — so traffic the zone saw before the
-   site existed is not counted. The response reports the first day that actually had
-   visitors. The check-in counter's `VISITOR_BASELINE_TOTAL` estimate is never added to
-   Cloudflare's figures: Cloudflare counted that period itself.
-
-Run `node --test tests/cloudflare-visitors.test.mjs` for the query shape, the month
-arithmetic, the snapshot, the stale path and the fallback.
+For a while the homepage showed Cloudflare's zone analytics instead (`httpRequests1dGroups`
+→ `uniq.uniques`). Those are distinct addresses that made any request, crawlers included, and
+the zone's plan cannot filter them, so they were removed. The `CF_ANALYTICS_TOKEN` secret is
+no longer read and can be deleted from the Worker's settings.
 
 The studio also provides ordinary external links to [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models) and [Qwen Chat](https://chat.qwen.ai/). These open the providers' own websites, where their current login, pricing, privacy and usage terms apply.
 
