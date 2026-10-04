@@ -58,6 +58,12 @@ const MAX_TRANSLATION_OUTPUT_CHARACTERS = 20_000;
 // produce a rolling window: everyone would be counted on the 1st and the last 30 days would
 // be a cliff rather than a curve.
 const VISITOR_COOKIE = "pf_visitor_day";
+// The "real people" figure needs to know whether a browser has ever been counted, not just
+// today. This cookie holds only "1"; Chrome caps a cookie's life at 400 days.
+const PERSON_COOKIE = "pf_person";
+const PERSON_COOKIE_MAX_AGE = 34560000;
+// The day the "real people" figure counts from.
+const PEOPLE_SINCE = "2026-03-14";
 const ROLLING_WINDOW_DAYS = 30;
 // A few days more than the window, so pruning is not knife-edge against a clock skew.
 const VISITOR_DAY_RETENTION = 45;
@@ -65,8 +71,9 @@ const VISITOR_DAY_RETENTION = 45;
 // Used to carry any per-month totals from previous schemes into the all-time figure.
 const VISITOR_EPOCH_MONTH = "2026-02";
 const SITE_LAUNCH_DATE = "2026-02-28T13:45:02.000Z";
-// Estimated baseline of visits between website launch (28 Feb 2026) and counter DO deployment (25 Jul 2026).
-const DEFAULT_PRE_COUNTER_BASELINE = 700;
+// Estimated baseline of visits between website launch (28 Feb 2026) and counter DO deployment
+// (25 Jul 2026). Raised from 700 to 1,000 in October 2026 to estimate that period generously.
+const DEFAULT_PRE_COUNTER_BASELINE = 1000;
 const BASE_INSTRUCTION = [
   "You are Pigsfield's free educational assistant for learners in India.",
   "Answer in the user's language, explain clearly, use practical examples, and distinguish facts from uncertainty.",
@@ -233,6 +240,10 @@ function visitorCookie(day) {
   return `${VISITOR_COOKIE}=${encodeURIComponent(day)}; Path=/; Max-Age=172800; Secure; HttpOnly; SameSite=Lax`;
 }
 
+function personCookie() {
+  return `${PERSON_COOKIE}=1; Path=/; Max-Age=${PERSON_COOKIE_MAX_AGE}; Secure; HttpOnly; SameSite=Lax`;
+}
+
 // Crawlers, SEO and uptime tools, AI fetchers and scripted HTTP clients. Most never run the
 // page's JavaScript and so never reach the check-in at all; this catches the ones that do,
 // or that call the endpoint directly. App names that are also real browsers or in-app
@@ -284,16 +295,18 @@ async function counterFetch(stub, path, method = "GET") {
  * passed so the object prunes to exactly what the Worker still considers current rather than
  * having to know the retention rule itself.
  */
-async function counterResponse(stub, increment, baseline = 0) {
+async function counterResponse(stub, increment, baseline = 0, person = false) {
   const window = recentIndiaDays(ROLLING_WINDOW_DAYS);
   const keep = recentIndiaDays(VISITOR_DAY_RETENTION);
   const baseParam = Number(baseline) > 0 ? `&baseline=${encodeURIComponent(Number(baseline))}` : "";
+  const personParam = person ? "&person=1" : "";
   const payload = increment
-    ? await counterFetch(stub, `/increment?day=${window[0]}&keep=${keep.join(",")}${baseParam}`, "POST")
+    ? await counterFetch(stub, `/increment?day=${window[0]}&keep=${keep.join(",")}${baseParam}${personParam}`, "POST")
     : await counterFetch(stub, `/count?${baseParam ? baseParam.slice(1) : ""}`);
 
   const total = Number(payload && payload.total);
   if (!Number.isSafeInteger(total) || total < 0) throw new Error("Invalid counter response");
+  const people = Number(payload && payload.people);
   const days = payload && typeof payload.days === "object" && payload.days ? payload.days : {};
   const rolling = window.reduce((sum, day) => sum + (Number(days[day]) || 0), 0);
   const startedAt = typeof payload.startedAt === "string" && payload.startedAt <= SITE_LAUNCH_DATE
@@ -303,6 +316,7 @@ async function counterResponse(stub, increment, baseline = 0) {
   return {
     total,
     rolling,
+    people: Number.isSafeInteger(people) && people >= 0 ? people : total,
     imported: Boolean(payload && payload.imported),
     startedAt
   };
@@ -342,7 +356,8 @@ async function handleVisitors(request, env) {
   }
 
   const today = indiaDay();
-  const alreadyCounted = cookieValue(request, VISITOR_COOKIE) === today;
+  const dayCookie = cookieValue(request, VISITOR_COOKIE);
+  const alreadyCounted = dayCookie === today;
   let increment = request.method === "POST" && !alreadyCounted && !automatedRequest(request);
 
   if (increment && env.VISITOR_RATE_LIMITER && typeof env.VISITOR_RATE_LIMITER.limit === "function") {
@@ -358,23 +373,32 @@ async function handleVisitors(request, env) {
     // One object now, not one per month: a rolling window has to read across months, and an
     // all-time total cannot live in a counter that is replaced every month.
     const stub = env.VISITOR_COUNTER.getByName("pigsfield-visitors-all");
-    let result = await counterResponse(stub, increment, configuredBaseline);
+    // A person is counted once per browser, ever. A browser that still carries a day cookie
+    // from before the person cookie existed was already in the check-ins the "people" figure
+    // was seeded from, so it is marked as known without being added again.
+    const markPerson = increment && cookieValue(request, PERSON_COOKIE) !== "1";
+    const newPerson = markPerson && !/^\d{4}-\d{2}-\d{2}$/.test(dayCookie);
+    let result = await counterResponse(stub, increment, configuredBaseline, newPerson);
     if (!result.imported) {
       await importLegacyTotal(env, stub);
       result = await counterResponse(stub, false, configuredBaseline);
     }
-    const headers = increment ? { "Set-Cookie": visitorCookie(today) } : {};
     // Only these check-ins are shown. Cloudflare's zone analytics were used for a while, but
     // its "unique visitors" are distinct addresses that made any request, crawlers included,
     // and that filtering cannot be turned on for the zone's plan.
-    return json({
+    const response = json({
       total: result.total,
       rolling: result.rolling,
       windowDays: ROLLING_WINDOW_DAYS,
+      people: result.people,
+      peopleSince: PEOPLE_SINCE,
       startedAt: result.startedAt,
       counted: increment,
-      definition: `Best-effort browser check-ins from real people: usually one per browser each India day, sent only after someone scrolls, taps or types, and never for recognised bots, crawlers or cloud-hosted traffic. "rolling" covers the last ${ROLLING_WINDOW_DAYS} days ending today; "total" is every check-in since the counter started.`
-    }, 200, headers);
+      definition: `Best-effort browser check-ins from real people: usually one per browser each India day, sent only after someone scrolls, taps or types, and never for recognised bots, crawlers or cloud-hosted traffic. "rolling" covers the last ${ROLLING_WINDOW_DAYS} days ending today; "total" is every check-in since the counter started; "people" counts each browser once, ever, since ${PEOPLE_SINCE}, and its figure before October 2026 is an estimate seeded from the check-ins.`
+    });
+    if (increment) response.headers.append("Set-Cookie", visitorCookie(today));
+    if (markPerson) response.headers.append("Set-Cookie", personCookie());
+    return response;
   } catch (_) {
     return json({ error: "Visitor count is temporarily unavailable." }, 503);
   }
@@ -420,6 +444,8 @@ class MonthlyVisitorCounter {
     let startedAt = await this.state.storage.get("startedAt") || null;
     let imported = Boolean(await this.state.storage.get("imported"));
     let baseline = Number(await this.state.storage.get("baseline")) || 0;
+    let people = Number(await this.state.storage.get("people")) || 0;
+    let peopleSeeded = Boolean(await this.state.storage.get("peopleSeeded"));
 
     let storageUpdates = {};
     let needsUpdate = false;
@@ -442,18 +468,35 @@ class MonthlyVisitorCounter {
       needsUpdate = true;
     }
 
+    // The "people" figure starts from every check-in so far, pre-counter estimate included.
+    // Those are visits, so a returning browser is in there more than once: a deliberately
+    // generous estimate of the people before per-browser counting began. It waits for the
+    // legacy import, so the months that import carries are part of it.
+    const seedPeople = () => {
+      if (!imported || peopleSeeded) return false;
+      people = total;
+      peopleSeeded = true;
+      return true;
+    };
+    if (seedPeople()) {
+      storageUpdates.people = people;
+      storageUpdates.peopleSeeded = peopleSeeded;
+      needsUpdate = true;
+    }
+
     if (request.method === "POST" && url.pathname === "/increment") {
       const day = url.searchParams.get("day") || "";
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ error: "A calendar day is required." }, 400);
       const keep = new Set((url.searchParams.get("keep") || "").split(",").filter(Boolean));
       total += 1;
       days[day] = (Number(days[day]) || 0) + 1;
+      if (url.searchParams.get("person") === "1") people += 1;
       // Anything outside the retention window the Worker asked us to keep.
       for (const key of Object.keys(days)) {
         if (!keep.has(key)) delete days[key];
       }
       if (!startedAt || startedAt > SITE_LAUNCH_DATE) startedAt = SITE_LAUNCH_DATE;
-      await this.state.storage.put({ total, days, startedAt, baseline });
+      await this.state.storage.put({ total, days, startedAt, baseline, people, peopleSeeded });
     } else if (request.method === "POST" && url.pathname === "/seed") {
       // One-time carry-over of the per-month totals. Guarded so a retry cannot double it.
       const carried = Number(url.searchParams.get("total")) || 0;
@@ -465,13 +508,14 @@ class MonthlyVisitorCounter {
         const since = url.searchParams.get("startedAt");
         if (since && (!startedAt || since < startedAt)) startedAt = since;
         if (!startedAt || startedAt > SITE_LAUNCH_DATE) startedAt = SITE_LAUNCH_DATE;
-        await this.state.storage.put({ total, startedAt, imported, baseline });
+        seedPeople();
+        await this.state.storage.put({ total, startedAt, imported, baseline, people, peopleSeeded });
       }
     } else if (needsUpdate) {
       await this.state.storage.put(storageUpdates);
     }
 
-    return json({ total, days, startedAt, imported, baseline });
+    return json({ total, days, startedAt, imported, baseline, people });
   }
 }
 
@@ -707,6 +751,7 @@ export default {
 export {
   DEFAULT_MODEL,
   DEFAULT_PRE_COUNTER_BASELINE,
+  PEOPLE_SINCE,
   ROLLING_WINDOW_DAYS,
   SITE_LAUNCH_DATE,
   VISITOR_EPOCH_MONTH,

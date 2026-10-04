@@ -207,9 +207,17 @@ stop and requests simply fail, so a ceiling would add nothing but a nicer error 
 Tutor and document prompts are sent to the same-origin `/api/ai` route, which calls the selected model through the server-side Cloudflare AI binding. No model files are downloaded to the browser and no additional provider key is exposed there. A random local client identifier and Cloudflare-provided network address support short abuse limits; shared capacity and provider availability still apply. Image prompts use the named Pollinations image service. Voice preview and music synthesis appear only when the browser supports the necessary capability, and their final output is made in the browser. Generated images, documents and music files remain downloadable where the browser supports the format. Do not enter personal, confidential or high-stakes information into a cloud service, and verify all generated work before using it.
 
 The homepage calls `/api/visitors` to show two best-effort figures of **real people**:
-visits in the last 30 days, and every visit since the counter started. A first-party,
-HTTP-only cookie stores the current India **day**, so the same browser is usually counted
-once a day.
+
+- **Real visits in the last 30 days** — a rolling window ending today, re-read every minute
+  while the page is on screen. A first-party, HTTP-only cookie stores the current India
+  **day**, so the same browser is counted as a visit once a day.
+- **Real people since 14 March 2026** (`people`, `peopleSince`) — each browser once, ever. A
+  second HTTP-only cookie, `pf_person`, holds only `1` for up to 400 days. When per-browser
+  counting began (October 2026) this figure was seeded once from every check-in so far,
+  including the pre-counter estimate (`VISITOR_BASELINE_TOTAL`, raised from 700 to 1,000).
+  Those were visits, so a returning browser is in the seed more than once: a deliberately
+  generous estimate of the people before that date. A browser that still carries a day
+  cookie from before then is already in the seed and is not added again.
 
 Bots are kept out at both ends:
 

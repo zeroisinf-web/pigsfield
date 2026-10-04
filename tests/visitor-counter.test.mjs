@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   DEFAULT_PRE_COUNTER_BASELINE,
   MonthlyVisitorCounter,
+  PEOPLE_SINCE,
   ROLLING_WINDOW_DAYS,
   SITE_LAUNCH_DATE,
   VISITOR_EPOCH_MONTH,
@@ -82,7 +83,7 @@ test("the rolling window is the last 30 days ending today, not a calendar month"
   assert.equal(new Set(days).size, 30, "no day may repeat");
 });
 
-test("counts a browser once a day and sets only a day cookie", async () => {
+test("counts a browser once a day and once as a person, with cookies that identify no one", async () => {
   const { env } = counterEnvironment();
   const first = await handleVisitors(visitorRequest(), env);
   assert.equal(first.status, 200);
@@ -93,19 +94,68 @@ test("counts a browser once a day and sets only a day cookie", async () => {
   assert.equal(firstBody.counted, true);
   assert.match(firstBody.startedAt, /^\d{4}-\d{2}-\d{2}T/);
 
-  const cookie = first.headers.get("set-cookie");
+  assert.equal(firstBody.people, 1);
+  assert.equal(firstBody.peopleSince, "2026-03-14");
+
+  const [cookie, person] = first.headers.getSetCookie();
   assert.match(cookie, /^pf_visitor_day=\d{4}-\d{2}-\d{2};/);
   assert.match(cookie, /HttpOnly/);
   // Two days, so a timezone boundary cannot double-count and tomorrow still counts.
   assert.match(cookie, /Max-Age=172800/);
   assert.doesNotMatch(cookie, /[a-f0-9]{24,}/i, "the cookie must not carry a visitor identifier");
+  // The person cookie says only "counted before", for as long as a browser keeps a cookie.
+  assert.match(person, /^pf_person=1;/);
+  assert.match(person, /HttpOnly/);
+  assert.match(person, /Max-Age=34560000/);
 
-  const second = await handleVisitors(visitorRequest({ cookie: cookie.split(";")[0] }), env);
+  const second = await handleVisitors(visitorRequest({ cookie: cookie.split(";")[0] + "; " + person.split(";")[0] }), env);
   const secondBody = await second.json();
   assert.equal(secondBody.rolling, 1);
   assert.equal(secondBody.total, 1);
+  assert.equal(secondBody.people, 1);
   assert.equal(secondBody.counted, false);
   assert.equal(second.headers.get("set-cookie"), null);
+});
+
+test("a returning browser is a new visit each day but the same person", async () => {
+  const seed = { "pigsfield-visitors-all": { total: 500, imported: true } };
+  const { env } = counterEnvironment(seed);
+  // The person cookie from an earlier day, and yesterday's day cookie.
+  const body = await (await handleVisitors(visitorRequest({ cookie: "pf_visitor_day=2000-01-01; pf_person=1" }), env)).json();
+  assert.equal(body.counted, true);
+  assert.equal(body.total, 501, "a new day is a new visit");
+  assert.equal(body.people, 500, "but not a new person");
+});
+
+test("the people figure starts from every check-in so far, once, and then counts new browsers", async () => {
+  // An existing counter from before per-browser counting: 326 check-ins plus the estimate.
+  const seed = { "pigsfield-visitors-all": { total: 326, imported: true, baseline: 700 } };
+  const { env, valuesFor } = counterEnvironment(seed, { baseline: 1000 });
+
+  // Raising the estimate to 1,000 adds the 300 difference once, and the people figure is
+  // seeded from that total: visits, so a generous estimate of the people behind them.
+  const read = await (await handleVisitors(visitorRequest({ method: "GET", origin: "" }), env)).json();
+  assert.equal(read.total, 626);
+  assert.equal(read.people, 626);
+  assert.equal(valuesFor("pigsfield-visitors-all").get("peopleSeeded"), true);
+
+  // A browser seen in the last two days, before the person cookie existed, is already in the
+  // seed: it gets the cookie but is not added again.
+  const known = await handleVisitors(visitorRequest({ cookie: "pf_visitor_day=2000-01-01" }), env);
+  const knownBody = await known.json();
+  assert.equal(knownBody.total, 627);
+  assert.equal(knownBody.people, 626);
+  assert.ok(known.headers.getSetCookie().some((value) => value.startsWith("pf_person=1;")));
+
+  // A browser never seen before is a new person.
+  const fresh = await (await handleVisitors(visitorRequest(), env)).json();
+  assert.equal(fresh.total, 628);
+  assert.equal(fresh.people, 627);
+
+  // Seeding happens once: later reads do not reset the figure to the visit total.
+  const again = await (await handleVisitors(visitorRequest({ method: "GET", origin: "" }), env)).json();
+  assert.equal(again.people, 627);
+  assert.equal(PEOPLE_SINCE, "2026-03-14");
 });
 
 test("the total keeps history the rolling window has already dropped", async () => {
@@ -230,7 +280,7 @@ test("rejects foreign increments and fails closed without storage", async () => 
 test("counts from site launch date (28 Feb 2026) and normalizes late counter start dates", async () => {
   assert.equal(VISITOR_EPOCH_MONTH, "2026-02");
   assert.equal(SITE_LAUNCH_DATE, "2026-02-28T13:45:02.000Z");
-  assert.equal(DEFAULT_PRE_COUNTER_BASELINE, 700);
+  assert.equal(DEFAULT_PRE_COUNTER_BASELINE, 1000);
 
   // Simulate an existing counter that was stamped on July 25, 2026
   const seed = {

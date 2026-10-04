@@ -757,6 +757,8 @@ function checkExperienceContracts() {
   // The rolling window may honestly be 0 on a quiet day; the all-time total may not, because
   // it carries every check-in since launch.
   check(/Number\.isSafeInteger\(period\)[\s\S]{0,60}period\s*<\s*0/.test(homeRuntime), homeRuntimeFile, "homepage must reject a fabricated period count");
+  check(/Number\(data && data\.people\)/.test(homeRuntime) && /Number\(data && data\.rolling\)/.test(homeRuntime), homeRuntimeFile, "the homepage must show real people since the start date and real visits in the last 30 days");
+  check(/setInterval\([\s\S]{0,160}requestVisitorCounts\(["']GET["']\)/.test(homeRuntime), homeRuntimeFile, "the 30-day figure must stay live while the homepage is open");
   check(!/cloudflare/i.test(homeRuntime), homeRuntimeFile, "the homepage must not show Cloudflare's address count, which includes crawlers");
   check(/Number\.isSafeInteger\(total\)[\s\S]{0,60}total\s*<\s*1/.test(homeRuntime), homeRuntimeFile, "homepage must reject missing or fabricated visitor totals");
   check(/dataset\.state\s*=\s*["']unavailable["']/.test(homeRuntime), homeRuntimeFile, "homepage must hide the count when its service is unavailable");
@@ -988,6 +990,8 @@ function checkExperienceContracts() {
     check(/definition:\s*`Best-effort browser check-ins/.test(worker), workerFile, "visitor endpoint must describe the total honestly");
     check(/"rolling" covers the last \$\{ROLLING_WINDOW_DAYS\} days ending today/.test(worker), workerFile, "the endpoint must say which window the rolling figure covers");
     check(/automatedRequest\(request\)/.test(worker), workerFile, "visitor total must exclude recognizable automated requests");
+    check(/PERSON_COOKIE\s*=\s*["']pf_person["']/.test(worker) && /\$\{PERSON_COOKIE\}=1; Path=\/; Max-Age=\$\{PERSON_COOKIE_MAX_AGE\}; Secure; HttpOnly; SameSite=Lax/.test(worker), workerFile, "the person cookie must hold only 1 and stay HTTP-only");
+    check(/PEOPLE_SINCE\s*=\s*["']2026-03-14["']/.test(worker) && /peopleSince:\s*PEOPLE_SINCE/.test(worker), workerFile, "the people figure must say the day it counts from");
     check(/HOSTING_ASNS\.has\(Number\(request\.cf\?\.asn\)\)/.test(worker), workerFile, "visitor check-ins from cloud and hosting networks must not count as people");
     check(!fs.existsSync(path.join(ROOT, "worker", "cloudflare-visitors.mjs")) && !/cloudflareVisitors/.test(worker), workerFile, "the visitor route must not answer with Cloudflare's address count, which includes crawlers");
     check(/env\.VISITOR_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "visitor increments need a separate abuse limit");

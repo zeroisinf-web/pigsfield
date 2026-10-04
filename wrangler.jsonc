@@ -17,7 +17,7 @@
   // VISITOR_BASELINE_TOTAL is the estimated pre-counter visits added to the check-in
   // counter's total.
   "vars": {
-    "VISITOR_BASELINE_TOTAL": "700"
+    "VISITOR_BASELINE_TOTAL": "1000"
   },
   // Optional accounts are OFF here on purpose. Every /api/auth route answers "not enabled"
   // without this binding and the sign-in panel never renders, so guest mode is the default
