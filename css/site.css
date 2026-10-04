@@ -468,7 +468,7 @@ summary::-webkit-details-marker { display: none; }
 .link-button { display: flex; min-height: 2.55rem; align-items: center; justify-content: space-between; gap: 0.7rem; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: 0.6rem; background: var(--paper-strong); color: var(--ink); font-size: 0.76rem; font-weight: 750; }
 .link-button:hover { border-color: var(--green); }
 .link-button.play,
-.link-button.source-video { background: #d93025; color: #fff; border-color: transparent; }
+.link-button.source-video, .link-button.source-tutorial { background: #d93025; color: #fff; border-color: transparent; }
 .link-button.source-app { background: #2266c8; color: #fff; border-color: transparent; }
 .link-button.source-document { background: #e7a72e; color: #18231f; border-color: transparent; }
 .link-button.source-website { background: var(--green); color: var(--on-green); border-color: transparent; }
