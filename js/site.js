@@ -1216,11 +1216,9 @@
       </dialog>
 
       <dialog class="site-dialog" id="donate-dialog" aria-labelledby="donate-title">
-        <div class="dialog-head"><h2 id="donate-title">Someone is studying for free tonight</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close donation details">×</button></div>
+        <div class="dialog-head"><h2 id="donate-title">Keep Pigsfield free</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close donation details">×</button></div>
         <div class="dialog-body donate-body">
-          <p>Somewhere in India right now, a student is preparing for an exam on a borrowed phone and a weak signal. A teacher is looking for a lesson that will finally make sense to her class. Someone is filing an RTI for the very first time.</p>
-          <p>Pigsfield exists so none of them has to pay, sign up or be sold to just to find their way. It is volunteer-led, with no ads and no paywall, and it stays free only because people who found it useful help keep it running.</p>
-          <p class="donate-ask"><strong>If Pigsfield ever saved you time, money or confusion, please pass it forward.</strong> Whatever you give keeps the door open for the next person who has nowhere else to look.</p>
+          <p class="donate-ask">No ads, no paywall, no sign-up. Pigsfield stays free because people like you chip in. <strong>If it saved you time or money, please pass it forward.</strong></p>
           <div class="donate-amounts" role="group" aria-label="Choose an amount">
             <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=51&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹51</a>
             <a class="button ghost" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;am=101&amp;cu=INR&amp;tn=Keep%20Pigsfield%20free">₹101</a>
@@ -1231,7 +1229,7 @@
             <div class="upi-code"><span>UPI ID</span><code>zeroisinf@ibl</code><button class="button small ghost" type="button" data-copy="zeroisinf@ibl">Copy</button></div>
             <a class="button brand" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;cu=INR">Give any amount with UPI</a>
           </div>
-          <p class="donate-note">Please check that the receiver name in your UPI app is right before paying. Thank you, truly.</p>
+          <p class="donate-note">Check the receiver name in your UPI app before paying. Thank you!</p>
         </div>
       </dialog>
 

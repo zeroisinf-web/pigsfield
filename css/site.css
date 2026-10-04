@@ -1161,6 +1161,11 @@ body[data-page="watch"] {
   .support-dock-right .support-pair button { font-size: 0; padding-inline: .55rem; }
   .topic-sources .link-button, .exam-link-row .link-button { gap: .2rem; padding-inline: .28rem; font-size: .62rem; }
   .topic-lane, .exam-resource-group { padding-inline: .25rem; }
+  .site-dialog:not(.ai-studio-dialog) .donate-body { padding-inline: .75rem; }
+  .upi-box { grid-template-columns: minmax(0, 1fr); padding: .6rem; }
+  .upi-code { gap: .4rem; padding: .5rem; }
+  .upi-code span { white-space: nowrap; }
+  .upi-code code { font-size: .82rem; }
 }
 
 /* Liquid Glass: translucent, top-lit surfaces over a quiet colour field. Only floating
