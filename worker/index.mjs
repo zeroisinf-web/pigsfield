@@ -1,6 +1,5 @@
 import { handleAccountRoute } from "./account-routes.mjs";
 import { handleModelRankings } from "./model-rankings.mjs";
-import { cloudflareVisitors, SNAPSHOT_OBJECT } from "./cloudflare-visitors.mjs";
 import { handlePoster } from "./poster.mjs";
 // Every model here is served by the Cloudflare Workers AI binding, which is what makes the
 // studio's promise true regardless of which one is picked: no visitor account, no additional
@@ -234,10 +233,42 @@ function visitorCookie(day) {
   return `${VISITOR_COOKIE}=${encodeURIComponent(day)}; Path=/; Max-Age=172800; Secure; HttpOnly; SameSite=Lax`;
 }
 
+// Crawlers, SEO and uptime tools, AI fetchers and scripted HTTP clients. Most never run the
+// page's JavaScript and so never reach the check-in at all; this catches the ones that do,
+// or that call the endpoint directly. App names that are also real browsers or in-app
+// browsers (DuckDuckGo, Yandex, Baidu, WhatsApp) are deliberately absent; their crawlers say
+// "bot" or "spider".
+const AUTOMATED_AGENT = /bot\b|bot\/|crawl|spider|scrap|headless|phantom|selenium|puppeteer|playwright|lighthouse|pagespeed|gtmetrix|pingdom|uptime|monitor|preview|facebookexternalhit|slurp|embedly|python|curl\/|wget|httpie|go-http|java\/|okhttp|axios|node-fetch|undici|libwww|httpclient|ahrefs|semrush|chatgpt-user|claude-user|anthropic|perplexity/i;
+
+// Cloud and hosting networks. People browse from homes, offices and mobile carriers; a
+// "browser" in AWS, Google Cloud, Azure or a VPS host is almost always a headless crawler
+// that sends an ordinary browser User-Agent. Someone on a VPN hosted there is missed, which
+// is the right side to err on for a figure that claims to count people.
+const HOSTING_ASNS = new Set([
+  16509, 14618, // Amazon AWS
+  15169, 396982, // Google, Google Cloud
+  8075, // Microsoft Azure
+  31898, // Oracle Cloud
+  14061, // DigitalOcean
+  16276, // OVH
+  24940, // Hetzner
+  63949, // Akamai Linode
+  20473, // Vultr
+  51167, // Contabo
+  45102, // Alibaba Cloud
+  132203, // Tencent Cloud
+  12876, // Scaleway
+  9009 // M247
+]);
+
 function automatedRequest(request) {
-  if (request.cf?.botManagement?.verifiedBot) return true;
+  const management = request.cf?.botManagement;
+  if (management?.verifiedBot) return true;
+  // Bot Management scores only exist on plans that include it; 1-29 is "likely automated".
+  if (Number.isInteger(management?.score) && management.score > 0 && management.score < 30) return true;
+  if (HOSTING_ASNS.has(Number(request.cf?.asn))) return true;
   const agent = String(request.headers.get("User-Agent") || "");
-  return /bot\b|crawler|spider|headless|preview|facebookexternalhit|slurp|bingpreview/i.test(agent);
+  return agent.length < 10 || AUTOMATED_AGENT.test(agent);
 }
 
 async function counterFetch(stub, path, method = "GET") {
@@ -301,7 +332,7 @@ async function importLegacyTotal(env, stub) {
   await counterFetch(stub, `/seed?${query}`, "POST");
 }
 
-async function handleVisitors(request, env, options = {}) {
+async function handleVisitors(request, env) {
   if (!["GET", "POST"].includes(request.method)) return json({ error: "Use GET or POST for visitor-count requests." }, 405);
   if (request.method === "POST" && !sameOriginRequest(request)) {
     return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
@@ -333,22 +364,16 @@ async function handleVisitors(request, env, options = {}) {
       result = await counterResponse(stub, false, configuredBaseline);
     }
     const headers = increment ? { "Set-Cookie": visitorCookie(today) } : {};
-    // Cloudflare's own count wins whenever it is configured and answers: it has been counting
-    // since the zone went live, months before these check-ins began. The check-ins keep
-    // running underneath, so the homepage still has a figure if the analytics token is never
-    // set or Cloudflare has nothing to give.
-    const cloudflare = await cloudflareVisitors(request, env, {
-      ...options,
-      store: env.VISITOR_COUNTER.getByName(SNAPSHOT_OBJECT)
-    }).catch(() => null);
-    if (cloudflare) return json({ ...cloudflare, counted: increment }, 200, headers);
+    // Only these check-ins are shown. Cloudflare's zone analytics were used for a while, but
+    // its "unique visitors" are distinct addresses that made any request, crawlers included,
+    // and that filtering cannot be turned on for the zone's plan.
     return json({
       total: result.total,
       rolling: result.rolling,
       windowDays: ROLLING_WINDOW_DAYS,
       startedAt: result.startedAt,
       counted: increment,
-      definition: `Best-effort browser check-ins; usually one per browser each India day. "rolling" covers the last ${ROLLING_WINDOW_DAYS} days ending today; "total" is every check-in since the counter started.`
+      definition: `Best-effort browser check-ins from real people: usually one per browser each India day, sent only after someone scrolls, taps or types, and never for recognised bots, crawlers or cloud-hosted traffic. "rolling" covers the last ${ROLLING_WINDOW_DAYS} days ending today; "total" is every check-in since the counter started.`
     }, 200, headers);
   } catch (_) {
     return json({ error: "Visitor count is temporarily unavailable." }, 503);
@@ -387,25 +412,6 @@ class MonthlyVisitorCounter {
         count: Number(await this.state.storage.get("count")) || 0,
         startedAt: await this.state.storage.get("startedAt") || null
       });
-    }
-
-    // Completed months of Cloudflare's unique-visitor count, copied here because Cloudflare
-    // keeps daily analytics for a limited time and the "since launch" total must not shrink
-    // when the earliest months age out. Only month keys and whole numbers are accepted.
-    if (url.pathname === "/cf-months") {
-      const months = await this.state.storage.get("cfMonths") || {};
-      if (request.method === "POST") {
-        let incoming = {};
-        try { incoming = (await request.json()).months || {}; } catch (_) { incoming = {}; }
-        for (const [month, entry] of Object.entries(incoming)) {
-          const uniques = Number(entry && entry.uniques);
-          if (!/^\d{4}-\d{2}$/.test(month) || !Number.isSafeInteger(uniques) || uniques < 0) continue;
-          const firstDay = /^\d{4}-\d{2}-\d{2}$/.test(String(entry.firstDay || "")) ? entry.firstDay : null;
-          months[month] = { uniques, firstDay };
-        }
-        await this.state.storage.put({ cfMonths: months });
-      }
-      return json({ months });
     }
 
     let total = Number(await this.state.storage.get("total")) || 0;
@@ -716,6 +722,7 @@ export {
   DailyAIBudget,
   MonthlyVisitorCounter,
   TRANSLATION_MODEL,
+  automatedRequest,
   handleAI,
   handleTranslate,
   handleVisitors,

@@ -6,6 +6,7 @@ import {
   ROLLING_WINDOW_DAYS,
   SITE_LAUNCH_DATE,
   VISITOR_EPOCH_MONTH,
+  automatedRequest,
   handleVisitors,
   indiaDay,
   indiaMonth,
@@ -179,6 +180,42 @@ test("read-only requests and recognizable bots do not increment", async () => {
   const botBody = await bot.json();
   assert.equal(botBody.total, 0);
   assert.equal(botBody.counted, false);
+});
+
+test("only real people are counted: crawlers, scripts, headless browsers and cloud servers are not", () => {
+  const request = (userAgent, cf) => ({ cf, headers: new Headers(userAgent === null ? {} : { "User-Agent": userAgent }) });
+  const chrome = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36";
+  const people = [
+    chrome,
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36 DuckDuckGo/5",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+  ];
+  for (const agent of people) assert.equal(automatedRequest(request(agent, { asn: 55836 })), false, agent);
+
+  const machines = [
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/129.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)",
+    "Mozilla/5.0 (compatible; Bytespider; spider-feedback@bytedance.com)",
+    "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36 Chrome-Lighthouse",
+    "curl/8.5.0",
+    "python-requests/2.32.3",
+    "Go-http-client/2.0",
+    "",
+    null
+  ];
+  for (const agent of machines) assert.equal(automatedRequest(request(agent, { asn: 55836 })), true, String(agent));
+
+  // An ordinary browser string from a cloud network is a crawler wearing a disguise.
+  assert.equal(automatedRequest(request(chrome, { asn: 16509 })), true, "AWS");
+  assert.equal(automatedRequest(request(chrome, { asn: 396982 })), true, "Google Cloud");
+  assert.equal(automatedRequest(request(chrome, { asn: 14061 })), true, "DigitalOcean");
+  // Cloudflare's own verdicts, where the plan provides them.
+  assert.equal(automatedRequest(request(chrome, { botManagement: { verifiedBot: true } })), true);
+  assert.equal(automatedRequest(request(chrome, { botManagement: { score: 2 } })), true);
+  assert.equal(automatedRequest(request(chrome, { botManagement: { score: 90 } })), false);
 });
 
 test("rejects foreign increments and fails closed without storage", async () => {
