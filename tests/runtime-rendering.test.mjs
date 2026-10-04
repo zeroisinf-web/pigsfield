@@ -36,6 +36,20 @@ test("the whole catalog reaches the DOM without anyone running any JavaScript", 
   }
 });
 
+test("the exam panels reach the DOM without anyone opening them or running JavaScript", () => {
+  // The page used to ship an empty #exam-root and build each panel only when a visitor
+  // opened it, so no crawler ever saw the syllabus or a single resource link.
+  const page = text("exams/index.html");
+  assert.match(page, /<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>/);
+  for (const id of ["exam-ncert-roadmap", "exam-mock-tests", "exam-common-subjects", "exam-ias", "exam-ras", "exam-channels"]) {
+    assert.match(page, new RegExp(`<details class="exam-panel" id="${id}"[^>]*><summary>[\\s\\S]*?<div class="exam-panel-body"><p>`), `${id} must ship with its body`);
+  }
+  assert.match(page, /<table class="data-table">/, "the NCERT roadmap table must be in the markup");
+  assert.ok((page.match(/class="link-button /g) || []).length > 300, "the exam resource links must be in the markup");
+  assert.doesNotMatch(page, /<details\b[^>]*\sopen/, "every panel still starts closed");
+  assert.doesNotMatch(page, /js\/data\/exams\.js\?/, "the page must not download the data it already carries");
+});
+
 test("a YouTube search link is not dressed up as a video", () => {
   const source = text("js/site.js");
   // 96 catalogue links point at youtube.com/results?search_query=... . A YouTube host test

@@ -15,13 +15,13 @@ const STATIC = "monthly";
 const RARE = "yearly";
 
 export const ROUTES = [
-  { path: "/", lastmod: "2026-07-15", changefreq: HUB, priority: "1.0" },
+  { path: "/", lastmod: "2026-10-04", changefreq: HUB, priority: "1.0" },
 
   { path: "/learn/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
   { path: "/rights/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
   { path: "/skills/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
   { path: "/tools/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
-  { path: "/exams/", lastmod: "2026-07-15", changefreq: HUB, priority: "0.8" },
+  { path: "/exams/", lastmod: "2026-10-04", changefreq: HUB, priority: "0.8" },
   { path: "/watch/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
 
   // Generated topic pages. Slugs come from tools/build-topics.mjs, so a new topic reaches
