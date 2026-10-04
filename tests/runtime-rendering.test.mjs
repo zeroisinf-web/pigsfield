@@ -50,31 +50,36 @@ test("the exam panels reach the DOM without anyone opening them or running JavaS
   assert.doesNotMatch(page, /js\/data\/exams\.js\?/, "the page must not download the data it already carries");
 });
 
-test("a YouTube search link is not dressed up as a video", () => {
+test("a YouTube search link is not dressed up as a playable video", () => {
   const source = text("js/site.js");
   // 96 catalogue links point at youtube.com/results?search_query=... . A YouTube host test
-  // alone calls those "video": red play styling, a play affordance, and a label reading
-  // "Tutorial" for a page that plays nothing. js/player.js parse() returns null for
-  // /results, so the play never had anywhere to go.
+  // alone calls those "video", and a video gets a play affordance — but js/player.js
+  // parse() returns null for /results, so the play never had anywhere to go.
   assert.match(source, /function isYouTubeSearch\(url\)/, "search links need their own classification");
   assert.match(source, /parsed\.pathname === "\/results"/, "a search is identified by its /results path");
   assert.match(source, /if \(isYouTubeSearch\(value\)\) return "website";/, "a search must not classify as a video");
   // The host check must be anchored: a bare dot would also match evilyoutubeXcom.
   assert.match(source, /\/\(\?:\^\|\\\.\)youtube\\\.com\$\/i/, "the host pattern must escape its dots");
+  assert.match(source, /function isTutorialSearch\(url, label\)/, "tutorial searches need their own classification");
 
   const builder = text("tools/build-topics.mjs");
-  assert.match(builder, /isYouTubeSearch\(url\)\s*\?\s*"Search YouTube"/, "the generated label must say it is a search");
-  // And the generated pages must actually carry that classification.
+  assert.match(builder, /isYouTubeSearch\(url\)\s*\?\s*"Search YouTube"/, "a search that is not a tutorial must still say it is a search");
+  // A search the catalogue calls a tutorial looks like the YouTube button and says
+  // "Tutorial", but stays an ordinary link: it never gets the in-site player.
   const page = text("tools/files-and-remote-access/index.html");
-  assert.match(page, /class="link-button source-website source-brand-website"[^>]*youtube\.com\/results/, "a search link must render as a website, not a video");
+  assert.match(page, /class="link-button source-tutorial source-brand-youtube"[^>]*youtube\.com\/results[^>]*aria-label="Search YouTube for [^"]+ tutorials"/, "a tutorial search must be a YouTube-branded link named as a search");
   const lanes = [...page.matchAll(/<div class="topic-lane topic-lane-(web|video|app)">([\s\S]*?)<\/div>/g)];
   const searchLanes = lanes.filter(([, , html]) => html.includes("youtube.com/results"));
   assert.ok(searchLanes.length > 0);
   for (const [, lane, html] of searchLanes) {
     assert.equal(lane, "video", "YouTube searches belong in the YouTube column");
-    assert.match(html, /Search YouTube/);
+    assert.match(html, /source-mark-youtube/);
+    assert.match(html, /<span class="source-label">Tutorial<\/span>/);
     assert.doesNotMatch(html, /data-youtube-play/);
   }
+  // Rights pages label theirs "YouTube Tutorial"; channel searches elsewhere are not tutorials.
+  assert.match(text("rights/anti-corruption/index.html"), /source-tutorial source-brand-youtube/);
+  assert.doesNotMatch(text("learn/class-9-to-12/index.html"), /source-tutorial/);
 });
 
 test("the generated pages and the runtime share one source-button vocabulary", () => {

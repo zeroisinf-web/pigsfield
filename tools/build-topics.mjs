@@ -170,13 +170,13 @@ function siteHelpers(root = ROOT) {
   const context = vm.createContext({ PF: {}, URL });
   vm.runInContext(
     `${siteBlock(root, "source-marks")}\n${siteBlock(root, "resource-symbols")}\n` +
-    ";globalThis.helpers = { classifySource, sourceBrand, sourceMark, isYouTubeSearch, resourceSymbolFor: PF.resourceSymbolFor };",
+    ";globalThis.helpers = { classifySource, sourceBrand, sourceMark, isYouTubeSearch, isTutorialSearch, resourceSymbolFor: PF.resourceSymbolFor };",
     context
   );
   return context.helpers;
 }
 
-const { classifySource, sourceBrand, sourceMark, isYouTubeSearch, resourceSymbolFor } = siteHelpers();
+const { classifySource, sourceBrand, sourceMark, isYouTubeSearch, isTutorialSearch, resourceSymbolFor } = siteHelpers();
 
 /** Mirrors PF.slug in js/site.js. tests/catalog-compatibility.test.mjs pins the result. */
 function slug(value) {
@@ -256,6 +256,9 @@ function renderSource(pair, title) {
   const brand = sourceBrand(url, type);
   const mark = sourceMark(url, type);
   const attributes = `href="${esc(url)}" target="_blank" rel="noopener noreferrer"`;
+  if (isTutorialSearch(url, label)) {
+    return `<a class="link-button source-tutorial source-brand-youtube" ${attributes} aria-label="${esc(`Search YouTube for ${title} tutorials`)}" title="${esc(host)}">${sourceMark(url, "video")}<span class="source-label">Tutorial</span></a>`;
+  }
   if (type === "video" || type === "app") {
     const where = brand === "app" ? "the provider’s app page" : BRAND_NAMES[brand] || host;
     const action = type === "video" ? "Watch" : "Get";

@@ -153,6 +153,14 @@
     }
   }
 
+  // A search the catalogue labels as a tutorial ("Tutorial", "YouTube Tutorial") is drawn as
+  // a YouTube button that says "Tutorial", because that is where it takes you and what it
+  // finds. It stays a plain link with no play affordance: a results page has no one video
+  // for the in-site player to play.
+  function isTutorialSearch(url, label) {
+    return isYouTubeSearch(url) && /tutorial/i.test(String(label || ""));
+  }
+
   function classifySource(url) {
     const value = String(url || "");
     if (isYouTubeSearch(value)) return "website";
@@ -179,6 +187,7 @@
   }
 
   PF.isYouTubeSearch = isYouTubeSearch;
+  PF.isTutorialSearch = isTutorialSearch;
   PF.classifySource = classifySource;
   PF.sourceBrand = sourceBrand;
   PF.sourceMark = sourceMark;
