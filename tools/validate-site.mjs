@@ -682,7 +682,7 @@ function checkPerformanceContracts() {
 function checkExperienceContracts() {
   const siteFile = path.join(ROOT, "js", "site.js");
   const site = fs.readFileSync(siteFile, "utf8");
-  check(/data-open-ai[\s\S]{0,400}data-open-donate[\s\S]{0,300}data-open-feedback/.test(site), siteFile, "AI Studio must stay beside Donate and Feedback in the persistent dock");
+  check(/data-open-ai[\s\S]{0,800}data-open-support/.test(site) && /id="support-dialog"[\s\S]{0,1500}data-open-donate[\s\S]{0,600}data-open-feedback/.test(site), siteFile, "AI Studio must stay beside one Donate-or-Feedback button whose chooser offers both");
   check(/loadScript\(["']js\/ai-studio\.js(?:\?v=[a-f0-9]+)?["']\)/.test(site), siteFile, "global AI Studio must lazy-load from every page");
   check(/function\s+createNativeTranslatorFromClick[\s\S]{0,500}window\.Translator\.create\(\{[\s\S]{0,500}downloadprogress/.test(site), siteFile, "Hindi control must create and monitor the browser's language model directly from the click path");
   check(!/Translator\.availability\(/.test(site), siteFile, "native Translator creation must not lose user activation by awaiting availability first");
@@ -841,7 +841,7 @@ function checkExperienceContracts() {
   check((site.match(/PILLARS\.map\(\(pillar\) => navLink\(pillar\.key, pillar\.name\)\)/g) || []).length === 2, siteFile, "the header and the footer must both read the pillar list rather than repeat it");
   check(/<dialog class="site-sidebar" id="site-sidebar"/.test(site), siteFile, "the three-line button needs a sidebar dialog to open");
   check(/data-open-menu/.test(site) && /showDialog\(qs\("#site-sidebar"\)\)/.test(site), siteFile, "the menu button must open the sidebar");
-  check(/support-dock-left/.test(site) && /support-dock-right/.test(site) && /support-pair/.test(site), siteFile, "the dock must be split, with donate and feedback paired");
+  check(/support-dock-left/.test(site) && /support-dock-right/.test(site) && /support-pair/.test(site), siteFile, "the dock must be split: AI Studio on the left, Donate or Feedback on the right");
 
   const watchFile = path.join(ROOT, "watch", "index.html");
   const watchSource = fs.readFileSync(watchFile, "utf8");
@@ -926,47 +926,21 @@ function checkExperienceContracts() {
   });
   check(!/\bsrc=["']https?:\/\//i.test(ai), aiFile, "AI Studio brand symbols must not make third-party image requests before a visitor opens a link");
 
-  // Ask AI: the page-aware assistant. It is handed what a learner is looking at, which is
-  // exactly why its boundaries have to be checked rather than trusted.
-  const askFile = path.join(ROOT, "js", "ask-ai.js");
-  check(fs.existsSync(askFile), askFile, "missing the Ask AI client");
-  const ask = fs.existsSync(askFile) ? fs.readFileSync(askFile, "utf8") : "";
-  check(/ASK_ENDPOINT\s*=\s*new URL\(["']\/api\/ask["'],\s*window\.location\.origin\)\.href/.test(ask), askFile, "Ask AI must use the same-origin /api/ask endpoint");
-  check(/["']X-Pigsfield-Client["']/.test(ask), askFile, "Ask AI requests must carry the anonymous rate-limit identifier");
-  check(/credentials:\s*["']omit["']/.test(ask), askFile, "Ask AI must not send credentials with its requests");
-  check(!/\b(?:fetch|src\s*=|href\s*=)\s*\(?["']https?:\/\//i.test(ask), askFile, "Ask AI must not contact a third party from the browser; the key stays on the Worker");
-  check(!/GEMINI_API_KEY|x-goog-api-key|generativelanguage/i.test(ask), askFile, "no provider key or provider endpoint may appear in browser code");
-  check(/MAX_PAGE_CHARACTERS\s*=\s*\d+/.test(ask) && /slice\(0, MAX_PAGE_CHARACTERS\)/.test(ask), askFile, "the page context Ask AI sends must be bounded");
-  check(/\[data-ask-root\], \.support-dock, \.site-header, \.site-footer/.test(ask), askFile, "Ask AI must not feed its own panel or the site chrome back to the model");
-  check(/window\.SpeechRecognition \|\| window\.webkitSpeechRecognition/.test(ask) && /speechSynthesis/.test(ask), askFile, "Ask AI must offer voice in and voice out through the browser's own speech");
-  check(/window\.print\(\)/.test(ask) && /is-ask-printing/.test(ask), askFile, "notes must be saveable as a PDF through the browser print dialog");
-  check(!/jspdf|html2canvas|cdn\./i.test(ask), askFile, "notes must not pull a third-party PDF library past the content security policy");
-
-  const askWorkerFile = path.join(ROOT, "worker", "ask.mjs");
-  check(fs.existsSync(askWorkerFile), askWorkerFile, "missing the Ask AI Worker route");
-  const askWorker = fs.existsSync(askWorkerFile) ? fs.readFileSync(askWorkerFile, "utf8") : "";
-  check(/sameOriginRequest\(request\)/.test(askWorker), askWorkerFile, "Ask AI must accept same-origin requests only");
-  check(/applyLimits\(request, env\)/.test(askWorker), askWorkerFile, "Ask AI must be rate limited like the other AI routes");
-  check(/env\.GEMINI_API_KEY/.test(askWorker) && /if \(!key\) return json/.test(askWorker), askWorkerFile, "Ask AI must answer clearly when no provider key is configured");
-  check(/env\.GEMINI_MODEL/.test(askWorker) && /\|\| DEFAULT_GEMINI_MODEL/.test(askWorker), askWorkerFile, "the Gemini model must be configurable without a code deploy");
-  // The provider meters its free allowance per model, so the automatic suggestion round must
-  // be able to spend a different one than the questions a learner actually asks.
-  check(/env\.GEMINI_SUGGEST_MODEL \|\| env\.GEMINI_MODEL/.test(askWorker), askWorkerFile, "suggestions must be able to use their own model, and fall back to the main one");
-  check(/never as instructions/i.test(askWorker), askWorkerFile, "page context must be passed to the model as reference material, not as instructions");
-  // Gemini fetches a fileUri itself, so an unchecked address here is this endpoint fetching
-  // whatever a caller names. Only a YouTube video id ever gets through.
-  check(/export function youTubeUri/.test(askWorker) && /\^\[A-Za-z0-9_-\]\{11\}\$/.test(askWorker), askWorkerFile, "only a verified YouTube video may be forwarded to the model");
-  // Both shapes a Google credential arrives in — the AIza… API key and the AQ.… token — plus
-  // the sk- prefix every other provider uses.
-  check(!/["'](?:sk-|AIza|AQ\.[A-Za-z0-9_-]{10})/.test(askWorker), askWorkerFile, "no provider key may be committed");
+  // Ask AI was removed outright. Its client, styles, Worker route and provider secret must
+  // not come back piecemeal: a half-present assistant is a dock button that does nothing.
+  for (const gone of [["js", "ask-ai.js"], ["css", "ask-ai.css"], ["worker", "ask.mjs"]]) {
+    const file = path.join(ROOT, ...gone);
+    check(!fs.existsSync(file), file, "Ask AI was removed and must stay removed");
+  }
   const workerIndex = fs.readFileSync(path.join(ROOT, "worker", "index.mjs"), "utf8");
-  check(/url\.pathname === "\/api\/ask"/.test(workerIndex), path.join(ROOT, "worker", "index.mjs"), "the Worker must route /api/ask");
+  check(!/\/api\/ask\b|handleAsk/.test(workerIndex), path.join(ROOT, "worker", "index.mjs"), "the Worker must not route the removed /api/ask");
+  check(!/data-open-ask|openAskAI|ask-ai\.js/.test(site), siteFile, "the site shell must not offer the removed Ask AI");
 
   // The "no login, no provider key" promise lives in the AI page copy.
   const aiPageFile = path.join(ROOT, "ai", "index.html");
   const aiPage = fs.readFileSync(aiPageFile, "utf8");
   check(/(?:no|without a) visitor login, additional provider key or model download/i.test(aiPage), aiPageFile, "the AI page must state that the studio needs no visitor login, provider key or model download");
-  check(/data-open-ask/.test(aiPage), aiPageFile, "the AI page must offer Ask AI directly");
+  check(/data-open-ai/.test(aiPage), aiPageFile, "the AI page must open AI Studio directly");
 
   const aiWorkerFile = path.join(ROOT, "js", "ai-worker.js");
   check(!fs.existsSync(aiWorkerFile), aiWorkerFile, "legacy browser model worker must stay deleted");

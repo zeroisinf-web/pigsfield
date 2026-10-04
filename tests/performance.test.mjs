@@ -70,7 +70,10 @@ test("the navigation shell stays small enough for a fast first visit", () => {
   // for, and they remain the binding constraint.
   // Raw moved 91 -> 93 KiB for the phone tab bar (four links, a menu button and their
   // icons) and the scroll-direction cue that slims it. Gzip and Brotli stay put.
-  withinBudget("js/site.js", { raw: 93 * 1024, gzip: 26 * 1024, brotli: 24 * 1024 });
+  // Brotli 24 -> 24.5 KiB for the donation appeal and its Donate-or-Feedback chooser. Ask AI
+  // was removed in the same change, which took its dock button and loader out of this file
+  // and a 31 KiB client and 15 KiB stylesheet off every visitor who opened it.
+  withinBudget("js/site.js", { raw: 93 * 1024, gzip: 26 * 1024, brotli: 24.5 * 1024 });
   // The font was 119.7 KiB carrying opsz 6-144 and wght 1-1000. Trimmed to the ranges the
   // site actually paints (opsz 12-120, wght 400-900) it is 83.6 KiB and renders
   // pixel-identically. This budget stops a future re-export shipping the full axes again.
@@ -114,7 +117,7 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     ["exams/index.html", 595, 166],
     // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules, and
     // to 566 for the Liquid Glass layer and the phone tab bar.
-    ["watch/index.html", 566, 204],
+    ["watch/index.html", 566, 205],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],
