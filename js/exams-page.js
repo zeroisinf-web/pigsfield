@@ -1,12 +1,25 @@
 (function () {
   "use strict";
 
-  function initExamPage() {
-    const PF = window.PF;
-    const data = window.PF_DATA && window.PF_DATA.exams;
-    const root = document.getElementById("exam-root");
-    if (!PF || !data || !root || !PF.YouTube) return;
+  // Panel order, ids and titles. The ids are deep-link targets, so they must not change.
+  const PANELS = [
+    { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap" },
+    { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers" },
+    { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects" },
+    { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course" },
+    { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course" },
+    { key: "channels", id: "exam-channels", title: "Exam channels and official portals" }
+  ];
 
+  /**
+   * The exam page's markup, built from PF_DATA.exams without touching the DOM.
+   *
+   * tools/build-exams.mjs runs this at build time and writes every panel, closed, into
+   * exams/index.html. Before that the page shipped an empty #exam-root and filled each
+   * panel only when someone opened it, so search engines, AI answer engines and link
+   * previews saw six headings and none of the UPSC, RAS, SSC or NCERT material under them.
+   */
+  function createExamMarkup(PF, data) {
     const escapeHtml = PF.escapeHtml;
     const list = (value) => Array.isArray(value) ? value : [];
 
@@ -93,8 +106,8 @@
       return `<p>${escapeHtml(description)}</p>${body}`;
     }
 
-    function panelShell(definition) {
-      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><div class="exam-panel-body"></div></details>`;
+    function panelShell(definition, body) {
+      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
     }
 
     function renderRoadmap() {
@@ -205,16 +218,39 @@
       );
     }
 
-    const panelDefinitions = [
-      { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap", render: renderRoadmap },
-      { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers", render: renderMockTests },
-      { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects", render: renderCommonSubjects },
-      { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course", render: () => renderExamTrack("ias", "UPSC/ IAS Complete Foundation Course", "Navigate Prelims, Mains, CSAT and essential primary sources in one place.") },
-      { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course", render: () => renderExamTrack("ras", "RAS Complete Foundation Course", "Navigate Rajasthan Prelims, Mains and high-value primary sources in one place.") },
-      { key: "channels", id: "exam-channels", title: "Exam channels and official portals", render: renderChannels }
-    ];
+    const renderers = {
+      roadmap: renderRoadmap,
+      tests: renderMockTests,
+      common: renderCommonSubjects,
+      ias: () => renderExamTrack("ias", "UPSC/ IAS Complete Foundation Course", "Navigate Prelims, Mains, CSAT and essential primary sources in one place."),
+      ras: () => renderExamTrack("ras", "RAS Complete Foundation Course", "Navigate Rajasthan Prelims, Mains and high-value primary sources in one place."),
+      channels: renderChannels
+    };
+    const panelDefinitions = PANELS.map((panel) => Object.assign({}, panel, { render: renderers[panel.key] }));
+
+    return {
+      panelDefinitions,
+      panelShell,
+      // Every panel with its body, all closed: what exams/index.html ships.
+      prerendered: () => `<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>${panelDefinitions.map((definition) => panelShell(definition, definition.render())).join("")}</div>`
+    };
+  }
+
+  window.PF = window.PF || {};
+  window.PF.examMarkup = createExamMarkup;
+
+  function initExamPage() {
+    const PF = window.PF;
+    const data = window.PF_DATA && window.PF_DATA.exams;
+    const root = document.getElementById("exam-root");
+    const prerendered = root && root.querySelector(".exam-stack[data-prerendered]");
+    if (!PF || !root || !PF.YouTube || (!prerendered && !data)) return;
+
+    // The shipped page already holds every panel body. Only an older or hand-edited page
+    // without it falls back to building panels here, one at a time as they are opened.
+    const { panelDefinitions, panelShell } = prerendered ? { panelDefinitions: PANELS, panelShell: null } : createExamMarkup(PF, data);
     const panelsByKey = new Map(panelDefinitions.map((definition) => [definition.key, definition]));
-    const panelKeyById = new Map(panelDefinitions.map((definition) => [definition.id, definition.key]));
+    const panelKeyById = new Map(PANELS.map((definition) => [definition.id, definition.key]));
 
     function renderPanel(details) {
       if (!details || details.dataset.rendered === "true") return;
@@ -233,7 +269,8 @@
       return "";
     }
 
-    root.innerHTML = `<div class="exam-stack" id="exam-sections" data-accordion-scope>${panelDefinitions.map(panelShell).join("")}</div>`;
+    if (prerendered) root.querySelectorAll("details.exam-panel").forEach((details) => { details.dataset.rendered = "true"; });
+    else root.innerHTML = `<div class="exam-stack" id="exam-sections" data-accordion-scope>${panelDefinitions.map(panelShell).join("")}</div>`;
     if (PF.applyLanguageTo) PF.applyLanguageTo(root);
 
     root.addEventListener("click", (event) => {

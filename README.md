@@ -31,7 +31,7 @@ Then open `http://localhost:8741`.
 
 This static preview does not provide `/api/ai` or `/api/translate`; hosted text generation and fallback Hindi translation need the deployed Cloudflare Worker and its `AI` binding.
 
-After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first: it writes the per-topic pages **and** the index block on each hub, and `npm run build` fails if either is stale.
+After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first: it writes the per-topic pages **and** the index block on each hub, and `npm run build` fails if either is stale. If you changed `js/data/exams.js` or `js/exams-page.js`, run `npm run build:exams`: it writes every exam panel into `exams/index.html` so crawlers can read them, and `npm run build` fails if they are stale.
 
 ```bash
 npm run build:assets

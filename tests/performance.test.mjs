@@ -105,7 +105,11 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     ["skills/index.html", 299, 143],
     ["tools/index.html", 301, 144],
     ["rights/index.html", 301, 144],
-    ["exams/index.html", 387, 166],
+    // The exam panels are written into the page as markup now (tools/build-exams.mjs), so
+    // crawlers can read the UPSC, RAS, SSC and NCERT material, and the 60 KiB data script is
+    // gone. Raw bytes rose with the repeated link markup; Brotli, what actually crosses the
+    // network, barely moved.
+    ["exams/index.html", 585, 166],
     // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules.
     ["watch/index.html", 556, 204],
     ["about/index.html", 303, 145],
