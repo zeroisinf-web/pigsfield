@@ -1052,8 +1052,17 @@
     const header = qs("[data-site-header]");
     if (!header) return;
     let scrolled = null;
+    let lastY = window.scrollY;
+    let direction = "up";
     const sync = () => {
-      const next = window.scrollY > 8;
+      const y = window.scrollY;
+      const nextDirection = y < 120 ? "up" : y > lastY + 6 ? "down" : y < lastY - 6 ? "up" : direction;
+      if (Math.abs(y - lastY) > 6 || y < 120) lastY = y;
+      if (nextDirection !== direction) {
+        direction = nextDirection;
+        root.dataset.scrollDir = direction;
+      }
+      const next = y > 8;
       if (next === scrolled) return;
       scrolled = next;
       header.dataset.scrolled = String(next);
@@ -1114,11 +1123,18 @@
   }
 
   /** The dock and dialog heads all draw from one 24-grid; this is that tag, written once. */
+  const TAB_ICONS = "assets/tab-icons.svg?v=744e95cba16e";
   const uiIcon = (d) => `<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
 
   function dialogMarkup() {
     const mount = document.createElement("div");
+    const tabIcon = (id) => `<svg aria-hidden="true" focusable="false"><use href="${escapeHtml(base + TAB_ICONS)}#${id}"/></svg>`;
+    const tab = (key, label, icon) => `<a href="${escapeHtml(PF.path(key))}"${page === key ? ' aria-current="page"' : ""}>${tabIcon(icon)}<span>${label}</span></a>`;
     mount.innerHTML = `
+      <nav class="tab-bar" aria-label="App navigation">
+        ${tab("home", "Home", "home")}${tab("learn", "Learn", "learn")}${tab("watch", "PigBang", "watch")}${tab("exams", "Exams", "exams")}
+        <button type="button" data-open-menu aria-controls="site-sidebar" aria-haspopup="dialog">${tabIcon("more")}<span>More</span></button>
+      </nav>
       <aside class="support-dock support-dock-left" aria-label="AI studio and assistant">
         <div class="support-action support-pair ai-pair">
           <button type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</button>
