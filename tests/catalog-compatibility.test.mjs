@@ -38,7 +38,7 @@ function legacySaveIds(data) {
     (data[key].sections || []).forEach((section, sectionIndex) => {
       (section.groups || []).forEach((group, groupIndex) => {
         (group.items || []).forEach((item, itemIndex) => {
-          const id = slug(`${item.title}-${section.resourceIdSection || sectionIndex + 1}-${groupIndex + 1}-${itemIndex + 1}`);
+          const id = item.resourceId || slug(`${item.title}-${section.resourceIdSection || sectionIndex + 1}-${groupIndex + 1}-${itemIndex + 1}`);
           ids.set(`${section.saveKey || key}:${id}`, item.title);
         });
       });
@@ -75,7 +75,8 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
       }
     }
   }
-  assert.equal(checked, 291, "every resource that has a page of its own must keep its id");
+  // 22 AI entries were moved to AI Studio or explicitly removed.
+  assert.equal(checked, 269, "every resource that has a page of its own must keep its id");
 });
 
 test("moved Teacher Training cards retain the legacy save namespace", () => {

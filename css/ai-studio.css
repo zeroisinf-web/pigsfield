@@ -488,7 +488,6 @@
 
 @container (max-width: 620px) {
   .ai-launchpad-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ai-launchpad-group .featured:first-child { grid-column: 1 / -1; }
   .ai-rankings-table, .ai-rankings-table tbody { display: block; }
   .ai-rankings-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
   .ai-rankings-table tr {
@@ -525,3 +524,23 @@
 /* No reduced-motion block here on purpose: css/site.css already disables every animation,
    transition and transform site-wide under prefers-reduced-motion: reduce, and a second
    copy would only be one more place to keep in step. */
+
+/* Shared, explicit actions for both tool cards and ranked models. */
+.ai-tool-actions { display: flex; flex-wrap: wrap; gap: .35rem; }
+.ai-ext-pill.featured .ai-tool-actions { margin-left: auto; flex-shrink: 0; }
+.ai-studio-v2 .ai-ext-pill.featured { flex-wrap: wrap; }
+.ai-studio-v2 .ai-ext-pill[hidden] { display: none; }
+.ai-studio-v2 .ai-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: .35rem;
+  min-height: 2.25rem; padding: .35rem .65rem; border: 1px solid var(--ai-border-strong);
+  border-radius: .55rem; color: var(--ink); background: var(--ai-raised);
+  font-size: .75rem; font-weight: 650; line-height: 1.25; text-decoration: none;
+}
+.ai-studio-v2 .ai-learn { --ai-youtube: #c5221f; background: var(--ai-youtube); border-color: var(--ai-youtube); color: #fff; }
+.ai-studio-v2 .ai-learn:hover { --ai-youtube: #a71916; }
+.ai-studio-v2 .ai-use:hover { border-color: var(--brand); color: var(--brand); }
+.ai-action .ai-icon { width: 1.05rem; height: 1.05rem; flex: none; }
+.ai-studio-v2 .ai-action:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+.ai-ranking-identity .ai-tool-actions { margin-top: .4rem; }
+.ai-channel-links { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ai-updates h3 { margin: 0; font-size: 1.1rem; }
