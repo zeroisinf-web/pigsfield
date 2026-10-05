@@ -1,4 +1,4 @@
-// Digital Tools catalog. AI resources live in js/ai-studio.js.
+// Digital Tools catalog. General AI assistants live in js/ai-studio.js.
 // Explicit resource IDs preserve saved items and links when entries move.
 window.PF_DATA = window.PF_DATA || {};
 window.PF_DATA.tools = {
@@ -362,11 +362,30 @@ window.PF_DATA.tools = {
         }
        ],
        "resourceId": "albo-1-3-7"
+      },
+      {
+       "title": "PDF Resizer",
+       "desc": "मल्टी-पेज PDFs का साइज़ और डाइमेंशन्स एडजस्ट करने का फ्री टूल।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://pdfresizer.com/multipage"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=pdf+resizer+multipage+tutorial"
+         ]
+        }
+       ],
+       "resourceId": "pdf-resizer-1-4-9"
       }
      ]
     },
     {
-     "title": "Creativity — Video, music, photo tools with tutorials",
+     "title": "Photo, Video & Design — Editing, compression and creative tools with tutorials",
      "items": [
       {
        "title": "YT Create",
@@ -388,6 +407,25 @@ window.PF_DATA.tools = {
        "resourceId": "yt-create-1-4-3"
       },
       {
+       "title": "VideoCompress AI",
+       "desc": "वीडियो का फ़ाइल साइज़ कम करने का ऑनलाइन टूल — आउटपुट की क्वालिटी और मौजूदा सीमाएँ जाँचें।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://videocompress.ai/"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=videocompress.ai+tutorial"
+         ]
+        }
+       ],
+       "resourceId": "videocompress-ai-1-4-1"
+      },
+      {
        "title": "Snapseed",
        "desc": "गूगल का फ्री प्रो-लेवल फोटो एडिटर — RAW एडिटिंग, कर्व्स और बहुत कुछ करता है।",
        "links": [
@@ -407,6 +445,69 @@ window.PF_DATA.tools = {
        "resourceId": "snapseed-1-4-4"
       },
       {
+       "title": "Remove.bg",
+       "desc": "इमेजेस से बैकग्राउंड हटाने के लिए एकदम क्लीन और सटीक AI टूल।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.remove.bg"
+         ]
+        },
+        {
+         "label": "App",
+         "urls": [
+          "https://play.google.com/store/apps/details?id=bg.remove.android"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=remove.bg+tutorial"
+         ]
+        }
+       ],
+       "resourceId": "remove-bg-1-4-5"
+      },
+      {
+       "title": "Pixelcut",
+       "desc": "प्रोडक्ट फोटोग्राफी और सोशल मीडिया के लिए AI-पावर्ड इमेज एडिटिंग ऐप।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.pixelcut.ai"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=pixelcut+app+tutorial"
+         ]
+        }
+       ],
+       "resourceId": "pixelcut-1-4-6"
+      },
+      {
+       "title": "Freepik",
+       "desc": "All-in-One AI Creative Suite — डिज़ाइन, वेक्टर्स और इमेजेस के लिए।",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.freepik.com"
+         ]
+        },
+        {
+         "label": "Tutorial",
+         "urls": [
+          "https://www.youtube.com/results?search_query=how+to+use+freepik+tutorial"
+         ]
+        }
+       ],
+       "resourceId": "freepik-1-4-7"
+      },
+      {
        "title": "Reduce Images",
        "desc": "फ्री ऑनलाइन टूल — इमेजेस का साइज़ (KB) कम करो बिना क्वालिटी खोए।",
        "links": [
@@ -424,25 +525,6 @@ window.PF_DATA.tools = {
         }
        ],
        "resourceId": "reduce-images-1-4-8"
-      },
-      {
-       "title": "PDF Resizer",
-       "desc": "मल्टी-पेज PDFs का साइज़ और डाइमेंशन्स एडजस्ट करने का फ्री टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://pdfresizer.com/multipage"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=pdf+resizer+multipage+tutorial"
-         ]
-        }
-       ],
-       "resourceId": "pdf-resizer-1-4-9"
       }
      ]
     },

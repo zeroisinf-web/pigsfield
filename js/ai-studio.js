@@ -63,24 +63,11 @@
       "tutorial": "https://www.youtube.com/results?search_query=claude+ai+full+tutorial+use+cases"
     },
     {
-      "name": "Claude Artifacts",
-      "description": "Build interactive apps",
-      "website": "https://claude.ai/design",
-      "tutorial": "https://www.youtube.com/results?search_query=claude+artifacts+tutorial"
-    },
-    {
       "name": "Gemini",
       "rankedCompany": "Google",
       "description": "Google assistant",
       "website": "https://gemini.google.com/",
       "tutorial": "https://www.youtube.com/results?search_query=how+to+use+google+gemini+tutorial"
-    },
-    {
-      "name": "Z.ai",
-      "rankedCompany": "Z AI",
-      "description": "Chat with GLM",
-      "website": "https://chat.z.ai/",
-      "tutorial": "https://www.youtube.com/results?search_query=chat+z+ai+tutorial+how+to+use"
     },
     {
       "name": "Google AI Studio",
@@ -123,42 +110,6 @@
       "description": "Indian language AI",
       "website": "https://www.sarvam.ai/",
       "tutorial": "https://www.youtube.com/results?search_query=sarvam+ai+tutorial+india"
-    },
-    {
-      "name": "Comet Browser",
-      "description": "AI browser",
-      "website": "https://play.google.com/store/apps/details?id=ai.perplexity.comet",
-      "tutorial": "https://www.youtube.com/results?search_query=comet+browser+tutorial"
-    },
-    {
-      "name": "VideoCompress AI",
-      "description": "Video compression",
-      "website": "https://videocompress.ai/",
-      "tutorial": "https://www.youtube.com/results?search_query=videocompress.ai+tutorial"
-    },
-    {
-      "name": "Suno",
-      "description": "AI music",
-      "website": "https://suno.com/",
-      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+suno+ai+music+generator"
-    },
-    {
-      "name": "Remove.bg",
-      "description": "Remove backgrounds",
-      "website": "https://www.remove.bg",
-      "tutorial": "https://www.youtube.com/results?search_query=remove.bg+tutorial"
-    },
-    {
-      "name": "Pixelcut",
-      "description": "AI photo editing",
-      "website": "https://www.pixelcut.ai",
-      "tutorial": "https://www.youtube.com/results?search_query=pixelcut+app+tutorial"
-    },
-    {
-      "name": "Freepik",
-      "description": "AI creative suite",
-      "website": "https://www.freepik.com",
-      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+freepik+tutorial"
     },
     {
       "name": "Codex",

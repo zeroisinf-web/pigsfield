@@ -8,6 +8,15 @@
   const qs = (selector, scope = document) => scope.querySelector(selector);
   const qsa = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
+  function relocateTool() {
+    if (location.pathname.endsWith("/tools/creative-tools/") && location.hash === "#pdf-resizer-1-4-9") {
+      location.replace("../files-and-remote-access/" + location.hash);
+      return true;
+    }
+  }
+  if (relocateTool()) return;
+  window.addEventListener("hashchange", relocateTool);
+
   const pageMap = {
     home: "",
     learn: "learn/",
@@ -27,7 +36,7 @@
   const dataScripts = {
     school: "js/data/school.js?v=1dd425b231b5",
     teach: "js/data/teach.js?v=591eca90da74",
-    tools: "js/data/tools.js?v=4ef7b7a71b7c",
+    tools: "js/data/tools.js?v=78e7d4748c46",
     exams: "js/data/exams.js?v=f6be0ec7a33a",
     pigbang: "js/data/pigbang.js?v=04fd284661b0",
     govt: "js/data/govt.js?v=8588947b234b"
@@ -42,11 +51,7 @@
     govt: "rights"
   };
 
-  // Where a catalogue entry actually lives. tools/build-topics.mjs splits each destination
-  // into its own pages — by section for /learn/, by group everywhere else — so a search
-  // result points at the page holding the resource instead of at the hub. A group with too
-  // few resources for a page of its own has no slug here and falls back to the hub, which
-  // still lists it. tools/validate-site.mjs fails the build if this drifts from DESTINATIONS.
+  // Search destinations must match DESTINATIONS in tools/build-topics.mjs.
   const topicRoutes = {
     school: { by: "section", slugs: ["nursery-to-class-5", "class-6-to-8", "class-9-to-12", "undergraduate", "postgraduate", "phd-and-research", "teacher-training"] },
     teach: { by: "group", slugs: ["government-skill-portals", "corporate-training", "coding-platforms"] },
@@ -1445,7 +1450,7 @@
     if (!dialog || !mount) return;
     showDialog(dialog);
     if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js?v=291b003076f8")
+      aiStudioPromise = loadScript("js/ai-studio.js?v=2ba2a6e82181")
         .then(() => {
           if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
           mount.replaceChildren();

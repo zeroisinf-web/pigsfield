@@ -28,7 +28,7 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
-const DATA_MINIMUMS = { school: 171, teach: 23, tools: 28, govt: 40, pigbang: 500 };
+const DATA_MINIMUMS = { school: 171, teach: 23, tools: 32, govt: 40, pigbang: 500 };
 const BANNED_DOMAIN_PATTERNS = [
   /\banimesalt(?:\.in|\.ac)?\b/i,
   /\bhianimes?(?:\.se|\.to|\.tv)?\b/i,

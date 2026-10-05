@@ -75,8 +75,8 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
       }
     }
   }
-  // 22 AI entries were moved to AI Studio or explicitly removed.
-  assert.equal(checked, 269, "every resource that has a page of its own must keep its id");
+  // 18 entries moved to AI Studio or were removed; four creative tools returned.
+  assert.equal(checked, 273, "every resource that has a page of its own must keep its id");
 });
 
 test("moved Teacher Training cards retain the legacy save namespace", () => {
