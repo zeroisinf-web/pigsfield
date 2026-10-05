@@ -20,7 +20,7 @@ export const ROUTES = [
   { path: "/learn/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
   { path: "/rights/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
   { path: "/skills/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
-  { path: "/tools/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
+  { path: "/tools/", lastmod: "2026-10-05", changefreq: HUB, priority: "0.8" },
   { path: "/exams/", lastmod: "2026-10-04", changefreq: HUB, priority: "0.8" },
   { path: "/watch/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
 
@@ -28,9 +28,9 @@ export const ROUTES = [
   // the sitemap and the validator at the same moment it reaches the filesystem.
   // Priority sits just under their hub: these are the pages meant to rank for specific
   // searches, and they carry the actual resources.
-  ...TOPICS.map((topic) => ({ path: topic.route, lastmod: "2026-09-05", changefreq: HUB, priority: "0.7" })),
+  ...TOPICS.map((topic) => ({ path: topic.route, lastmod: topic.dest === "tools" ? "2026-10-05" : "2026-09-05", changefreq: HUB, priority: "0.7" })),
 
-  { path: "/ai/", lastmod: "2026-10-04", changefreq: STATIC, priority: "0.7" },
+  { path: "/ai/", lastmod: "2026-10-05", changefreq: STATIC, priority: "0.7" },
   { path: "/about/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },
   { path: "/editorial/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.6" },
   { path: "/submit/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.5" },

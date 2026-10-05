@@ -27,7 +27,7 @@
   const dataScripts = {
     school: "js/data/school.js?v=1dd425b231b5",
     teach: "js/data/teach.js?v=591eca90da74",
-    tools: "js/data/tools.js?v=729f92db927f",
+    tools: "js/data/tools.js?v=4ef7b7a71b7c",
     exams: "js/data/exams.js?v=f6be0ec7a33a",
     pigbang: "js/data/pigbang.js?v=04fd284661b0",
     govt: "js/data/govt.js?v=8588947b234b"
@@ -50,7 +50,7 @@
   const topicRoutes = {
     school: { by: "section", slugs: ["nursery-to-class-5", "class-6-to-8", "class-9-to-12", "undergraduate", "postgraduate", "phd-and-research", "teacher-training"] },
     teach: { by: "group", slugs: ["government-skill-portals", "corporate-training", "coding-platforms"] },
-    tools: { by: "group", slugs: ["ai-tools", "privacy-and-browsers", "files-and-remote-access", "creative-tools", "research-tools"] },
+    tools: { by: "group", slugs: ["privacy-and-browsers", "files-and-remote-access", "creative-tools", "research-tools"] },
     govt: { by: "group", slugs: ["information-and-records", "anti-corruption", "courts-and-legal-remedies", "commissions-and-regulators", "grievance-portals", "social-audit", "parliament-and-representatives", "media-and-fraud-reporting", "criminal-and-financial-law", "digital-governance"] }
   };
 
@@ -1445,7 +1445,7 @@
     if (!dialog || !mount) return;
     showDialog(dialog);
     if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js?v=20f94cfdd54d")
+      aiStudioPromise = loadScript("js/ai-studio.js?v=291b003076f8")
         .then(() => {
           if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
           mount.replaceChildren();
@@ -1479,7 +1479,7 @@
     (data.sections || []).forEach((section, sectionIndex) => {
       (section.groups || []).forEach((group, groupIndex) => {
         (group.items || []).forEach((item, itemIndex) => {
-          const id = PF.slug(`${item.title}-${section.resourceIdSection||1+sectionIndex}-${1+groupIndex}-${1+itemIndex}`);
+          const id = item.resourceId || PF.slug(`${item.title}-${section.resourceIdSection||1+sectionIndex}-${1+groupIndex}-${1+itemIndex}`);
           const route = topicRoutes[key];
           const slug = route ? route.slugs[route.by === "section" ? sectionIndex : groupIndex] : "";
           entries.push({

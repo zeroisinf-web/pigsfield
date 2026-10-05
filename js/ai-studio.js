@@ -13,7 +13,7 @@
 
   const studioStyle = document.createElement("link");
   studioStyle.rel = "stylesheet";
-  studioStyle.href = assetUrl("css/ai-studio.css?v=18630eed4598");
+  studioStyle.href = assetUrl("css/ai-studio.css?v=7f32ee85f481");
   document.head.append(studioStyle);
 
   // Line art drawn to one 24-grid and inheriting currentColor, rather than emoji: emoji are
@@ -21,7 +21,7 @@
   // felt like and sitting off the baseline beside the label.
   const ICONS = {
     bolt: '<path d="M13.4 2 4.6 13.4h5.3L9.1 22l9-11.9h-5.4L13.4 2Z"/>',
-    arrow: '<path d="M7.6 5.4h11v11h-1.9V8.6L6.9 18.4 5.6 17.1l9.8-9.8H7.6V5.4Z"/>',
+    youtube: '<path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5a3 3 0 0 0-2.1 2.1C2 9 2 12 2 12s0 3 .4 4.8a3 3 0 0 0 2.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 0 0 2.1-2.1C22 15 22 12 22 12s0-3-.4-4.8Z"/><path d="m10 8.8 5.2 3.2-5.2 3.2Z" fill="var(--ai-youtube, #c5221f)"/>',
     refresh: '<path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"/>'
   };
 
@@ -46,28 +46,210 @@
     return `<svg class="ai-icon${extraClass ? " " + extraClass : ""}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name] || ""}</svg>`;
   }
 
+  // Migrated from Digital Tools; keep these available when the live rankings are offline.
+  const AI_TOOLS = [
+    {
+      "name": "ChatGPT",
+      "rankedCompany": "OpenAI",
+      "description": "Everyday assistant",
+      "website": "https://chatgpt.com/",
+      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+chatgpt+full+tutorial+course"
+    },
+    {
+      "name": "Claude",
+      "rankedCompany": "Anthropic",
+      "description": "Writing & coding",
+      "website": "https://claude.ai/",
+      "tutorial": "https://www.youtube.com/results?search_query=claude+ai+full+tutorial+use+cases"
+    },
+    {
+      "name": "Claude Artifacts",
+      "description": "Build interactive apps",
+      "website": "https://claude.ai/design",
+      "tutorial": "https://www.youtube.com/results?search_query=claude+artifacts+tutorial"
+    },
+    {
+      "name": "Gemini",
+      "rankedCompany": "Google",
+      "description": "Google assistant",
+      "website": "https://gemini.google.com/",
+      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+google+gemini+tutorial"
+    },
+    {
+      "name": "Z.ai",
+      "rankedCompany": "Z AI",
+      "description": "Chat with GLM",
+      "website": "https://chat.z.ai/",
+      "tutorial": "https://www.youtube.com/results?search_query=chat+z+ai+tutorial+how+to+use"
+    },
+    {
+      "name": "Google AI Studio",
+      "description": "Build with Gemini",
+      "website": "https://aistudio.google.com/",
+      "tutorial": "https://www.youtube.com/results?search_query=google+ai+studio+tutorial"
+    },
+    {
+      "name": "NotebookLM",
+      "description": "Research your sources",
+      "website": "https://notebooklm.google.com/",
+      "tutorial": "https://www.youtube.com/results?search_query=google+notebooklm+tutorial"
+    },
+    {
+      "name": "Google DeepMind",
+      "description": "AI research",
+      "website": "https://deepmind.google/",
+      "tutorial": "https://www.youtube.com/results?search_query=google+deepmind+research+overview"
+    },
+    {
+      "name": "Gemma",
+      "description": "Open models",
+      "website": "https://deepmind.google/models/gemma/",
+      "tutorial": "https://www.youtube.com/results?search_query=gemma+model+local+tutorial"
+    },
+    {
+      "name": "Google Flow",
+      "description": "AI filmmaking",
+      "website": "https://labs.google/fx/tools/flow",
+      "tutorial": "https://www.youtube.com/results?search_query=google+flow+ai+filmmaking+tutorial"
+    },
+    {
+      "name": "Google Labs",
+      "description": "AI experiments",
+      "website": "https://labs.google/",
+      "tutorial": "https://www.youtube.com/results?search_query=google+labs+ai+experiments"
+    },
+    {
+      "name": "Sarvam AI",
+      "description": "Indian language AI",
+      "website": "https://www.sarvam.ai/",
+      "tutorial": "https://www.youtube.com/results?search_query=sarvam+ai+tutorial+india"
+    },
+    {
+      "name": "Comet Browser",
+      "description": "AI browser",
+      "website": "https://play.google.com/store/apps/details?id=ai.perplexity.comet",
+      "tutorial": "https://www.youtube.com/results?search_query=comet+browser+tutorial"
+    },
+    {
+      "name": "VideoCompress AI",
+      "description": "Video compression",
+      "website": "https://videocompress.ai/",
+      "tutorial": "https://www.youtube.com/results?search_query=videocompress.ai+tutorial"
+    },
+    {
+      "name": "Suno",
+      "description": "AI music",
+      "website": "https://suno.com/",
+      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+suno+ai+music+generator"
+    },
+    {
+      "name": "Remove.bg",
+      "description": "Remove backgrounds",
+      "website": "https://www.remove.bg",
+      "tutorial": "https://www.youtube.com/results?search_query=remove.bg+tutorial"
+    },
+    {
+      "name": "Pixelcut",
+      "description": "AI photo editing",
+      "website": "https://www.pixelcut.ai",
+      "tutorial": "https://www.youtube.com/results?search_query=pixelcut+app+tutorial"
+    },
+    {
+      "name": "Freepik",
+      "description": "AI creative suite",
+      "website": "https://www.freepik.com",
+      "tutorial": "https://www.youtube.com/results?search_query=how+to+use+freepik+tutorial"
+    },
+    {
+      "name": "Codex",
+      "description": "Coding with OpenAI",
+      "website": "https://chatgpt.com/codex/",
+      "tutorial": "https://www.youtube.com/results?search_query=Codex%20tutorial%20how%20to%20use"
+    },
+    {
+      "name": "Claude Code",
+      "description": "Agentic coding",
+      "website": "https://claude.ai/code/",
+      "tutorial": "https://www.youtube.com/results?search_query=Claude%20Code%20tutorial%20how%20to%20use"
+    },
+    {
+      "name": "Antigravity",
+      "description": "Build with Google AI",
+      "website": "https://antigravity.google/",
+      "tutorial": "https://www.youtube.com/results?search_query=Antigravity%20tutorial%20how%20to%20use"
+    }
+  ];
+  // Display names checked against the channels' own YouTube page titles.
+  const AI_CHANNELS = [
+    [
+      "Arpit Bhayani",
+      "asliengineering"
+    ],
+    [
+      "Prime Venture Partners",
+      "primeventurepartners"
+    ],
+    [
+      "Gaurav Sen",
+      "gkcs"
+    ],
+    [
+      "Dwarkesh Patel",
+      "dwarkeshpatel"
+    ],
+    [
+      "Machine Learning Street Talk",
+      "machinelearningstreettalk"
+    ],
+    [
+      "Wolfram",
+      "wolframresearch"
+    ],
+    [
+      "Varun Mayya",
+      "varunmayya"
+    ],
+    [
+      "The Cutting Edge School",
+      "cuttingedgeschool"
+    ]
+  ];
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"})[char]);
+  }
+
+  function tutorialUrl(name) {
+    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(name + " tutorial how to use");
+  }
+
+  function toolMarkup(tool) {
+    return `<div class="ai-ext-pill featured" data-ai-site="${escapeHtml(tool.website)}" data-ranked-company="${escapeHtml(tool.rankedCompany || "")}">
+      ${tool.name === "Indus" ? '<span class="pill-logo-tile pill-monogram" aria-hidden="true">इ</span>' : ""}
+      ${tool.name === "Duck.ai" ? '<span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg?v=2fe1a0269c21" alt="" width="24" height="24" aria-hidden="true"></span>' : ""}
+      <span class="pill-text"><span class="pill-label">${escapeHtml(tool.name)}</span><span class="pill-description">${escapeHtml(tool.description)}</span></span>
+      <span class="ai-tool-actions">
+        <a class="ai-action ai-use" href="${escapeHtml(tool.website)}" target="_blank" rel="noopener noreferrer" aria-label="Use ${escapeHtml(tool.name)}">Use</a>
+        <a class="ai-action ai-learn" href="${escapeHtml(tool.tutorial || tutorialUrl(tool.name))}" target="_blank" rel="noopener noreferrer" aria-label="Learn ${escapeHtml(tool.name)} on YouTube">${icon("youtube")} Learn</a>
+      </span>
+    </div>`;
+  }
+
   const STUDIO_MARKUP = `
     <div data-ai-studio-root class="ai-studio-v2">
       <section class="ai-panel ai-launchpad" aria-label="External AI launchpad">
         <div class="ai-panel-head">
-          <span class="ai-launchpad-title">${icon("bolt")} Discover &amp; compare</span>
+          <span class="ai-launchpad-title">${icon("bolt")} AI tools</span>
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
             <span class="pill-logo-tile"><img class="pill-logo" src="/assets/artificial-analysis-symbol.png?v=64685c6de905" alt="" width="24" height="24" aria-hidden="true"></span>
             <span class="pill-text"><span class="pill-label">LLM Rankings</span><span class="pill-description">Independent benchmarks</span></span>
-            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
+            <span class="ai-action ai-use">Use</span>
           </a>
-          <a class="ai-ext-pill featured" href="https://indus.sarvam.ai/" target="_blank" rel="noopener noreferrer" title="Open Indus by Sarvam">
-            <span class="pill-logo-tile pill-monogram" aria-hidden="true">इ</span>
-            <span class="pill-text"><span class="pill-label">Indus</span><span class="pill-description">By Sarvam</span></span>
-            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
-          </a>
-          <a class="ai-ext-pill featured" href="https://duck.ai/" target="_blank" rel="noopener noreferrer" title="Open Duck.ai by DuckDuckGo">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg?v=2fe1a0269c21" alt="" width="24" height="24" aria-hidden="true"></span>
-            <span class="pill-text"><span class="pill-label">Duck.ai</span><span class="pill-description">By DuckDuckGo</span></span>
-            <span class="pill-go" aria-hidden="true">${icon("arrow")}</span>
-          </a>
+          ${toolMarkup({ name: "Indus", description: "By Sarvam", website: "https://indus.sarvam.ai/", tutorial: tutorialUrl("Indus Sarvam AI") })}
+          ${toolMarkup({ name: "Duck.ai", description: "By DuckDuckGo", website: "https://duck.ai/", tutorial: tutorialUrl("Duck.ai DuckDuckGo") })}
+          ${AI_TOOLS.map(toolMarkup).join("")}
         </div>
       </section>
 
@@ -87,6 +269,12 @@
         <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. The ten most intelligent models that answer end to end within 35 seconds, with at most two from any one company so a single lab cannot fill the table; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
       </section>
 
+      <section class="ai-panel ai-updates" aria-labelledby="ai-updates-title">
+        <div class="ai-panel-head"><h3 id="ai-updates-title">Be updated</h3></div>
+        <nav class="ai-channel-links" aria-label="AI YouTube channels">
+          ${AI_CHANNELS.map(([name, handle]) => `<a class="ai-action ai-learn" href="https://www.youtube.com/@${handle}" target="_blank" rel="noopener noreferrer">${icon("youtube")} ${escapeHtml(name)}</a>`).join("")}
+        </nav>
+      </section>
     </div>`;
 
   function element(tag, className, text) {
@@ -159,14 +347,24 @@
           row.setAttribute("role", "row");
           const company = element("td", "ai-ranking-model");
           company.setAttribute("role", "cell");
-          const link = element("a", "ai-ranking-name", model.name);
+          const name = element("span", "ai-ranking-name", model.name);
+          const link = element("a", "ai-action ai-use", "Use");
+          link.setAttribute("aria-label", "Use " + model.name);
           const url = new URL(model.website);
           if (url.protocol !== "https:") throw new Error("Invalid website");
           link.href = url.href;
           link.target = "_blank";
           link.rel = "noopener noreferrer";
           const identity = element("span", "ai-ranking-identity");
-          identity.append(link, element("span", "ai-ranking-company", model.company));
+          const learn = element("a", "ai-action ai-learn");
+          learn.innerHTML = icon("youtube") + " Learn";
+          learn.href = tutorialUrl(model.company + " " + model.name);
+          learn.target = "_blank";
+          learn.rel = "noopener noreferrer";
+          learn.setAttribute("aria-label", "Learn " + model.name + " on YouTube");
+          const actions = element("span", "ai-tool-actions");
+          actions.append(link, learn);
+          identity.append(name, element("span", "ai-ranking-company", model.company), actions);
           // The row lays out inside the cell rather than as the cell, so the first column
           // still participates in table layout and stays aligned with its heading.
           const inner = element("span", "ai-ranking-model-inner");
@@ -181,6 +379,13 @@
           return row;
         });
         body.replaceChildren(...rows);
+        // A chat already represented by the ranking needs no duplicate launch button.
+        // Keep specialised paths (Codex, Claude Code, etc.) even for a ranked company.
+        const rankedSites = new Set(data.models.map(model => new URL(model.website).href.replace(/\/$/, "")));
+        const rankedCompanies = new Set(data.models.map(model => model.company));
+        root.querySelectorAll("[data-ai-site]").forEach(card => {
+          card.hidden = rankedCompanies.has(card.dataset.rankedCompany) || rankedSites.has(new URL(card.dataset.aiSite).href.replace(/\/$/, ""));
+        });
         const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
         const shortfall = rows.length < RANKED_MODELS ? ` Only ${rows.length} ${rows.length === 1 ? "model has" : "models have"} verified qualifying results.` : "";
         status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${shortfall}`;

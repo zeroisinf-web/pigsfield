@@ -24,7 +24,7 @@ test("the whole catalog reaches the DOM without anyone running any JavaScript", 
   // during setup. Crawlers, AI answer engines, social preview fetchers and no-JS readers
   // get whatever the server sent, so the catalogue is generated into the markup now:
   // tools/build-topics.mjs writes one page per topic and the hubs link to them.
-  for (const page of ["learn/nursery-to-class-5/index.html", "rights/anti-corruption/index.html", "tools/ai-tools/index.html"]) {
+  for (const page of ["learn/nursery-to-class-5/index.html", "rights/anti-corruption/index.html", "tools/creative-tools/index.html"]) {
     const source = text(page);
     assert.match(source, /<article class="topic-item" id="[a-z0-9-]+">/, `${page} must serve its resources as markup`);
     assert.doesNotMatch(source, /js\/(?:catalog|data\/)/, `${page} must not load a catalogue runtime to show its own content`);

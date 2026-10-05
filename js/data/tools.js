@@ -1,332 +1,11 @@
-// Auto-generated from the Pigsfield Excel sheets by tools/convert.py
-// Safe to edit by hand — this is the live data of the website.
+// Digital Tools catalog. AI resources live in js/ai-studio.js.
+// Explicit resource IDs preserve saved items and links when entries move.
 window.PF_DATA = window.PF_DATA || {};
 window.PF_DATA.tools = {
  "sections": [
   {
    "title": "SECTION — Digital Tools",
    "groups": [
-    {
-     "title": "AI & Coding — Best AI & coding tools + direct tutorials",
-     "items": [
-      {
-       "title": "ChatGPT",
-       "desc": "लॉजिक समझने, कोडिंग करने, और जनरल सवालों के जवाब के लिए दुनिया का सबसे बेहतरीन AI। Pro: $20/month",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://chat.openai.com/",
-          "https://chatgpt.com/codex/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.openai.chatgpt"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+use+chatgpt+full+tutorial+course"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Claude AI",
-       "desc": "लॉजिक, कोडिंग और बड़े डॉक्यूमेंट्स एनालाइज करने में मास्टर। जवाब नियंत्रित और ethical हैं।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://claude.ai/",
-          "https://claude.ai/code/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.anthropic.claude"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=claude+ai+full+tutorial+use+cases"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Claude Artifacts",
-       "desc": "Claude के अंदर ही UI डिज़ाइन, कोड, और इंटरैक्टिव ऐप्स जनरेट करने का फ्रंटएंड साथ में।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://claude.ai/design"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=claude+artifacts+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google Gemini",
-       "desc": "रियल-टाइम वेब सर्च और गूगल के ईकोसिस्टम (Docs, Drive, Gmail) के साथ इंटीग्रेट AI।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://gemini.google.com/",
-          "https://antigravity.google/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.google.android.apps.bard"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+use+google+gemini+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "chat.z.ai",
-       "desc": "💰 मुफ़्त उपयोग विकल्प वाला AI चैट टूल — सुविधाएँ और सीमाएँ प्रदाता पर जाँचें।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://chat.z.ai/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=chat+z+ai+tutorial+how+to+use"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google AI Studio",
-       "desc": "डेवलपर्स के लिए गूगल का प्लेग्राउंड — बिना लिमिट के Gemini के एडवांस्ड मॉडल्स टेस्ट करो।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://aistudio.google.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+ai+studio+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Be AI Updated (YouTube)",
-       "desc": "AI और टेक्नोलॉजी पर बेस्ट YouTube क्रिएटर्स",
-       "links": [
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://youtube.com/@asliengineering",
-          "https://youtube.com/@primeventurepartners",
-          "https://youtube.com/@gkcs",
-          "https://youtube.com/@dwarkeshpatel",
-          "https://youtube.com/@machinelearningstreettalk",
-          "https://youtube.com/@wolframresearch",
-          "https://youtube.com/@varunmayya",
-          "https://youtube.com/@cuttingedgeschool"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "NotebookLM",
-       "desc": "अपने PDF या नोट्स अपलोड करो — यह सिर्फ उसी डेटा के आधार पर जवाब देता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://notebooklm.google.com/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+notebooklm+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google DeepMind",
-       "desc": "गूगल की AI रिसर्च लैब — AlphaFold, Gemini और दुनिया के सबसे एडवांस्ड AI मॉडल्स यहीं बनते हैं।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://deepmind.google/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+deepmind+research+overview"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Gemma",
-       "desc": "गूगल का ओपन-सोर्स हल्का LLM — अपने फोन या लैपटॉप पर लोकली रन करो।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://deepmind.google/models/gemma/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.google.ai.edge.gallery"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=gemma+model+local+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google Flow",
-       "desc": "AI से सिनेमैटिक वीडियो और फिल्म सीन जनरेट करने वाला गूगल का फिल्ममेकिंग टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://labs.google/fx/tools/flow"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+flow+ai+filmmaking+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google Labs",
-       "desc": "गूगल के सभी AI एक्सपेरिमेंट्स और बीटा प्रोजेक्ट्स का सेंट्रल हब।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://labs.google/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+labs+ai+experiments"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Sarvam AI",
-       "desc": "खास तौर पर भारतीय भाषाओं (हिंदी, तमिल आदि) और वॉइस-बेस्ड AI मॉडल्स पर फोकस करता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.sarvam.ai/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=sarvam+ai+tutorial+india"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Uncensored Chat",
-       "desc": "कॉरपोरेट फिल्टर-फ्री AI मॉडल्स — ब्रूटली ऑनेस्ट जवाब देते हैं।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://uncensored.chat"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+use+uncensored+ai+models"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Opal",
-       "desc": "गूगल का एक्सपेरिमेंटल AI प्रोजेक्ट।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://opal.google"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+opal+ai+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Google Colab",
-       "desc": "ब्राउज़र में ही Python और Machine Learning कोड रन करने का फ्री क्लाउड टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://colab.research.google.com"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=google+colab+tutorial+for+beginners"
-         ]
-        }
-       ]
-      }
-     ]
-    },
     {
      "title": "Privacy & Web — Privacy tools, browsers, and web utilities",
      "items": [
@@ -346,7 +25,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+download+from+getintopc+safely"
          ]
         }
-       ]
+       ],
+       "resourceId": "getintopc-1-2-1"
       },
       {
        "title": "Modyolo",
@@ -364,7 +44,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+download+from+modyolo"
          ]
         }
-       ]
+       ],
+       "resourceId": "modyolo-1-2-2"
       },
       {
        "title": "Tor Browser",
@@ -388,7 +69,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=tor+browser+tutorial+for+beginners"
          ]
         }
-       ]
+       ],
+       "resourceId": "tor-browser-1-2-3"
       },
       {
        "title": "Brave",
@@ -412,25 +94,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=brave+browser+best+settings+tutorial"
          ]
         }
-       ]
-      },
-      {
-       "title": "Comet Browser",
-       "desc": "Browse like your talking to Jarvis of tony stark",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=ai.perplexity.comet"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=comet+browser+tutorial"
-         ]
-        }
-       ]
+       ],
+       "resourceId": "brave-1-2-4"
       },
       {
        "title": "YT ReVanced",
@@ -448,7 +113,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=youtube+revanced+install+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "yt-revanced-1-2-6"
       },
       {
        "title": "Seal",
@@ -466,7 +132,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=seal+video+downloader+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "seal-1-2-7"
       },
       {
        "title": "Snaptube",
@@ -484,7 +151,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+snaptube"
          ]
         }
-       ]
+       ],
+       "resourceId": "snaptube-1-2-8"
       },
       {
        "title": "Stacher",
@@ -502,7 +170,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+stacher+media+downloader"
          ]
         }
-       ]
+       ],
+       "resourceId": "stacher-1-2-9"
       },
       {
        "title": "e-Raktkosh",
@@ -516,8 +185,7 @@ window.PF_DATA.tools = {
         },
         {
          "label": "App",
-         "urls": [
-         ]
+         "urls": []
         },
         {
          "label": "Tutorial",
@@ -525,7 +193,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=eraktkosh+blood+bank+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "e-raktkosh-1-2-10"
       },
       {
        "title": "Have I Been Pwned",
@@ -543,7 +212,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=haveibeenpwned+tutorial+check+email+hack"
          ]
         }
-       ]
+       ],
+       "resourceId": "have-i-been-pwned-1-2-11"
       }
      ]
     },
@@ -572,7 +242,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+digilocker+app"
          ]
         }
-       ]
+       ],
+       "resourceId": "digilocker-1-3-1"
       },
       {
        "title": "Drive / Docs",
@@ -590,7 +261,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=google+drive+docs+full+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "drive-docs-1-3-2"
       },
       {
        "title": "CX File Explorer",
@@ -608,7 +280,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=cx+file+explorer+smb+ftp+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "cx-file-explorer-1-3-3"
       },
       {
        "title": "PDF24 Tools",
@@ -626,7 +299,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+pdf24+tools"
          ]
         }
-       ]
+       ],
+       "resourceId": "pdf24-tools-1-3-4"
       },
       {
        "title": "Windows App",
@@ -634,8 +308,7 @@ window.PF_DATA.tools = {
        "links": [
         {
          "label": "App",
-         "urls": [
-         ]
+         "urls": []
         },
         {
          "label": "Tutorial",
@@ -643,7 +316,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=microsoft+windows+app+android+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "windows-app-1-3-5"
       },
       {
        "title": "Remote Desktop",
@@ -667,7 +341,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=chrome+remote+desktop+setup+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "remote-desktop-1-3-6"
       },
       {
        "title": "Albo",
@@ -685,54 +360,14 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=albo+save+for+later+app"
          ]
         }
-       ]
+       ],
+       "resourceId": "albo-1-3-7"
       }
      ]
     },
     {
      "title": "Creativity — Video, music, photo tools with tutorials",
      "items": [
-      {
-       "title": "VideoCompress AI",
-       "desc": "AI की मदद से वीडियो की क्वालिटी गिराए बिना उसका साइज (MB) कम करने का टूल।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://videocompress.ai/"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=videocompress.ai+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Suno (AI Music)",
-       "desc": "टेक्स्ट में बताओ कैसा गाना चाहिए — वोकल्स और म्यूजिक के साथ स्टूडियो क्वालिटी गाना बनाता है।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://suno.com/"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+use+suno+ai+music+generator"
-         ]
-        }
-       ]
-      },
       {
        "title": "YT Create",
        "desc": "YouTube का अपना फ्री वीडियो एडिटर — Shorts और Reels के लिए बेहतरीन।",
@@ -749,7 +384,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=youtube+create+app+video+editing+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "yt-create-1-4-3"
       },
       {
        "title": "Snapseed",
@@ -767,83 +403,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=snapseed+photo+editing+tutorial"
          ]
         }
-       ]
-      },
-      {
-       "title": "Remove.bg",
-       "desc": "इमेजेस से बैकग्राउंड हटाने के लिए एकदम क्लीन और सटीक AI टूल।",
-       "links": [
-        {
-         "label": "Tool Name",
-         "urls": [
-          "http://remove.bg"
-         ]
-        },
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.remove.bg"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=bg.remove.android"
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=remove.bg+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Pixelcut",
-       "desc": "प्रोडक्ट फोटोग्राफी और सोशल मीडिया के लिए AI-पावर्ड इमेज एडिटिंग ऐप।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.pixelcut.ai"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=pixelcut+app+tutorial"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Freepik",
-       "desc": "All-in-One AI Creative Suite — डिज़ाइन, वेक्टर्स और इमेजेस के लिए।",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.freepik.com"
-         ]
-        },
-        {
-         "label": "App",
-         "urls": [
-         ]
-        },
-        {
-         "label": "Tutorial",
-         "urls": [
-          "https://www.youtube.com/results?search_query=how+to+use+freepik+tutorial"
-         ]
-        }
-       ]
+       ],
+       "resourceId": "snapseed-1-4-4"
       },
       {
        "title": "Reduce Images",
@@ -861,7 +422,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=reduce+image+size+online+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "reduce-images-1-4-8"
       },
       {
        "title": "PDF Resizer",
@@ -879,7 +441,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=pdf+resizer+multipage+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "pdf-resizer-1-4-9"
       }
      ]
     },
@@ -902,7 +465,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+libgen+library+genesis"
          ]
         }
-       ]
+       ],
+       "resourceId": "library-genesis-1-5-1"
       },
       {
        "title": "Anna's Archive",
@@ -920,7 +484,8 @@ window.PF_DATA.tools = {
           "https://en.wikipedia.org/wiki/Shadow_library"
          ]
         }
-       ]
+       ],
+       "resourceId": "anna-s-archive-1-5-2"
       },
       {
        "title": "Veritasium",
@@ -938,7 +503,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/@veritasium"
          ]
         }
-       ]
+       ],
+       "resourceId": "veritasium-1-5-3"
       },
       {
        "title": "Telegram",
@@ -962,7 +528,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=telegram+advanced+features+tutorial"
          ]
         }
-       ]
+       ],
+       "resourceId": "telegram-1-5-4"
       },
       {
        "title": "Product Hunt",
@@ -976,8 +543,7 @@ window.PF_DATA.tools = {
         },
         {
          "label": "App",
-         "urls": [
-         ]
+         "urls": []
         },
         {
          "label": "Tutorial",
@@ -985,7 +551,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+product+hunt"
          ]
         }
-       ]
+       ],
+       "resourceId": "product-hunt-1-5-5"
       },
       {
        "title": "SocialBlade",
@@ -1003,7 +570,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+use+social+blade+analytics"
          ]
         }
-       ]
+       ],
+       "resourceId": "socialblade-1-5-6"
       },
       {
        "title": "91mobiles",
@@ -1021,7 +589,8 @@ window.PF_DATA.tools = {
           "https://www.youtube.com/results?search_query=how+to+compare+phones+on+91mobiles"
          ]
         }
-       ]
+       ],
+       "resourceId": "91mobiles-1-5-7"
       }
      ]
     }
