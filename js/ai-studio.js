@@ -14,7 +14,7 @@
   if (!document.querySelector('link[href*="ai-studio.css"]')) {
     const studioStyle = document.createElement("link");
     studioStyle.rel = "stylesheet";
-    studioStyle.href = assetUrl("css/ai-studio.css?v=2773adb527c5");
+    studioStyle.href = assetUrl("css/ai-studio.css?v=81a9e6c4f247");
     document.head.append(studioStyle);
   }
 
@@ -214,7 +214,7 @@
         </div>
         <div class="ai-launchpad-group">
           <a class="ai-ext-pill featured" href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer" title="Open Artificial Analysis LLM Rankings">
-            <span class="pill-logo-tile"><img class="pill-logo" src="/assets/artificial-analysis-symbol.png?v=64685c6de905" alt="" width="24" height="24" aria-hidden="true"></span>
+            <span class="pill-logo-tile"><img class="pill-logo" src="${escapeHtml(assetUrl("assets/artificial-analysis-symbol.png?v=64685c6de905"))}" alt="" width="24" height="24" aria-hidden="true"></span>
             <span class="pill-text"><span class="pill-label">LLM Rankings</span><span class="pill-description">Independent benchmarks</span></span>
             <span class="ai-action ai-use">Use</span>
           </a>
@@ -306,8 +306,14 @@
       refresh.disabled = true;
       root.querySelector(".ai-rankings")?.classList.add("is-loading");
       try {
-        const response = await fetch("/api/model-rankings", { signal: AbortSignal.timeout(25000), cache: "no-store" });
-        if (!response.ok) throw new Error("Unavailable");
+        let response;
+        try {
+          response = await fetch("/api/model-rankings", { signal: AbortSignal.timeout(25000), cache: "no-store" });
+          if (!response.ok) throw new Error("Unavailable");
+        } catch (apiErr) {
+          response = await fetch(assetUrl("assets/model-rankings.json"), { signal: AbortSignal.timeout(10000) });
+          if (!response.ok) throw apiErr;
+        }
         const data = await response.json();
         if (!Array.isArray(data.models) || !data.models.length || !Number.isFinite(Date.parse(data.updatedAt))) throw new Error("Invalid rankings");
         // The bar is read against the leading model, so the spread between labs is visible
@@ -318,11 +324,15 @@
           row.setAttribute("role", "row");
           const company = element("td", "ai-ranking-model");
           company.setAttribute("role", "cell");
-          const name = element("span", "ai-ranking-name", model.name);
-          const link = element("a", "ai-action ai-use", "Use");
-          link.setAttribute("aria-label", "Use " + model.name);
           const url = new URL(model.website);
           if (url.protocol !== "https:") throw new Error("Invalid website");
+          const name = element("a", "ai-ranking-name", model.name);
+          name.href = url.href;
+          name.target = "_blank";
+          name.rel = "noopener noreferrer";
+          name.setAttribute("title", "Open " + model.name);
+          const link = element("a", "ai-action ai-use", "Use");
+          link.setAttribute("aria-label", "Use " + model.name);
           link.href = url.href;
           link.target = "_blank";
           link.rel = "noopener noreferrer";
@@ -350,13 +360,6 @@
           return row;
         });
         body.replaceChildren(...rows);
-        // A chat already represented by the ranking needs no duplicate launch button.
-        // Keep specialised paths (Codex, Claude Code, etc.) even for a ranked company.
-        const rankedSites = new Set(data.models.map(model => new URL(model.website).href.replace(/\/$/, "")));
-        const rankedCompanies = new Set(data.models.map(model => model.company));
-        root.querySelectorAll("[data-ai-site]").forEach(card => {
-          card.hidden = rankedCompanies.has(card.dataset.rankedCompany) || rankedSites.has(new URL(card.dataset.aiSite).href.replace(/\/$/, ""));
-        });
         const stale = data.stale || Date.now() - Date.parse(data.updatedAt) > 3600000;
         const shortfall = rows.length < RANKED_MODELS ? ` Only ${rows.length} ${rows.length === 1 ? "model has" : "models have"} verified qualifying results.` : "";
         status.textContent = `${stale ? "Source unavailable — showing last verified data. " : ""}Updated ${new Date(data.updatedAt).toLocaleString()}.${shortfall}`;
@@ -391,6 +394,15 @@
     root.querySelectorAll("img.pill-logo").forEach((image) => {
       const src = image.getAttribute("src");
       if (src && src.startsWith("/")) image.src = assetUrl(src);
+    });
+
+    // Clicking anywhere on a tool card (outside action links/buttons) opens the tool's website
+    root.addEventListener("click", (event) => {
+      if (event.target.closest("a, button, summary, input, select, textarea")) return;
+      const card = event.target.closest("[data-ai-site]");
+      if (card && card.dataset.aiSite) {
+        window.open(card.dataset.aiSite, "_blank", "noopener,noreferrer");
+      }
     });
 
     initRankings(root);
@@ -435,6 +447,7 @@
     }
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !event.defaultPrevented) {
+        if (document.querySelector("dialog[open]")) return;
         closeAIStudio();
       }
     });

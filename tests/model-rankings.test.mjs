@@ -75,3 +75,24 @@ test('route serves fresh cache, refreshes expired data, then preserves snapshot 
   assert.equal((await result.json()).stale, true);
   assert.equal((await handleModelRankings(new Request(request, {method:'POST'}), env)).status, 405);
 });
+
+test('AI Studio page and shell do not intercept clicks inside the studio mount', () => {
+  const aiHtml = fs.readFileSync(path.join(ROOT, 'ai', 'index.html'), 'utf8');
+  assert.doesNotMatch(aiHtml, /class="[^"]*ai-page-content[^"]*"[^>]*data-open-ai/, 'data-open-ai must not wrap #ai-studio-mount');
+  assert.match(aiHtml, /<div[^>]*class="[^"]*ai-page-badge[^"]*"[^>]*data-open-ai/, 'data-open-ai is safely anchored on hero badge');
+
+  const siteJs = fs.readFileSync(path.join(ROOT, 'js', 'site.js'), 'utf8');
+  assert.match(siteJs, /function\s+openAIStudio\([^)]*\)\s*\{[\s\S]*?if\s*\(\s*page\s*===\s*["']ai["']\s*\)\s*return;/);
+  assert.match(siteJs, /if\s*\(\s*page\s*!==\s*["']ai["']\s*\)\s*\{[\s\S]*?qsa\(["']\[data-open-ai\]["']\)/);
+});
+
+test('AI Studio preserves launchpad tools, provides fallback rankings, and uses secure Use and Learn links', () => {
+  const studioJs = fs.readFileSync(path.join(ROOT, 'js', 'ai-studio.js'), 'utf8');
+  assert.match(studioJs, /class="ai-action ai-use"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+  assert.match(studioJs, /class="ai-action ai-learn"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+  assert.match(studioJs, /element\(["']a["'],\s*["']ai-ranking-name["']/);
+  assert.match(studioJs, /assets\/model-rankings\.json/);
+  assert.doesNotMatch(studioJs, /card\.hidden\s*=\s*rankedCompanies\.has/);
+  assert.match(studioJs, /document\.querySelector\(["']dialog\[open\]["']\)/);
+});
+

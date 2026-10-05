@@ -1434,10 +1434,13 @@
   }
 
   function warmAIStudio() {
-    return loadScript("js/ai-studio.js?v=3f93758b39dd");
+    return loadScript("js/ai-studio.js?v=de6655b612fa");
   }
 
   function openAIStudio(event) {
+    if (page === "ai") return;
+    const trigger = event && event.target && event.target.closest && event.target.closest("[data-open-ai]");
+    if (!trigger || trigger.closest("#ai-studio-mount") || trigger.closest(".ai-page-content")) return;
     if (event && typeof event.preventDefault === "function") {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
       event.preventDefault();
@@ -1902,11 +1905,13 @@
     }));
     qsa("[data-open-search]").forEach((button) => button.addEventListener("click", () => openSearch()));
     qsa("[data-open-saved]").forEach((button) => button.addEventListener("click", () => { renderSaved(); showDialog(qs("#saved-dialog")); }));
-    qsa("[data-open-ai]").forEach((element) => {
-      element.addEventListener("click", openAIStudio);
-      element.addEventListener("pointerenter", warmAIStudio, { once: true });
-      element.addEventListener("focus", warmAIStudio, { once: true });
-    });
+    if (page !== "ai") {
+      qsa("[data-open-ai]").forEach((element) => {
+        element.addEventListener("click", openAIStudio);
+        element.addEventListener("pointerenter", warmAIStudio, { once: true });
+        element.addEventListener("focus", warmAIStudio, { once: true });
+      });
+    }
     const openFrom = (target) => (event) => {
       const from = event.currentTarget.closest("dialog");
       if (from && from.open) from.close();
