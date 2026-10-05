@@ -1450,7 +1450,7 @@
     if (!dialog || !mount) return;
     showDialog(dialog);
     if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js?v=2ba2a6e82181")
+      aiStudioPromise = loadScript("js/ai-studio.js?v=0fccd9faa2f9")
         .then(() => {
           if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
           mount.replaceChildren();

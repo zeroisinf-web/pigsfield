@@ -13,7 +13,7 @@
 
   const studioStyle = document.createElement("link");
   studioStyle.rel = "stylesheet";
-  studioStyle.href = assetUrl("css/ai-studio.css?v=7f32ee85f481");
+  studioStyle.href = assetUrl("css/ai-studio.css?v=0453c01a7186");
   document.head.append(studioStyle);
 
   // Line art drawn to one 24-grid and inheriting currentColor, rather than emoji: emoji are
@@ -40,6 +40,25 @@
     "Alibaba": { file: "assets/qwen-symbol.svg?v=63e0c8b36a25" },
     "Z AI": { file: "assets/zai-symbol.svg?v=a3988f0efa5d", mono: true },
     "DeepSeek": { file: "assets/deepseek-symbol.svg?v=1f7d6dc2bdd3" }
+  };
+
+  // Product icons are stored locally; source URLs are recorded in tools/ai-icon-sources.mjs.
+  const TOOL_MARKS = {
+    "ChatGPT": COMPANY_MARKS.OpenAI.file,
+    "Claude": COMPANY_MARKS.Anthropic.file,
+    "Gemini": COMPANY_MARKS.Google.file,
+    "Google AI Studio": "assets/google-aistudio-symbol.svg?v=55fb9e7e8733",
+    "NotebookLM": "assets/notebooklm-symbol.svg?v=0e369abeda78",
+    "Google DeepMind": "assets/deepmind-symbol.svg?v=1327a382a5a6",
+    "Gemma": "assets/gemma-symbol.svg?v=6e8124788ad9",
+    "Google Flow": "assets/flow-symbol.png?v=b9f5018da737",
+    "Google Labs": "assets/google-labs-symbol.png?v=5ac84d45c584",
+    "Sarvam AI": "assets/sarvam-symbol.svg?v=f39a5a4bd815",
+    "Indus": "assets/indus-symbol.svg?v=5d7574de4c85",
+    "Duck.ai": "assets/duckduckgo-symbol.svg?v=2fe1a0269c21",
+    "Codex": COMPANY_MARKS.OpenAI.file,
+    "Claude Code": "assets/claude-code-symbol.png?v=400438130950",
+    "Antigravity": "assets/antigravity-symbol.svg?v=de7911c3d206"
   };
 
   function icon(name, extraClass) {
@@ -176,8 +195,7 @@
 
   function toolMarkup(tool) {
     return `<div class="ai-ext-pill featured" data-ai-site="${escapeHtml(tool.website)}" data-ranked-company="${escapeHtml(tool.rankedCompany || "")}">
-      ${tool.name === "Indus" ? '<span class="pill-logo-tile pill-monogram" aria-hidden="true">इ</span>' : ""}
-      ${tool.name === "Duck.ai" ? '<span class="pill-logo-tile"><img class="pill-logo" src="/assets/duckduckgo-symbol.svg?v=2fe1a0269c21" alt="" width="24" height="24" aria-hidden="true"></span>' : ""}
+      <span class="pill-logo-tile ai-tool-logo"><img class="pill-logo" src="${escapeHtml(assetUrl(TOOL_MARKS[tool.name]))}" alt="" width="24" height="24" aria-hidden="true"></span>
       <span class="pill-text"><span class="pill-label">${escapeHtml(tool.name)}</span><span class="pill-description">${escapeHtml(tool.description)}</span></span>
       <span class="ai-tool-actions">
         <a class="ai-action ai-use" href="${escapeHtml(tool.website)}" target="_blank" rel="noopener noreferrer" aria-label="Use ${escapeHtml(tool.name)}">Use</a>
@@ -211,13 +229,13 @@
         </div>
         <div class="ai-rankings-scroll">
           <table class="ai-rankings-table" role="table">
-            <caption class="sr-only">The ten most intelligent models that answer end to end within 35 seconds, with at most two from any one company</caption>
+            <caption class="sr-only">The ten most intelligent models that answer end to end within 45 seconds, with at most two from any one company</caption>
             <thead role="rowgroup"><tr role="row"><th scope="col">Company &amp; model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
             <tbody data-rankings-body role="rowgroup"></tbody>
           </table>
         </div>
         <p data-rankings-status role="status">Loading verified rankings…</p>
-        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. The ten most intelligent models that answer end to end within 35 seconds, with at most two from any one company so a single lab cannot fill the table; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
+        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. The ten most intelligent models that answer end to end within 45 seconds, with at most two from any one company so a single lab cannot fill the table; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
       </section>
 
       <section class="ai-panel ai-updates" aria-labelledby="ai-updates-title">
