@@ -5,7 +5,7 @@ export const SOURCE = 'https://artificialanalysis.ai/leaderboards/models';
 // labs listing six configurations of the same two models, which told a visitor nothing about
 // who else is worth opening; a cap of two keeps a lab's genuine second entry — a cheaper or
 // faster configuration is a real choice — without letting one lab fill the table.
-export const MAX_SECONDS = 35;
+export const MAX_SECONDS = 45;
 export const MAX_MODELS = 10;
 export const MAX_PER_COMPANY = 2;
 const COMPANIES = {
@@ -120,7 +120,7 @@ export async function handleModelRankings(request, env, cache = globalThis.cache
   // through the current one rather than served as they were stored.
   const reselect = data => data && { ...data, models: selectModels(data.models) };
   if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
-  const cacheKey = new Request(new URL('/api/model-rankings?selection=capped-v4', request.url));
+  const cacheKey = new Request(new URL('/api/model-rankings?selection=capped-v5', request.url));
   let previous;
   try { previous = reselect(await (await cache?.match(cacheKey))?.json()); } catch (_) { /* recover via source */ }
   if (previous?.models?.length && Date.now() - Date.parse(previous.updatedAt) < 3600000) return json({ ...previous, stale: false });

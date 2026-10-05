@@ -544,3 +544,7 @@
 .ai-ranking-identity .ai-tool-actions { margin-top: .4rem; }
 .ai-channel-links { display: flex; flex-wrap: wrap; gap: .5rem; }
 .ai-updates h3 { margin: 0; font-size: 1.1rem; }
+
+/* Preserve official icon colors on a light tile in either site theme. */
+.ai-tool-logo { background: #fff; }
+.ai-tool-logo .pill-logo { color-scheme: light; }

@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseRankings, handleModelRankings, selectModels, MAX_MODELS, MAX_PER_COMPANY } from '../worker/model-rankings.mjs';
+import { parseRankings, handleModelRankings, selectModels, MAX_MODELS, MAX_PER_COMPANY, MAX_SECONDS } from '../worker/model-rankings.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const html = rows => `<table><tr>${['Model','Creator','Artificial Analysis Intelligence Index','Cost per TaskUSD','TotalResponse (s)'].map(c => `<th>${c}</th>`).join('')}</tr>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
 test('filters total response, preserves zero cost, allows a second entry per company and breaks ties', () => {
   const data = parseRankings(html([
-    ['Slow','OpenAI',99,1,35.01], ['Missing','Meta',95,1,'--'], ['Provisional','Google','90*',1,10],
-    ['A','OpenAI',80,2,35], ['B','OpenAI',80,0,34], ['C','Anthropic',81,3,33],
+    ['Slow','OpenAI',99,1,45.01], ['Missing','Meta',95,1,'--'], ['Provisional','Google','90*',1,10],
+    ['A','OpenAI',80,2,45], ['B','OpenAI',80,0,44], ['C','Anthropic',81,3,40],
     ['D','xAI',79,1,30], ['E','SpaceXAI',78,1,29]
   ]));
   // B outranks the equally intelligent A because it costs less, and both fit inside
@@ -18,9 +18,9 @@ test('filters total response, preserves zero cost, allows a second entry per com
   assert.deepEqual(data.models.map(m => m.name), ['C','B','A','D','E']);
   assert.equal(data.models[1].cost, 0);
 });
-test('caps the table at ten entries and any company at two, and accepts exactly 35 seconds', () => {
+test('caps the table at ten entries and any company at two, and accepts exactly 45 seconds', () => {
   const creators = ['OpenAI','OpenAI','OpenAI','Anthropic','Anthropic','Anthropic','Google','New Lab','Z AI','DeepSeek','Kimi','xAI','Mistral'];
-  const data = parseRankings(html(creators.map((c,i) => [`Model ${i}`,c,90-i,1,35])));
+  const data = parseRankings(html(creators.map((c,i) => [`Model ${i}`,c,90-i,1,45])));
   assert.equal(data.models.length, MAX_MODELS);
   const perCompany = data.models.reduce((counts, m) => counts.set(m.company, (counts.get(m.company) || 0) + 1), new Map());
   assert.ok([...perCompany.values()].every(count => count <= MAX_PER_COMPANY), 'no company may exceed its allowance');
@@ -49,7 +49,7 @@ test('the bundled snapshot survives the current selection rule', () => {
   assert.ok(models.length <= MAX_MODELS);
   const perCompany = models.reduce((counts, m) => counts.set(m.company, (counts.get(m.company) || 0) + 1), new Map());
   assert.ok([...perCompany.values()].every(count => count <= MAX_PER_COMPANY));
-  assert.ok(models.every(m => m.seconds > 0 && m.seconds <= 35));
+  assert.ok(models.every(m => m.seconds > 0 && m.seconds <= MAX_SECONDS));
 });
 test('fails closed when source markup or metrics disappear', () => {
   assert.throws(() => parseRankings('<html>Challenge</html>'));
