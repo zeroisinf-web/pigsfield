@@ -11,10 +11,12 @@
     return base.replace(/\/+$/, "") + "/" + path.replace(/^\/+/, "");
   }
 
-  const studioStyle = document.createElement("link");
-  studioStyle.rel = "stylesheet";
-  studioStyle.href = assetUrl("css/ai-studio.css?v=0453c01a7186");
-  document.head.append(studioStyle);
+  if (!document.querySelector('link[href*="ai-studio.css"]')) {
+    const studioStyle = document.createElement("link");
+    studioStyle.rel = "stylesheet";
+    studioStyle.href = assetUrl("css/ai-studio.css?v=2773adb527c5");
+    document.head.append(studioStyle);
+  }
 
   // Line art drawn to one 24-grid and inheriting currentColor, rather than emoji: emoji are
   // a different typeface on every platform, arriving at whatever weight and colour the OS
@@ -408,13 +410,49 @@
     return init(root);
   }
 
+  function closeAIStudio() {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    let hasLocalReferrer = false;
+    try {
+      hasLocalReferrer = Boolean(document.referrer && new URL(document.referrer).origin === window.location.origin);
+    } catch (_) {}
+    if (window.history.length > 1 && hasLocalReferrer) {
+      window.history.back();
+    } else {
+      const base = document.documentElement.getAttribute("data-base") || "../";
+      window.location.assign(base);
+    }
+  }
+
+  function autoMountPage() {
+    const mount = document.querySelector("#ai-studio-mount");
+    if (mount) {
+      mountAIStudio(mount);
+    }
+    const closeBtn = document.querySelector("[data-close-ai-page]");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeAIStudio);
+    }
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        closeAIStudio();
+      }
+    });
+  }
+
+  function start() {
+    autoMountPage();
+    init(document);
+  }
+
+  PF.closeAIStudio = closeAIStudio;
   PF.initAIStudio = init;
   PF.mountAIStudio = mountAIStudio;
-  PF.aiStudio = { mount: mountAIStudio };
+  PF.aiStudio = { mount: mountAIStudio, close: closeAIStudio };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => init(document), { once: true });
+    document.addEventListener("DOMContentLoaded", start, { once: true });
   } else {
-    init(document);
+    start();
   }
 })();

@@ -548,3 +548,110 @@
 /* Preserve official icon colors on a light tile in either site theme. */
 .ai-tool-logo { background: #fff; }
 .ai-tool-logo .pill-logo { color-scheme: light; }
+
+/* --- AI Studio Page Layout & Close Button ---------------------------------- */
+.ai-page-hero {
+  padding: 2.2rem 0 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-strong);
+}
+.ai-page-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.ai-page-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 48rem;
+}
+.ai-page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--brand);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ai-page-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-page-icon .ui-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.ai-page-heading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.1;
+  color: var(--ink);
+  font-weight: 800;
+}
+.ai-page-lede {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(0.92rem, 1.8vw, 1.05rem);
+  line-height: 1.55;
+}
+.ai-page-close-wrap {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+.ai-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.ai-close-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, var(--paper));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+.ai-close-btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.ai-close-cross {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.ai-page-content {
+  padding-top: 1.25rem;
+  padding-bottom: 2.5rem;
+}
+
+@media (max-width: 48rem) {
+  .ai-page-hero-inner {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+  .ai-page-close-wrap {
+    align-self: flex-end;
+    margin-top: 0;
+  }
+  .ai-page-heading {
+    font-size: 2.1rem;
+  }
+}
+

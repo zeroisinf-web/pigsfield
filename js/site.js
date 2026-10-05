@@ -1151,7 +1151,7 @@
       </nav>
       <aside class="support-dock support-dock-left" aria-label="AI Studio">
         <div class="support-action support-pair ai-pair">
-          <button type="button" data-open-ai><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</button>
+          <a href="${escapeHtml(PF.path("ai"))}" data-open-ai aria-label="Open AI Studio"><span class="ai-dock-mark" aria-hidden="true">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')}</span> AI Studio</a>
         </div>
       </aside>
       <aside class="support-dock support-dock-right" aria-label="Donate or give feedback">
@@ -1177,16 +1177,6 @@
           <nav class="sidebar-nav sidebar-nav-plain" aria-labelledby="site-sidebar-more">
             ${navLink("about", "Why Pigsfield")}${navLink("editorial", "How we choose resources")}${navLink("submit", "Suggest a resource")}${navLink("accessibility", "Accessibility")}${navLink("privacy", "Privacy & terms")}
           </nav>
-        </div>
-      </dialog>
-
-      <dialog class="site-dialog ai-studio-dialog" id="ai-studio-dialog" aria-labelledby="global-ai-title">
-        <div class="dialog-head ai-dialog-head">
-          <h2 id="global-ai-title">${uiIcon('M12 3.4 13.7 9l5.6 1.7-5.6 1.7L12 18l-1.7-5.6L4.7 10.7 10.3 9 12 3.4Z')} AI Studio</h2>
-          <button class="icon-button" type="button" data-close-dialog aria-label="Close AI studio">×</button>
-        </div>
-        <div class="dialog-body ai-dialog-body">
-          <div id="global-ai-studio-mount"><div class="ai-studio-loading" role="status"><strong>Loading the studio…</strong></div></div>
         </div>
       </dialog>
 
@@ -1443,34 +1433,18 @@
     return scriptPromises[src];
   }
 
-  let aiStudioPromise = null;
-  async function openAIStudio() {
-    const dialog = qs("#ai-studio-dialog");
-    const mount = qs("#global-ai-studio-mount");
-    if (!dialog || !mount) return;
-    showDialog(dialog);
-    if (!aiStudioPromise) {
-      aiStudioPromise = loadScript("js/ai-studio.js?v=0fccd9faa2f9")
-        .then(() => {
-          if (typeof PF.mountAIStudio !== "function") throw new Error("The studio could not start.");
-          mount.replaceChildren();
-          if (!PF.mountAIStudio(mount)) throw new Error("The studio could not be mounted safely.");
-          PF.applyLanguageTo(dialog);
-        })
-        .catch((error) => {
-          aiStudioPromise = null;
-          mount.innerHTML = `<div class="empty-state"><strong>AI studio is temporarily unavailable</strong><p>${escapeHtml(error && error.message ? error.message : "Please check your connection and try again.")}</p><button class="button small" type="button" data-retry-ai>Try again</button></div>`;
-          const retry = qs("[data-retry-ai]", mount);
-          if (retry) retry.addEventListener("click", openAIStudio, { once: true });
-          PF.applyLanguageTo(mount);
-        });
+  function warmAIStudio() {
+    return loadScript("js/ai-studio.js?v=3f93758b39dd");
+  }
+
+  function openAIStudio(event) {
+    if (event && typeof event.preventDefault === "function") {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault();
     }
-    await aiStudioPromise;
+    window.location.assign(PF.path("ai"));
   }
   PF.openAIStudio = openAIStudio;
-
-  // The panel builds its own dialog on first open, so nothing about it weighs on the
-  // navigation shell except this button and this loader.
 
   function loadData(key) {
     window.PF_DATA = window.PF_DATA || {};
@@ -1926,14 +1900,13 @@
     qsa("dialog").forEach((dialog) => dialog.addEventListener("click", (event) => {
       if (event.target === dialog) closeDialog(dialog);
     }));
-    const aiDialog = qs("#ai-studio-dialog");
-    if (aiDialog) aiDialog.addEventListener("close", () => {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    });
-
     qsa("[data-open-search]").forEach((button) => button.addEventListener("click", () => openSearch()));
     qsa("[data-open-saved]").forEach((button) => button.addEventListener("click", () => { renderSaved(); showDialog(qs("#saved-dialog")); }));
-    qsa("[data-open-ai]").forEach((button) => button.addEventListener("click", openAIStudio));
+    qsa("[data-open-ai]").forEach((element) => {
+      element.addEventListener("click", openAIStudio);
+      element.addEventListener("pointerenter", warmAIStudio, { once: true });
+      element.addEventListener("focus", warmAIStudio, { once: true });
+    });
     const openFrom = (target) => (event) => {
       const from = event.currentTarget.closest("dialog");
       if (from && from.open) from.close();
@@ -1972,7 +1945,7 @@
 
     const params = new URLSearchParams(location.search);
     if (params.get("q")) openSearch(params.get("q"));
-    if (params.get("studio") === "ai" || page === "ai") openAIStudio();
+    if (params.get("studio") === "ai" && page !== "ai") openAIStudio();
   }
 
   function registerServiceWorker() {
