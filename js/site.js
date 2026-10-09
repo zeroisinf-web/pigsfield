@@ -38,7 +38,7 @@
     teach: "js/data/teach.js?v=45496290068e",
     tools: "js/data/tools.js?v=78e7d4748c46",
     exams: "js/data/exams.js?v=d643a25eecd1",
-    pigbang: "js/data/pigbang.js?v=8b1f4bc74b83",
+    pigbang: "js/data/pigbang.js?v=9395c3e9ca34",
     govt: "js/data/govt.js?v=a4cf70952988"
   };
 

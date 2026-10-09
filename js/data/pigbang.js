@@ -320,8 +320,7 @@ window.PF_DATA.pigbang = {
      "subject": "History, Biography",
      "name": "The Who Was? Show",
      "desc": "Based on bestselling book series. Sketch comedy + biography. Perfect for Class 6–8.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Paid"
     },
     {
@@ -480,8 +479,7 @@ window.PF_DATA.pigbang = {
      "subject": "Mentorship, Grit, Wrestling",
      "name": "Dangal",
      "desc": "Coaching, ambition, and the weight of \"believing more in your students than they do\".",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Paid"
     },
     {
@@ -519,8 +517,7 @@ window.PF_DATA.pigbang = {
      "subject": "Ethics, Character Development",
      "name": "Avatar: The Last Airbender",
      "desc": "Character arcs, ethics, war/peace and identity in a genuinely fun series.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Paid"
     },
     {
@@ -823,8 +820,7 @@ window.PF_DATA.pigbang = {
      "subject": "Pedagogy, Inspiration",
      "name": "The Ron Clark Story",
      "desc": "Matthew Perry as Ron Clark — energy, rules, and love. TV movie classic.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Paid"
     },
     {
@@ -850,8 +846,7 @@ window.PF_DATA.pigbang = {
      "subject": "Empathy, Education",
      "name": "Sitare Zameen Par",
      "desc": "Educational support scenes.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Free"
     },
     {
@@ -2178,8 +2173,7 @@ window.PF_DATA.pigbang = {
      "subject": "Astrophysics, General Relativity",
      "name": "Black Holes: Edge of All We Know",
      "desc": "The Event Horizon Telescope collaboration — real-time cutting-edge physics research.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Paid"
     },
     {
@@ -2360,8 +2354,7 @@ window.PF_DATA.pigbang = {
      "subject": "Business, Entrepreneurship",
      "name": "The Startup Kids",
      "desc": "An open, honest look at young founders behind Dropbox, Vimeo, and SoundCloud, addressing venture grit, burnout, and mental resilience.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Free"
     },
     {
@@ -2387,8 +2380,7 @@ window.PF_DATA.pigbang = {
      "subject": "Business, Venture Capital",
      "name": "Something Ventured",
      "desc": "A gripping archival documentary tracking the birth of venture capital and the high-stakes early financing of Apple, Intel, Atari, and Cisco.",
-     "urls": [
-     ],
+     "urls": [],
      "price": "Free"
     },
     {
@@ -2784,7 +2776,8 @@ window.PF_DATA.pigbang = {
      "desc": "Warm, witty Australian family show — rich natural English. Loved globally.",
      "urls": [
       "https://www.youtube.com/@BlueyOfficialChannel"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2795,7 +2788,8 @@ window.PF_DATA.pigbang = {
      "desc": "Rhymes and basic Hindi listening — catchy, colourful, preschool-friendly.",
      "urls": [
       "https://www.youtube.com/@ChuChuTVHindi"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2806,7 +2800,8 @@ window.PF_DATA.pigbang = {
      "desc": "Stronger science and environment topics for older primary — Class 4–5 sweet spot.",
      "urls": [
       "https://www.youtube.com/@crashcoursekids/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2817,7 +2812,8 @@ window.PF_DATA.pigbang = {
      "desc": "PBS preschool show on emotions and friendship — Mister Rogers' animated successor.",
      "urls": [
       "https://www.youtube.com/@DanielTigersNeighbourhood/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2828,7 +2824,8 @@ window.PF_DATA.pigbang = {
      "desc": "BAFTA-winning UK show where squirrel scouts earn badges. Covers everything warmly.",
      "urls": [
       "https://www.youtube.com/@HeyDuggeeOfficial/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2839,7 +2836,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi rhymes, stories, beginner grammar-friendly videos. Long-running & trusted.",
      "urls": [
       "https://www.youtube.com/@infobellshindirhymes"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2850,7 +2848,8 @@ window.PF_DATA.pigbang = {
      "desc": "3D-animated Hindi stories and rhymes — very popular with Indian toddlers.",
      "urls": [
       "https://www.youtube.com/@jugnukidsvideos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2861,7 +2860,8 @@ window.PF_DATA.pigbang = {
      "desc": "India's iconic audiobook-animation storytelling — music, rhythm, folk style.",
      "urls": [
       "https://www.youtube.com/@karaditales"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2872,7 +2872,8 @@ window.PF_DATA.pigbang = {
      "desc": "Clear, funny explanations of fractions, geometry, long division. Class 3–5 perfect.",
      "urls": [
       "https://www.youtube.com/@mathantics"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2883,7 +2884,8 @@ window.PF_DATA.pigbang = {
      "desc": "The best early-maths show ever made — counting, addition, patterns, multiplication. A revelation.",
      "urls": [
       "https://www.youtube.com/@Numberblocks"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2894,7 +2896,8 @@ window.PF_DATA.pigbang = {
      "desc": "Ocean life, sea-animal rescues, real marine biology dressed as adventure.",
      "urls": [
       "https://www.youtube.com/@Octonauts/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2905,7 +2908,8 @@ window.PF_DATA.pigbang = {
      "desc": "The best phonics series ever made — letters become characters that build words.",
      "urls": [
       "https://www.youtube.com/@officialalphablocks"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2916,7 +2920,8 @@ window.PF_DATA.pigbang = {
      "desc": "Everyday English through family conversations — warm, gentle, funny.",
      "urls": [
       "https://www.youtube.com/@PeppaPigOfficial"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2927,7 +2932,8 @@ window.PF_DATA.pigbang = {
      "desc": "Short, focused, fun science videos — questions kids actually ask.",
      "urls": [
       "https://www.youtube.com/@SciShowKids/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2938,7 +2944,8 @@ window.PF_DATA.pigbang = {
      "desc": "70s classic still going strong — language, numbers, empathy, kindness.",
      "urls": [
       "https://www.youtube.com/@sesamestreet"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2949,7 +2956,8 @@ window.PF_DATA.pigbang = {
      "desc": "The Kratt brothers turn into animals and teach real biology. An all-time favourite.",
      "urls": [
       "https://www.youtube.com/@WildKratts/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2960,7 +2968,8 @@ window.PF_DATA.pigbang = {
      "desc": "Iconic 70s educational songs — grammar, maths, civics. Still teaches.",
      "urls": [
       "https://www.youtube.com/channel/UC1yty6F-2neYfwE8xc1A72Q"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2971,7 +2980,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi educational clips, rhymes, and language support videos.",
      "urls": [
       "https://www.youtube.com/user/eDewcate"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2982,7 +2992,8 @@ window.PF_DATA.pigbang = {
      "desc": "Indian Sesame Street style; younger side but useful for easy Hindi listening.",
      "urls": [
       "https://www.youtube.com/user/GalliGalliSim"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -2993,7 +3004,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi stories, grammar basics, animated explainers. Good reinforcement content.",
      "urls": [
       "https://www.youtube.com/user/PebblesHindi"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3004,7 +3016,8 @@ window.PF_DATA.pigbang = {
      "desc": "Great for vocabulary, rhythm, English exposure — bright, gentle, singable.",
      "urls": [
       "https://www.youtube.com/user/SuperSimpleSongs"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3014,8 +3027,8 @@ window.PF_DATA.pigbang = {
      "subject": "Indian History, Folklore",
      "name": "ACK Hindi YouTube",
      "desc": "Indian heroes, legends and history stories in Hindi-friendly format.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3027,7 +3040,8 @@ window.PF_DATA.pigbang = {
      "desc": "Vocabulary and grammar through catchy hip-hop animations. Wildly effective.",
      "urls": [
       "https://www.youtube.com/@FlocabularyYT/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3039,7 +3053,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hip-hop songs teaching vocabulary, literary terms, grammar. Wildly effective. Actually catchy.",
      "urls": [
       "https://www.youtube.com/@FlocabularyYT/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3052,7 +3067,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@HorribleHistoriesOfficial/playlists",
       "https://www.bbc.co.uk/cbbc/shows/horrible-histories"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3064,7 +3080,8 @@ window.PF_DATA.pigbang = {
      "desc": "Doctor twins explain the body and health through experiments. Wildly funny.",
      "urls": [
       "https://www.youtube.com/@OperationOuch/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3076,7 +3093,8 @@ window.PF_DATA.pigbang = {
      "desc": "General knowledge, science facts, and visual explainers — fun animated style.",
      "urls": [
       "https://www.youtube.com/user/Smartlearningforall"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3088,7 +3106,8 @@ window.PF_DATA.pigbang = {
      "desc": "Math + music + doodling = pure magic. Explores patterns, spirals, infinity through art.",
      "urls": [
       "https://vimeo.com/vihart/albums"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3100,7 +3119,8 @@ window.PF_DATA.pigbang = {
      "desc": "Short inspiring videos with Bill Gates, Mark Zuckerberg on why coding matters. Great motivation.",
      "urls": [
       "https://www.youtube.com/@codeorg/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3112,7 +3132,8 @@ window.PF_DATA.pigbang = {
      "desc": "Deep-dive history series — Rome, Mesopotamia, Mughal Empire. Animated, episodic, binge-worthy.",
      "urls": [
       "https://www.youtube.com/@ExtraHistory/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3124,7 +3145,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fast-paced, engaging science mysteries presented with premium animation. Explores deep space, human biology anomalies, and quantum basics in Hindi.",
      "urls": [
       "https://www.youtube.com/@GetSetFly"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3136,7 +3158,8 @@ window.PF_DATA.pigbang = {
      "desc": "Grammar topics explained simply and smartly. Class 6–8 English reinforcement.",
      "urls": [
       "https://www.youtube.com/@GrammarGirl/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3148,7 +3171,8 @@ window.PF_DATA.pigbang = {
      "desc": "Weird but true facts about the world. Short, funny, surprising. Great GK + geography builder.",
      "urls": [
       "https://www.youtube.com/@halfasinteresting/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3158,8 +3182,8 @@ window.PF_DATA.pigbang = {
      "subject": "General Science",
      "name": "It's AumSum Time Hindi",
      "desc": "Science + GK explainers in Hindi with funny animations. Engaging for Class 9–10.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3171,7 +3195,8 @@ window.PF_DATA.pigbang = {
      "desc": "Ex-NASA engineer builds wild experiments — real-world science and curiosity fuel.",
      "urls": [
       "https://www.youtube.com/@MarkRober"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3183,7 +3208,8 @@ window.PF_DATA.pigbang = {
      "desc": "Clear funny explanations of fractions, decimals, algebra, geometry. Perfect Class 6–8 level.",
      "urls": [
       "https://www.youtube.com/@mathantics/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3195,7 +3221,8 @@ window.PF_DATA.pigbang = {
      "desc": "Physics concepts in under 5 minutes with hand-drawn animations. Clean, sharp, mind-bending.",
      "urls": [
       "https://www.youtube.com/@minutephysics/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3207,7 +3234,8 @@ window.PF_DATA.pigbang = {
      "desc": "NileRed's more accessible second channel. Great for Class 9–10 chemistry.",
      "urls": [
       "https://www.youtube.com/@NileBlue/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3219,7 +3247,8 @@ window.PF_DATA.pigbang = {
      "desc": "History & mythology with humor & hand-drawn animations. Class 7–8 perfect energy.",
      "urls": [
       "https://www.youtube.com/@OverlySarcasticProductions"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3231,7 +3260,8 @@ window.PF_DATA.pigbang = {
      "desc": "Every element explored with real experiments. University of Nottingham chemists.",
      "urls": [
       "https://www.youtube.com/@periodicvideos/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3243,7 +3273,8 @@ window.PF_DATA.pigbang = {
      "desc": "Why does X country exist?' type fascinating geography + demography + history videos.",
      "urls": [
       "https://www.youtube.com/@RealLifeLore/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3255,7 +3286,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fast-paced science on chemistry, physics, biology, space. Perfect for Class 7–8.",
      "urls": [
       "https://www.youtube.com/@scishow/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3267,7 +3299,8 @@ window.PF_DATA.pigbang = {
      "desc": "Animated history — timelines, battles, empires, revolutions. Clear and visual.",
      "urls": [
       "https://www.youtube.com/@SimpleHistory/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3279,7 +3312,8 @@ window.PF_DATA.pigbang = {
      "desc": "Slow-motion science & real engineering — rockets, guns, animals, submarines. Spectacular.",
      "urls": [
       "https://www.youtube.com/@smartereveryday/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3289,8 +3323,8 @@ window.PF_DATA.pigbang = {
      "subject": "Math, Science",
      "name": "Smart Learning for All",
      "desc": "Hindi explainers aligned to NCERT — history, science, civics in Hindi. Class 9–12 syllabus.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3302,7 +3336,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real mathematician doing funny, weird, deep math. Great for curious Class 7–8 students.",
      "urls": [
       "https://www.youtube.com/@standupmaths/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3314,7 +3349,8 @@ window.PF_DATA.pigbang = {
      "desc": "Animated lessons on literature, language, science, philosophy. World-class quality. Endlessly deep.",
      "urls": [
       "https://www.youtube.com/@TheEconomist/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3326,7 +3362,8 @@ window.PF_DATA.pigbang = {
      "desc": "Space, environment, health and tech explained with Indian lens.",
      "urls": [
       "https://www.youtube.com/c/IndiaScience"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3339,7 +3376,8 @@ window.PF_DATA.pigbang = {
      "desc": "Use TED-Ed lessons in class, build your own with their Lesson Builder.",
      "urls": [
       "https://ed.ted.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3350,8 +3388,8 @@ window.PF_DATA.pigbang = {
      "subject": "Pedagogy, Science",
      "name": "Smart Learning for All (Hindi)",
      "desc": "NCERT-aligned Hindi explainers — great for observing vernacular-medium pedagogy.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3364,7 +3402,8 @@ window.PF_DATA.pigbang = {
      "desc": "Animated lessons + model for how to craft a brilliant explanation.",
      "urls": [
       "https://www.youtube.com/@TEDEd/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3377,7 +3416,8 @@ window.PF_DATA.pigbang = {
      "desc": "How countries, borders, systems work. Beautifully animated, deeply thought-provoking.",
      "urls": [
       "https://www.youtube.com/@CGPGrey/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3390,7 +3430,8 @@ window.PF_DATA.pigbang = {
      "desc": "Engaging visual essays on the history of dominant tech giants, breakthrough scientific developments, and systemic economic history.",
      "urls": [
       "https://www.youtube.com/@ColdFusion"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3403,7 +3444,8 @@ window.PF_DATA.pigbang = {
      "desc": "Slow but culturally rich Indian shows and knowledge content.",
      "urls": [
       "https://www.youtube.com/@DoordarshanNational"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3416,7 +3458,8 @@ window.PF_DATA.pigbang = {
      "desc": "One video per country — geography, culture, history, flags. Every country on Earth. Endlessly watchable.",
      "urls": [
       "https://www.youtube.com/@GeographyNow/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3429,7 +3472,8 @@ window.PF_DATA.pigbang = {
      "desc": "Wildlife, world cultures, geography, environment. Stunning documentary-quality content.",
      "urls": [
       "https://www.youtube.com/@NatGeo/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3442,7 +3486,8 @@ window.PF_DATA.pigbang = {
      "desc": "Chemistry experiments like alchemy — turning styrofoam into candy. Wildly entertaining.",
      "urls": [
       "https://www.youtube.com/@NileRed/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3455,7 +3500,8 @@ window.PF_DATA.pigbang = {
      "desc": "Mathematicians talking about fascinating numbers. Not textbook math — rabbit-hole math. Addictive.",
      "urls": [
       "https://www.youtube.com/@numberphile/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3468,7 +3514,8 @@ window.PF_DATA.pigbang = {
      "desc": "Exceptionally well-researched, animated deep-dives into South Asian history, exploring the complex naval logistics of the Cholas and ancient trade networks.",
      "urls": [
       "https://www.youtube.com/@OddCompass"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3481,7 +3528,8 @@ window.PF_DATA.pigbang = {
      "desc": "Stunningly animated video essays focused on corporate supply chains, nation-specific business environments, and global tech trends.",
      "urls": [
       "https://www.youtube.com/@PolyMatter"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3494,7 +3542,8 @@ window.PF_DATA.pigbang = {
      "desc": "How rockets, processors, planes, nuclear reactors work. Engineering visualized beautifully.",
      "urls": [
       "https://www.youtube.com/@RealEngineering/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3507,7 +3556,8 @@ window.PF_DATA.pigbang = {
      "desc": "MIT-trained engineer builds impossible machines — CNC, robotics, programming, fabrication. Inspiring.",
      "urls": [
       "https://www.youtube.com/@StuffMadeHere/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3520,7 +3570,8 @@ window.PF_DATA.pigbang = {
      "desc": "Christmas Lectures, Nobel-level talks, chemistry demonstrations. The highest quality science communication.",
      "urls": [
       "https://www.youtube.com/@TheRoyalInstitution/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3533,7 +3584,8 @@ window.PF_DATA.pigbang = {
      "desc": "Philosophy, psychology, literature, relationships — big ideas for teenagers. Class 10–12.",
      "urls": [
       "https://www.youtube.com/@theschooloflifetv/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3546,7 +3598,8 @@ window.PF_DATA.pigbang = {
      "desc": "Linguistics, engineering, weird systems — brilliant English storytelling.",
      "urls": [
       "https://www.youtube.com/@TomScottGo/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3559,7 +3612,8 @@ window.PF_DATA.pigbang = {
      "desc": "Mind-bending logic, physics paradoxes, and engineering milestones decoded using first-principles experimentation and narrative storytelling.",
      "urls": [
       "https://www.youtube.com/@Veritasium"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3572,7 +3626,8 @@ window.PF_DATA.pigbang = {
      "desc": "Why does anything exist?' Curiosity at absolute peak. Mind-bending science + philosophy.",
      "urls": [
       "https://www.youtube.com/@Vsauce/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3585,7 +3640,8 @@ window.PF_DATA.pigbang = {
      "desc": "How the world works — airlines, logistics, geopolitics, urban planning. Mind-expanding.",
      "urls": [
       "https://www.youtube.com/@Wendover/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3599,7 +3655,8 @@ window.PF_DATA.pigbang = {
      "desc": "Years of archive clips — pitches, negotiations, and what makes a deal work.",
      "urls": [
       "https://www.youtube.com/@SharkTankGlobal"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3612,7 +3669,8 @@ window.PF_DATA.pigbang = {
      "desc": "Sanjyot Keer — professional Indian cooking techniques you can actually use at home.",
      "urls": [
       "https://www.youtube.com/@YourFoodLab"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3625,7 +3683,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@PBS/playlists",
       "https://www.pbs.org/kenburns/the-war"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3637,7 +3696,8 @@ window.PF_DATA.pigbang = {
      "desc": "Filmmaker-style history docs — unique deep angles on historical events. Class 10–12.",
      "urls": [
       "https://www.youtube.com/@AtunSheiFilms/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3649,7 +3709,8 @@ window.PF_DATA.pigbang = {
      "desc": "Full courses on philosophy, political science, sociology, world history, literature — all free on YouTube.",
      "urls": [
       "https://www.youtube.com/@crashcourse/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3661,7 +3722,8 @@ window.PF_DATA.pigbang = {
      "desc": "Stunning animated videos on space, biology, climate, AI, philosophy. Most watchable science channel.",
      "urls": [
       "https://www.youtube.com/@kurzgesagt/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3673,7 +3735,8 @@ window.PF_DATA.pigbang = {
      "desc": "History + mythology + literature with humor — deep research, entertaining delivery. UG Arts level.",
      "urls": [
       "https://www.youtube.com/@OverlySarcasticProductions"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3685,7 +3748,8 @@ window.PF_DATA.pigbang = {
      "desc": "Biochemistry, organic chemistry, molecular biology — accurate, clear, UG-level depth.",
      "urls": [
       "https://www.youtube.com/@ProfessorDaveExplains/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3697,7 +3761,8 @@ window.PF_DATA.pigbang = {
      "desc": "Parliamentary debates, cultural programs, historical docs in Hindi. Authentic language exposure.",
      "urls": [
       "https://www.youtube.com/@sansadtv"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3709,7 +3774,8 @@ window.PF_DATA.pigbang = {
      "desc": "Step-by-step organic + general chemistry — mechanisms, nomenclature, reactions. UG exam prep gold.",
      "urls": [
       "https://www.youtube.com/@TheOrganicChemistryTutor/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3722,7 +3788,8 @@ window.PF_DATA.pigbang = {
      "desc": "Watch to learn the shape of a great idea-talk — and try your own.",
      "urls": [
       "https://www.ted.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3735,7 +3802,8 @@ window.PF_DATA.pigbang = {
      "desc": "Neural networks, Fourier series, differential equations — visual mathematical intuition at graduate level.",
      "urls": [
       "https://www.youtube.com/@3blue1brown/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3748,7 +3816,8 @@ window.PF_DATA.pigbang = {
      "desc": "Chomsky, Dawkins, Pinker, Krauss, Harari — world's leading researchers in short explosive format.",
      "urls": [
       "https://www.youtube.com/@bigthink/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3761,7 +3830,8 @@ window.PF_DATA.pigbang = {
      "desc": "Graduate-level cosmology, quantum field theory, general relativity. The most rigorous free physics content.",
      "urls": [
       "https://www.youtube.com/@pbsspacetime/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3774,7 +3844,8 @@ window.PF_DATA.pigbang = {
      "desc": "Nobel-laureate lectures, Christmas Lectures, graduate-level science talks.",
      "urls": [
       "https://www.youtube.com/@TheRoyalInstitution"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3787,7 +3858,8 @@ window.PF_DATA.pigbang = {
      "desc": "Business, founders, sports, politics — India's longest-form podcast.",
      "urls": [
       "https://www.youtube.com/@beerbiceps/podcasts"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3800,7 +3872,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi-English finance teacher — taxes, investing, markets explained simply.",
      "urls": [
       "https://www.youtube.com/@CARachanaRanade/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3813,7 +3886,8 @@ window.PF_DATA.pigbang = {
      "desc": "Sharan Hegde is on a mission to spread financial literacy in each and every Indian household through comedic shorts and entertaining long-form videos.",
      "urls": [
       "https://www.youtube.com/@financewithsharan/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3826,7 +3900,8 @@ window.PF_DATA.pigbang = {
      "desc": "100-second explainers on every tech concept — JS, Python, Docker, AI. Sharp and fast.",
      "urls": [
       "https://www.youtube.com/@Fireship/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3839,7 +3914,8 @@ window.PF_DATA.pigbang = {
      "desc": "Cinematic, documentary-style breakdowns exploring marketing strategies, competitive monopolies, and corporate drama of global empires.",
      "urls": [
       "https://www.youtube.com/@MagnatesMedia"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3853,7 +3929,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@rajshamani/videos",
       "https://www.youtube.com/@RajShamani"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3867,7 +3944,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@ThinkSchool/videos",
       "https://www.youtube.com/@ThinkSchool"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3881,7 +3959,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@warikoo/videos",
       "https://www.youtube.com/@warikoo"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3891,8 +3970,8 @@ window.PF_DATA.pigbang = {
      "subject": "Mathematics, Theoretical Physics",
      "name": "IAS Princeton",
      "desc": "Institute for Advanced Study lectures — math and physics at the absolute frontier.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3903,7 +3982,8 @@ window.PF_DATA.pigbang = {
      "desc": "The most-watched TED Talk ever. Every staff room should watch it once a year.",
      "urls": [
       "https://www.ted.com/talks/sir_ken_robinson_do_schools_kill_creativity"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3914,7 +3994,8 @@ window.PF_DATA.pigbang = {
      "desc": "Panels, lectures, and teacher-education content by APU faculty.",
      "urls": [
       "https://www.youtube.com/@AzimPremjiUniversity"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3926,7 +4007,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@cambridgeenglishtv/playlists",
       "https://www.cambridgeenglish.org/teaching-english"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3937,7 +4019,8 @@ window.PF_DATA.pigbang = {
      "desc": "Jenn Gonzalez's fantastic practical-PD channel — techniques, reflections, interviews.",
      "urls": [
       "https://www.youtube.com/@CultofPedagogy"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3948,7 +4031,8 @@ window.PF_DATA.pigbang = {
      "desc": "Short-form classroom practice videos from the George Lucas Educational Foundation.",
      "urls": [
       "https://www.youtube.com/@edutopia"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3957,8 +4041,8 @@ window.PF_DATA.pigbang = {
      "subject": "Education, Pedagogy",
      "name": "Teach Like a Champion",
      "desc": "Videos demonstrating Doug Lemov's highly regarded teaching techniques for classroom management and student engagement.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3969,7 +4053,8 @@ window.PF_DATA.pigbang = {
      "desc": "Emotional-intelligence content for teachers managing their own life too.",
      "urls": [
       "https://www.youtube.com/@theschooloflifetv"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3980,7 +4065,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real lawyer explains cases, laws, Supreme Court decisions — accessible and accurate. UG Law students.",
      "urls": [
       "https://www.youtube.com/@LegalEagle/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -3992,7 +4078,8 @@ window.PF_DATA.pigbang = {
      "desc": "Metabolic pathways, enzyme kinetics, molecular biology — upper-division UG biochemistry level.",
      "urls": [
       "https://www.youtube.com/@AKLectures/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4002,8 +4089,8 @@ window.PF_DATA.pigbang = {
      "subject": "Legal Studies, Continuing Education",
      "name": "CLE for Free",
      "desc": "Continuing legal education lectures — evidence, criminal procedure, corporate law, ethics.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4016,7 +4103,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@TheMagicSchoolBusOfficial/playlists",
       "https://www.netflix.com/in/title/80108373?source=35&fromWatch=true"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4028,7 +4116,8 @@ window.PF_DATA.pigbang = {
      "desc": "Graduate law lectures — constitutional theory, international law, human rights, jurisprudence.",
      "urls": [
       "https://www.youtube.com/@YaleLawSchool/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4041,7 +4130,8 @@ window.PF_DATA.pigbang = {
      "desc": "Neural networks from scratch, backpropagation, GPT — ex-Tesla AI Director teaches deep learning.",
      "urls": [
       "https://www.youtube.com/@AndrejKarpathy/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4054,7 +4144,8 @@ window.PF_DATA.pigbang = {
      "desc": "Algorithms, cryptography, P vs NP, machine learning theory, quantum computing. Graduate CS level.",
      "urls": [
       "https://www.youtube.com/@Computerphile/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4065,8 +4156,8 @@ window.PF_DATA.pigbang = {
      "subject": "Cell Biology, Research Seminars",
      "name": "iBiology",
      "desc": "Research-level biology seminars by Nobel laureates and world-leading scientists.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4079,7 +4170,8 @@ window.PF_DATA.pigbang = {
      "desc": "India's IIT/IISc lecture repository — 50,000+ hours of engineering + science PhD prep.",
      "urls": [
       "https://www.youtube.com/@iitnptel"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4092,7 +4184,8 @@ window.PF_DATA.pigbang = {
      "desc": "4-hour conversations with AI researchers, physicists, philosophers, presidents, engineers. Dense.",
      "urls": [
       "https://www.youtube.com/@lexfridman/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4105,7 +4198,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free college economics courses by economists Tyler Cowen & Alex Tabarrok. Research-level depth.",
      "urls": [
       "https://www.youtube.com/@MarginalRevolutionUniversity/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4118,7 +4212,8 @@ window.PF_DATA.pigbang = {
      "desc": "Graduate math — topology, complex analysis, unsolved problems, visual proofs. Research-level depth.",
      "urls": [
       "https://www.youtube.com/@Mathologer/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4131,7 +4226,8 @@ window.PF_DATA.pigbang = {
      "desc": "Theoretical physics talks by the world's top researchers — cutting-edge physics.",
      "urls": [
       "https://www.youtube.com/@PIOutreach"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4144,7 +4240,8 @@ window.PF_DATA.pigbang = {
      "desc": "Full lectures — Chomsky, Zizek, Butler, Habermas. Research-level humanities.",
      "urls": [
       "https://www.youtube.com/@PhilosophyOverdose"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4157,7 +4254,8 @@ window.PF_DATA.pigbang = {
      "desc": "Full lecture recordings — Chomsky, Zizek, Badiou, Butler, Habermas, Rawls. Graduate-level philosophy.",
      "urls": [
       "https://www.youtube.com/@PhilosophyOverdose/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4170,7 +4268,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fellows' talks, Nobel interviews, historic scientific conversations.",
      "urls": [
       "https://www.youtube.com/@royalsociety"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4183,7 +4282,8 @@ window.PF_DATA.pigbang = {
      "desc": "Caltech physicist interviews the world's best minds — physics, philosophy, complexity.",
      "urls": [
       "https://www.youtube.com/@seancarroll"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4196,7 +4296,8 @@ window.PF_DATA.pigbang = {
      "desc": "Physics, philosophy, complexity, consciousness — Caltech physicist interviews the world's best minds.",
      "urls": [
       "https://www.youtube.com/@seancarroll/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4209,7 +4310,8 @@ window.PF_DATA.pigbang = {
      "desc": "Graduate-level ML, AI, systems, entrepreneurship — the full Stanford catalogue.",
      "urls": [
       "https://www.youtube.com/@stanfordonline"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4222,7 +4324,8 @@ window.PF_DATA.pigbang = {
      "desc": "Latest AI/ML/CV/RL research papers explained — DALL-E, GPT, AlphaFold, Sora. Research-level summaries.",
      "urls": [
       "https://www.youtube.com/@TwoMinutePapers/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4234,7 +4337,8 @@ window.PF_DATA.pigbang = {
      "desc": "AI search, knowledge representation, machine learning, neural networks, NLP — graduate CS intro to AI.",
      "urls": [
       "https://www.youtube.com/@cs50"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4247,7 +4351,8 @@ window.PF_DATA.pigbang = {
      "desc": "Live market analysis, earnings, Fed decisions, CEO interviews — real-time financial market education.",
      "urls": [
       "https://www.youtube.com/@BloombergTelevision/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4260,7 +4365,8 @@ window.PF_DATA.pigbang = {
      "desc": "Strategy, leadership, organizational behavior, innovation — MBA case study discussions and interviews.",
      "urls": [
       "https://www.youtube.com/@HarvardBusinessReview/playlists"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4271,8 +4377,8 @@ window.PF_DATA.pigbang = {
      "subject": "Financial Markets, Economics",
      "name": "Patrick Boyle",
      "desc": "Hedge fund manager explains derivatives, quant finance, market microstructure, macro economics. Brilliant.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4285,7 +4391,8 @@ window.PF_DATA.pigbang = {
      "desc": "Live \"learn by doing\" sessions from Zerodha — markets, TA, fundamentals.",
      "urls": [
       "https://zerodha.com/varsity/live/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4297,7 +4404,8 @@ window.PF_DATA.pigbang = {
      "desc": "Finance, investing, economics explained — stocks, bonds, derivatives, macroeconomics. UG Finance.",
      "urls": [
       "https://www.youtube.com/@Investopedia/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4309,7 +4417,8 @@ window.PF_DATA.pigbang = {
      "desc": "A character-driven narrative centered on a first-time software engineer adapting to office culture, tax filing, savings, and peer growth.",
      "urls": [
       "https://www.youtube.com/@TheViralFever"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4322,7 +4431,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://www.youtube.com/@wscubetech/videos",
       "https://www.youtube.com/@skillopedia/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4333,7 +4443,8 @@ window.PF_DATA.pigbang = {
      "desc": "Doordarshan's dedicated farmer channel — schemes, modern practices, markets.",
      "urls": [
       "https://www.youtube.com/@DDKisan/playlists"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4344,7 +4455,8 @@ window.PF_DATA.pigbang = {
      "desc": "Modern farming techniques, horticulture, poultry, dairy — India-specific.",
      "urls": [
       "https://www.youtube.com/@DiscoverAgriculture/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4355,7 +4467,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi auto mechanic and repair content — real-world vocational skills.",
      "urls": [
       "https://www.youtube.com/@hitechecmrepairtrainingcenter/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4366,7 +4479,8 @@ window.PF_DATA.pigbang = {
      "desc": "India's leading agri-media — farming practices, schemes, success stories.",
      "urls": [
       "https://www.youtube.com/@kjkrishijagran/videos"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4377,7 +4491,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hindi carpentry and construction & many more real life trade skills.",
      "urls": [
       "https://www.youtube.com/@nsdcskills8971/playlists"
-     ]
+     ],
+     "price": "Free"
     }
    ]
   },
@@ -4393,7 +4508,8 @@ window.PF_DATA.pigbang = {
      "desc": "Gentle, beautifully made early-reading app from Duolingo. Fully free.",
      "urls": [
       "https://abc.duolingo.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4404,7 +4520,8 @@ window.PF_DATA.pigbang = {
      "desc": "Introduces algebra concepts to young kids through pure puzzle gameplay. Mind-blowing.",
      "urls": [
       "https://dragonbox.com/products/algebra-5"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4415,7 +4532,8 @@ window.PF_DATA.pigbang = {
      "desc": "Addition and subtraction turned into a treasure-hunting adventure. Ages 6–9.",
      "urls": [
       "https://dragonbox.com/products/big-numbers"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4426,7 +4544,8 @@ window.PF_DATA.pigbang = {
      "desc": "Multiplication fluency disguised as a monster-friendship adventure. Ages 5–9.",
      "urls": [
       "https://dragonbox.com/products/multiplication"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4437,7 +4556,8 @@ window.PF_DATA.pigbang = {
      "desc": "Playful place-value and counting through delightful puzzle mechanics. Ages 4–8.",
      "urls": [
       "https://dragonbox.com/products/numbers"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4448,7 +4568,8 @@ window.PF_DATA.pigbang = {
      "desc": "Kid-friendly drawing and colouring pad — huge sticker & stencil library.",
      "urls": [
       "https://drawingdesk.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4460,7 +4581,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://kids.nationalgeographic.com/",
       "https://kids.nationalgeographic.com/games"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4471,7 +4593,8 @@ window.PF_DATA.pigbang = {
      "desc": "Stories, phonics, rhymes, and reading activities. Free, ad-free, quality content.",
      "urls": [
       "https://learn.khanacademy.org/khan-academy-kids/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4482,7 +4605,8 @@ window.PF_DATA.pigbang = {
      "desc": "Program a robot by placing simple commands. Pure logic, no syntax. Ages 4–8.",
      "urls": [
       "https://lightbot.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4493,7 +4617,8 @@ window.PF_DATA.pigbang = {
      "desc": "Adorable number discovery app from Originator — counting, equations, early maths.",
      "urls": [
       "https://originatorkids.com/app/endless-numbers/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4504,7 +4629,8 @@ window.PF_DATA.pigbang = {
      "desc": "Vast library of gentle science, nature, and curiosity-friendly games. All free.",
      "urls": [
       "https://pbskids.org/games"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4515,7 +4641,8 @@ window.PF_DATA.pigbang = {
      "desc": "Playful web games for number sense, patterns, shapes, counting. From trusted PBS Kids.",
      "urls": [
       "https://pbskids.org/games/math"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4526,7 +4653,8 @@ window.PF_DATA.pigbang = {
      "desc": "Explore animals, habitats, and creature powers tied to the beloved show.",
      "urls": [
       "https://pbskids.org/wildkratts/games"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4538,7 +4666,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://play.google.com/store/apps/details?id=com.ns.ackjunior&hl=en_IN",
       "https://www.youtube.com/watch?v=0-NoBEApD9I&list=PLvv0ioDw7u2t2UsBw9YSEdPI3uSHEnWfg"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4550,7 +4679,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://play.google.com/store/apps/details?id=com.soniqmantra.kutuki&hl=en_IN",
       "https://www.youtube.com/@KutukiKids/playlists"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4561,7 +4691,8 @@ window.PF_DATA.pigbang = {
      "desc": "Speech-based AI tutor (Diya) that listens while kids read aloud and encourages them.",
      "urls": [
       "https://readalong.google.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4572,7 +4703,8 @@ window.PF_DATA.pigbang = {
      "desc": "Systematic phonics and reading path — levelled lessons and books. Ages 3–13.",
      "urls": [
       "https://readingeggs.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4583,7 +4715,8 @@ window.PF_DATA.pigbang = {
      "desc": "Gorgeous sandbox play for toddlers — cook, garden, build, visit friends. Ages 2–5.",
      "urls": [
       "https://sagomini.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4594,7 +4727,8 @@ window.PF_DATA.pigbang = {
      "desc": "Open-ended digital play — kitchen, hair salon, hospital, life. Pure imagination fuel.",
      "urls": [
       "https://tocaboca.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4605,7 +4739,8 @@ window.PF_DATA.pigbang = {
      "desc": "Point phone at sky — identify stars and planets. Astronomy made magical. Ages 4+.",
      "urls": [
       "https://vitotechnology.com/apps/star-walk-kids"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4616,7 +4751,8 @@ window.PF_DATA.pigbang = {
      "desc": "Complete early-learning curriculum — reading, art, songs, puzzles. Ages 2–8.",
      "urls": [
       "https://www.abcmouse.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4627,7 +4763,8 @@ window.PF_DATA.pigbang = {
      "desc": "Colouring, drawing, crafting — the beloved Crayola brand in app form.",
      "urls": [
       "https://www.crayola.com/create/creative-moment-ideas"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4638,7 +4775,8 @@ window.PF_DATA.pigbang = {
      "desc": "Playful early coding curriculum for K–5. Kids learn logic, loops, conditionals.",
      "urls": [
       "https://www.kodable.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4649,7 +4787,8 @@ window.PF_DATA.pigbang = {
      "desc": "MIT's coding app for ages 5–7 — drag blocks, make characters move, tell stories.",
      "urls": [
       "https://www.scratchjr.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4660,7 +4799,8 @@ window.PF_DATA.pigbang = {
      "desc": "Classic games from Sesame Street — counting, colors, nature, social learning.",
      "urls": [
       "https://www.sesamestreet.org/games"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4671,7 +4811,8 @@ window.PF_DATA.pigbang = {
      "desc": "Long-standing favourite for early reading and phonics practice. Ages 3–7.",
      "urls": [
       "https://www.starfall.com/h/ltr-classic/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4682,7 +4823,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free phonics adventure game from Usborne Foundation. Genuinely excellent.",
      "urls": [
       "https://www.teachyourmonster.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4693,7 +4835,8 @@ window.PF_DATA.pigbang = {
      "desc": "Music composition for young kids — loop animal sounds into tiny songs. Delightful.",
      "urls": [
       "https://www.yatatoy.com/loopimal"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4704,7 +4847,8 @@ window.PF_DATA.pigbang = {
      "desc": "English reading with Indian settings and relatable characters.",
      "urls": [
       "https://storyweaver.org.in/en/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4715,7 +4859,8 @@ window.PF_DATA.pigbang = {
      "desc": "Wit, social intelligence and reasoning through Indian court stories.",
      "urls": [
       "https://storyweaver.org.in/en/search?query=Tenali%20Raman"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4726,7 +4871,8 @@ window.PF_DATA.pigbang = {
      "desc": "Thousands of free Hindi stories for early readers — Pratham Books. Read online or download.",
      "urls": [
       "https://storyweaver.org.in/hi/stories"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4737,7 +4883,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fred Rogers on feelings, kindness, and the neighbourhood. The best life-skills TV ever.",
      "urls": [
       "https://www.misterrogers.org/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4749,7 +4896,8 @@ window.PF_DATA.pigbang = {
      "desc": "Beautiful geometry game teaching Euclid-style thinking through a storybook adventure.",
      "urls": [
       "https://dragonbox.com/products/elements"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4761,7 +4909,8 @@ window.PF_DATA.pigbang = {
      "desc": "Award-winning visual intro to fractions through ice-melting puzzle levels. Ages 5–12.",
      "urls": [
       "https://play.google.com/store/apps/details?id=air.com.ululab.SliceFractions"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4775,7 +4924,8 @@ window.PF_DATA.pigbang = {
       "https://play.google.com/store/apps/details?id=com.rovio.BadPiggies",
       "https://play.google.com/store/apps/details?id=com.rovio.baba&referrer=singular_click_id%3De8e74e18-b293-4af0-b042-298e4f5c63f1",
       "https://www.angrybirds.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4788,7 +4938,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://play.google.com/store/apps/details?id=net.trellisys.papertrell.shelfd78d4014e0644aecb2034389bc08ddb4&hl=en_IN",
       "https://www.youtube.com/watch?v=-2cz94ysyJ0&list=PLi1mn8TI3M4aZLNEwkXY_f6MtmIE1pRK8"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4800,7 +4951,8 @@ window.PF_DATA.pigbang = {
      "desc": "Create animations, games and stories; coding without fear.",
      "urls": [
       "https://scratch.mit.edu/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4812,7 +4964,8 @@ window.PF_DATA.pigbang = {
      "desc": "Impossible geometry, optical illusions, spatial reasoning — Escher-style architecture puzzles. Stunning.",
      "urls": [
       "https://store.steampowered.com/app/1927310"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4824,7 +4977,8 @@ window.PF_DATA.pigbang = {
      "desc": "Flags, maps, capitals — competitive quiz format. Great for GK + geography together.",
      "urls": [
       "https://world-geography-games.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4836,7 +4990,8 @@ window.PF_DATA.pigbang = {
      "desc": "Classic browser maths-logic puzzles. Genuinely fun, doesn't feel like study. Ages 6+.",
      "urls": [
       "https://www.coolmathgames.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4848,7 +5003,8 @@ window.PF_DATA.pigbang = {
      "desc": "Tilting Point's country-shape game — kids absorb geography by play, not memorization.",
      "urls": [
       "https://www.dan-russell-pinson.com/our-games/stack-the-countries/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4860,7 +5016,8 @@ window.PF_DATA.pigbang = {
      "desc": "Reverse Hindi learning for kids more comfortable in English. Gamified daily streaks.",
      "urls": [
       "https://www.duolingo.com/course/hi/en/Learn-Hindi"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4872,7 +5029,8 @@ window.PF_DATA.pigbang = {
      "desc": "Cut/assemble maps to remember states, rivers and directions physically.",
      "urls": [
       "https://www.mapsofindia.com/maps/india/india-political-map.htm"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4884,7 +5042,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fantasy RPG — you battle monsters by solving maths. Curriculum-aligned Grades 1–5.",
      "urls": [
       "https://www.prodigygame.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4896,7 +5055,8 @@ window.PF_DATA.pigbang = {
      "desc": "Plan Kota-to-Kanyakumari style routes and identify states, rivers and language zones.",
      "urls": [
       "https://www.railyatri.in/trains-between-stations"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4908,7 +5068,8 @@ window.PF_DATA.pigbang = {
      "desc": "300+ map quizzes — great for older primary kids curious about countries and flags.",
      "urls": [
       "https://www.seterra.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4920,7 +5081,8 @@ window.PF_DATA.pigbang = {
      "desc": "History, world capitals, flags — fast-paced quiz games. Wide variety of topics.",
      "urls": [
       "https://www.sheppardsoftware.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4932,7 +5094,8 @@ window.PF_DATA.pigbang = {
      "desc": "Trace where vegetables, grains and spices came from; geography becomes daily life.",
      "urls": [
       "https://agmarknet.gov.in/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4944,7 +5107,8 @@ window.PF_DATA.pigbang = {
      "desc": "Official NCERT Extra Fun Books",
      "urls": [
       "https://epathshala.nic.in/process.php?id=students&type=Supplementry-Books&ln=en"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4956,7 +5120,8 @@ window.PF_DATA.pigbang = {
      "desc": "Digital children's library — 40,000+ books, audiobooks, read-to-me. Ages 4–12.",
      "urls": [
       "https://www.getepic.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -4968,7 +5133,8 @@ window.PF_DATA.pigbang = {
      "desc": "Angles, fractions and symmetry through paper folding.",
      "urls": [
       "https://www.mathigon.org/origami"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4980,7 +5146,8 @@ window.PF_DATA.pigbang = {
      "desc": "Weekly puzzles create competition and number play without textbook pressure.",
      "urls": [
       "https://www.mathsisfun.com/puzzles/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -4993,7 +5160,8 @@ window.PF_DATA.pigbang = {
      "desc": "200+ hrs of STEM curriculum hidden inside Minecraft. Build circuits, ecosystems, history.",
      "urls": [
       "https://education.minecraft.net"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5006,7 +5174,8 @@ window.PF_DATA.pigbang = {
      "desc": "High-quality digital comic archives. Excellent for developing a reading habit while building formal English vocabulary through historical epics.",
      "urls": [
       "https://play.google.com/store/apps/details?id=com.ns.ack&hl=en_IN"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5019,7 +5188,8 @@ window.PF_DATA.pigbang = {
      "desc": "Exponential growth, number theory — addictive math logic game. Surprisingly deep for number systems.",
      "urls": [
       "https://play2048.co"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5033,7 +5203,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "http://sudoku.com",
       "https://sudoku.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5046,7 +5217,8 @@ window.PF_DATA.pigbang = {
      "desc": "Guess the country from its silhouette. Daily challenge, very addictive geography game.",
      "urls": [
       "https://worldle.teuteuf.fr"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5059,7 +5231,8 @@ window.PF_DATA.pigbang = {
      "desc": "Drop into Google Street View anywhere on Earth — guess the country/city. Greatest geography game ever made.",
      "urls": [
       "https://www.geoguessr.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5072,7 +5245,8 @@ window.PF_DATA.pigbang = {
      "desc": "Engineering, physics, resource management, architecture, ecology — everything hidden inside a block game.",
      "urls": [
       "https://www.minecraft.net"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5085,7 +5259,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free computer science and AI courses suitable for school learners.",
      "urls": [
       "https://code.org/hi/global"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5098,7 +5273,8 @@ window.PF_DATA.pigbang = {
      "desc": "Algebra tiles, fractions, geometry and probability become objects students can move and test.",
      "urls": [
       "https://mathigon.org/polypad"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5111,7 +5287,8 @@ window.PF_DATA.pigbang = {
      "desc": "Explore Indian science museum galleries from home.",
      "urls": [
       "https://ncsm.gov.in/gallery/virtual-gallery-exhibition"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5124,7 +5301,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real news rewritten at different reading levels. Current events + comprehension.",
      "urls": [
       "https://newsela.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5137,7 +5315,8 @@ window.PF_DATA.pigbang = {
      "desc": "",
      "urls": [
       "https://www.incredibleindia.gov.in/en"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5151,7 +5330,8 @@ window.PF_DATA.pigbang = {
      "desc": "Live quiz battles on any topic. Create your own or join public GK quizzes. Best for group play.",
      "urls": [
       "https://kahoot.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5165,7 +5345,8 @@ window.PF_DATA.pigbang = {
      "desc": "Self-paced and live quizzes — often cleaner UX than Kahoot for practice.",
      "urls": [
       "https://quizizz.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5179,7 +5360,8 @@ window.PF_DATA.pigbang = {
      "desc": "Short-video discussions — low-stakes speaking practice for language & seminar classes.",
      "urls": [
       "https://info.flip.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5193,7 +5375,8 @@ window.PF_DATA.pigbang = {
      "desc": "Chess trains calculation, planning and pattern recognition without looking like homework.",
      "urls": [
       "https://lichess.org/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5207,7 +5390,8 @@ window.PF_DATA.pigbang = {
      "desc": "Language learning turned into a game — free, addictive, surprisingly effective.",
      "urls": [
       "https://www.duolingo.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5221,7 +5405,8 @@ window.PF_DATA.pigbang = {
      "desc": "",
      "urls": [
       "https://artsandculture.google.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5235,7 +5420,8 @@ window.PF_DATA.pigbang = {
      "desc": "Monuments, crafts, museums and places explored visually.",
      "urls": [
       "https://artsandculture.google.com/entity/india/m03rk0"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5249,7 +5435,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fly around the planet — mountains, oceans, cities. Pure wonder. No login needed.",
      "urls": [
       "https://earth.google.com/web"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5263,7 +5450,8 @@ window.PF_DATA.pigbang = {
      "desc": "Identify any plant/animal with your camera. Real citizen science used by biologists worldwide.",
      "urls": [
       "https://www.inaturalist.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5276,7 +5464,8 @@ window.PF_DATA.pigbang = {
      "desc": "Sorting, binary, algorithms and data through physical games.",
      "urls": [
       "https://csunplugged.org/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5289,7 +5478,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://storyweaver.org.in/hi",
       "https://storyweaver.org.in/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5300,7 +5490,8 @@ window.PF_DATA.pigbang = {
      "desc": "Algebra concepts taught through an addictive puzzle game. Feels like a video game, not school.",
      "urls": [
       "https://dragonbox.com/products/algebra-12"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5311,7 +5502,8 @@ window.PF_DATA.pigbang = {
      "desc": "Games, books, comics for grades 6–8. Mix of math, vocabulary, and general topics.",
      "urls": [
       "https://www.funbrain.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5322,7 +5514,8 @@ window.PF_DATA.pigbang = {
      "desc": "iPad coding for kids — drag-drop to make real apps and games. Ages 9–13.",
      "urls": [
       "https://www.gethopscotch.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5333,7 +5526,8 @@ window.PF_DATA.pigbang = {
      "desc": "Block coding → Python/JavaScript pathway. One of few apps where a 13-year-old can reach real coding.",
      "urls": [
       "https://www.tynker.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5344,7 +5538,8 @@ window.PF_DATA.pigbang = {
      "desc": "Encyclopedia + flashcards + fun facts + homework help. Trusted reference for Class 6–8.",
      "urls": [
       "https://www.factmonster.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5355,7 +5550,8 @@ window.PF_DATA.pigbang = {
      "desc": "Classic + contemporary literature with comprehension questions. Grade 9–12 levelled.",
      "urls": [
       "https://www.commonlit.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5367,7 +5563,8 @@ window.PF_DATA.pigbang = {
      "desc": "An RPG-style exploration game where you control your hero's movements, combat, and strategies entirely via Python or JavaScript code.",
      "urls": [
       "https://codecombat.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5380,7 +5577,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://knowledge.carolina.com/cell-craft/",
       "http://www.cellcraftgame.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5392,7 +5590,8 @@ window.PF_DATA.pigbang = {
      "desc": "Mobile rocket builder with realistic physics — orbits, fuel, staging. Free and incredibly deep.",
      "urls": [
       "https://play.google.com/store/apps/details?id=com.StefMorojna.SpaceflightSimulator"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5404,7 +5603,8 @@ window.PF_DATA.pigbang = {
      "desc": "Complete interactive periodic table — properties, reactions, history of each element.",
      "urls": [
       "https://play.google.com/store/apps/details?id=mendeleev.redlime"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5416,7 +5616,8 @@ window.PF_DATA.pigbang = {
      "desc": "Flashcard sets + matching games for every topic. Student-made content for every Class 6–8 subject.",
      "urls": [
       "https://quizlet.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5428,7 +5629,8 @@ window.PF_DATA.pigbang = {
      "desc": "Student-made flashcard sets for Hindi vyakaran, alankar, sandhi, samas — Class 9–12.",
      "urls": [
       "https://quizlet.com/subject/hindi/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5440,7 +5642,8 @@ window.PF_DATA.pigbang = {
      "desc": "AR star map — point phone at sky, identify stars, planets, constellations live in real-time.",
      "urls": [
       "https://starwalk.space"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5452,7 +5655,8 @@ window.PF_DATA.pigbang = {
      "desc": "Evolve from microbe to space civilization — biology, ecology, evolution, astronomy across 5 stages.",
      "urls": [
       "https://store.steampowered.com/app/17390/Spore"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5464,7 +5668,8 @@ window.PF_DATA.pigbang = {
      "desc": "Explore procedurally generated galaxies — astronomy, chemistry, ecosystems, alien biology. Space exploration.",
      "urls": [
       "https://store.steampowered.com/app/275850"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5476,7 +5681,8 @@ window.PF_DATA.pigbang = {
      "desc": "WW1 adventure game based on real letters and events. Deeply moving history experience.",
      "urls": [
       "https://store.steampowered.com/app/277290"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5488,7 +5694,8 @@ window.PF_DATA.pigbang = {
      "desc": "Design subway systems for cities — urban planning, graph theory, optimization. Math + geography + design.",
      "urls": [
       "https://store.steampowered.com/app/287980"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5500,7 +5707,8 @@ window.PF_DATA.pigbang = {
      "desc": "3D puzzle boxes with intricate mechanical logic — spatial reasoning & problem solving at its most beautiful.",
      "urls": [
       "https://store.steampowered.com/app/288160"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5512,7 +5720,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real terminal hacking — actual Linux commands, file systems, networking. Best coding intro game ever.",
      "urls": [
       "https://store.steampowered.com/app/365450"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5524,7 +5733,8 @@ window.PF_DATA.pigbang = {
      "desc": "Program a little worker using assembly logic — algorithms, loops, conditionals. No syntax needed.",
      "urls": [
       "https://store.steampowered.com/app/375820"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5536,7 +5746,8 @@ window.PF_DATA.pigbang = {
      "desc": "Jules Verne's Around the World in 80 Days as interactive novel — geography, culture, language choices.",
      "urls": [
       "https://store.steampowered.com/app/381780"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5548,7 +5759,8 @@ window.PF_DATA.pigbang = {
      "desc": "Guide a species through natural selection — genetics, adaptation, survival. Evolution as simulation.",
      "urls": [
       "https://store.steampowered.com/app/535530"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5560,7 +5772,8 @@ window.PF_DATA.pigbang = {
      "desc": "Archaeological language mystery — decode ancient script, piece together civilizations. Linguistics + history.",
      "urls": [
       "https://store.steampowered.com/app/774201"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5572,7 +5785,8 @@ window.PF_DATA.pigbang = {
      "desc": "Learn core programming logic and computational thinking by directing corporate office workers using assembly-like instructions.",
      "urls": [
       "https://tomorrowcorporation.com/humanresourcemachine"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5584,7 +5798,8 @@ window.PF_DATA.pigbang = {
      "desc": "The definitive idle tycoon game that intuitively demonstrates the power of compounding growth, system scaling, and automation investing.",
      "urls": [
       "https://www.hyperhippo.com/games/adventure-capitalist/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5596,7 +5811,8 @@ window.PF_DATA.pigbang = {
      "desc": "Government + history through games — build a nation, argue in court, make laws.",
      "urls": [
       "https://www.icivics.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5608,7 +5824,8 @@ window.PF_DATA.pigbang = {
      "desc": "Historical simulation — live as real characters through key historical events. Immersive.",
      "urls": [
       "https://www.mission-us.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5620,7 +5837,8 @@ window.PF_DATA.pigbang = {
      "desc": "Place events correctly on a historical timeline — addictive card-game style trivia.",
      "urls": [
       "https://www.timeline-game.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5632,7 +5850,8 @@ window.PF_DATA.pigbang = {
      "desc": "India's answer to Google Earth. Middle schoolers can track real-time weather data, analyze local Indian terrain changes, and explore satellite imagery.",
      "urls": [
       "https://bhuvan.nrsc.gov.in"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5644,7 +5863,8 @@ window.PF_DATA.pigbang = {
      "desc": "Visualize real NASA climate data — CO2 levels, sea rise, temperature, ice coverage. Actual satellite data.",
      "urls": [
       "https://climate.nasa.gov/interactives/climate-time-machine"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5656,7 +5876,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real-time 3D universe explorer — black holes, exoplanets, space missions. Jaw-dropping.",
      "urls": [
       "https://eyes.nasa.gov"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5668,7 +5889,8 @@ window.PF_DATA.pigbang = {
      "desc": "Read maps and guess monsoon, clouds, wind and temperature patterns.",
      "urls": [
       "https://mausam.imd.gov.in/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5680,7 +5902,8 @@ window.PF_DATA.pigbang = {
      "desc": "Separate history, metaphor, exaggeration and moral meaning in stories.",
      "urls": [
       "https://www.amarchitrakatha.com/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5692,7 +5915,8 @@ window.PF_DATA.pigbang = {
      "desc": "Most beautiful graphing calculator ever. Visualize any function, inequality, or equation instantly.",
      "urls": [
       "https://www.desmos.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5704,7 +5928,8 @@ window.PF_DATA.pigbang = {
      "desc": "Grammar practice through fun sentences about things students love — celebs, sports.",
      "urls": [
       "https://www.noredink.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5716,7 +5941,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real science fair project guides + virtual experiments. Perfect for Class 6–8 projects.",
      "urls": [
       "https://www.sciencebuddies.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5728,7 +5954,8 @@ window.PF_DATA.pigbang = {
      "desc": "Excellent browser-based sandbox to design 3D models, wire virtual Arduino circuits, and write block code to simulate real-world physics and robotics.",
      "urls": [
       "https://www.tinkercad.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5740,7 +5967,8 @@ window.PF_DATA.pigbang = {
      "desc": "Batteries, LEDs, switches and Arduino logic become safe browser experiments.",
      "urls": [
       "https://www.tinkercad.com/circuits"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5753,7 +5981,8 @@ window.PF_DATA.pigbang = {
      "desc": "Collect Hadoti/Marwari/Mewari or local words and compare with standard Hindi.",
      "urls": [
       "https://bharatavani.in/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5766,7 +5995,8 @@ window.PF_DATA.pigbang = {
      "desc": "Interactive maths activities — now free via Amplify. Graphing lessons, polygraph games.",
      "urls": [
       "https://teacher.desmos.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5779,7 +6009,8 @@ window.PF_DATA.pigbang = {
      "desc": "Problem-solving in Math, logic & science through interactive storytelling.",
      "urls": [
       "https://brilliant.org"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5792,7 +6023,8 @@ window.PF_DATA.pigbang = {
      "desc": "A brilliant puzzle game covering machine learning, neural networks, big data, and AI systems. Your goal: code a system to translate cat language.",
      "urls": [
       "https://luden.io/wtl/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5806,7 +6038,8 @@ window.PF_DATA.pigbang = {
      "urls": [
       "https://play.google.com/store/apps/details?id=com.miniclip.plagueinc",
       "https://www.ndemiccreations.com/en/22-plague-inc"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5819,7 +6052,8 @@ window.PF_DATA.pigbang = {
      "desc": "Interactive visual games focusing on coordinate geometry, mental algebra, and 3D shapes using spatial puzzles instead of rote formulas.",
      "urls": [
       "https://play.google.com/store/search?q=anki&c=apps&hl=en_IN"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5832,7 +6066,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real-time strategy + resource management + multitasking. Builds executive function and rapid decision-making.",
      "urls": [
       "https://starcraft2.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -5845,7 +6080,8 @@ window.PF_DATA.pigbang = {
      "desc": "500+ interconnected logic puzzles — lateral thinking, pattern recognition, epistemology. Deep philosophy of knowing.",
      "urls": [
       "https://store.steampowered.com/app/210970"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5858,7 +6094,8 @@ window.PF_DATA.pigbang = {
      "desc": "Build and manage a city — urban planning, taxation, zoning, public goods, budget. Commerce + economics in action.",
      "urls": [
       "https://store.steampowered.com/app/255710"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5871,7 +6108,8 @@ window.PF_DATA.pigbang = {
      "desc": "Build empire from Stone Age to Space Age — history, geography, diplomacy, economics. Ultimate history game.",
      "urls": [
       "https://store.steampowered.com/app/289070"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5884,7 +6122,8 @@ window.PF_DATA.pigbang = {
      "desc": "Defuse a bomb using a manual — communication, logic, teamwork, pressure. Great in pairs.",
      "urls": [
       "https://store.steampowered.com/app/341800"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5897,7 +6136,8 @@ window.PF_DATA.pigbang = {
      "desc": "Build and automate a factory — engineering, logistics, optimization, systems thinking. Deeply educational.",
      "urls": [
       "https://store.steampowered.com/app/427520"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5910,7 +6150,8 @@ window.PF_DATA.pigbang = {
      "desc": "Drag-and-drop machine learning + AI concepts. Build neural networks to translate cat language.",
      "urls": [
       "https://store.steampowered.com/app/619150"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5923,7 +6164,8 @@ window.PF_DATA.pigbang = {
      "desc": "Puzzle game built on real physics — momentum, velocity, angles. Valve's masterpiece. Teaches without telling.",
      "urls": [
       "https://store.steampowered.com/app/620/Portal_2"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5936,7 +6178,8 @@ window.PF_DATA.pigbang = {
      "desc": "Medieval military history — Mongols, Vikings, Japanese, Aztecs. Real civilizations, real battles.",
      "urls": [
       "https://store.steampowered.com/app/813780"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5949,7 +6192,8 @@ window.PF_DATA.pigbang = {
      "desc": "Simulate the universe — collide planets, create star systems, test gravity. Physics simulator as god game.",
      "urls": [
       "https://universesandbox.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5962,7 +6206,8 @@ window.PF_DATA.pigbang = {
      "desc": "Build rockets & launch spacecraft — real orbital mechanics, gravity, fuel physics. Used by NASA engineers.",
      "urls": [
       "https://www.kerbalspaceprogram.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5975,7 +6220,8 @@ window.PF_DATA.pigbang = {
      "desc": "Design pathogens, model epidemic spread — epidemiology, mutation, immune response. Dangerously accurate biology.",
      "urls": [
       "https://www.ndemiccreations.com/en/22-plague-inc"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -5988,7 +6234,8 @@ window.PF_DATA.pigbang = {
      "desc": "Vocabulary and deduction in one tiny daily game.",
      "urls": [
       "https://www.nytimes.com/games/wordle/index.html"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6001,7 +6248,8 @@ window.PF_DATA.pigbang = {
      "desc": "Thousands of trivia quizzes — science, geography, pop culture, history. Endlessly browsable.",
      "urls": [
       "https://www.sporcle.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6014,7 +6262,8 @@ window.PF_DATA.pigbang = {
      "desc": "Immersive 3D interactive walkthroughs hosted by the Archaeological Survey of India. Explore the layouts of Hampi, Ajanta, and Harappan cities.",
      "urls": [
       "https://asi.nic.in"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6027,7 +6276,8 @@ window.PF_DATA.pigbang = {
      "desc": "Virtual science labs — gravity, waves, electricity, chemical reactions. University of Colorado.",
      "urls": [
       "https://phet.colorado.edu"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6040,7 +6290,8 @@ window.PF_DATA.pigbang = {
      "desc": "Make Python quizzes, calculators, text adventures and mini games.",
      "urls": [
       "https://replit.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6053,7 +6304,8 @@ window.PF_DATA.pigbang = {
      "desc": "All-in-one graphing, geometry, calculus, algebra tool. Used by students worldwide. Browser + mobile.",
      "urls": [
       "https://www.geogebra.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6067,7 +6319,8 @@ window.PF_DATA.pigbang = {
      "desc": "Dozens of real science projects — classify galaxies, transcribe letters, track wildlife.",
      "urls": [
       "https://www.zooniverse.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6081,7 +6334,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free English courses, podcasts, workplace vocabulary — globally trusted.",
      "urls": [
       "https://learnenglish.britishcouncil.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6095,7 +6349,8 @@ window.PF_DATA.pigbang = {
      "desc": "Design without being a designer — templates for everything, free tier plentiful.",
      "urls": [
       "https://www.canva.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6109,7 +6364,8 @@ window.PF_DATA.pigbang = {
      "desc": "Interactive browser-based coding lessons — Python, HTML, SQL. Good free tier.",
      "urls": [
       "https://www.codecademy.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6122,7 +6378,8 @@ window.PF_DATA.pigbang = {
      "desc": "Master CSS Grid layout structures by writing frontend code to water, weed, and grow a vibrant virtual carrot garden.",
      "urls": [
       "https://cssgridgarden.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6135,7 +6392,8 @@ window.PF_DATA.pigbang = {
      "desc": "A highly engaging puzzle game that teaches CSS Flexbox alignment principles by guiding colorful frogs to their matching lilypads.",
      "urls": [
       "https://flexboxfroggy.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6147,7 +6405,8 @@ window.PF_DATA.pigbang = {
      "desc": "An innovative rogue-like game where you survive levels by directly modifying the game's actual underlying JavaScript source code.",
      "urls": [
       "https://alexnisnevich.github.io/untrusted/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6159,7 +6418,8 @@ window.PF_DATA.pigbang = {
      "desc": "Program elevators to transport building passengers efficiently using JavaScript, optimizing for speed and heavy traffic algorithms.",
      "urls": [
       "https://play.elevatorsaga.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6171,7 +6431,8 @@ window.PF_DATA.pigbang = {
      "desc": "Medieval dynasty simulation — feudalism, religion, politics. History textbook as a soap opera strategy game.",
      "urls": [
       "https://store.steampowered.com/app/1158310"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6183,7 +6444,8 @@ window.PF_DATA.pigbang = {
      "desc": "Run a country — set tax, healthcare, education, defense policy. Political science + economics + governance.",
      "urls": [
       "https://store.steampowered.com/app/1410890"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6195,7 +6457,8 @@ window.PF_DATA.pigbang = {
      "desc": "Be an immigration officer in Soviet-era country — political science, ethics, bureaucracy. Brilliant.",
      "urls": [
       "https://store.steampowered.com/app/239030"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6207,7 +6470,8 @@ window.PF_DATA.pigbang = {
      "desc": "Philosophy of mind, consciousness, AI ethics — Gödel's incompleteness through first-person puzzle philosophy.",
      "urls": [
       "https://store.steampowered.com/app/257510"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6219,7 +6483,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real-time commodity market simulation — supply/demand, price elasticity, market manipulation. Economics as esport.",
      "urls": [
       "https://store.steampowered.com/app/271790"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6231,7 +6496,8 @@ window.PF_DATA.pigbang = {
      "desc": "Survive as a civilian in wartime — ethics, history of conflict. Powerful emotional impact. Class 10–12.",
      "urls": [
       "https://store.steampowered.com/app/282070"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6243,7 +6509,8 @@ window.PF_DATA.pigbang = {
      "desc": "Play as a government surveillance analyst — digital rights, civil liberties, ethics of data. Political theory in action.",
      "urls": [
       "https://store.steampowered.com/app/491950"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6255,7 +6522,8 @@ window.PF_DATA.pigbang = {
      "desc": "Program real circuits using assembly-like code. Electronics + programming. Serious Class 11–12 CS.",
      "urls": [
       "https://store.steampowered.com/app/504210"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6267,7 +6535,8 @@ window.PF_DATA.pigbang = {
      "desc": "19th century grand strategy — industrialization, trade, colonialism, class struggle. History + economics combined.",
      "urls": [
       "https://store.steampowered.com/app/529340"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6279,7 +6548,8 @@ window.PF_DATA.pigbang = {
      "desc": "Bond atoms, build molecules, solve chemical reactions through insanely clever puzzles. Best chem game ever.",
      "urls": [
       "https://store.steampowered.com/app/92800"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6291,7 +6561,8 @@ window.PF_DATA.pigbang = {
      "desc": "Stock market simulation with virtual money — learn trading, portfolio management, market dynamics. Free.",
      "urls": [
       "https://www.investopedia.com/simulator"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6303,7 +6574,8 @@ window.PF_DATA.pigbang = {
      "desc": "University-level virtual chemistry & biology lab simulations. Real experiments done safely.",
      "urls": [
       "https://www.labster.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6315,7 +6587,8 @@ window.PF_DATA.pigbang = {
      "desc": "Learn Python, C++, JavaScript, SQL through game-style lessons + challenges. Class 10–12.",
      "urls": [
       "https://www.sololearn.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6327,7 +6600,8 @@ window.PF_DATA.pigbang = {
      "desc": "3D interactive human anatomy — all organ systems, rotational views, animations. Class 11–12 Bio & Medical Colleges.",
      "urls": [
       "https://www.visiblebody.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6339,7 +6613,8 @@ window.PF_DATA.pigbang = {
      "desc": "World's best intro to Computer Science. Free. Life-changing for Class 11–12.",
      "urls": [
       "https://cs50.harvard.edu/x"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6352,7 +6627,8 @@ window.PF_DATA.pigbang = {
      "desc": "Adaptive vocabulary — tracks weakness, retests. GRE/IELTS level vocab building through a genuinely fun game.",
      "urls": [
       "https://www.vocabulary.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6365,7 +6641,8 @@ window.PF_DATA.pigbang = {
      "desc": "Solve any math problem with full step-by-step working. The ultimate computational engine.",
      "urls": [
       "https://www.wolframalpha.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6379,7 +6656,8 @@ window.PF_DATA.pigbang = {
      "desc": "Markdown-based personal knowledge base — ideal for long-form literature notes.",
      "urls": [
       "https://obsidian.md"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6393,7 +6671,8 @@ window.PF_DATA.pigbang = {
      "desc": "Academic writing grammar and style assistant — can dramatically tighten drafts.",
      "urls": [
       "https://www.grammarly.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6407,7 +6686,8 @@ window.PF_DATA.pigbang = {
      "desc": "All-in-one workspace — many PhDs run their thesis project management from here.",
      "urls": [
       "https://www.notion.so"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6420,7 +6700,8 @@ window.PF_DATA.pigbang = {
      "desc": "A text-based financial survival simulation forcing tough decisions on low-income constraints, teaching budgeting and crisis management.",
      "urls": [
       "http://playspent.org/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6433,7 +6714,8 @@ window.PF_DATA.pigbang = {
      "desc": "An online CSS styling arena where players compete to replicate visual shapes using the shortest, cleanest HTML/CSS code possible.",
      "urls": [
       "https://cssbattle.dev/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6446,7 +6728,8 @@ window.PF_DATA.pigbang = {
      "desc": "Master SQL query mechanics by investigating a crime database to track down a murderer in a fictional city using real commands.",
      "urls": [
       "https://mystery.knightlab.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6459,7 +6742,8 @@ window.PF_DATA.pigbang = {
      "desc": "An elite business sim where you scale from zero to managing massive retail stores, web agencies, logistics, and real estate in NYC.",
      "urls": [
       "https://www.bigambitionsgame.com/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6472,7 +6756,8 @@ window.PF_DATA.pigbang = {
      "desc": "Turn advanced coding practice into a competitive multiplayer video game. Supports over 25 major programming languages.",
      "urls": [
       "https://www.codingame.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6483,8 +6768,8 @@ window.PF_DATA.pigbang = {
      "subject": "Personal Finance",
      "name": "Cashflow Classic",
      "desc": "Robert Kiyosaki's official financial literacy game. Teaches cash flow mechanics, asset vs liability management, and investing logic.",
-     "urls": [
-     ]
+     "urls": [],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6497,7 +6782,8 @@ window.PF_DATA.pigbang = {
      "desc": "An advanced economic simulator with a living player-driven market. Optimize manufacturing, source raw inputs, and trade with players.",
      "urls": [
       "https://www.simcompanies.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6510,7 +6796,8 @@ window.PF_DATA.pigbang = {
      "desc": "World-class free 3D software — animation, modelling, sculpting, film-grade VFX.",
      "urls": [
       "https://www.blender.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6523,7 +6810,8 @@ window.PF_DATA.pigbang = {
      "desc": "Industry-standard UI/UX design tool. Free tier is genuinely generous.",
      "urls": [
       "https://www.figma.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6536,7 +6824,8 @@ window.PF_DATA.pigbang = {
      "desc": "Reference-style tutorials for every web-dev language. The \"just-enough\" resource.",
      "urls": [
       "https://www.w3schools.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6548,7 +6837,8 @@ window.PF_DATA.pigbang = {
      "desc": "Preprint server for physics, math, CS, biology — read papers before they publish.",
      "urls": [
       "https://arxiv.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6560,7 +6850,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real satellite datasets — climate, oceanography, land use, atmospheric science. Graduate research data.",
      "urls": [
       "https://earthdata.nasa.gov"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6572,7 +6863,8 @@ window.PF_DATA.pigbang = {
      "desc": "AI research assistant — answers questions by searching papers and extracting data.",
      "urls": [
       "https://elicit.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6584,7 +6876,8 @@ window.PF_DATA.pigbang = {
      "desc": "Consortium access to e-journals for Indian universities — INFLIBNET initiative.",
      "urls": [
       "https://ess.inflibnet.ac.in"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6596,7 +6889,8 @@ window.PF_DATA.pigbang = {
      "desc": "Model hub for ML — pretrained models, datasets, Spaces demos. AI PhD home base.",
      "urls": [
       "https://huggingface.co"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6608,7 +6902,8 @@ window.PF_DATA.pigbang = {
      "desc": "ML papers linked to runnable code + benchmark leaderboards. CS/AI PhD essential.",
      "urls": [
       "https://paperswithcode.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6620,7 +6915,8 @@ window.PF_DATA.pigbang = {
      "desc": "See how any paper is cited — supporting, contrasting, or just mentioning.",
      "urls": [
       "https://scite.ai"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6632,7 +6928,8 @@ window.PF_DATA.pigbang = {
      "desc": "Elsevier's reference manager — PDF library, annotations, citation export.",
      "urls": [
       "https://www.mendeley.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6644,7 +6941,8 @@ window.PF_DATA.pigbang = {
      "desc": "Network for researchers — share papers, request full-texts, track metrics.",
      "urls": [
       "https://www.researchgate.net"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6656,7 +6954,8 @@ window.PF_DATA.pigbang = {
      "desc": "Elsevier's major citation index — usually free to Indian scholars via institution.",
      "urls": [
       "https://www.scopus.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6668,7 +6967,8 @@ window.PF_DATA.pigbang = {
      "desc": "AI-powered paper search with TL;DRs, citation intelligence, and reading paths.",
      "urls": [
       "https://www.semanticscholar.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6680,7 +6980,8 @@ window.PF_DATA.pigbang = {
      "desc": "Social Science Research Network — preprints for economics, law, management.",
      "urls": [
       "https://www.ssrn.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6691,7 +6992,8 @@ window.PF_DATA.pigbang = {
      "desc": "Your permanent researcher ID — essential for journal submissions and grants.",
      "urls": [
       "https://orcid.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6702,7 +7004,8 @@ window.PF_DATA.pigbang = {
      "desc": "India's national thesis repository — 6 lakh+ Indian PhD theses in open access.",
      "urls": [
       "https://shodhganga.inflibnet.ac.in"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6714,7 +7017,8 @@ window.PF_DATA.pigbang = {
      "desc": "Preregistration, data hosting, project management for reproducible science.",
      "urls": [
       "https://osf.io"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6725,7 +7029,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free LMS from Google — assignments, grading, materials. Essential digital classroom.",
      "urls": [
       "https://classroom.google.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6736,7 +7041,8 @@ window.PF_DATA.pigbang = {
      "desc": "Interactive slide lessons with embedded quizzes, polls, virtual tours. Paid but worth it.",
      "urls": [
       "https://nearpod.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6747,7 +7053,8 @@ window.PF_DATA.pigbang = {
      "desc": "Digital pinboards for group work, exit tickets, bilingual sharing. Huge free value.",
      "urls": [
       "https://padlet.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6758,7 +7065,8 @@ window.PF_DATA.pigbang = {
      "desc": "Research-backed visible-thinking routines, PZ Classroom materials. Free to use.",
      "urls": [
       "https://pz.harvard.edu"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6769,7 +7077,8 @@ window.PF_DATA.pigbang = {
      "desc": "Student portfolios — kids record learning for parents and the teacher. K–5 favourite.",
      "urls": [
       "https://web.seesaw.me"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6780,7 +7089,8 @@ window.PF_DATA.pigbang = {
      "desc": "Quick interactive worksheet generator — match, quiz, wheel-spin. Saves hours.",
      "urls": [
       "https://wordwall.net"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6791,7 +7101,8 @@ window.PF_DATA.pigbang = {
      "desc": "Beautiful worksheets, presentations, classroom visuals — free for verified teachers.",
      "urls": [
       "https://www.canva.com/education/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6802,7 +7113,8 @@ window.PF_DATA.pigbang = {
      "desc": "Policy briefs, research on foundational literacy/numeracy, NEP 2020 implementation.",
      "urls": [
       "https://www.centralsquarefoundation.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6813,7 +7125,8 @@ window.PF_DATA.pigbang = {
      "desc": "Classroom communication, behaviour points, parent updates. Hugely popular K–5.",
      "urls": [
       "https://www.classdojo.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6824,7 +7137,8 @@ window.PF_DATA.pigbang = {
      "desc": "George Lucas Foundation's teacher-facing magazine — brilliant classroom ideas daily.",
      "urls": [
       "https://www.edutopia.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6835,7 +7149,8 @@ window.PF_DATA.pigbang = {
      "desc": "Live audience polls, word clouds, quizzes — fantastic for secondary & teacher-PD sessions.",
      "urls": [
       "https://www.mentimeter.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6846,7 +7161,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fellowship, alumni network, classroom resources by teachers in low-income schools.",
      "urls": [
       "https://www.teachforindia.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6857,7 +7173,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free lesson plans, PD courses, webinars for English teachers worldwide.",
      "urls": [
       "https://www.teachingenglish.org.uk/training"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6869,7 +7186,8 @@ window.PF_DATA.pigbang = {
      "desc": "The gold standard of corporate simulators. Used by business schools to model marketing, supply chains, manufacturing, and real estate.",
      "urls": [
       "https://www.capitalismlab.com/"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6881,7 +7199,8 @@ window.PF_DATA.pigbang = {
      "desc": "Industry-standard molecular drawing — draw structures, predict properties, 3D conformations. Every MSc Chem uses.",
      "urls": [
       "https://revvitysignals.com/products/research/chemdraw"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6893,7 +7212,8 @@ window.PF_DATA.pigbang = {
      "desc": "Industry-standard financial data terminal — live markets, equity research, fixed income, derivatives. MBA essential.",
      "urls": [
       "https://www.bloomberg.com/professional/solution/bloomberg-terminal"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6905,7 +7225,8 @@ window.PF_DATA.pigbang = {
      "desc": "Global business, economics, geopolitics — essential reading for MBA. The most credible business publication.",
      "urls": [
       "https://www.economist.com"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6918,7 +7239,8 @@ window.PF_DATA.pigbang = {
      "desc": "Map neurons in the retina — MIT Seung Lab. Contribute to real brain-mapping research.",
      "urls": [
       "https://eyewire.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6931,7 +7253,8 @@ window.PF_DATA.pigbang = {
      "desc": "Fold real proteins — actual scientific game used by researchers. Citizen science + biochemistry.",
      "urls": [
       "https://fold.it"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6944,7 +7267,8 @@ window.PF_DATA.pigbang = {
      "desc": "Parallel assembly language puzzles — algorithms, instruction scheduling. For serious CS theory researchers.",
      "urls": [
       "https://store.steampowered.com/app/370360"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -6957,7 +7281,8 @@ window.PF_DATA.pigbang = {
      "desc": "Trace real neurons in 3D — Allen Institute neuroscience citizen science.",
      "urls": [
       "https://www.mozak.science"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6970,7 +7295,8 @@ window.PF_DATA.pigbang = {
      "desc": "Millions of digitized books, papers, primary sources — historical documents, out-of-print texts for MA research.",
      "urls": [
       "https://archive.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6983,7 +7309,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free GPU/TPU access for deep learning — run PyTorch, TensorFlow notebooks in browser. Essential for ML research.",
      "urls": [
       "https://colab.research.google.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -6996,7 +7323,8 @@ window.PF_DATA.pigbang = {
      "desc": "Version control + code hosting. Every modern PhD should version-control their code.",
      "urls": [
       "https://github.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7009,7 +7337,8 @@ window.PF_DATA.pigbang = {
      "desc": "The standard scientific computing notebook — Python, R, Julia. Reproducible research.",
      "urls": [
       "https://jupyter.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7022,7 +7351,8 @@ window.PF_DATA.pigbang = {
      "desc": "The definitive graduate philosophy reference — every philosopher, argument, and school of thought.",
      "urls": [
       "https://plato.stanford.edu"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7035,7 +7365,8 @@ window.PF_DATA.pigbang = {
      "desc": "Hosted RStudio — for statisticians, economists, epidemiologists, social scientists.",
      "urls": [
       "https://posit.cloud"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7048,7 +7379,8 @@ window.PF_DATA.pigbang = {
      "desc": "Access 35+ million biomedical research papers — the primary database for MSc Biology and Chemistry research.",
      "urls": [
       "https://pubmed.ncbi.nlm.nih.gov"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7061,7 +7393,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free access to legal scholarship, case law citations, law review articles — primary research tool for LLM.",
      "urls": [
       "https://scholar.google.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7074,7 +7407,8 @@ window.PF_DATA.pigbang = {
      "desc": "Visual graph of prior/derivative works — the fastest way to map a literature.",
      "urls": [
       "https://www.connectedpapers.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7087,7 +7421,8 @@ window.PF_DATA.pigbang = {
      "desc": "100+ peer-reviewed academic journals — history, sociology, political science, philosophy. Graduate research core.",
      "urls": [
       "https://www.jstor.org"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7100,7 +7435,8 @@ window.PF_DATA.pigbang = {
      "desc": "Real-world ML datasets + competitions. Graduate-level data science and machine learning in practice.",
      "urls": [
       "https://www.kaggle.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7113,7 +7449,8 @@ window.PF_DATA.pigbang = {
      "desc": "The official LaTeX typesetting system — free, open, the language of academia.",
      "urls": [
       "https://www.latex-project.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7126,7 +7463,8 @@ window.PF_DATA.pigbang = {
      "desc": "Collaborative LaTeX editor — the standard way PhDs write mathematical theses and papers.",
      "urls": [
       "https://www.overleaf.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7139,7 +7477,8 @@ window.PF_DATA.pigbang = {
      "desc": "Industry-standard computational math — symbolic algebra, numerical methods, data visualization, quantum simulation.",
      "urls": [
       "https://www.wolfram.com/mathematica"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7152,7 +7491,8 @@ window.PF_DATA.pigbang = {
      "desc": "Graduate-level economics — game theory, industrial organization, public economics. Free courses by top economists.",
      "urls": [
       "https://mru.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7165,7 +7505,8 @@ window.PF_DATA.pigbang = {
      "desc": "Learn blockchain architecture and Solidity smart contract engineering by coding and building your own interactive zombie army game.",
      "urls": [
       "https://cryptozombies.io/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7178,7 +7519,8 @@ window.PF_DATA.pigbang = {
      "desc": "A massive multi-industry management game covering retail networks, high-tech manufacturing, agricultural output, and HR optimization.",
      "urls": [
       "https://virtonomics.com/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7191,7 +7533,8 @@ window.PF_DATA.pigbang = {
      "desc": "Create custom simulated trading leagues, practice short selling, and run financial statement analytics using global market tickers.",
      "urls": [
       "https://www.marketwatch.com/game"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7204,7 +7547,8 @@ window.PF_DATA.pigbang = {
      "desc": "Strategy, management, leadership case studies — essential reading.",
      "urls": [
       "https://hbr.org"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7217,7 +7561,8 @@ window.PF_DATA.pigbang = {
      "desc": "Securities and Exchange Board of India's investor-awareness material.",
      "urls": [
       "https://investor.sebi.gov.in"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7230,7 +7575,8 @@ window.PF_DATA.pigbang = {
      "desc": "Algorithm problem sets used by Google, Amazon, Microsoft for hiring. The gold standard for CS UG students.",
      "urls": [
       "https://leetcode.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7243,7 +7589,8 @@ window.PF_DATA.pigbang = {
      "desc": "The Indus Entrepreneurs — mentorship, events, community across India + global.",
      "urls": [
       "https://tie.org"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7256,7 +7603,8 @@ window.PF_DATA.pigbang = {
      "desc": "Competitive programming, data structures, algorithms — interview prep + genuine CS skill building.",
      "urls": [
       "https://www.hackerrank.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7269,7 +7617,8 @@ window.PF_DATA.pigbang = {
      "desc": "National Institute of Securities Markets — SEBI-recognized certifications.",
      "urls": [
       "https://www.nism.ac.in"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7282,7 +7631,8 @@ window.PF_DATA.pigbang = {
      "desc": "National Stock Exchange of India's formal certifications for market careers.",
      "urls": [
       "https://www.nseindia.com/learn"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7295,7 +7645,8 @@ window.PF_DATA.pigbang = {
      "desc": "World's leading public-speaking club — pay a fee, meet locally, practise weekly.",
      "urls": [
       "https://www.toastmasters.org"
-     ]
+     ],
+     "price": "Paid"
     },
     {
      "classes": [
@@ -7308,7 +7659,8 @@ window.PF_DATA.pigbang = {
      "desc": "Essays, recordings, founder talks — all open. The canonical startup archive.",
      "urls": [
       "https://www.ycombinator.com/library"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7321,7 +7673,8 @@ window.PF_DATA.pigbang = {
      "desc": "Possibly the best free Indian financial-education resource. No signup, no ads.",
      "urls": [
       "https://zerodha.com/varsity"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7334,7 +7687,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free official Adobe tutorials — Photoshop, Illustrator, Premiere, After Effects.",
      "urls": [
       "https://helpx.adobe.com/learn.html"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7347,7 +7701,8 @@ window.PF_DATA.pigbang = {
      "desc": "IIM Bangalore's free/paid MOOCs on business and entrepreneurship.",
      "urls": [
       "https://www.iimbx.iimb.ac.in"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7360,7 +7715,8 @@ window.PF_DATA.pigbang = {
      "desc": "Free curriculum + community for early-stage founders. Pure YC gold, open to anyone.",
      "urls": [
       "https://www.startupschool.org"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7372,7 +7728,8 @@ window.PF_DATA.pigbang = {
      "desc": "Interactive video-based web-dev school — you edit the instructor's code live.",
      "urls": [
       "https://scrimba.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7384,7 +7741,8 @@ window.PF_DATA.pigbang = {
      "desc": "A cyberpunk text-based RPG where you write functional JavaScript code to automate corporate hacking hacks, trade stocks, and script servers.",
      "urls": [
       "https://store.steampowered.com/app/1812820/Bitburner/"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7396,7 +7754,8 @@ window.PF_DATA.pigbang = {
      "desc": "The English-speaking world's most comprehensive finance reference + simulator.",
      "urls": [
       "https://www.investopedia.com"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7407,7 +7766,8 @@ window.PF_DATA.pigbang = {
      "desc": "Government's farmer advisory app — weather, market prices, crop advisories, dealers.",
      "urls": [
       "https://play.google.com/store/apps/details?id=com.informaticapp.risl"
-     ]
+     ],
+     "price": "Free"
     },
     {
      "classes": [
@@ -7419,7 +7779,8 @@ window.PF_DATA.pigbang = {
      "desc": "Indian non-profit teaching entrepreneurship and skilling, free programs.",
      "urls": [
       "https://wfglobal.org"
-     ]
+     ],
+     "price": "Free"
     }
    ]
   }
