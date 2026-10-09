@@ -40,6 +40,8 @@ npm run build
 npm test
 ```
 
+Each hub and topic page has its own 1200×630 social card in `assets/og/`, so a link shared on WhatsApp shows the page's name and resource count. The cards are committed images drawn with Playwright: after a page's name, headline or resource count changes, run `NODE_PATH=$(npm root -g) npm run build:og`, then `npm run build:topics`. `npm run build` fails while a card is missing.
+
 ## Deploy from GitHub with Cloudflare Workers
 
 1. Push this folder to the repository's `main` branch.

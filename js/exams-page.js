@@ -3,12 +3,12 @@
 
   // Panel order, ids and titles. The ids are deep-link targets, so they must not change.
   const PANELS = [
-    { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap" },
-    { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers" },
-    { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects" },
-    { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course" },
-    { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course" },
-    { key: "channels", id: "exam-channels", title: "Exam channels and official portals" }
+    { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap", share: "Which NCERT books each exam needs, class by class." },
+    { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers", share: "Free mock tests and previous papers in one list." },
+    { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects", share: "Free courses and books for every common exam subject." },
+    { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course", share: "The whole UPSC syllabus with free courses, marathons and books for each paper." },
+    { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course", share: "The whole RAS syllabus with free courses, marathons and books for each paper." },
+    { key: "channels", id: "exam-channels", title: "Exam channels and official portals", share: "Official exam portals and the channels worth following." }
   ];
 
   /**
@@ -107,7 +107,7 @@
     }
 
     function panelShell(definition, body) {
-      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
+      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><div class="exam-panel-share"><button class="button small ghost card-share" type="button" data-share="${escapeHtml(definition.id)}" data-share-title="${escapeHtml(definition.title)}" data-share-text="${escapeHtml(definition.share)}">Send to your study group</button></div><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
     }
 
     function renderRoadmap() {

@@ -1356,6 +1356,11 @@
       if (button) shareFrom(button);
     });
     qs("[data-share-copy]").addEventListener("click", () => shareData && PF.copy(shareData.url, "Link copied"));
+    // The know-your-rights image card is drawn by js/rights-card.js, fetched on first use.
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest && event.target.closest("[data-rights-card]");
+      if (button) loadScript("js/rights-card.js?v=ed2ce02ff39d").then(() => PF.rightsCard(button.closest("article")), () => PF.toast("The image card could not load. Please try again."));
+    });
   }
 
   PF.openExternal = function (url, title = "Resource") {

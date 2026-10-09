@@ -7,9 +7,14 @@ import { DESTINATIONS, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
+import { ogCards, ogImageFor } from "./build-og.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
+// Hubs and topic pages carry a social card of their own (tools/build-og.mjs); every other
+// page keeps the site card.
+const OG_ROUTES = new Set(ogCards().map((card) => card.route));
+const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(route) ? ogImageFor(route) : "assets/og.png"}`;
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -210,9 +215,10 @@ function checkHtml(file) {
   check(metaValue(metaTags, "og:title").length > 0, file, "missing og:title");
   check(metaValue(metaTags, "og:description").length > 0, file, "missing og:description");
   check(metaValue(metaTags, "og:url") === expectedCanonical, file, `og:url must be ${expectedCanonical}`);
-  check(metaValue(metaTags, "og:image") === "https://pigsfield.com/assets/og.png", file, "og:image must use the finished 1200×630 social card");
+  check(metaValue(metaTags, "og:image") === socialCardFor(route), file, `og:image must be ${socialCardFor(route)}`);
+  if (OG_ROUTES.has(route)) check(fs.existsSync(path.join(ROOT, ogImageFor(route))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
   check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
-  check(metaValue(metaTags, "twitter:image") === "https://pigsfield.com/assets/og.png", file, "twitter:image must use the finished social card");
+  check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must match og:image");
   check(/(?:^|\/)assets\/pigsfield-icon-192\.png$/.test(icon?.href || ""), file, "favicon must use the optimized 192×192 Pigsfield icon");
   check((icon?.type || "").toLowerCase() === "image/png" && icon?.sizes === "192x192", file, "favicon must declare its PNG type and 192x192 size");
   check(h1Count === 1, file, `expected exactly one h1, found ${h1Count}`);
@@ -269,7 +275,7 @@ function checkSeoContracts(files) {
     check(metaValue(metaTags, "og:site_name") === "Pigsfield", file, "og:site_name must be Pigsfield");
     check(metaValue(metaTags, "og:locale") === "en_IN", file, "og:locale must be en_IN");
     check(metaValue(metaTags, "og:url") === canonical, file, `og:url must match the canonical ${canonical}`);
-    check(metaValue(metaTags, "og:image") === `${SITE_ORIGIN}/assets/og.png`, file, "og:image must use the canonical social card URL");
+    check(metaValue(metaTags, "og:image") === socialCardFor(route), file, "og:image must use the canonical social card URL");
     check(metaValue(metaTags, "og:image:width") === "1200" && metaValue(metaTags, "og:image:height") === "630", file, "Open Graph image dimensions must be 1200×630");
 
     for (const field of twitterFields) {
@@ -277,7 +283,7 @@ function checkSeoContracts(files) {
       check(values.length === 1 && normalizedSeoText(values[0]).length > 0, file, `twitter:${field} must appear exactly once with content`);
     }
     check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
-    check(metaValue(metaTags, "twitter:image") === `${SITE_ORIGIN}/assets/og.png`, file, "twitter:image must use the canonical social card URL");
+    check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must use the canonical social card URL");
 
     const nodes = jsonLdNodes(parseJsonLd(html, file));
     if (!contract) continue;
@@ -856,6 +862,8 @@ function checkExperienceContracts() {
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
   check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
+  const examsPage = fs.readFileSync(path.join(ROOT, "exams", "index.html"), "utf8");
+  check(["exam-ias", "exam-ras", "exam-ncert-roadmap"].every((id) => examsPage.includes(`data-share="${id}"`)), path.join(ROOT, "exams", "index.html"), "each exam panel must offer a link to share it with a study group");
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
   const faqFile = path.join(ROOT, "index.html");
   check(/class=["']faq-list["'][^>]*data-accordion-scope/.test(fs.readFileSync(faqFile, "utf8")), faqFile, "expandable peers need an explicit accordion scope");

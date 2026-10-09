@@ -516,6 +516,8 @@ summary::-webkit-details-marker { display: none; }
 .player-error { padding: 0.7rem 1rem; border-top: 1px solid rgba(255,255,255,.15); color: #ffb3a6; font-size: 0.82rem; }
 .exam-stack { display: grid; gap: 0.8rem; }
 .exam-panel-body { padding: 1.2rem; border-top: 1px solid var(--line); }
+.exam-panel-share { display: flex; justify-content: flex-end; padding: .8rem 1.2rem 0; border-top: 1px solid var(--line); }
+.exam-panel-share + .exam-panel-body { border-top: 0; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.8rem; }
 .data-table { width: 100%; min-width: 54rem; border-collapse: collapse; font-size: 0.83rem; }
 .data-table th, .data-table td { padding: 0.8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -904,6 +906,8 @@ body[data-page="watch"] {
 .topic-item p { max-width: 70ch; margin-bottom: .75rem; color: var(--ink-soft); font-size: .95rem; }
 .topic-item .card-tool { display: none; flex: 0 0 auto; }
 .js-ready .topic-item .card-tool { display: grid; }
+.rights-card-button { display: none; margin: 0 0 .7rem; }
+.js-ready .rights-card-button { display: inline-flex; }
 .topic-sources, .exam-resource-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; align-items: stretch; margin-top: auto; border-top: 1px solid var(--line); }
 .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .55rem; min-width: 0; padding: 1rem; }
 .topic-lane + .topic-lane, .exam-resource-group + .exam-resource-group { border-left: 1px solid var(--line); }
@@ -1264,3 +1268,4 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 @media print { .tab-bar { display: none !important; } body::before { display: none; } }
+.rights-card-preview { display: block; width: 100%; max-height: 60vh; margin-bottom: .8rem; border: 1px solid var(--line); border-radius: .75rem; object-fit: contain; background: var(--paper); }
