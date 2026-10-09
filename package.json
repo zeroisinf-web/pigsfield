@@ -12,7 +12,8 @@
     "build:sw": "node tools/build-sw.mjs",
     "test": "node --test tests/*.test.mjs",
     "check:production": "node tools/check-production.mjs",
-    "check:links": "node tools/link-check.mjs"
+    "check:links": "node tools/link-check.mjs",
+    "build:og": "node tools/build-og.mjs"
   },
   "engines": {
     "node": ">=20"

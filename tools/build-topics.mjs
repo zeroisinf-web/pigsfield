@@ -149,7 +149,6 @@ export function sourceFor(data, destination, topic) {
     ...group,
     sectionNumber: first.resourceIdSection || 1,
     groupNumber: topic.key + 1,
-    saveKey: first.saveKey,
     catalogKey: destination.module
   };
 }
@@ -190,24 +189,22 @@ function slug(value) {
 
 /** Everything a page renders, so the digest changes whenever visible content changes.
  *
- *  The element id is part of it deliberately: it is the anchor a saved item and an old
+ *  The element id is part of it deliberately: it is the anchor a shared link and an old
  *  deep link point at, and it must not move without the page being rebuilt.
  *
  *  Ids keep the scheme the JavaScript catalogue used — slug(title-section-group-item),
  *  with the preserved section number for the two catalogues that were moved between
- *  destinations — so a heart saved before the split still resolves afterwards. */
+ *  destinations — so a link shared before the split still resolves afterwards. */
 export function topicPayload(source) {
   const groups = source.groups
     ? source.groups.map((group, index) => ({ group, groupNumber: index + 1 }))
     : [{ group: source, groupNumber: source.groupNumber || 1 }];
   const sectionNumber = source.resourceIdSection || source.sectionNumber || 1;
-  const saveKey = source.saveKey || source.catalogKey || "";
   return groups.flatMap(({ group, groupNumber }) =>
     (group.items || []).map((item, itemIndex) => {
       const id = item.resourceId || slug(`${item.title}-${sectionNumber}-${groupNumber}-${itemIndex + 1}`);
       return {
         id,
-        saveId: saveKey ? `${saveKey}:${id}` : "",
         title: item.title || "",
         desc: item.desc || "",
         warning: item.warning || "",
@@ -303,13 +300,18 @@ function resourceSymbol(item) {
   return resourceSymbolFor({ title: item.title, urls, type });
 }
 
-function renderResources(source, sectionName) {
+/** A resource with a helpline and steps can be passed on as a know-your-rights image card,
+ *  drawn in the browser by js/rights-card.js from the practical guide below it. */
+function hasRightsCard(item) {
+  const labels = item.extra.map((part) => part.label || "");
+  return labels.some((label) => /Helpline/i.test(label)) && labels.some((label) => /Step-by-Step/i.test(label));
+}
+
+function renderResources(source) {
   return topicPayload(source)
     .map((item) => {
-      const save = item.saveId
-        ? `<button class="card-tool" type="button" data-save="${esc(item.saveId)}" data-save-title="${esc(item.title)}" data-save-section="${esc(sectionName)}" aria-pressed="false" aria-label="Save ${esc(item.title)}">\u2661</button>`
-        : "";
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${save}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
+      const share = `<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${hasRightsCard(item) ? `<button class="button small ghost rights-card-button" type="button" data-rights-card>Share as image · फ़ोटो कार्ड</button>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
     })
     .join("\n        ");
 }
@@ -343,7 +345,6 @@ function leftoverGroups(data, destination) {
         ...group,
         sectionNumber: first.resourceIdSection || 1,
         groupNumber: index + 1,
-        saveKey: first.saveKey,
         catalogKey: destination.module
       }
     }))
@@ -380,7 +381,7 @@ export function renderTopicIndex(data, destination) {
   ).join("");
   const leftovers = leftoverGroups(data, destination).map(({ title, source }) =>
     `<section class="topic-leftover"><h3>${esc(title)}</h3><div class="topic-list">
-        ${renderResources(source, title)}
+        ${renderResources(source)}
       </div></section>`).join("\n      ");
   return [
     `<p class="topic-count"><strong>${total}</strong> free-first ${total === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>`,
@@ -468,10 +469,10 @@ export function renderTopicPage(destination, topic, source) {
   <meta name="pf-topic-digest" content="${digestFor(source)}">
   <link rel="canonical" href="${canonical}"><link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(topic.title)}"><meta property="og:description" content="${esc(social)}"><meta property="og:url" content="${canonical}">
-  <meta property="og:image" content="${ORIGIN}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Pigsfield ${esc(topic.name)} resources"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(topic.title)}"><meta name="twitter:description" content="${esc(social)}"><meta name="twitter:image" content="${ORIGIN}/assets/og.png"><meta name="twitter:image:alt" content="Pigsfield ${esc(topic.name)} resources">
+  <meta property="og:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Pigsfield ${esc(topic.name)} resources"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(topic.title)}"><meta name="twitter:description" content="${esc(social)}"><meta name="twitter:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta name="twitter:image:alt" content="Pigsfield ${esc(topic.name)} resources">
   <link rel="preload" href="../../assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../../css/site.css">
-  <script defer src="../../js/site.js"></script><script defer src="../../js/account.js"></script>
+  <script defer src="../../js/site.js"></script>
   <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>
 </head>
 <body data-page="${esc(destination.dest)}">
@@ -482,7 +483,7 @@ export function renderTopicPage(destination, topic, source) {
     <section class="section"><div class="container">
       <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>
       <div class="topic-list">
-        ${renderResources(source, topic.name)}
+        ${renderResources(source)}
       </div>
     </div></section>
     <section class="section alt"><div class="container">

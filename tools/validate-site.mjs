@@ -7,9 +7,14 @@ import { DESTINATIONS, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
+import { ogCards, ogImageFor } from "./build-og.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
+// Hubs and topic pages carry a social card of their own (tools/build-og.mjs); every other
+// page keeps the site card.
+const OG_ROUTES = new Set(ogCards().map((card) => card.route));
+const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(route) ? ogImageFor(route) : "assets/og.png"}`;
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -210,9 +215,10 @@ function checkHtml(file) {
   check(metaValue(metaTags, "og:title").length > 0, file, "missing og:title");
   check(metaValue(metaTags, "og:description").length > 0, file, "missing og:description");
   check(metaValue(metaTags, "og:url") === expectedCanonical, file, `og:url must be ${expectedCanonical}`);
-  check(metaValue(metaTags, "og:image") === "https://pigsfield.com/assets/og.png", file, "og:image must use the finished 1200×630 social card");
+  check(metaValue(metaTags, "og:image") === socialCardFor(route), file, `og:image must be ${socialCardFor(route)}`);
+  if (OG_ROUTES.has(route)) check(fs.existsSync(path.join(ROOT, ogImageFor(route))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
   check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
-  check(metaValue(metaTags, "twitter:image") === "https://pigsfield.com/assets/og.png", file, "twitter:image must use the finished social card");
+  check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must match og:image");
   check(/(?:^|\/)assets\/pigsfield-icon-192\.png$/.test(icon?.href || ""), file, "favicon must use the optimized 192×192 Pigsfield icon");
   check((icon?.type || "").toLowerCase() === "image/png" && icon?.sizes === "192x192", file, "favicon must declare its PNG type and 192x192 size");
   check(h1Count === 1, file, `expected exactly one h1, found ${h1Count}`);
@@ -269,7 +275,7 @@ function checkSeoContracts(files) {
     check(metaValue(metaTags, "og:site_name") === "Pigsfield", file, "og:site_name must be Pigsfield");
     check(metaValue(metaTags, "og:locale") === "en_IN", file, "og:locale must be en_IN");
     check(metaValue(metaTags, "og:url") === canonical, file, `og:url must match the canonical ${canonical}`);
-    check(metaValue(metaTags, "og:image") === `${SITE_ORIGIN}/assets/og.png`, file, "og:image must use the canonical social card URL");
+    check(metaValue(metaTags, "og:image") === socialCardFor(route), file, "og:image must use the canonical social card URL");
     check(metaValue(metaTags, "og:image:width") === "1200" && metaValue(metaTags, "og:image:height") === "630", file, "Open Graph image dimensions must be 1200×630");
 
     for (const field of twitterFields) {
@@ -277,7 +283,7 @@ function checkSeoContracts(files) {
       check(values.length === 1 && normalizedSeoText(values[0]).length > 0, file, `twitter:${field} must appear exactly once with content`);
     }
     check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
-    check(metaValue(metaTags, "twitter:image") === `${SITE_ORIGIN}/assets/og.png`, file, "twitter:image must use the canonical social card URL");
+    check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must use the canonical social card URL");
 
     const nodes = jsonLdNodes(parseJsonLd(html, file));
     if (!contract) continue;
@@ -448,7 +454,6 @@ function validateData() {
     const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");
     check(Boolean(teacherTraining && teacherTraining.highlight && teacherTraining.note), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must retain its highlighted education note");
     check(teacherTraining?.resourceIdSection === 1, path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy section-1 resource IDs");
-    check(teacherTraining?.saveKey === "teach", path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy teach: saved-item identity");
     check(vocational?.resourceIdSection === 2, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must preserve its legacy section-2 resource IDs");
     check(!(data.teach.sections || []).some((section) => section && section.id === "tt"), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must not remain inside Vocational & Business");
   }
@@ -716,7 +721,6 @@ function checkExperienceContracts() {
   check(/Nursery to PhD[\s\S]{0,160}PigBang[\s\S]{0,160}Competitive Exams[\s\S]{0,160}Vocational & Business[\s\S]{0,160}Digital Tools[\s\S]{0,160}Make Govt Accountable/.test(site), siteFile, "primary destinations must keep the requested names and order");
   check(/key\s*===\s*["']watch["']\s*\?\s*["'] data-pigbang-link/.test(site), siteFile, "shared PigBang navigation links must stay highlighted");
   check(/item\.kind\s*===\s*["']pigbang["'][\s\S]{0,80}data-pigbang-link/.test(site), siteFile, "PigBang search results must stay highlighted");
-  check(/item\.section\s*===\s*["']PigBang["'][\s\S]{0,80}data-pigbang-item/.test(site), siteFile, "saved PigBang resources must stay highlighted");
   check(/PF\.resourceIdentityFor\s*=\s*function/.test(site) && /PF\.resourceOrganizationKeyFor\s*=\s*function/.test(site) && /PF\.resourceSymbolFor\s*=\s*function/.test(site), siteFile, "shared resource identity and symbol helpers must stay exported");
   check(/function\s+isGenericResourceHost\([^)]+\)[\s\S]{0,300}youtube\\\.com[\s\S]{0,200}play\\\.google\\\.com/.test(site), siteFile, "generic video and app hosts must not replace content identity");
   check(/const\s+organizationHosts\s*=\s*\[\.\.\.new Set\(hosts\.filter\([\s\S]{0,120}!isGenericResourceHost\(host\)[\s\S]{0,80}\.sort\(\)/.test(site), siteFile, "organization hosts must be generic-host-free and URL-order independent");
@@ -768,12 +772,6 @@ function checkExperienceContracts() {
   const watchPage = fs.readFileSync(watchPageFile, "utf8");
   check(/id=["']watch-count["'][^>]*role=["']status["'][^>]*aria-live=["']polite["']/.test(watchPage), watchPageFile, "PigBang result count must announce filter changes");
 
-  const runtimeFiles = walk(ROOT, (file) => /\.(?:html|js|css)$/i.test(file) && relative(file) !== "tools/validate-site.mjs");
-  for (const file of runtimeFiles) {
-    const source = fs.readFileSync(file, "utf8");
-    check(!/(?:PF\.(?:share|openShare)|navigator\.share|data-share(?:\b|-)|source-share-button|id=["']share-dialog["']|class=["'][^"']*\bshare-(?:grid|option)\b)/i.test(source), file, "custom sharing UI or runtime code must not return");
-  }
-
   for (const name of ["watch.js", "exams-page.js"]) {
     const file = path.join(ROOT, "js", name);
     const source = fs.readFileSync(file, "utf8");
@@ -785,7 +783,6 @@ function checkExperienceContracts() {
       check(/\brel=["']noopener noreferrer["']/.test(tag), file, "provider anchor must isolate the external tab");
     });
     check(!/<button\b[^>]*class=["'][^"']*\blink-button\b/i.test(source), file, "provider controls must not be scripted buttons");
-    check(!/(?:data-share(?:\b|-)|PF\.openShare|PF\.share)/.test(source), file, "provider share controls must not return");
     check(/a\[data-youtube-play\]/.test(source), file, "supported YouTube anchors must retain optional in-site playback");
     check(/event\.button\s*!==\s*0/.test(source) && /event\.ctrlKey/.test(source) && /event\.metaKey/.test(source) && /event\.shiftKey/.test(source) && /event\.altKey/.test(source), file, "modified and non-primary link activation must remain browser-native");
     check(/event\.preventDefault\(\)[\s\S]{0,160}PF\.YouTube\.play\(anchor\.href/.test(source), file, "only plain YouTube activation should open the in-site player");
@@ -856,15 +853,17 @@ function checkExperienceContracts() {
   check(/topic-lane-\$\{lane\}/.test(laneBuilder) && /\["web", "video", "app"\]/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "provider links must be laid out as web, video and app lanes");
   check(/class="topic-symbol"/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "a resource card must carry its own symbol beside the title");
 
-  const staticSaveButtons = /\[data-save\]\[data-save-title\]/;
-  check(staticSaveButtons.test(site), siteFile, "generated pages need their save buttons hydrated and delegated");
-  const savedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
-  check(/data-save="school:[a-z0-9-]+" data-save-title=/.test(savedTopicPage), path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "topic cards must keep the catalogue's saved-item namespace");
+  check(/closest\("\[data-share\]"\)/.test(site), siteFile, "generated pages need their share buttons delegated");
+  const sharedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
+  check(/<article class="topic-item" id="([^"]+)">[\s\S]*?data-share="\1" data-share-title=/.test(sharedTopicPage), path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "topic cards must share a link to their own anchor");
+  check(!/data-save=|\u2661|\u2665|♡|♥/.test(sharedTopicPage + site), siteFile, "the save heart was replaced by sharing and must not return");
 
   const examsFile = path.join(ROOT, "js", "exams-page.js");
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
   check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
+  const examsPage = fs.readFileSync(path.join(ROOT, "exams", "index.html"), "utf8");
+  check(["exam-ias", "exam-ras", "exam-ncert-roadmap"].every((id) => examsPage.includes(`data-share="${id}"`)), path.join(ROOT, "exams", "index.html"), "each exam panel must offer a link to share it with a study group");
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
   const faqFile = path.join(ROOT, "index.html");
   check(/class=["']faq-list["'][^>]*data-accordion-scope/.test(fs.readFileSync(faqFile, "utf8")), faqFile, "expandable peers need an explicit accordion scope");
