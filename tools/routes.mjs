@@ -15,20 +15,21 @@ const STATIC = "monthly";
 const RARE = "yearly";
 
 export const ROUTES = [
-  { path: "/", lastmod: "2026-10-04", changefreq: HUB, priority: "1.0" },
+  { path: "/", lastmod: "2026-10-09", changefreq: HUB, priority: "1.0" },
 
   { path: "/learn/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
-  { path: "/rights/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
-  { path: "/skills/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
+  { path: "/rights/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.9" },
+  { path: "/skills/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
   { path: "/tools/", lastmod: "2026-10-05", changefreq: HUB, priority: "0.8" },
-  { path: "/exams/", lastmod: "2026-10-04", changefreq: HUB, priority: "0.8" },
-  { path: "/watch/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.8" },
+  { path: "/exams/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
+  { path: "/watch/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
 
   // Generated topic pages. Slugs come from tools/build-topics.mjs, so a new topic reaches
   // the sitemap and the validator at the same moment it reaches the filesystem.
   // Priority sits just under their hub: these are the pages meant to rank for specific
   // searches, and they carry the actual resources.
-  ...TOPICS.map((topic) => ({ path: topic.route, lastmod: topic.dest === "tools" ? "2026-10-05" : "2026-09-05", changefreq: HUB, priority: "0.7" })),
+  // Rights pages changed on 2026-10-09: civic tips moved to the right cards, two legal errors fixed.
+  ...TOPICS.map((topic) => ({ path: topic.route, lastmod: topic.lastmod || (topic.dest === "rights" ? "2026-10-09" : topic.dest === "tools" ? "2026-10-05" : "2026-09-05"), changefreq: HUB, priority: "0.7" })),
 
   { path: "/ai/", lastmod: "2026-10-05", changefreq: STATIC, priority: "0.7" },
   { path: "/about/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },

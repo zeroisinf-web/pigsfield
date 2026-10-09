@@ -940,6 +940,16 @@ window.PF_DATA.exams = {
     "srcText": "UPSC’s Cut-off Marks page has CSE cut-offs. (UPSC)",
     "srcUrl": "https://www.upsc.gov.in/examinations/cutoff-marks--"
    }
+  ],
+  "official": [
+   {
+    "label": "Past papers",
+    "url": "https://www.upsc.gov.in/examinations/previous-question-papers"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://upsc.gov.in/answer-keys"
+   }
   ]
  },
  "ras": {
@@ -1518,5 +1528,92 @@ window.PF_DATA.exams = {
     "https://www.youtube.com/@rajasthanexamsbymissiongyan"
    ]
   }
- ]
+ ],
+ "jee": {
+  "description": "NTA engineering entrance: Physics, Chemistry, Maths. Two sessions, Jan and Apr.",
+  "links": [
+   {
+    "label": "Syllabus",
+    "url": "https://jeemain.nta.nic.in/document/syllabus-2026/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://jeemain.nta.nic.in/document/final-answer-keys-of-jeemain-2026-session-i-paper-i-b-e-b-tech/"
+   },
+   {
+    "label": "Free mock tests",
+    "url": "https://www.nta.ac.in/abhyas"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": [
+   {
+    "name": "Physics",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3gg5klg1OCuojRv03azO48L"
+   },
+   {
+    "name": "Chemistry",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3iE2UKBjjf_hyFTQMmf4DeW"
+   },
+   {
+    "name": "Mathematics",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3gUC61DuKdmlvQ6Ir2jJgj1"
+   }
+  ]
+ },
+ "neet": {
+  "description": "NTA medical entrance: 180 MCQs in Physics, Chemistry, Biology. Pen and paper.",
+  "links": [
+   {
+    "label": "Information bulletin",
+    "url": "https://neet.nta.nic.in/document/information-bulletin-english/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://neet.nta.nic.in/final-answer-keys-for-neet-ug-2026-re-examination/"
+   },
+   {
+    "label": "Free mock tests",
+    "url": "https://www.nta.ac.in/abhyas"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": []
+ },
+ "cuet": {
+  "description": "NTA test for central university UG admission: languages, domain subjects, GAT.",
+  "links": [
+   {
+    "label": "Syllabus",
+    "url": "https://cuet.nta.nic.in/cuetug-2026-syllabus/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://www.nta.ac.in/Download/Notice/Notice_20260621191633.pdf"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": []
+ }
 };

@@ -91,7 +91,8 @@ export const DESTINATIONS = [
       { key: 6, slug: "parliament-and-representatives", name: "Parliament & Representatives", h1: "Your representative works for you.", title: "Contact Your MP or MLA + NOTA Guide | Pigsfield", description: "How to make written representations to an MP or MLA in India, reach parliamentary and assembly committees, and understand the NOTA option.", intro: "The elected route. A written representation on record is slower than a complaint but carries weight a portal ticket does not." },
       { key: 7, slug: "media-and-fraud-reporting", name: "Media & Fraud Reporting", h1: "When the story or the money is wrong.", title: "Press Council, NBDSA & Fraud Reporting | Pigsfield", description: "Complain about Indian print and television coverage through the Press Council and NBDSA, run digital accountability campaigns, and report Aadhaar or DBT fraud.", intro: "Holding coverage to account, and reporting benefit fraud. Media complaints have short deadlines, so act while the broadcast is recent." },
       { key: 8, slug: "criminal-and-financial-law", name: "Criminal & Financial Law", h1: "The heavier instruments.", title: "FIR, PMLA & Benami Act Explained | Pigsfield", description: "Filing an FIR against official wrongdoing in India, plus plain-language explanations of the Prevention of Money Laundering Act and the Benami Transactions Act.", intro: "Criminal and asset-recovery law. General educational information, not legal advice — these routes carry consequences for the person filing too." },
-      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." }
+      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." },
+      { key: 10, slug: "your-state", name: "Your State", lastmod: "2026-10-09", h1: "Your state's complaint and RTI portals.", title: "State RTI, CM Helpline & Lokayukta Portals | Pigsfield", description: "Official CM helpline, RTI and Lokayukta portals for ten large Indian states, gathered in one place." }
     ]
   },
   {
@@ -102,7 +103,8 @@ export const DESTINATIONS = [
     topics: [
       { key: 0, slug: "government-skill-portals", name: "Government Skill Portals", h1: "State-backed training that costs nothing.", title: "Free Govt Skill Courses: NPTEL, SWAYAM | Pigsfield", description: "Free Indian government skill platforms — Skill India, BharatSkills, NPTEL, SWAYAM Plus, Spoken Tutorial, Virtual Labs and AICTE internships.", intro: "Government and IIT-run platforms covering ITI trades, engineering, IT and virtual laboratories. Most issue recognized certificates at no cost." },
       { key: 1, slug: "corporate-training", name: "Corporate Training", h1: "Industry certificates without the invoice.", title: "Free IBM, Microsoft & Google Certificates | Pigsfield", description: "Free corporate training from Infosys Springboard, IBM SkillsBuild, Microsoft Learn, Google Digital Garage, AWS, TCS iON and Cisco, usable from India.", intro: "Company-run programmes in cloud, AI and workplace skills. Free to learn; confirm whether a given certificate costs anything before you count on it." },
-      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." }
+      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." },
+      { key: 3, slug: "jobs-and-business", name: "Jobs, Business & Trades", lastmod: "2026-10-09", h1: "Find work, start a business, learn a trade.", title: "Free Govt Job, Business & Trade Portals | Pigsfield", description: "Official portals for jobs, apprenticeships, MSME registration, Mudra loans, PMEGP, PM Vishwakarma and ITI trades." }
     ]
   }
 ];
@@ -242,6 +244,8 @@ function sourceType(url, label) {
   return type === "website" && /^(app|apps|android|ios)\b/i.test(label.trim()) ? "app" : type;
 }
 
+const GENERIC_LABELS = new Set(["Web", "Website", "Official Website", "Official Step-by-Step Guide", "Resource Name", "YouTube", "YouTube Tutorial", "Tutorial", "App", "Apps", "सुझाव"]);
+
 /** Rectangular provider controls retain a visible label beside their mark. */
 function renderSource(pair, title) {
   const split = pair.indexOf("|");
@@ -261,8 +265,9 @@ function renderSource(pair, title) {
     return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} aria-label="${esc(`${action} ${title} on ${where}`)}" title="${esc(host)}">${mark}<span class="source-label">${esc(brand === "app" ? "Get app" : where)}</span></a>`;
   }
   // A youtube.com/results link is a search page, not a video, and its host would say the
-  // opposite of what it does.
-  const text = isYouTubeSearch(url) ? "Search YouTube" : host;
+  // opposite of what it does. A specific label ("RTI Online", "Lokayukta") says more than
+  // the host; the catalogue's generic ones ("Web", "Official Website") do not.
+  const text = isYouTubeSearch(url) ? "Search YouTube" : GENERIC_LABELS.has(label.trim()) || !label.trim() ? host : label.trim();
   return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} title="${esc(label || host)}">${mark}<span class="source-label">${esc(text)}</span></a>`;
 }
 

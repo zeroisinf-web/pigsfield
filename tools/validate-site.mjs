@@ -34,6 +34,9 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
 ]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
 const DATA_MINIMUMS = { school: 171, teach: 23, tools: 32, govt: 40, pigbang: 500 };
+// YouTube *search* pages prove nobody checked a video. Each one replaced by a reviewed video
+// lowers this ceiling; it may only go down.
+const MAX_YOUTUBE_SEARCH_LINKS = 54;
 const BANNED_DOMAIN_PATTERNS = [
   /\banimesalt(?:\.in|\.ac)?\b/i,
   /\bhianimes?(?:\.se|\.to|\.tv)?\b/i,
@@ -442,6 +445,10 @@ function validateData() {
     check(count >= DATA_MINIMUMS[name], path.join(ROOT, "js", "data", `${name}.js`), `expected at least ${DATA_MINIMUMS[name]} catalog items, found ${count}`);
     validateUrlTree(data[name], path.join(ROOT, "js", "data", `${name}.js`), `PF_DATA.${name}`);
   }
+
+  const youtubeSearches = ["school", "teach", "tools", "pigbang", "govt"]
+    .reduce((sum, name) => sum + (JSON.stringify(data[name] || {}).match(/youtube\.com\/results\?search_query/g) || []).length, 0);
+  check(youtubeSearches <= MAX_YOUTUBE_SEARCH_LINKS, path.join(ROOT, "js", "data"), `${youtubeSearches} YouTube search links exceed the ceiling of ${MAX_YOUTUBE_SEARCH_LINKS}; link a reviewed video instead`);
 
   if (data.school && data.teach) {
     const learningIds = (data.school.sections || []).map((section) => section && section.id);

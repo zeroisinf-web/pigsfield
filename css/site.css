@@ -910,6 +910,10 @@ body[data-page="watch"] {
 /* Only filled lanes are drawn; these follow the base rule and precede the narrow container rule. */
 .lanes-1 { grid-template-columns: minmax(0, 1fr); }
 .lanes-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* One lane: its buttons sit side by side instead of stacking, which saves a phone screen of scrolling. */
+.topic-sources.lanes-1 > .topic-lane { flex-flow: row wrap; }
+.topic-sources.lanes-1 .source-lane-label { flex-basis: 100%; }
+.topic-sources.lanes-1 .link-button { width: auto; }
 .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .55rem; min-width: 0; padding: 1rem; }
 .topic-lane + .topic-lane, .exam-resource-group + .exam-resource-group { border-left: 1px solid var(--line); }
 .source-lane-label { display: block; margin-bottom: .15rem; color: var(--ink-soft); font-size: .67rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
@@ -1090,6 +1094,8 @@ body[data-page="watch"] {
   /* Lanes stay side by side as columns, as on desktop: Web | YouTube | Apps and
      Course | Marathon | Book, each with its links stacked underneath. */
   .topic-sources, .exam-resource-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .topic-sources.lanes-1, .exam-resource-groups.lanes-1 { grid-template-columns: minmax(0, 1fr); }
+  .topic-sources.lanes-2, .exam-resource-groups.lanes-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .3rem; padding: .55rem .35rem .6rem; }
   .topic-lane:first-child, .exam-resource-group:first-child { padding-left: 0; }
   .topic-lane:last-child, .exam-resource-group:last-child { padding-right: 0; }

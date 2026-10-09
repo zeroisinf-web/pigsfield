@@ -966,6 +966,120 @@ window.PF_DATA.teach = {
        ]
       }
      ]
+    },
+    {
+     "title": "JOBS, BUSINESS & TRADES (Govt)",
+     "items": [
+      {
+       "title": "National Career Service (NCS)",
+       "desc": "Government and private jobs, job fairs and career counselling. Free registration.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://ncs.gov.in/"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Apprenticeship India (NAPS)",
+       "desc": "Paid apprenticeships for 10th, 12th and ITI pass candidates.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.apprenticeshipindia.gov.in/"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "NATS (Graduate/Diploma Apprenticeship)",
+       "desc": "Paid apprenticeships for graduates and diploma holders.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://nats.education.gov.in/student_type.php"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "e-Shram (ई-श्रम)",
+       "desc": "Free registration for unorganised workers, linked to social-security schemes.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://eshram.gov.in/e-shram-portal"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Udyam Registration (उद्यम पंजीकरण)",
+       "desc": "Free online MSME registration with Aadhaar.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://udyamregistration.gov.in/UdyamRegistration.aspx"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "PM Mudra Yojana / JanSamarth",
+       "desc": "Collateral-free loans for small businesses: Shishu, Kishore and Tarun.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.jansamarth.in/business-loan-pradhan-mantri-mudra-yojana-scheme",
+          "https://www.mudra.org.in/"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "PMEGP",
+       "desc": "Subsidy on bank loans for starting a new micro enterprise.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://www.kviconline.gov.in/pmegpeportal/jsp/pmegponline.jsp"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "PM Vishwakarma (पीएम विश्वकर्मा)",
+       "desc": "Training, toolkit support and low-cost loans for traditional artisans.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://disclaimer.pmvishwakarma.gov.in/"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Bharat Skills (DGT / ITI)",
+       "desc": "ITI trade syllabi, e-books, question banks and videos. Free.",
+       "links": [
+        {
+         "label": "Web",
+         "urls": [
+          "https://bharatskills.gov.in/home/cts"
+         ]
+        }
+       ]
+      }
+     ]
     }
    ],
    "id": "vs",

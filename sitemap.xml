@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pigsfield.com/</loc>
-    <lastmod>2026-10-04</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -14,13 +14,13 @@
   </url>
   <url>
     <loc>https://pigsfield.com/rights/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/skills/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -32,13 +32,13 @@
   </url>
   <url>
     <loc>https://pigsfield.com/exams/</loc>
-    <lastmod>2026-10-04</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/watch/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -110,61 +110,67 @@
   </url>
   <url>
     <loc>https://pigsfield.com/rights/information-and-records/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/anti-corruption/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/courts-and-legal-remedies/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/commissions-and-regulators/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/grievance-portals/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/social-audit/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/parliament-and-representatives/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/media-and-fraud-reporting/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/criminal-and-financial-law/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pigsfield.com/rights/digital-governance/</loc>
-    <lastmod>2026-09-05</lastmod>
+    <lastmod>2026-10-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pigsfield.com/rights/your-state/</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -183,6 +189,12 @@
   <url>
     <loc>https://pigsfield.com/skills/coding-platforms/</loc>
     <lastmod>2026-09-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pigsfield.com/skills/jobs-and-business/</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
