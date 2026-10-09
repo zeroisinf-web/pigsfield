@@ -22,7 +22,6 @@ function harness() {
     focus() {}
   }
   const nodes = new Map();
-  const saved = new Map();
   const document = {
     querySelector(selector) {
       if (!nodes.has(selector)) nodes.set(selector, new Element());
@@ -36,7 +35,6 @@ function harness() {
     slug: (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     escapeHtml: (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
     isYouTubeSearch: (value) => { const url = new URL(value); return /(?:^|\.)youtube\.com$/.test(url.hostname) && url.pathname === '/results'; },
-    isSaved: (id) => saved.has(id), getSaved: () => [...saved.values()],
     resourceSymbolFor: () => '◇', classifySource: () => 'website', sourceBrand: () => 'website', sourceMark: () => '<svg></svg>'
   };
   const window = { PF, matchMedia: () => ({ matches: true }) };
@@ -47,20 +45,17 @@ function harness() {
   const boot = source.indexOf('  document.querySelector("#watch-reset")?.addEventListener');
   assert.ok(boot > 0);
   vm.runInContext(source.slice(0, boot) + 'PF.watchTest = { entries, shelves, matches, applyShelfFilter, resetFilters, tile, card, openDetail, revealHash, render, createRotation, featuredEntries }; })();', sandbox);
-  return { api: PF.watchTest, nodes, saved, document, sandbox };
+  return { api: PF.watchTest, nodes, document, sandbox };
 }
 
-test('saved-shelf View all restricts results to saved PigBang titles', () => {
-  const { api, saved, nodes } = harness();
-  const entry = api.entries.find((e) => e.item.name === 'Our Planet');
-  const id = `pigbang:${entry.id}`;
-  saved.set(id, { id });
-  saved.set('other:resource', { id: 'other:resource' });
-  const shelf = api.shelves().find((s) => s.id === 'my-list');
+test('shelf View all switches to the filtered grid', () => {
+  const { api, nodes } = harness();
+  const shelf = api.shelves().find((s) => s.id === 'free');
   api.applyShelfFilter(shelf);
-  assert.deepEqual(Array.from(api.matches(), (e) => e.id), [entry.id]);
+  assert.ok(api.matches().length > 0);
+  assert.ok(api.matches().every((e) => e.price === 'free'));
   assert.equal(nodes.get('#watch-billboard').hidden, true);
-  assert.equal(nodes.get('#watch-count').textContent, '1 result');
+  assert.equal(api.shelves().some((s) => s.id === 'my-list'), false, 'the saved watchlist was replaced by sharing');
 });
 
 test('level, type, price and multiword search compose and reset together', () => {
@@ -75,15 +70,12 @@ test('level, type, price and multiword search compose and reset together', () =>
   assert.equal(nodes.get('#watch-billboard').hidden, false);
 });
 
-test('empty saved and search results offer a recovery action', () => {
+test('empty search results offer a recovery action', () => {
   const { api, nodes } = harness();
-  api.applyShelfFilter({ filter: { tab: 'my-list' } });
-  assert.match(nodes.get('#watch-grid').innerHTML, /Your next discovery belongs here/);
-  assert.match(nodes.get('#watch-grid').innerHTML, /data-reset/);
-  api.resetFilters();
   nodes.get('#watch-search').value = 'no-match-23903940';
   api.render();
   assert.match(nodes.get('#watch-grid').innerHTML, /No titles found/);
+  assert.match(nodes.get('#watch-grid').innerHTML, /data-reset/);
   assert.equal(nodes.get('#watch-more').hidden, true);
 });
 
@@ -120,15 +112,13 @@ test('related titles are native keyboard buttons and clicking one replaces the d
   assert.equal(dialog.open, true);
 });
 
-test('saved-card markup follows the current saved state, including removal', () => {
-  const { api, saved } = harness();
-  const entry = api.entries[0];
-  const id = `pigbang:${entry.id}`;
-  assert.match(api.card(entry), /aria-pressed="false"/);
-  saved.set(id, { id });
-  assert.match(api.card(entry), /aria-label="Remove from your list" aria-pressed="true"/);
-  saved.delete(id);
-  assert.match(api.card(entry), /aria-label="Save to your list" aria-pressed="false"/);
+test('cards and tiles share a link to their own title instead of saving it', () => {
+  const { api } = harness();
+  const entry = api.entries.find((e) => e.item.name === 'Our Planet');
+  for (const markup of [api.card(entry), api.tile(entry)]) {
+    assert.ok(markup.includes(`data-share="${entry.id}" data-share-title="Our Planet"`));
+    assert.doesNotMatch(markup, /data-save|♡|♥/);
+  }
 });
 
 test('malformed shared URL fragments do not crash browsing', () => {

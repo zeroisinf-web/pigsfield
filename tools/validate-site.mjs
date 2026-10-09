@@ -448,7 +448,6 @@ function validateData() {
     const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");
     check(Boolean(teacherTraining && teacherTraining.highlight && teacherTraining.note), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must retain its highlighted education note");
     check(teacherTraining?.resourceIdSection === 1, path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy section-1 resource IDs");
-    check(teacherTraining?.saveKey === "teach", path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must preserve its legacy teach: saved-item identity");
     check(vocational?.resourceIdSection === 2, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must preserve its legacy section-2 resource IDs");
     check(!(data.teach.sections || []).some((section) => section && section.id === "tt"), path.join(ROOT, "js", "data", "teach.js"), "Teacher Training must not remain inside Vocational & Business");
   }
@@ -716,7 +715,6 @@ function checkExperienceContracts() {
   check(/Nursery to PhD[\s\S]{0,160}PigBang[\s\S]{0,160}Competitive Exams[\s\S]{0,160}Vocational & Business[\s\S]{0,160}Digital Tools[\s\S]{0,160}Make Govt Accountable/.test(site), siteFile, "primary destinations must keep the requested names and order");
   check(/key\s*===\s*["']watch["']\s*\?\s*["'] data-pigbang-link/.test(site), siteFile, "shared PigBang navigation links must stay highlighted");
   check(/item\.kind\s*===\s*["']pigbang["'][\s\S]{0,80}data-pigbang-link/.test(site), siteFile, "PigBang search results must stay highlighted");
-  check(/item\.section\s*===\s*["']PigBang["'][\s\S]{0,80}data-pigbang-item/.test(site), siteFile, "saved PigBang resources must stay highlighted");
   check(/PF\.resourceIdentityFor\s*=\s*function/.test(site) && /PF\.resourceOrganizationKeyFor\s*=\s*function/.test(site) && /PF\.resourceSymbolFor\s*=\s*function/.test(site), siteFile, "shared resource identity and symbol helpers must stay exported");
   check(/function\s+isGenericResourceHost\([^)]+\)[\s\S]{0,300}youtube\\\.com[\s\S]{0,200}play\\\.google\\\.com/.test(site), siteFile, "generic video and app hosts must not replace content identity");
   check(/const\s+organizationHosts\s*=\s*\[\.\.\.new Set\(hosts\.filter\([\s\S]{0,120}!isGenericResourceHost\(host\)[\s\S]{0,80}\.sort\(\)/.test(site), siteFile, "organization hosts must be generic-host-free and URL-order independent");
@@ -768,12 +766,6 @@ function checkExperienceContracts() {
   const watchPage = fs.readFileSync(watchPageFile, "utf8");
   check(/id=["']watch-count["'][^>]*role=["']status["'][^>]*aria-live=["']polite["']/.test(watchPage), watchPageFile, "PigBang result count must announce filter changes");
 
-  const runtimeFiles = walk(ROOT, (file) => /\.(?:html|js|css)$/i.test(file) && relative(file) !== "tools/validate-site.mjs");
-  for (const file of runtimeFiles) {
-    const source = fs.readFileSync(file, "utf8");
-    check(!/(?:PF\.(?:share|openShare)|navigator\.share|data-share(?:\b|-)|source-share-button|id=["']share-dialog["']|class=["'][^"']*\bshare-(?:grid|option)\b)/i.test(source), file, "custom sharing UI or runtime code must not return");
-  }
-
   for (const name of ["watch.js", "exams-page.js"]) {
     const file = path.join(ROOT, "js", name);
     const source = fs.readFileSync(file, "utf8");
@@ -785,7 +777,6 @@ function checkExperienceContracts() {
       check(/\brel=["']noopener noreferrer["']/.test(tag), file, "provider anchor must isolate the external tab");
     });
     check(!/<button\b[^>]*class=["'][^"']*\blink-button\b/i.test(source), file, "provider controls must not be scripted buttons");
-    check(!/(?:data-share(?:\b|-)|PF\.openShare|PF\.share)/.test(source), file, "provider share controls must not return");
     check(/a\[data-youtube-play\]/.test(source), file, "supported YouTube anchors must retain optional in-site playback");
     check(/event\.button\s*!==\s*0/.test(source) && /event\.ctrlKey/.test(source) && /event\.metaKey/.test(source) && /event\.shiftKey/.test(source) && /event\.altKey/.test(source), file, "modified and non-primary link activation must remain browser-native");
     check(/event\.preventDefault\(\)[\s\S]{0,160}PF\.YouTube\.play\(anchor\.href/.test(source), file, "only plain YouTube activation should open the in-site player");
@@ -856,10 +847,10 @@ function checkExperienceContracts() {
   check(/topic-lane-\$\{lane\}/.test(laneBuilder) && /\["web", "video", "app"\]/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "provider links must be laid out as web, video and app lanes");
   check(/class="topic-symbol"/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "a resource card must carry its own symbol beside the title");
 
-  const staticSaveButtons = /\[data-save\]\[data-save-title\]/;
-  check(staticSaveButtons.test(site), siteFile, "generated pages need their save buttons hydrated and delegated");
-  const savedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
-  check(/data-save="school:[a-z0-9-]+" data-save-title=/.test(savedTopicPage), path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "topic cards must keep the catalogue's saved-item namespace");
+  check(/closest\("\[data-share\]"\)/.test(site), siteFile, "generated pages need their share buttons delegated");
+  const sharedTopicPage = fs.readFileSync(path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "utf8");
+  check(/<article class="topic-item" id="([^"]+)">[\s\S]*?data-share="\1" data-share-title=/.test(sharedTopicPage), path.join(ROOT, "learn", "nursery-to-class-5", "index.html"), "topic cards must share a link to their own anchor");
+  check(!/data-save=|\u2661|\u2665|♡|♥/.test(sharedTopicPage + site), siteFile, "the save heart was replaced by sharing and must not return");
 
   const examsFile = path.join(ROOT, "js", "exams-page.js");
   const exams = fs.readFileSync(examsFile, "utf8");

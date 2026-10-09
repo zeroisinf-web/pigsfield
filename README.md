@@ -49,14 +49,14 @@ npm test
 5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER`, `VISITOR_RATE_LIMITER` and `POSTER_IP_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate`, `/api/poster` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
 6. The three text models use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
 
-## Optional accounts (off by default)
+## Optional accounts (dormant)
 
-Pigsfield works fully without an account and nothing is gated behind one. Signing in exists
-only so a saved list can follow someone between a shared PC and a phone. With no D1 database
-bound, every `/api/auth/*` route answers "not enabled" and the sign-in panel never appears —
-guest mode is the default, not a fallback.
+The saved list and its heart button were replaced by a share button on every resource, so the
+site no longer has any sign-in interface. The Worker's `/api/auth/*` and `/api/saved` routes
+remain only so an account created earlier can still be deleted on request. With no D1 database
+bound, every one of them answers "not enabled".
 
-To turn it on:
+The original setup, kept for reference:
 
 ```bash
 npx wrangler d1 create pigsfield
@@ -253,7 +253,7 @@ The studio also provides ordinary external links to [Artificial Analysis](https:
 
 ## Accessibility and privacy
 
-The interface is keyboard navigable, responsive, reduced-motion aware and designed with visible focus and strong contrast. Saved resources, preferences and recent activity stay in browser storage. Choosing हिन्दी uses the browser's on-device Translator API where supported. Otherwise, loaded translatable English interface text—including page copy, accessible labels, titles and placeholders—goes in limited batches to Pigsfield's same-origin `/api/translate` route and Cloudflare-hosted AI4Bharat IndicTrans2; text typed by the visitor is never included. That fallback is rate-limited, uses a no-referrer request, needs no visitor account or provider key, and sends neither the page URL nor text to Google Translate. Browser-menu guidance appears only if both paths fail. See the in-site Accessibility and Privacy pages for the full plain-language policy.
+The interface is keyboard navigable, responsive, reduced-motion aware and designed with visible focus and strong contrast. Preferences stay in browser storage; the share button on every resource sends a plain link to that card and records nothing. Choosing हिन्दी uses the browser's on-device Translator API where supported. Otherwise, loaded translatable English interface text—including page copy, accessible labels, titles and placeholders—goes in limited batches to Pigsfield's same-origin `/api/translate` route and Cloudflare-hosted AI4Bharat IndicTrans2; text typed by the visitor is never included. That fallback is rate-limited, uses a no-referrer request, needs no visitor account or provider key, and sends neither the page URL nor text to Google Translate. Browser-menu guidance appears only if both paths fail. See the in-site Accessibility and Privacy pages for the full plain-language policy.
 
 ## Support and corrections
 

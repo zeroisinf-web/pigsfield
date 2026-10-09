@@ -380,19 +380,6 @@
   // Clear pf-recent-v2: a log of opened resources that nothing read back. See git log.
   try { localStorage.removeItem("pf-recent-v2"); } catch (_) {}
 
-  function readJson(key, fallback) {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(key));
-      return parsed == null ? fallback : parsed;
-    } catch (_) {
-      return fallback;
-    }
-  }
-
-  function setJson(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
-  }
-
   function setTheme(theme) {
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
@@ -1045,7 +1032,6 @@
           <button class="search-trigger" type="button" data-open-search aria-label="Search all Pigsfield resources">
             <b aria-hidden="true">⌕</b><span>Search</span><kbd>Ctrl K</kbd>
           </button>
-          <button class="icon-button saved-trigger" type="button" data-open-saved aria-label="Open saved resources" title="Saved resources">♡</button>
           <button class="icon-button lang-toggle" type="button" data-lang-toggle translate="no" aria-label="Translate this page to Hindi" title="Translate this page to Hindi">हिन्दी</button>
           <span class="sr-only" id="translation-live-status" role="status" aria-live="polite" translate="no"></span>
           <button class="icon-button" type="button" data-theme-toggle aria-label="Change theme">☾</button>
@@ -1156,7 +1142,7 @@
       </aside>
       <aside class="support-dock support-dock-right" aria-label="Donate or give feedback">
         <div class="support-action support-pair">
-          <button type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog">${uiIcon('M12 20.7 3.9 12.9a5 5 0 0 1 7.1-7l1 1 1-1a5 5 0 0 1 7.1 7L12 20.7Z')} Donate or Feedback</button>
+          <button type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog">${uiIcon('M3 8h18v4H3Zm2 5h14v8H5ZM12 8c-2-4-6-4-5-1Zm0 0c2-4 6-4 5-1Z')} Donate or Feedback</button>
         </div>
       </aside>
 
@@ -1193,9 +1179,17 @@
         </div>
       </dialog>
 
-      <dialog class="site-dialog" id="saved-dialog" aria-labelledby="saved-title">
-        <div class="dialog-head"><h2 id="saved-title">Saved for later</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close saved resources">×</button></div>
-        <div class="dialog-body"><div class="saved-list" id="saved-list"></div></div>
+      <dialog class="site-dialog" id="share-dialog" aria-labelledby="share-title">
+        <div class="dialog-head"><h2 id="share-title">Share with a friend</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close sharing">×</button></div>
+        <div class="dialog-body">
+          <p class="share-preview" id="share-preview"></p>
+          <div class="action-grid">
+            <a class="action-option" id="share-whatsapp" href="https://wa.me/" target="_blank" rel="noopener noreferrer"><b aria-hidden="true">✆</b><span><strong>WhatsApp</strong><small>Send to a chat or group</small></span></a>
+            <a class="action-option" id="share-telegram" href="https://t.me/" target="_blank" rel="noopener noreferrer"><b aria-hidden="true">✈</b><span><strong>Telegram</strong><small>Post to a channel or group</small></span></a>
+            <button class="action-option" type="button" data-share-copy><b aria-hidden="true">⧉</b><span><strong>Copy link</strong><small>Paste it anywhere</small></span></button>
+            <a class="action-option" id="share-email" href="mailto:"><b aria-hidden="true">@</b><span><strong>Email</strong><small>Send it to a teacher or parent</small></span></a>
+          </div>
+        </div>
       </dialog>
 
       <dialog class="site-dialog" id="translation-help-dialog" aria-labelledby="translation-help-title" translate="no">
@@ -1213,8 +1207,9 @@
         <div class="dialog-body">
           <p>No paywall, no ads, no sign-up. Pigsfield keeps going because people like you give a little, or tell us what to fix.</p>
           <div class="action-grid">
-            <button class="action-option action-option-donate" type="button" data-open-donate><b aria-hidden="true">♥</b><span><strong>Donate</strong><small>Keep learning free for the next student</small></span></button>
+            <button class="action-option action-option-donate" type="button" data-open-donate><b aria-hidden="true">₹</b><span><strong>Donate</strong><small>Keep learning free for the next student</small></span></button>
             <button class="action-option" type="button" data-open-feedback><b aria-hidden="true">✎</b><span><strong>Feedback</strong><small>Report a broken link, suggest a resource or share an idea</small></span></button>
+            <button class="action-option" type="button" data-share data-share-url="${escapeHtml(base)}"><b aria-hidden="true">↗</b><span><strong>Share Pigsfield</strong><small>Free for you, free for a friend</small></span></button>
           </div>
         </div>
       </dialog>
@@ -1234,6 +1229,7 @@
             <a class="button brand" href="upi://pay?pa=zeroisinf@ibl&amp;pn=Pigsfield&amp;cu=INR">Give any amount with UPI</a>
           </div>
           <p class="donate-note">Check the receiver name in your UPI app before paying. Thank you!</p>
+          <p class="donate-note">Can't give right now? Telling one friend helps just as much. <button class="button small ghost" type="button" data-share data-share-url="${escapeHtml(base)}">Share Pigsfield</button></p>
         </div>
       </dialog>
 
@@ -1305,105 +1301,61 @@
     PF.toast(success);
   };
 
-  const SAVED_KEY = "pf-saved-v2";
-  let saved = readJson(SAVED_KEY, []);
-  if (!Array.isArray(saved)) saved = [];
+  /* Sharing. A free site travels by word of mouth, so every resource card, every PigBang
+   * title and the support dialogs carry a share button. Phones get the native share sheet,
+   * which already lists WhatsApp; elsewhere a small dialog offers WhatsApp, Telegram, email
+   * and a copyable link. Nothing is tracked: the link is the page, plus the card's anchor.
+   */
+  const SHARE_PITCH = "Free learning for India: NCERT, exam prep, skills and RTI help in one place.";
+  let shareData = null;
 
-  PF.isSaved = function (id) { return saved.some((item) => item.id === id); };
-
-  PF.toggleSaved = function (item) {
-    const index = saved.findIndex((savedItem) => savedItem.id === item.id);
-    if (index >= 0) {
-      saved.splice(index, 1);
-      PF.toast("Removed from saved");
-    } else {
-      saved.unshift({
-        id: item.id,
-        title: item.title,
-        description: item.description || "",
-        url: item.url,
-        section: item.section || "Pigsfield"
-      });
-      saved = saved.slice(0, 100);
-      PF.toast("Saved for later");
-    }
-    setJson(SAVED_KEY, saved);
-    document.dispatchEvent(new CustomEvent("pf:saved-changed", { detail: { id: item.id } }));
-    return index < 0;
-  };
-
-  // Read/replace the saved list. js/account.js uses these to sync with an optional
-  // account; the list itself stays in this browser for anyone who never signs in.
-  PF.getSaved = function () {
-    return saved.slice();
-  };
-
-  PF.replaceSaved = function (items) {
-    if (!Array.isArray(items)) return PF.getSaved();
-    saved = items.slice(0, 100);
-    setJson(SAVED_KEY, saved);
-    renderSaved();
-    document.dispatchEvent(new CustomEvent("pf:saved-changed", { detail: { id: "" } }));
-    return PF.getSaved();
-  };
-
-  function renderSaved() {
-    const list = qs("#saved-list");
-    if (!list) return;
-    if (!saved.length) {
-      list.innerHTML = `<div class="empty-state"><strong>Nothing saved yet</strong><p>Use the heart button on any resource to build a personal list on this device.</p></div>`;
-      PF.applyLanguageTo(list);
+  PF.share = function ({ title, text, url }) {
+    shareData = {
+      title: title || document.title,
+      text: [title, text || SHARE_PITCH, "Free on Pigsfield · Pigsfield पर मुफ़्त"].filter(Boolean).join("\n"),
+      url: url || location.href.split("#")[0]
+    };
+    if (navigator.share && window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+      navigator.share(shareData).catch((error) => { if (!error || error.name !== "AbortError") openShareDialog(); });
       return;
     }
-    list.innerHTML = saved.map((item) => `
-      <div class="saved-item"${item.section === "PigBang" ? " data-pigbang-item" : ""}>
-        <div><a${item.section === "PigBang" ? " data-pigbang-link" : ""} href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a><small>${escapeHtml(item.section)}</small></div>
-        <button class="icon-button" type="button" data-remove-saved="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.title)}">×</button>
-      </div>`).join("");
-    qsa("[data-remove-saved]", list).forEach((button) => {
-      button.addEventListener("click", () => {
-        saved = saved.filter((item) => item.id !== button.dataset.removeSaved);
-        setJson(SAVED_KEY, saved);
-        renderSaved();
-        document.dispatchEvent(new CustomEvent("pf:saved-changed", { detail: { id: button.dataset.removeSaved } }));
-      });
+    openShareDialog();
+  };
+
+  function openShareDialog() {
+    const { title, text, url } = shareData;
+    const message = `${text}\n${url}`;
+    qs("#share-preview").textContent = title;
+    qs("#share-whatsapp").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    qs("#share-telegram").href = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+    qs("#share-email").href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(message)}`;
+    showDialog(qs("#share-dialog"));
+  }
+
+  /* A share button names its card's anchor in data-share (empty for the page itself) and
+   * may carry its own title, text or URL; otherwise the card's first paragraph is the text.
+   * Generated topic pages and PigBang both rely on this one delegated listener. */
+  function shareFrom(button) {
+    const from = button.closest("dialog");
+    if (from && /^(support|donate)-dialog$/.test(from.id)) closeDialog(from);
+    const anchor = button.dataset.share;
+    const blurb = !button.dataset.shareText && button.closest("article") && button.closest("article").querySelector("p");
+    const text = (button.dataset.shareText || (blurb ? blurb.textContent : "")).trim().replace(/\s+/g, " ");
+    PF.share({
+      title: button.dataset.shareTitle || "",
+      text: text.length > 160 ? `${text.slice(0, 157)}…` : text,
+      url: button.dataset.shareUrl
+        ? new URL(button.dataset.shareUrl, location.href).href
+        : `${location.origin}${location.pathname}${anchor ? `#${encodeURIComponent(anchor)}` : ""}`
     });
-    PF.applyLanguageTo(list);
   }
 
-  /* Save buttons on pages that are plain HTML.
-   *
-   * The generated topic pages under /learn/, /skills/, /tools/ and /rights/ ship their
-   * cards as markup, so there is no page module to bind a heart to. A button that carries
-   * its own title and section is therefore hydrated and delegated here instead. Buttons
-   * rendered by a page module (PigBang) describe themselves through that module and carry
-   * no data-save-title, so they are left to it.
-   */
-  function staticSaveState(button) {
-    const isSaved = PF.isSaved(button.dataset.save);
-    button.classList.toggle("is-saved", isSaved);
-    button.textContent = isSaved ? "\u2665" : "\u2661";
-    button.setAttribute("aria-pressed", String(isSaved));
-    button.setAttribute("aria-label", `${isSaved ? "Remove" : "Save"} ${button.dataset.saveTitle || "this resource"}`);
-  }
-
-  function initStaticSaveButtons() {
-    const buttons = qsa("[data-save][data-save-title]");
-    if (!buttons.length) return;
-    buttons.forEach(staticSaveState);
+  function initShareButtons() {
     document.addEventListener("click", (event) => {
-      const button = event.target.closest && event.target.closest("[data-save][data-save-title]");
-      if (!button) return;
-      PF.toggleSaved({
-        id: button.dataset.save,
-        title: button.dataset.saveTitle,
-        description: button.dataset.saveDescription || "",
-        section: button.dataset.saveSection || "Pigsfield",
-        // A save id is "<catalogue>:<anchor>", and the anchor is the card's own element id.
-        url: `${location.origin}${location.pathname}#${encodeURIComponent(button.dataset.save.split(":").pop())}`
-      });
+      const button = event.target.closest && event.target.closest("[data-share]");
+      if (button) shareFrom(button);
     });
-    document.addEventListener("pf:saved-changed", () => qsa("[data-save][data-save-title]").forEach(staticSaveState));
+    qs("[data-share-copy]").addEventListener("click", () => shareData && PF.copy(shareData.url, "Link copied"));
   }
 
   PF.openExternal = function (url, title = "Resource") {
@@ -1904,7 +1856,6 @@
       if (event.target === dialog) closeDialog(dialog);
     }));
     qsa("[data-open-search]").forEach((button) => button.addEventListener("click", () => openSearch()));
-    qsa("[data-open-saved]").forEach((button) => button.addEventListener("click", () => { renderSaved(); showDialog(qs("#saved-dialog")); }));
     if (page !== "ai") {
       qsa("[data-open-ai]").forEach((element) => {
         element.addEventListener("click", openAIStudio);
@@ -1969,7 +1920,7 @@
     dialogMarkup();
     initializeAccordions();
     bindUi();
-    initStaticSaveButtons();
+    initShareButtons();
     setTheme(root.dataset.theme || initialTheme());
     if (savedLanguage() === "hi") restoreSavedHindi();
     else setLanguageState("en");

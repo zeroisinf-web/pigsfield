@@ -104,6 +104,6 @@ test("PigBang appends the next page without rebuilding visible cards", () => {
   assert.match(source, /grid\.addEventListener\("click", handleGridClick\)/);
   assert.match(source, /grid\.insertAdjacentHTML\("beforeend", additions\.map\(card\)\.join\(""\)\)/);
   assert.match(source, /entriesByTab\.get\(activeTab\)/);
-  assert.match(source, /cardMarkup\[cacheIndex\]/);
+  assert.match(source, /if \(entry\.cardMarkup\) return entry\.cardMarkup;/);
   assert.doesNotMatch(source, /function bindCards\(/);
 });

@@ -41,7 +41,6 @@
   const priceButtons = Array.from(document.querySelectorAll("[data-price]"));
   const priceTarget = priceButtons[0] && priceButtons[0].parentElement;
   const entriesById = new Map();
-  const entriesBySaveId = new Map();
   const entriesByTab = new Map((data.tabs || []).map((tab) => [tab.id, []]));
 
   const entries = [];
@@ -61,7 +60,6 @@
       };
       entries.push(entry);
       entriesById.set(id, entry);
-      entriesBySaveId.set(`pigbang:${id}`, entry);
       entriesByTab.get(tab.id).push(entry);
     });
   });
@@ -195,23 +193,24 @@
     return `<div class="ott-source-actions" role="group" aria-label="Watch and download options">${urls.map((url) => renderEntrySource(url, entry.item)).join("")}</div>`;
   }
 
+  function shareButton(entry, extra = "") {
+    const name = entry.item.name || "this title";
+    return `<button class="card-tool card-share${extra}" type="button" data-share="${PF.escapeHtml(entry.id)}" data-share-title="${PF.escapeHtml(name)}" data-share-text="${PF.escapeHtml(entry.item.desc || "")}" aria-label="Share ${PF.escapeHtml(name)}"></button>`;
+  }
+
   function card(entry) {
     const item = entry.item;
-    const saveId = `pigbang:${entry.id}`;
-    const saved = PF.isSaved(saveId);
-    const cacheIndex = saved ? 1 : 0;
-    const cardMarkup = entry.cardMarkup || (entry.cardMarkup = []);
-    if (cardMarkup[cacheIndex]) return cardMarkup[cacheIndex];
+    if (entry.cardMarkup) return entry.cardMarkup;
     const price = String(item.price || "").trim();
     const art = artworkFor(entry);
     const priceClass = /^free$/i.test(price) ? "free" : /^paid$/i.test(price) ? "paid" : "";
 
-    const markup = `<article class="resource-card watch-card" id="${PF.escapeHtml(entry.id)}" data-entry-id="${PF.escapeHtml(saveId)}">
+    const markup = `<article class="resource-card watch-card" id="${PF.escapeHtml(entry.id)}" data-entry-id="pigbang:${PF.escapeHtml(entry.id)}">
       <div class="watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}" aria-hidden="true">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}</div>
       <div class="resource-topline">
         <span class="tag">${PF.escapeHtml(tabLabels[entry.tab] || "PigBang")}</span>
         <div class="card-tools">
-          <button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+          ${shareButton(entry)}
         </div>
       </div>
       <div class="resource-tags">
@@ -222,7 +221,7 @@
       ${item.desc ? `<p>${PF.escapeHtml(item.desc)}</p>` : ""}
       <div class="resource-actions">${entrySources(entry)}</div>
     </article>`;
-    cardMarkup[cacheIndex] = markup;
+    entry.cardMarkup = markup;
     return markup;
   }
 
@@ -249,8 +248,6 @@
   function tile(entry) {
     const item = entry.item;
     const art = artworkFor(entry);
-    const saveId = `pigbang:${entry.id}`;
-    const saved = PF.isSaved(saveId);
     const play = playableUrl(entry);
     const open = openUrl(entry);
     const action = play
@@ -259,12 +256,12 @@
         ? `<a class="ott-play" href="${PF.escapeHtml(open)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${PF.escapeHtml(item.name || "this title")} at its source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.6l-8.3 8.3 1.4 1.4L19 6.4V10h2V3h-7Zm5 16H5V5h5V3H3v18h18v-7h-2v5Z"/></svg></a>`
         : "";
     const price = priceText(entry);
-    return `<li class="ott-tile" data-entry-id="${PF.escapeHtml(saveId)}">
+    return `<li class="ott-tile" data-entry-id="pigbang:${PF.escapeHtml(entry.id)}">
       <div class="ott-art watch-art watch-art-${entry.tab}" style="--visual-hue:${visualHue(item.name)}">${watchSymbol(entry)}${art ? `<img class="watch-art-img" src="${PF.escapeHtml(art.src)}" width="${art.width}" height="${art.height}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}
         <div class="ott-tile-overlay">
           <div class="ott-tile-actions">
             ${action}
-            <button class="card-tool${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+            ${shareButton(entry)}
             <button class="ott-tile-info" type="button" data-detail="${PF.escapeHtml(entry.id)}" aria-label="More details about ${PF.escapeHtml(item.name || "this title")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
           </div>
           <div class="ott-tile-pills">
@@ -282,11 +279,6 @@
     const list = [];
     const spotlight = ["Our Planet", "Cosmos: A Spacetime Odyssey", "Planet Earth II", "Veritasium", "Kurzgesagt"].map((name) => entries.find((entry) => entry.item.name === name)).filter(Boolean);
     if (spotlight.length) list.push({ id: "spotlight", title: "Start with a little wonder", entries: spotlight });
-    const savedItems = (typeof PF.getSaved === "function" ? PF.getSaved() : []).filter((savedItem) => String(savedItem.id || "").startsWith("pigbang:"));
-    const savedEntries = savedItems.map((savedItem) => entriesBySaveId.get(savedItem.id)).filter(Boolean);
-    if (savedEntries.length) {
-      list.push({ id: "my-list", title: "Your watchlist", entries: savedEntries, filter: { tab: "my-list" } });
-    }
     const free = entries.filter((entry) => entry.price === "free");
     if (free.length) list.push({ id: "free", title: "Free to explore", entries: free, filter: { price: "free" } });
     (data.tabs || []).forEach((tab) => {
@@ -352,36 +344,6 @@
     track.dataset.filled = "true";
     updateArrows(row);
     if (PF.applyLanguageTo) PF.applyLanguageTo(track);
-  }
-
-  function refreshSavedShelf() {
-    const shelf = shelves().find((item) => item.id === "my-list");
-    let row = rowsTarget.querySelector('[data-shelf="my-list"]');
-    const active = document.activeElement;
-    const focusWasInside = row && row.contains(active);
-    const focusedSave = focusWasInside && active.dataset.save;
-    const position = row?.querySelector(".ott-row-track").scrollLeft || 0;
-    if (!shelf) {
-      row?.remove();
-      shelfEntries.delete("my-list");
-      if (focusWasInside) tabButtons.find((button) => button.dataset.tab === "my-list")?.focus({ preventScroll: true });
-      return;
-    }
-    shelfEntries.set(shelf.id, shelf);
-    if (!row) {
-      rowsTarget.insertAdjacentHTML("afterbegin", shelfMarkup(shelf));
-      row = rowsTarget.querySelector('[data-shelf="my-list"]');
-    }
-    const track = row.querySelector(".ott-row-track");
-    track.dataset.filled = "false";
-    fillRow(row);
-    track.scrollLeft = position;
-    row.querySelector("[data-shelf-all]").innerHTML = `View all <span aria-hidden="true">${shelf.entries.length} →</span>`;
-    updateArrows(row);
-    if (focusWasInside) {
-      const target = focusedSave && track.querySelector(`[data-save="${CSS.escape(focusedSave)}"]`);
-      (target || row.querySelector("[data-shelf-all]")).focus({ preventScroll: true });
-    }
   }
 
   function updateArrows(row) {
@@ -456,8 +418,6 @@
     if (!billboard || !featured || !entry) return;
     const item = entry.item;
     const art = artworkFor(entry);
-    const saveId = `pigbang:${entry.id}`;
-    const saved = PF.isSaved(saveId);
     const play = playableUrl(entry);
     const open = openUrl(entry);
     const primary = play
@@ -480,7 +440,7 @@
       <div class="ott-billboard-actions">
         ${primary}
         <button class="button ghost ott-hero-info" type="button" data-detail="${PF.escapeHtml(entry.id)}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> More info</button>
-        <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+        ${shareButton(entry, " ott-hero-share")}
       </div>`;
     if (PF.applyLanguageTo) PF.applyLanguageTo(featured);
   }
@@ -556,8 +516,6 @@
     const dialog = ensureDetailDialog();
     const item = entry.item;
     const art = artworkFor(entry);
-    const saveId = `pigbang:${entry.id}`;
-    const saved = PF.isSaved(saveId);
     const play = playableUrl(entry);
     const open = openUrl(entry);
     const primary = play
@@ -595,7 +553,7 @@
           <h2 id="watch-detail-title">${PF.escapeHtml(item.name || "PigBang")}</h2>
           <div class="ott-detail-cta">
             ${primary}
-            <button class="card-tool ott-hero-save${saved ? " is-saved" : ""}" type="button" data-save="${PF.escapeHtml(saveId)}" aria-label="${saved ? "Remove from" : "Save to"} your list" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+            ${shareButton(entry, " ott-hero-share")}
           </div>
         </div>
       </div>
@@ -638,26 +596,11 @@
       PF.YouTube.play(anchor.href, anchor.dataset.title || "PigBang");
       return;
     }
-
-    const button = event.target.closest && event.target.closest("[data-save]");
-    if (!button) return;
-    const entry = entriesBySaveId.get(button.dataset.save);
-    if (!entry) return;
-    const saved = PF.toggleSaved({ id: button.dataset.save, title: entry.item.name || "PigBang item", description: entry.item.desc || "", section: "PigBang", url: localUrl(entry.id) });
-    const saveSelector = CSS && CSS.escape ? `[data-save="${CSS.escape(button.dataset.save)}"]` : `[data-save="${button.dataset.save.replace(/["\\]/g, "\\$&")}"]`;
-    document.querySelectorAll(saveSelector).forEach((b) => {
-      b.classList.toggle("is-saved", saved);
-      b.textContent = saved ? "♥" : "♡";
-      b.setAttribute("aria-pressed", String(saved));
-      b.setAttribute("aria-label", `${saved ? "Remove from" : "Save to"} your list`);
-    });
   }
 
   function matches() {
     const terms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const pool = activeTab === "my-list"
-      ? entries.filter((entry) => PF.isSaved(`pigbang:${entry.id}`))
-      : (activeTab === "all" ? entries : (entriesByTab.get(activeTab) || []));
+    const pool = activeTab === "all" ? entries : (entriesByTab.get(activeTab) || []);
     return pool.filter((entry) => {
       if (activeLevel !== "all" && !entry.classes.includes(activeLevel)) return false;
       if (activePrice !== "all" && entry.price !== activePrice) return false;
@@ -675,7 +618,7 @@
     const reset = document.querySelector("#watch-reset");
     if (reset) reset.hidden = browse;
     const context = document.querySelector("#watch-context");
-    if (context) context.textContent = activeTab === "my-list" ? "Your saved discoveries" : input.value.trim() ? 'Results for “' + input.value.trim() + '”' : browse ? "Explore the collection" : "Explore your selection";
+    if (context) context.textContent = input.value.trim() ? 'Results for “' + input.value.trim() + '”' : browse ? "Explore the collection" : "Explore your selection";
     const filterCount = document.querySelector("#watch-filter-count");
     if (filterCount) filterCount.textContent = [activePrice, activeLevel].filter((value) => value !== "all").length || "";
     if (browse) {
@@ -688,7 +631,7 @@
     moreButton.hidden = shown.length >= filtered.length;
     moreButton.textContent = `Load ${Math.min(PAGE_SIZE, Math.max(0, filtered.length - shown.length))} more`;
     if (!shown.length) {
-      grid.innerHTML = `<div class="empty-state"><strong>${activeTab === "my-list" ? "Your next discovery belongs here." : "No titles found."}</strong><p>${activeTab === "my-list" ? "Save a title with the heart button and come back to it whenever you like." : "Try fewer words, another subject, or clear your filters."}</p><button class="button ghost" type="button" data-reset>Explore all titles</button></div>`;
+      grid.innerHTML = `<div class="empty-state"><strong>No titles found.</strong><p>Try fewer words, another subject, or clear your filters.</p><button class="button ghost" type="button" data-reset>Explore all titles</button></div>`;
       if (PF.applyLanguageTo) PF.applyLanguageTo(grid);
       return;
     }
@@ -723,7 +666,7 @@
   }
 
   function buildFilters() {
-    tabsTarget.innerHTML = [["all", "Discover"], ["my-list", "My list"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
+    tabsTarget.innerHTML = [["all", "Discover"]].concat(data.tabs.map((tab) => [tab.id, tabLabels[tab.id] || tab.id]))
       .map(([id, label]) => `<button class="filter-chip${id === activeTab ? " active" : ""}" type="button" data-tab="${PF.escapeHtml(id)}" aria-pressed="${id === activeTab}">${PF.escapeHtml(label)}</button>`).join("");
     tabButtons = Array.from(tabsTarget.querySelectorAll("[data-tab]"));
     tabsTarget.addEventListener("click", (event) => {
@@ -825,25 +768,5 @@
     render(appendFrom, currentMatches);
   });
   window.addEventListener("hashchange", revealHash);
-  document.addEventListener("pf:saved-changed", () => {
-    document.querySelectorAll("[data-save]").forEach((button) => {
-      const saved = PF.isSaved(button.dataset.save);
-      button.classList.toggle("is-saved", saved);
-      button.textContent = saved ? "♥" : "♡";
-      button.setAttribute("aria-pressed", String(saved));
-      button.setAttribute("aria-label", `${saved ? "Remove from" : "Save to"} your list`);
-    });
-    refreshSavedShelf();
-    if (activeTab === "my-list") {
-      const active = document.activeElement;
-      const restoreFocus = grid.contains(active);
-      const savedId = active?.dataset.save;
-      render();
-      if (restoreFocus) {
-        const target = savedId && grid.querySelector(`[data-save="${CSS.escape(savedId)}"]`);
-        (target || grid.querySelector("[data-save], [data-reset]") || input).focus({ preventScroll: true });
-      }
-    }
-  });
   revealHash();
 })();

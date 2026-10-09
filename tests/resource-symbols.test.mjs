@@ -12,7 +12,7 @@ const siteSource = readSource("js", "site.js");
 
 function loadResourceResolver() {
   const start = siteSource.indexOf("  const RESOURCE_ORGANIZATIONS");
-  const end = siteSource.indexOf("\n\n  function readJson", start);
+  const end = siteSource.indexOf("\n\n  // Clear pf-recent-v2", start);
   assert.notEqual(start, -1, "resource resolver start marker is missing");
   assert.notEqual(end, -1, "resource resolver end marker is missing");
 
