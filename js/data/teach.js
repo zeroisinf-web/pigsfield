@@ -30,8 +30,9 @@ window.PF_DATA.teach = {
        ]
       },
       {
-       "title": "",
-       "desc": "",
+       "title": "IGNOU eGyanKosh",
+       "desc": "IGNOU की मुफ़्त self-learning material",
+       "resourceId": "1-1-2",
        "links": [
         {
          "label": "Web",
@@ -43,8 +44,9 @@ window.PF_DATA.teach = {
        ]
       },
       {
-       "title": "",
-       "desc": "",
+       "title": "BMD Education",
+       "desc": "Self-learning material और video playlists",
+       "resourceId": "1-1-3",
        "links": [
         {
          "label": "Web",
@@ -826,7 +828,7 @@ window.PF_DATA.teach = {
         {
          "label": "Web",
          "urls": [
-          "https://grow.google/intl/en_in/?utm_source=redirect&utm_medium=redirect&utm_term=gwg&utm_content=apac&utm_campaign=redirect",
+          "https://grow.google/intl/en_in/",
           "https://edu.exceedlms.com/student/catalog/list?category_ids=10934-applied-digital-skills"
          ]
         }

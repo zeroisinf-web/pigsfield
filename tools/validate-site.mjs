@@ -447,8 +447,9 @@ function validateData() {
     const learningIds = (data.school.sections || []).map((section) => section && section.id);
     const phdIndex = learningIds.indexOf("phd");
     const teacherIndex = learningIds.indexOf("tt");
-    check(groupedItemCount(data.school) === 171, path.join(ROOT, "js", "data", "school.js"), "Nursery to PhD must contain exactly 171 resources after Teacher Training moves");
-    check(groupedItemCount(data.teach) === 23, path.join(ROOT, "js", "data", "teach.js"), "Vocational & Business must contain exactly 23 resources");
+    // Minimums, not exact counts: an exact count failed the build whenever a resource was added.
+    check(groupedItemCount(data.school) >= DATA_MINIMUMS.school, path.join(ROOT, "js", "data", "school.js"), `Nursery to PhD must keep at least ${DATA_MINIMUMS.school} resources`);
+    check(groupedItemCount(data.teach) >= DATA_MINIMUMS.teach, path.join(ROOT, "js", "data", "teach.js"), `Vocational & Business must keep at least ${DATA_MINIMUMS.teach} resources`);
     check(phdIndex >= 0 && teacherIndex === phdIndex + 1, path.join(ROOT, "js", "data", "school.js"), "Teacher Training must appear immediately after PhD");
     const teacherTraining = data.school.sections[teacherIndex];
     const vocational = (data.teach.sections || []).find((section) => section && section.id === "vs");

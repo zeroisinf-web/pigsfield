@@ -372,7 +372,7 @@ window.PF_DATA.pigbang = {
      "name": "The Sheep Detectives",
      "desc": "A witty whodunnit where a flock of sheep step into the role of unlikely sleuths to solve a murder on their farm.",
      "urls": [
-      "https://youtu.be/pyZI5oM6hWk?si=BjNabl_zL4xAeWQp"
+      "https://youtu.be/pyZI5oM6hWk"
      ],
      "price": "Free"
     },
@@ -754,7 +754,7 @@ window.PF_DATA.pigbang = {
      "name": "The Thinking Game",
      "desc": "Documenting game and thinking development.",
      "urls": [
-      "https://youtu.be/d95J8yzvjbQ?si=YWApJiG52qlQPBdm"
+      "https://youtu.be/d95J8yzvjbQ"
      ],
      "price": "Free"
     },
@@ -1289,7 +1289,7 @@ window.PF_DATA.pigbang = {
      "desc": "A long-running medical drama following the personal and professional lives of the surgical residents and attendings at Grey Sloan Memorial Hospital.",
      "urls": [
       "https://www.hotstar.com/in/shows/greys-anatomy/14823",
-      "https://www.hotstar.com/in/shows/greys-anatomy/14823?utm_source=gwa"
+      "https://www.hotstar.com/in/shows/greys-anatomy/14823"
      ],
      "price": "Paid"
     },
@@ -2277,7 +2277,7 @@ window.PF_DATA.pigbang = {
      "name": "Rough Book",
      "desc": "Film about teacher fighting system.",
      "urls": [
-      "https://youtu.be/eKIdkJMtlAQ?si=6x1d6PIY03n_DOPH"
+      "https://youtu.be/eKIdkJMtlAQ"
      ],
      "price": "Free"
     },

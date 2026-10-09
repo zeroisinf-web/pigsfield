@@ -35,11 +35,11 @@
 
   const dataScripts = {
     school: "js/data/school.js?v=1dd425b231b5",
-    teach: "js/data/teach.js?v=591eca90da74",
+    teach: "js/data/teach.js?v=45496290068e",
     tools: "js/data/tools.js?v=78e7d4748c46",
-    exams: "js/data/exams.js?v=f6be0ec7a33a",
-    pigbang: "js/data/pigbang.js?v=04fd284661b0",
-    govt: "js/data/govt.js?v=8588947b234b"
+    exams: "js/data/exams.js?v=d643a25eecd1",
+    pigbang: "js/data/pigbang.js?v=8b1f4bc74b83",
+    govt: "js/data/govt.js?v=a4cf70952988"
   };
 
   const dataPages = {

@@ -8,6 +8,9 @@
     { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects", share: "Free courses and books for every common exam subject." },
     { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course", share: "The whole UPSC syllabus with free courses, marathons and books for each paper." },
     { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course", share: "The whole RAS syllabus with free courses, marathons and books for each paper." },
+    { key: "jee", id: "exam-jee", title: "JEE Main", share: "Free JEE Main preparation: official syllabus, past papers, free mock tests and courses.", optional: true },
+    { key: "neet", id: "exam-neet", title: "NEET-UG", share: "Free NEET-UG preparation: official syllabus, past papers, free mock tests and courses.", optional: true },
+    { key: "cuet", id: "exam-cuet", title: "CUET-UG", share: "Free CUET-UG preparation: official syllabus, past papers and free mock tests.", optional: true },
     { key: "channels", id: "exam-channels", title: "Exam channels and official portals", share: "Official exam portals and the channels worth following." }
   ];
 
@@ -89,17 +92,24 @@
       return links.length ? `<div class="exam-link-row">${links.join("")}</div>` : "";
     }
 
+    /** Labelled official links — past papers, answer keys, free practice — in one row. */
+    function officialRow(items) {
+      const links = list(items).map((item) => {
+        const clean = cleanUrl(item && item.url);
+        return clean ? linkButtonFromClean(clean, item.label) : "";
+      }).filter(Boolean);
+      return links.length ? `<div class="exam-link-row">${links.join("")}</div>` : "";
+    }
+
     function resourceGroups(item) {
       const groups = [
         ["course", "Course"],
         ["marathon", "Marathon"],
         ["books", "Book"]
       ];
-      if (!groups.some(([key]) => list(item && item[key]).length)) return "";
-      return `<div class="exam-resource-groups">${groups.map(([key, label]) => {
-        const links = linkRow(item && item[key], label);
-        return `<div class="exam-resource-group"><span class="source-lane-label">${label}</span>${links || `<span class="source-empty">Not listed</span>`}</div>`;
-      }).join("")}</div>`;
+      const filled = groups.map(([key, label]) => [label, linkRow(item && item[key], label)]).filter(([, links]) => links);
+      if (!filled.length) return "";
+      return `<div class="exam-resource-groups lanes-${filled.length}">${filled.map(([label, links]) => `<div class="exam-resource-group"><span class="source-lane-label">${label}</span>${links}</div>`).join("")}</div>`;
     }
 
     function panelBody(description, body) {
@@ -107,7 +117,7 @@
     }
 
     function panelShell(definition, body) {
-      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><div class="exam-panel-share"><button class="button small ghost card-share" type="button" data-share="${escapeHtml(definition.id)}" data-share-title="${escapeHtml(definition.title)}" data-share-text="${escapeHtml(definition.share)}">Send to your study group</button></div><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
+      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><button class="card-tool card-share exam-share" type="button" data-share="${escapeHtml(definition.id)}" data-share-title="${escapeHtml(definition.title)}" data-share-text="${escapeHtml(definition.share)}" aria-label="Send ${escapeHtml(definition.title)} to your study group"></button><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
     }
 
     function renderRoadmap() {
@@ -136,7 +146,7 @@
       const links = linkRow(data.tests && data.tests.urls, "Mock test");
       return panelBody(
         "Practise with free mock tests, official previous papers and current-affairs revision sources.",
-        links || `<p>${escapeHtml("Mock-test links are being updated.")}</p>`
+        `${officialRow(data.tests && data.tests.official)}${links || `<p>${escapeHtml("Mock-test links are being updated.")}</p>`}`
       );
     }
 
@@ -204,7 +214,7 @@
         return `<section class="syllabus-item"><h3>${escapeHtml(section.title || `${title} syllabus section`)}</h3>${section.sub ? `<p>${escapeHtml(section.sub)}</p>` : ""}${items ? `<div class="syllabus-list">${items}</div>` : ""}</section>`;
       }).join("");
       const syllabus = sections ? `<div class="syllabus-list">${sections}</div>` : `<p>${escapeHtml("Syllabus details are being updated.")}</p>`;
-      return panelBody(description, `${syllabus}${renderEssentials(track, title)}`);
+      return panelBody(description, `${officialRow(track.official)}${syllabus}${renderEssentials(track, title)}`);
     }
 
     function renderChannels() {
@@ -218,15 +228,28 @@
       );
     }
 
+    /** JEE, NEET and CUET: official links first, then one free course per subject. */
+    function renderQuickTrack(key) {
+      const track = data[key] || {};
+      const subjects = list(track.subjects).map((subject) => {
+        const clean = cleanUrl(subject && subject.url);
+        return clean ? linkButtonFromClean(clean, `${subject.name} course`, subject.name) : "";
+      }).filter(Boolean);
+      return panelBody(track.description || "", `${officialRow(track.links)}${subjects.length ? `<h3>${escapeHtml("Free courses")}</h3><div class="exam-link-row">${subjects.join("")}</div>` : ""}`);
+    }
+
     const renderers = {
       roadmap: renderRoadmap,
       tests: renderMockTests,
       common: renderCommonSubjects,
       ias: () => renderExamTrack("ias", "UPSC/ IAS Complete Foundation Course", "Navigate Prelims, Mains, CSAT and essential primary sources in one place."),
       ras: () => renderExamTrack("ras", "RAS Complete Foundation Course", "Navigate Rajasthan Prelims, Mains and high-value primary sources in one place."),
+      jee: () => renderQuickTrack("jee"),
+      neet: () => renderQuickTrack("neet"),
+      cuet: () => renderQuickTrack("cuet"),
       channels: renderChannels
     };
-    const panelDefinitions = PANELS.map((panel) => Object.assign({}, panel, { render: renderers[panel.key] }));
+    const panelDefinitions = PANELS.filter((panel) => !panel.optional || data[panel.key]).map((panel) => Object.assign({}, panel, { render: renderers[panel.key] }));
 
     return {
       panelDefinitions,

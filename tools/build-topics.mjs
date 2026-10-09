@@ -266,8 +266,8 @@ function renderSource(pair, title) {
   return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} title="${esc(label || host)}">${mark}<span class="source-label">${esc(text)}</span></a>`;
 }
 
-/** Web on the left, YouTube in the middle, apps on the right — in fixed tracks, so the
- *  three lanes line up down the page instead of starting wherever the last button ended. */
+/** Web, then YouTube, then apps. A lane with nothing in it is left out rather than drawn
+ *  as "Not listed": on a phone each lane is its own row, so empty ones only add scrolling. */
 function renderSources(item) {
   const lanes = { web: [], video: [], app: [] };
   for (const pair of item.urls) {
@@ -276,8 +276,10 @@ function renderSources(item) {
     const lane = isYouTubeSearch(url) ? "video" : type === "video" || type === "app" ? type : "web";
     lanes[lane].push(renderSource(pair, item.title));
   }
-  return `<div class="topic-sources">${["web", "video", "app"]
-    .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("") || `<span class="source-empty">Not listed</span>`}</div>`)
+  const filled = ["web", "video", "app"].filter((lane) => lanes[lane].length);
+  if (!filled.length) return "";
+  return `<div class="topic-sources lanes-${filled.length}">${filled
+    .map((lane) => `<div class="topic-lane topic-lane-${lane}"><span class="source-lane-label">${({ web: "Web", video: "YouTube", app: "Apps" })[lane]}</span>${lanes[lane].join("")}</div>`)
     .join("")}</div>`;
 }
 
@@ -310,8 +312,9 @@ function hasRightsCard(item) {
 function renderResources(source) {
   return topicPayload(source)
     .map((item) => {
-      const share = `<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button>`;
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${hasRightsCard(item) ? `<button class="button small ghost rights-card-button" type="button" data-rights-card>Share as image · फ़ोटो कार्ड</button>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
+      const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="Share ${esc(item.title)} as an image" title="फ़ोटो कार्ड"></button>` : "";
+      const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button></span>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
     })
     .join("\n        ");
 }
@@ -384,7 +387,7 @@ export function renderTopicIndex(data, destination) {
         ${renderResources(source)}
       </div></section>`).join("\n      ");
   return [
-    `<p class="topic-count"><strong>${total}</strong> free-first ${total === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>`,
+    `<p class="topic-count"><strong>${total}</strong> free-first ${total === 1 ? "resource" : "resources"}, each opening its original provider.</p>`,
     `<div class="topic-index">${cards}</div>`,
     leftovers
   ].filter(Boolean).join("\n      ");
@@ -481,7 +484,7 @@ export function renderTopicPage(destination, topic, source) {
     <div class="container breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">${esc(destination.parentName)}</a></li><li aria-current="page">${esc(topic.name)}</li></ol></div>
     <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede">${esc(topic.intro)}</p></div></section>
     <section class="section"><div class="container">
-      <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}. Pigsfield does not host any of these; every link opens the original provider, where current price, terms and eligibility apply.</p>
+      <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}, each opening its original provider.</p>
       <div class="topic-list">
         ${renderResources(source)}
       </div>
@@ -496,6 +499,25 @@ export function renderTopicPage(destination, topic, source) {
 </body>
 </html>
 `;
+}
+
+/** The homepage's pillar cards state how much each pillar holds. They were typed by hand
+ *  and drifted ("50 tools" when there were 32), so they are written from the data instead. */
+export function homeCounts(data) {
+  const pigbang = (data.pigbang.tabs || []).reduce((sum, tab) => sum + (tab.items || []).length, 0);
+  const total = (key) => destinationCount(data, { module: key });
+  return { school: `${total("school")} resources`, pigbang: `${pigbang} titles`, teach: `${total("teach")} resources`, tools: `${total("tools")} tools`, govt: `${total("govt")} resources` };
+}
+
+function buildHomeCounts({ root, check, data }) {
+  const file = path.join(root, "index.html");
+  const html = fs.readFileSync(file, "utf8");
+  const counts = homeCounts(data);
+  const next = html.replace(/<span data-count="([a-z]+)">[^<]*<\/span>/g, (match, key) => counts[key] ? `<span data-count="${key}">${counts[key]}</span>` : match);
+  if (next === html) return { stale: [], written: [] };
+  if (check) return { stale: ["/ (homepage counts)"], written: [] };
+  fs.writeFileSync(file, next, "utf8");
+  return { stale: [], written: ["/"] };
 }
 
 export function build({ root = ROOT, check = false } = {}) {
@@ -529,6 +551,9 @@ export function build({ root = ROOT, check = false } = {}) {
   const hubs = buildHubs({ root, check, data });
   stale.push(...hubs.stale);
   written.push(...hubs.written.map((route) => ({ route, count: 0, hub: true })));
+  const home = buildHomeCounts({ root, check, data });
+  stale.push(...home.stale);
+  written.push(...home.written.map((route) => ({ route, count: 0, hub: true })));
 
   return { stale, written, thin };
 }

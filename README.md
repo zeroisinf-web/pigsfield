@@ -10,7 +10,7 @@ Pigsfield is a free-first learning map for India. It organizes educational, skil
 - PigBang educational media with real cover art for every entry and lazy, privacy-enhanced YouTube playback
 - Competitive Exams roadmaps, mock tests and subject collections
 - Vocational & Business, Digital Tools and Make Govt Accountable, each split into its own page per topic with practical tutorials
-- An always-available AI Studio with a choice of three hosted models and no visitor login, additional provider key or model download, for tutoring, images, documents, capability-gated browser voice previews and browser-made music
+- An AI Studio that ranks capable AI models by cost and speed and links to the AI tools worth trying, with no visitor login
 - Persistent in-page Hindi translation: on-device where supported, otherwise through a rate-limited same-origin Cloudflare AI4Bharat route
 - Persistent AI Studio, Donate and Feedback controls
 - A best-effort monthly browser check-in total backed by a privacy-light Cloudflare Durable Object
