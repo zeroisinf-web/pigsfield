@@ -516,8 +516,7 @@ summary::-webkit-details-marker { display: none; }
 .player-error { padding: 0.7rem 1rem; border-top: 1px solid rgba(255,255,255,.15); color: #ffb3a6; font-size: 0.82rem; }
 .exam-stack { display: grid; gap: 0.8rem; }
 .exam-panel-body { padding: 1.2rem; border-top: 1px solid var(--line); }
-.exam-panel-share { display: flex; justify-content: flex-end; padding: .8rem 1.2rem 0; border-top: 1px solid var(--line); }
-.exam-panel-share + .exam-panel-body { border-top: 0; }
+.exam-share { float: right; margin: .9rem 1.2rem 0 .6rem; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.8rem; }
 .data-table { width: 100%; min-width: 54rem; border-collapse: collapse; font-size: 0.83rem; }
 .data-table th, .data-table td { padding: 0.8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -906,9 +905,15 @@ body[data-page="watch"] {
 .topic-item p { max-width: 70ch; margin-bottom: .75rem; color: var(--ink-soft); font-size: .95rem; }
 .topic-item .card-tool { display: none; flex: 0 0 auto; }
 .js-ready .topic-item .card-tool { display: grid; }
-.rights-card-button { display: none; margin: 0 0 .7rem; }
-.js-ready .rights-card-button { display: inline-flex; }
+.card-image::before { content: ""; width: 1rem; height: 1rem; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14Zm-5.04-6.71-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71Z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14Zm-5.04-6.71-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71Z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .topic-sources, .exam-resource-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; align-items: stretch; margin-top: auto; border-top: 1px solid var(--line); }
+/* Only filled lanes are drawn; these follow the base rule and precede the narrow container rule. */
+.lanes-1 { grid-template-columns: minmax(0, 1fr); }
+.lanes-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* One lane: its buttons sit side by side instead of stacking, which saves a phone screen of scrolling. */
+.topic-sources.lanes-1 > .topic-lane { flex-flow: row wrap; }
+.topic-sources.lanes-1 .source-lane-label { flex-basis: 100%; }
+.topic-sources.lanes-1 .link-button { width: auto; }
 .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .55rem; min-width: 0; padding: 1rem; }
 .topic-lane + .topic-lane, .exam-resource-group + .exam-resource-group { border-left: 1px solid var(--line); }
 .source-lane-label { display: block; margin-bottom: .15rem; color: var(--ink-soft); font-size: .67rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
@@ -1089,6 +1094,8 @@ body[data-page="watch"] {
   /* Lanes stay side by side as columns, as on desktop: Web | YouTube | Apps and
      Course | Marathon | Book, each with its links stacked underneath. */
   .topic-sources, .exam-resource-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .topic-sources.lanes-1, .exam-resource-groups.lanes-1 { grid-template-columns: minmax(0, 1fr); }
+  .topic-sources.lanes-2, .exam-resource-groups.lanes-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .topic-lane, .exam-resource-group { display: flex; flex-direction: column; align-items: stretch; gap: .3rem; padding: .55rem .35rem .6rem; }
   .topic-lane:first-child, .exam-resource-group:first-child { padding-left: 0; }
   .topic-lane:last-child, .exam-resource-group:last-child { padding-right: 0; }

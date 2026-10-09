@@ -154,7 +154,7 @@ window.PF_DATA.exams = {
     ],
     "marathon": [
      "https://www.youtube.com/watch?v=PEtiqdiabg0",
-     "https://youtu.be/4tj5K9MZEoI?si=rYRl0MQ74ajzQfK-"
+     "https://youtu.be/4tj5K9MZEoI"
     ],
     "books": [
      "https://www.scribd.com/document/932415676/Brahmastra-Formula-Book-English-3rd-Edition-Aditya-Ranjan-by-Pdfhub4u",
@@ -171,7 +171,7 @@ window.PF_DATA.exams = {
      "https://www.youtube.com/watch?v=sptgth5iMTo&list=PL4t_secZTPn5KDE9IgPlJQ6_OE4oQFlTe"
     ],
     "marathon": [
-     "https://youtu.be/psoFmlvWwvM?si=clIXPLR_3cwUxU80",
+     "https://youtu.be/psoFmlvWwvM",
      "https://www.youtube.com/watch?v=mQJILWbISJQ"
     ],
     "books": [],
@@ -229,12 +229,12 @@ window.PF_DATA.exams = {
     "subject": "Computer Awareness",
     "exam": "SSC & All",
     "course": [
-     "https://youtube.com/playlist?list=PL5SDlP42gG0j-LjdzQ8M6PbVBZAE1xiyd&si=lsw2ziKAC4jjdzON",
-     "https://youtube.com/playlist?list=PLAeePiDQTajeAkKCZZqvIIMNLcGAHsHHm&si=tz8kTAQlAoC96TAb"
+     "https://youtube.com/playlist?list=PL5SDlP42gG0j-LjdzQ8M6PbVBZAE1xiyd",
+     "https://youtube.com/playlist?list=PLAeePiDQTajeAkKCZZqvIIMNLcGAHsHHm"
     ],
     "marathon": [
-     "https://www.youtube.com/live/g1wPaVqMvlQ?si=brrL4gYdDyV37Epg",
-     "https://youtu.be/gcCVm_Fp9ec?si=RVukfT8M_KDy4Tf7"
+     "https://www.youtube.com/live/g1wPaVqMvlQ",
+     "https://youtu.be/gcCVm_Fp9ec"
     ],
     "books": [
      "https://www.scribd.com/document/691014864/Computer-Awareness-by-Arihant#page=5",
@@ -284,12 +284,12 @@ window.PF_DATA.exams = {
     "subject": "History",
     "exam": "World History",
     "course": [
-     "https://youtube.com/playlist?list=PLWEZPpYlpiLBCGxTjv1PrTNsvWS5rObD8&si=pf6FerQh8WMzF1SX",
-     "https://youtube.com/playlist?list=PLFiKKZWevLSz6aSefzaA-v7gEq-V-ZU64&si=ORueMnBsMDlNMUEF"
+     "https://youtube.com/playlist?list=PLWEZPpYlpiLBCGxTjv1PrTNsvWS5rObD8",
+     "https://youtube.com/playlist?list=PLFiKKZWevLSz6aSefzaA-v7gEq-V-ZU64"
     ],
     "marathon": [
-     "https://youtu.be/EYfJ7yO6KaQ?si=zy2sobIMafr8ywFS",
-     "https://youtu.be/UiXuBmBaNeA?si=tAZuehyqEb_uzp9T"
+     "https://youtu.be/EYfJ7yO6KaQ",
+     "https://youtu.be/UiXuBmBaNeA"
     ],
     "books": [],
     "extras": []
@@ -312,7 +312,7 @@ window.PF_DATA.exams = {
     "exam": "Industrial Revolution Class",
     "course": [],
     "marathon": [
-     "https://www.youtube.com/live/GUhL_FR9akw?si=dNvbISueAccess"
+     "https://www.youtube.com/live/GUhL_FR9akw"
     ],
     "books": [],
     "extras": []
@@ -322,7 +322,7 @@ window.PF_DATA.exams = {
     "exam": "French Revolution Class",
     "course": [],
     "marathon": [
-     "https://youtu.be/NLcdpsO8xBI?si=y_xqbOu41UfylIcK"
+     "https://youtu.be/NLcdpsO8xBI"
     ],
     "books": [],
     "extras": []
@@ -332,7 +332,7 @@ window.PF_DATA.exams = {
     "exam": "American Revolution Class",
     "course": [],
     "marathon": [
-     "https://youtu.be/N8p7tmoHZ1k?si=X000ALbWT6UQYM5Z"
+     "https://youtu.be/N8p7tmoHZ1k"
     ],
     "books": [],
     "extras": []
@@ -342,7 +342,7 @@ window.PF_DATA.exams = {
     "exam": "World War 1 Class",
     "course": [],
     "marathon": [
-     "https://youtu.be/GvkymWtIQwA?si=N8sYfxQQImHU_28Q"
+     "https://youtu.be/GvkymWtIQwA"
     ],
     "books": [],
     "extras": []
@@ -352,7 +352,7 @@ window.PF_DATA.exams = {
     "exam": "World War 2 Class",
     "course": [],
     "marathon": [
-     "https://youtu.be/-TLMaFN3CxY?si=ZOsX5r96rLcDqO4Z"
+     "https://youtu.be/-TLMaFN3CxY"
     ],
     "books": [],
     "extras": []
@@ -362,7 +362,7 @@ window.PF_DATA.exams = {
     "exam": "The Cold War Class",
     "course": [],
     "marathon": [
-     "https://youtu.be/scT4rHBjifU?si=K1EtgiKv6SGdAomm"
+     "https://youtu.be/scT4rHBjifU"
     ],
     "books": [],
     "extras": []
@@ -371,12 +371,12 @@ window.PF_DATA.exams = {
     "subject": "History",
     "exam": "Ancient History",
     "course": [
-     "https://youtube.com/playlist?list=PLpuxPG4TUOR5NvaM3LcJUZg8tzgxyBVqN&si=4NdgQDIQyh13PuHa",
-     "https://youtube.com/playlist?list=PL0CDU9VfXs_w_w6koQKirJMd27Ti-ILII&si=mgW2MqrN7eY_zJh1"
+     "https://youtube.com/playlist?list=PLpuxPG4TUOR5NvaM3LcJUZg8tzgxyBVqN",
+     "https://youtube.com/playlist?list=PL0CDU9VfXs_w_w6koQKirJMd27Ti-ILII"
     ],
     "marathon": [
-     "https://youtu.be/eHEv5aF5td8?si=77_LMFQ_0sFwckEI",
-     "https://www.youtube.com/live/68rd-Xn3DPo?si=uzJNFauyO4qXYpwb"
+     "https://youtu.be/eHEv5aF5td8",
+     "https://www.youtube.com/live/68rd-Xn3DPo"
     ],
     "books": [],
     "extras": []
@@ -385,12 +385,12 @@ window.PF_DATA.exams = {
     "subject": "History",
     "exam": "Medieval History",
     "course": [
-     "https://youtube.com/playlist?list=PL0CDU9VfXs_zy2zecu21i-CuSh8e3miHx&si=XZbTfnuTgMsWkPYV",
-     "https://youtube.com/playlist?list=PLpuxPG4TUOR6VMeKK9kH5cwQ_-KecJgiK&si=_nB9OLPHt0lum-oF"
+     "https://youtube.com/playlist?list=PL0CDU9VfXs_zy2zecu21i-CuSh8e3miHx",
+     "https://youtube.com/playlist?list=PLpuxPG4TUOR6VMeKK9kH5cwQ_-KecJgiK"
     ],
     "marathon": [
-     "https://youtu.be/Ry9trAKckNY?si=2ytJ5pBGgaF2ya7h",
-     "https://youtu.be/Kj982qMN9ec?si=UJeU60HOGnrCp7Ey"
+     "https://youtu.be/Ry9trAKckNY",
+     "https://youtu.be/Kj982qMN9ec"
     ],
     "books": [],
     "extras": []
@@ -399,12 +399,12 @@ window.PF_DATA.exams = {
     "subject": "History",
     "exam": "Modern History",
     "course": [
-     "https://youtube.com/playlist?list=PLKD059AFEBpwDisSqOSRgQQeOvNg55TrS&si=WHW3be-_Q4380uNb",
-     "https://youtube.com/playlist?list=PLFiKKZWevLSyyb9hcZvWZb0G1wIneDhmv&si=Y-eFne4yYKoWEy_g"
+     "https://youtube.com/playlist?list=PLKD059AFEBpwDisSqOSRgQQeOvNg55TrS",
+     "https://youtube.com/playlist?list=PLFiKKZWevLSyyb9hcZvWZb0G1wIneDhmv"
     ],
     "marathon": [
-     "https://youtu.be/04lDS0aoPQ4?si=o8X8nyliEvHhV-eM",
-     "https://youtu.be/ZboZd1dBghA?si=1Em-xZM0vJLpEKqV"
+     "https://youtu.be/04lDS0aoPQ4",
+     "https://youtu.be/ZboZd1dBghA"
     ],
     "books": [],
     "extras": []
@@ -471,7 +471,7 @@ window.PF_DATA.exams = {
      "https://www.youtube.com/watch?v=nxPjjF0cNoY"
     ],
     "books": [
-     "https://bookscape.com/product-details/bhartiya-arthvyavastha-16e-9789355329219?utm_term=&utm_campaign=&utm_source=adwords&utm_medium=ppc&hsa_acc=3070623782&hsa_cam=22916594543&hsa_grp=&hsa_ad=&hsa_src=x&hsa_tgt=&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gad_source=1&gad_campaignid=22916615702&gclid=CjwKCAjw46HPBhAMEiwASZpLRAX-xb638iyQ1ebJFbpmtBSnnNiU8l3oCzXyn1moxE_EyxpNQcZoRhoC5Q4QAvD_BwE",
+     "https://bookscape.com/product-details/bhartiya-arthvyavastha-16e-9789355329219?hsa_acc=3070623782&hsa_cam=22916594543&hsa_grp=&hsa_ad=&hsa_src=x&hsa_tgt=&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gad_source=1&gad_campaignid=22916615702",
      "https://www.indiabudget.gov.in/economicsurvey/",
      "https://www.niti.gov.in/reports",
      "https://www.rbi.org.in/scripts/AnnualReportPublications.aspx",
@@ -853,67 +853,67 @@ window.PF_DATA.exams = {
    {
     "topic": "Basic History, Geography, Polity, Economy, Science, Environment, CSAT basics",
     "srcText": "NCERT textbooks — official NCERT site provides textbooks for Classes I–XII in Hindi, English and Urdu. (NCERT)",
-    "srcUrl": "https://ncert.nic.in/textbook.php?utm_source=chatgpt.com"
+    "srcUrl": "https://ncert.nic.in/textbook.php"
    },
    {
     "topic": "Indian Culture, Art Forms, Literature, Architecture",
     "srcText": "Ministry of Culture and CCRT resources. Ministry of Culture handles preservation and promotion of India’s cultural heritage. (India Culture)",
-    "srcUrl": "https://www.indiaculture.gov.in/upcoming-and-ongoing-events-ministry-culture-organizations-332022?utm_source=chatgpt.com"
+    "srcUrl": "https://www.indiaculture.gov.in/upcoming-and-ongoing-events-ministry-culture-organizations-332022"
    },
    {
     "topic": "Constitution, Polity, Fundamental Rights, DPSP, Parliament, Federalism",
     "srcText": "Constitution of India — Legislative Department, Ministry of Law and Justice. (Legislative India)",
-    "srcUrl": "https://legislative.gov.in/constitution-of-india/?utm_source=chatgpt.com"
+    "srcUrl": "https://legislative.gov.in/constitution-of-india/"
    },
    {
     "topic": "Economy, Budgeting, Agriculture, Industry, Infrastructure, Social Sector",
     "srcText": "Economic Survey and Union Budget portal. (India Budget)",
-    "srcUrl": "https://www.indiabudget.gov.in/economicsurvey/?utm_source=chatgpt.com"
+    "srcUrl": "https://www.indiabudget.gov.in/economicsurvey/"
    },
    {
     "topic": "Monetary policy, inflation, banking, RBI role",
     "srcText": "Reserve Bank of India — RBI explains its monetary policy role and publishes Monetary Policy Reports. (Reserve Bank of India)",
-    "srcUrl": "https://www.rbi.org.in/commonman/english/Scripts/Organisation.aspx?utm_source=chatgpt.com"
+    "srcUrl": "https://www.rbi.org.in/commonman/english/Scripts/Organisation.aspx"
    },
    {
     "topic": "Demographics, population, employment, social indicators",
     "srcText": "Census of India and MoSPI / NSSO official data. (Census India)",
-    "srcUrl": "https://censusindia.gov.in/census.website/data/census-tables?utm_source=chatgpt.com"
+    "srcUrl": "https://censusindia.gov.in/census.website/data/census-tables"
    },
    {
     "topic": "Environment, biodiversity, climate change",
     "srcText": "Ministry of Environment, Forest and Climate Change annual reports. (Ministry of Environment)",
-    "srcUrl": "https://moef.gov.in/annual-reports?utm_source=chatgpt.com"
+    "srcUrl": "https://moef.gov.in/annual-reports"
    },
    {
     "topic": "Disaster Management",
     "srcText": "NDMA — official guidelines and National Disaster Management Plan. (NDMA)",
-    "srcUrl": "https://ndma.gov.in/?utm_source=chatgpt.com"
+    "srcUrl": "https://ndma.gov.in/"
    },
    {
     "topic": "Internal Security, border management, law and order",
     "srcText": "Ministry of Home Affairs annual reports and Internal Security Division information. (Ministry of Home Affairs)",
-    "srcUrl": "https://www.mha.gov.in/en/documents/annual-reports?utm_source=chatgpt.com"
+    "srcUrl": "https://www.mha.gov.in/en/documents/annual-reports"
    },
    {
     "topic": "International Relations",
     "srcText": "Ministry of External Affairs annual reports, press releases and official updates. (MEA India)",
-    "srcUrl": "https://mea.gov.in/Annual_Reports.htm?57%2FAnnual_Reports=&utm_source=chatgpt.com"
+    "srcUrl": "https://mea.gov.in/Annual_Reports.htm?57%2FAnnual_Reports="
    },
    {
     "topic": "Science and Technology, Space, Biotechnology, IPR basics",
     "srcText": "Department of Science & Technology reports and ISRO annual reports. (Department of Science & Technology)",
-    "srcUrl": "https://dst.gov.in/documents/reports?utm_source=chatgpt.com"
+    "srcUrl": "https://dst.gov.in/documents/reports"
    },
    {
     "topic": "Ethics, governance, RTI, citizen charters, public administration reforms",
     "srcText": "Second Administrative Reforms Commission reports on Ethics in Governance, RTI, Crisis Management, Public Order, Local Governance etc. (DARPG)",
-    "srcUrl": "https://darpg.gov.in/en/arc-reports?utm_source=chatgpt.com"
+    "srcUrl": "https://darpg.gov.in/en/arc-reports"
    },
    {
     "topic": "Current Affairs",
     "srcText": "PIB for government schemes/policies; MEA for foreign policy; ministry annual reports for subject-wise current affairs. PIB is the Government of India’s nodal agency for disseminating information on policies, programmes and initiatives. (Press Information Bureau)",
-    "srcUrl": "https://www.pib.gov.in/Content/224_5_AboutPIB.aspx?utm_source=chatgpt.com"
+    "srcUrl": "https://www.pib.gov.in/Content/224_5_AboutPIB.aspx"
    },
    {
     "topic": "Latest CSE notification + syllabus + exam scheme",
@@ -939,6 +939,16 @@ window.PF_DATA.exams = {
     "topic": "Official cut-off marks",
     "srcText": "UPSC’s Cut-off Marks page has CSE cut-offs. (UPSC)",
     "srcUrl": "https://www.upsc.gov.in/examinations/cutoff-marks--"
+   }
+  ],
+  "official": [
+   {
+    "label": "Past papers",
+    "url": "https://www.upsc.gov.in/examinations/previous-question-papers"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://upsc.gov.in/answer-keys"
    }
   ]
  },
@@ -1227,7 +1237,7 @@ window.PF_DATA.exams = {
         ],
         "marathon": [
          "https://www.youtube.com/playlist?list=PLam4CbJ5VUa757Mvx3O9Cl263e45sI3Of",
-         "https://www.youtube.com/live/zTULuFFnKYM?si=AzZbjt24FvtDKZpF",
+         "https://www.youtube.com/live/zTULuFFnKYM",
          "https://www.youtube.com/live/TcmQTdbJ18g"
         ],
         "books": []
@@ -1445,7 +1455,7 @@ window.PF_DATA.exams = {
    {
     "topic": "Rajasthan economy",
     "srcText": "Rajasthan Economic Review 2025–26, Finance Department, Government of Rajasthan. (Finance Department Rajasthan)",
-    "srcUrl": "https://finance.rajasthan.gov.in/docs/budget/statebudget/2026-2027/Economicreviewe.pdf?utm_source=chatgpt.com"
+    "srcUrl": "https://finance.rajasthan.gov.in/docs/budget/statebudget/2026-2027/Economicreviewe.pdf"
    },
    {
     "topic": "Rajasthan budget",
@@ -1475,7 +1485,7 @@ window.PF_DATA.exams = {
    {
     "topic": "Rajasthan current affairs",
     "srcText": "DIPR / Sujas and official Rajasthan government press releases. DIPR is the state information department source; Sujas is its government communication/publication ecosystem. (Google Play)",
-    "srcUrl": "https://play.google.com/store/apps/details?hl=hi&id=com.sujas&utm_source=chatgpt.com"
+    "srcUrl": "https://play.google.com/store/apps/details?hl=hi&id=com.sujas"
    }
   ]
  },
@@ -1518,5 +1528,92 @@ window.PF_DATA.exams = {
     "https://www.youtube.com/@rajasthanexamsbymissiongyan"
    ]
   }
- ]
+ ],
+ "jee": {
+  "description": "NTA engineering entrance: Physics, Chemistry, Maths. Two sessions, Jan and Apr.",
+  "links": [
+   {
+    "label": "Syllabus",
+    "url": "https://jeemain.nta.nic.in/document/syllabus-2026/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://jeemain.nta.nic.in/document/final-answer-keys-of-jeemain-2026-session-i-paper-i-b-e-b-tech/"
+   },
+   {
+    "label": "Free mock tests",
+    "url": "https://www.nta.ac.in/abhyas"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": [
+   {
+    "name": "Physics",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3gg5klg1OCuojRv03azO48L"
+   },
+   {
+    "name": "Chemistry",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3iE2UKBjjf_hyFTQMmf4DeW"
+   },
+   {
+    "name": "Mathematics",
+    "url": "https://www.youtube.com/playlist?list=PLxyGaR3hEy3gUC61DuKdmlvQ6Ir2jJgj1"
+   }
+  ]
+ },
+ "neet": {
+  "description": "NTA medical entrance: 180 MCQs in Physics, Chemistry, Biology. Pen and paper.",
+  "links": [
+   {
+    "label": "Information bulletin",
+    "url": "https://neet.nta.nic.in/document/information-bulletin-english/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://neet.nta.nic.in/final-answer-keys-for-neet-ug-2026-re-examination/"
+   },
+   {
+    "label": "Free mock tests",
+    "url": "https://www.nta.ac.in/abhyas"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": []
+ },
+ "cuet": {
+  "description": "NTA test for central university UG admission: languages, domain subjects, GAT.",
+  "links": [
+   {
+    "label": "Syllabus",
+    "url": "https://cuet.nta.nic.in/cuetug-2026-syllabus/"
+   },
+   {
+    "label": "Answer keys",
+    "url": "https://www.nta.ac.in/Download/Notice/Notice_20260621191633.pdf"
+   },
+   {
+    "label": "SATHEE",
+    "url": "https://sathee.iitk.ac.in/"
+   },
+   {
+    "label": "NCERT books",
+    "url": "https://ncert.nic.in/textbook.php"
+   }
+  ],
+  "subjects": []
+ }
 };

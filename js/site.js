@@ -35,11 +35,11 @@
 
   const dataScripts = {
     school: "js/data/school.js?v=1dd425b231b5",
-    teach: "js/data/teach.js?v=591eca90da74",
+    teach: "js/data/teach.js?v=95cc00147d76",
     tools: "js/data/tools.js?v=78e7d4748c46",
-    exams: "js/data/exams.js?v=f6be0ec7a33a",
-    pigbang: "js/data/pigbang.js?v=04fd284661b0",
-    govt: "js/data/govt.js?v=8588947b234b"
+    exams: "js/data/exams.js?v=114c9f2cfdd8",
+    pigbang: "js/data/pigbang.js?v=9395c3e9ca34",
+    govt: "js/data/govt.js?v=05e292fad015"
   };
 
   const dataPages = {
@@ -54,9 +54,9 @@
   // Search destinations must match DESTINATIONS in tools/build-topics.mjs.
   const topicRoutes = {
     school: { by: "section", slugs: ["nursery-to-class-5", "class-6-to-8", "class-9-to-12", "undergraduate", "postgraduate", "phd-and-research", "teacher-training"] },
-    teach: { by: "group", slugs: ["government-skill-portals", "corporate-training", "coding-platforms"] },
+    teach: { by: "group", slugs: ["government-skill-portals", "corporate-training", "coding-platforms", "jobs-and-business"] },
     tools: { by: "group", slugs: ["privacy-and-browsers", "files-and-remote-access", "creative-tools", "research-tools"] },
-    govt: { by: "group", slugs: ["information-and-records", "anti-corruption", "courts-and-legal-remedies", "commissions-and-regulators", "grievance-portals", "social-audit", "parliament-and-representatives", "media-and-fraud-reporting", "criminal-and-financial-law", "digital-governance"] }
+    govt: { by: "group", slugs: ["information-and-records", "anti-corruption", "courts-and-legal-remedies", "commissions-and-regulators", "grievance-portals", "social-audit", "parliament-and-representatives", "media-and-fraud-reporting", "criminal-and-financial-law", "digital-governance", "your-state"] }
   };
 
   const dataLabels = {

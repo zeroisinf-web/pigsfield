@@ -27,15 +27,8 @@ window.PF_DATA.govt = {
         {
          "label": "Official Step-by-Step Guide",
          "urls": [
-          
-         "https://rtionline.gov.in/guidelines.php?request",
-         "https://rtionline.gov.in/faq.php"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://rti.rajasthan.gov.in/"
+          "https://rtionline.gov.in/guidelines.php?request",
+          "https://rtionline.gov.in/faq.php"
          ]
         }
        ],
@@ -61,8 +54,8 @@ window.PF_DATA.govt = {
          "text": "1. RTI application लिखो (simple भाषा में) | 2. ₹10 का IPO/Court Fee Stamp लगाओ | 3. PIO (Public Information Officer) को भेजो | 4. 30 दिन में जवाब अनिवार्य | 5. जवाब न मिले → First Appeal (Appellate Authority को, 30 दिन में) | 6. फिर न मिले → Second Appeal (CIC/SIC को) | 7. झूठा जवाब मिले → penalty की मांग CIC से"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — RTI को Postmortem Tool की तरह Use करो:\n• कभी 'क्यों नहीं हुआ' मत पूछो — RTI में 'क्यों' का जवाब नहीं मिलता।\n• इसके बजाय पूछो:\n→ \"इस कार्य के लिए आवंटित बजट की Certified Copies प्रदान करें\"\n→ \"इस प्रोजेक्ट से जुड़े ठेकेदारों के नाम और बिल की प्रतियां दें\"\n→ \"अधिकारी द्वारा फाइल पर लिए निर्णयों की Day-to-Day Progress Report दें\"\n📌 KEY SECTIONS:\n• धारा 4(1)(b): Suo Motu Disclosure — विभाग को खुद जानकारी सार्वजनिक करनी होती है\n• धारा 6(1): आवेदन लगाने की प्रक्रिया\n• धारा 20: 30 दिन में जवाब न मिले → CIC/SIC अधिकारी पर ₹250/दिन जुर्माना (अधिकतम ₹25,000)\n🔗 Rajasthan RTI:"
+         "label": "सुझाव",
+         "text": "RTI को Postmortem Tool की तरह Use करो:\n• कभी 'क्यों नहीं हुआ' मत पूछो — RTI में 'क्यों' का जवाब नहीं मिलता।\n• इसके बजाय पूछो:\n→ \"इस कार्य के लिए आवंटित बजट की Certified Copies प्रदान करें\"\n→ \"इस प्रोजेक्ट से जुड़े ठेकेदारों के नाम और बिल की प्रतियां दें\"\n→ \"अधिकारी द्वारा फाइल पर लिए निर्णयों की Day-to-Day Progress Report दें\"\n📌 KEY SECTIONS:\n• धारा 4(1)(b): Suo Motu Disclosure — विभाग को खुद जानकारी सार्वजनिक करनी होती है\n• धारा 6(1): आवेदन लगाने की प्रक्रिया\n• धारा 20: 30 दिन में जवाब न मिले → CIC/SIC अधिकारी पर ₹250/दिन जुर्माना (अधिकतम ₹25,000)\n🔗 Rajasthan RTI:"
         }
        ],
        "badge": "TIER 1 — सूचना"
@@ -80,7 +73,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=CAG+report+India+hindi+explained"
+          "https://www.youtube.com/watch?v=GKyFsRp-kfA"
          ]
         }
        ],
@@ -102,8 +95,8 @@ window.PF_DATA.govt = {
          "text": "1. cag.gov.in पर जाओ | 2. Audit Reports section खोलो | 3. संबंधित state/ministry/year की रिपोर्ट download करो | 4. irregularities note करो | 5. इन्हें PIL, Lokpal complaint, या मीडिया में cite करो | 6. RTI से संबंधित फ़ाइलें माँगो | 7. Court में evidence के रूप में use करो"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — CAG को PIL का 'Ready-Made Ammunition' मानो:\n• cag.gov.in से उस विभाग की Audit Report download करो\n• Report में साफ लिखा होता है — फलां विभाग ने टेंडर में कितने करोड़ का नुकसान किया\n• इसी Report के आधार पर HC में PIL दाखिल करो — यह अकाट्य सबूत है क्योंकि सरकार के ही ऑडिटर का है\n• या CVC/Lokayukta में आपराधिक मामला दर्ज करवाओ\n• 2G, Coal Scam जैसे घोटाले CAG Reports से ही बाहर आए थे"
+         "label": "सुझाव",
+         "text": "CAG को PIL का 'Ready-Made Ammunition' मानो:\n• cag.gov.in से उस विभाग की Audit Report download करो\n• Report में साफ लिखा होता है — फलां विभाग ने टेंडर में कितने करोड़ का नुकसान किया\n• इसी Report के आधार पर HC में PIL दाखिल करो — यह अकाट्य सबूत है क्योंकि सरकार के ही ऑडिटर का है\n• या CVC/Lokayukta में आपराधिक मामला दर्ज करवाओ\n• 2G, Coal Scam जैसे घोटाले CAG Reports से ही बाहर आए थे"
         }
        ],
        "badge": "TIER 1 — सूचना"
@@ -123,13 +116,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=myneta+affidavit+check+neta+property+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://adrindia.org/"
+          "https://www.youtube.com/watch?v=oLAUUzGoZSQ"
          ]
         }
        ],
@@ -151,8 +138,8 @@ window.PF_DATA.govt = {
          "text": "1. myneta.info खोलो | 2. नेता का नाम search करो | 3. हर चुनाव का affidavit compare करो | 4. संपत्ति वृद्धि calculate करो | 5. आय के स्रोत check करो | 6. झूठा affidavit मिले → ECI को complaint | 7. ECI/High Court में चुनाव रद्द करवाने की petition | 8. ADR India पर detailed analysis देखो"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — MyNeta को IT/ED के साथ Combine करो:\n• ADR (Association for Democratic Reforms) चुनाव आयोग के Affidavits को digital रूप में रखता है\n• पिछले चुनाव की संपत्ति vs. वर्तमान चुनाव की संपत्ति — compare करो\n• Disproportionate assets मिले → IT Department / ED को complaint\n• यह data court में direct evidence के रूप में admissible है\n• 🔗 ADR:"
+         "label": "सुझाव",
+         "text": "MyNeta को IT/ED के साथ Combine करो:\n• ADR (Association for Democratic Reforms) चुनाव आयोग के Affidavits को digital रूप में रखता है\n• पिछले चुनाव की संपत्ति vs. वर्तमान चुनाव की संपत्ति — compare करो\n• Disproportionate assets मिले → IT Department / ED को complaint\n• यह data court में direct evidence के रूप में admissible है"
         }
        ],
        "badge": "TIER 1 — सूचना"
@@ -195,6 +182,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. lokpal.gov.in पर जाओ | 2. 'File Complaint' section खोलो | 3. Form भरो — विस्तृत विवरण, documents attach करो | 4. RTI से निकाले documents संलग्न करो | 5. Complaint submit करो | 6. Reference number नोट करो | 7. Status track करते रहो | 8. Lokpal inquiry commission बना सकता है | 9. Prosecution की सिफारिश भी कर सकता है"
+        },
+        {
+         "label": "सुझाव",
+         "text": "Lokpal की असली ताकत:\n• Lokpal अपनी शिकायतों की जाँच CBI या CVC से करवा सकता है\n• Complaint Format: निर्धारित Form में, Identity Proof + Affidavit के साथ\n• पुख्ता सबूत ज़रूरी — RTI से निकाले दस्तावेज़, Audio/Video\n• Affidavit इसलिए — ताकि फर्जी शिकायतें न हों, serious complainants ही आएं\n• PM के खिलाफ भी शिकायत हो सकती है, पर अंतरराष्ट्रीय संबंध, सुरक्षा, लोक व्यवस्था, परमाणु ऊर्जा और अंतरिक्ष से जुड़े आरोप बाहर हैं, और जाँच के लिए Lokpal की full bench के दो-तिहाई सदस्यों की मंज़ूरी चाहिए (Lokpal Act, धारा 14(1)(a))"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -232,10 +223,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. lokayukta.rajasthan.gov.in खोलो | 2. Online या offline complaint form भरो | 3. भ्रष्टाचार का विस्तृत विवरण लिखो | 4. Evidence — RTI replies, documents संलग्न करो | 5. Submit करो | 6. Lokayukta अपनी जांच करता है | 7. Report राज्यपाल को भेजी जाती है | 8. Action की सिफारिश की जाती है"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Lokpal की असली ताकत:\n• Lokpal के पास CBI और CVC को सीधे आदेश देने की शक्ति है\n• Complaint Format: निर्धारित Form में, Identity Proof + Affidavit के साथ\n• पुख्ता सबूत ज़रूरी — RTI से निकाले दस्तावेज़, Audio/Video\n• Affidavit इसलिए — ताकि फर्जी शिकायतें न हों, serious complainants ही आएं\n• Lokpal PM को भी investigate कर सकता है (office of profit cases में)"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -257,12 +244,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=CVC+complaint+central+vigilance+commission+india"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://pgportal.gov.in/"
-         ]
         }
        ],
        "extra": [
@@ -283,8 +264,8 @@ window.PF_DATA.govt = {
          "text": "1. cvc.gov.in खोलो | 2. 'Lodge Complaint' पर जाओ | 3. अधिकारी का नाम, विभाग, भ्रष्टाचार का विवरण | 4. Evidence upload करो | 5. Anonymous भी कर सकते हो | 6. Whistle Blower complaint के लिए अलग form है | 7. CVC संबंधित विभाग को जांच के आदेश देता है | 8. Follow-up करते रहो"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — CPGRAMS का Escalation Matrix:\n• शिकायत दर्ज → Registration Number मिलता है\n• नोडल अधिकारी ने गोलमोल जवाब देकर बंद कर दिया → उसी portal पर 'APPEAL' करो\n• Appeal सीधे Secretary स्तर के उच्चाधिकारी के पास जाती है\n• अधिकारियों पर 30 दिन में निपटाने का भारी Administrative Pressure होता है\n• यह pressure उनकी Annual Performance Review (ACR) को affect करता है\n• 🔗 Direct:"
+         "label": "सुझाव",
+         "text": "CVC + PIDPI का सही तरीका:\n• PIDPI = Public Interest Disclosure & Protection of Informers\n• Sealed envelope पर लिखो: \"COMPLAINT UNDER PIDPI RESOLUTION\"\n• अपना नाम और address ज़रूर दो — यह CVC के पास गुप्त रहेगा\n• CVC विभाग को केवल complaint विवरण भेजता है, आपकी identity नहीं\n• Whistle Blower Protection Act 2014 के तहत legal immunity मिलती है"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -302,7 +283,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=CBI+complaint+kaise+kare+hindi"
+          "https://www.youtube.com/watch?v=slZoH5N3SxU"
          ]
         }
        ],
@@ -322,10 +303,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. cbi.gov.in/complaints.php पर जाओ | 2. Complaint form भरो | 3. मामले का पूरा विवरण — dates, names, amounts | 4. Documents/evidence upload करो | 5. यदि state police ने FIR refuse की हो तो उसका proof भी दो | 6. High Court से CBI जांच का आदेश दिलवाना ज़्यादा effective है | 7. PIL में CBI जांच की मांग करो"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — IT Department Informant Reward Scheme:\n• Anonymous report भी valid — अपना नाम देना ज़रूरी नहीं\n• Benami property की जानकारी: incometaxindia.gov.in/benami\n• Reward: Tax Recovery का हिस्सा Informer को मिलता है\n• PIDPI (CVC) के तहत: लिफाफे पर \"Complaint under PIDPI\" लिखो\n• CVC आपकी पहचान पूरी तरह गुप्त रखेगा\n• संबंधित विभाग को केवल complaint का विवरण भेजकर जांच करवाएगा"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -345,12 +322,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=ED+Enforcement+Directorate+complaint+India+hindi"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://cvc.gov.in/whistleblower.htm"
-         ]
         }
        ],
        "extra": [
@@ -369,10 +340,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. enforcementdirectorate.gov.in पर complaint करो | 2. PMLA (Prevention of Money Laundering Act) के तहत complaint | 3. संपत्ति के अचानक वृद्धि के documents | 4. Bank transactions का evidence | 5. Benami property की जानकारी | 6. ED स्वयं investigation शुरू करती है | 7. Attachment of property का आदेश दे सकती है | 8. Court में prosecution"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — CVC + PIDPI का सही तरीका:\n• PIDPI = Public Interest Disclosure & Protection of Informers\n• Sealed envelope पर लिखो: \"COMPLAINT UNDER PIDPI RESOLUTION\"\n• अपना नाम और address ज़रूर दो — यह CVC के पास गुप्त रहेगा\n• CVC विभाग को केवल complaint विवरण भेजता है, आपकी identity नहीं\n• Whistle Blower Protection Act 2014 के तहत legal immunity मिलती है\n• 🔗 PIDPI:"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -390,13 +357,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=income+tax+evasion+report+india+reward+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://www.barcouncilofindia.org/"
+          "https://www.youtube.com/watch?v=IIIW9SyuWZU"
          ]
         }
        ],
@@ -415,11 +376,11 @@ window.PF_DATA.govt = {
         },
         {
          "label": "प्रक्रिया (Step-by-Step)",
-         "text": "1. incometax.gov.in पर जाओ | 2. 'Report Tax Evasion' section खोलो | 3. व्यक्ति का नाम, PAN (अगर पता हो), संपत्ति का विवरण | 4. कहाँ छुपाया है — property, jewelry, cash | 5. Evidence attach करो | 6. Anonymous report भी valid है | 7. Informant Reward Scheme के तहत reward claim करो | 8. I-T Department raid करती है और recovery पर reward मिलता है"
+         "text": "1. incometax.gov.in पर जाओ | 2. 'Report Tax Evasion' section खोलो | 3. व्यक्ति का नाम, PAN (अगर पता हो), संपत्ति का विवरण | 4. कहाँ छुपाया है — property, jewelry, cash | 5. Evidence attach करो | 6. गुमनाम सूचना भी दे सकते हैं, पर तब reward नहीं मिलता | 7. Reward चाहिए तो Informants Reward Scheme, 2018 में पहचान देकर Informant Code लो | 8. I-T Department raid करती है और recovery पर reward मिलता है"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — PIL दाखिल करने से पहले ये करो:\n• Step 1: संबंधित विभाग/नेता को Legal Notice (Demand for Justice) भेजो — यह Pre-PIL requirement है\n• Step 2: जवाब न मिले / असंतोषजनक जवाब → HC/SC में PIL\n• Article 32: SC में (Fundamental Rights violation)\n• Article 226: HC में (any violation)\n• Court PIL स्वीकार करे → Government को Notice → जवाब न दे → Contempt of Court → जेल\n• वकील नहीं? → Pro-Bono lawyers मिलते हैं जनहित के मुद्दों पर\n• 🔗 Bar Council of India:"
+         "label": "सुझाव",
+         "text": "IT Department Informant Reward Scheme:\n• गुमनाम सूचना दे सकते हैं, पर उस पर reward नहीं मिलता\n• Reward के लिए Income Tax Informants Reward Scheme, 2018 में अपनी पहचान देकर Informant Code लेना होता है — पहचान गुप्त रखी जाती है\n• Reward: वसूले गए tax का एक हिस्सा"
         }
        ],
        "badge": "TIER 2 — शिकायत"
@@ -437,7 +398,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=ACB+trap+anti+corruption+bureau+Rajasthan+hindi"
+          "https://www.youtube.com/watch?v=0Sgz2CMNAFM"
          ]
         }
        ],
@@ -481,7 +442,13 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=PIL+kaise+kare+public+interest+litigation+india+hindi"
+          "https://www.youtube.com/watch?v=WvTikgc47yE"
+         ]
+        },
+        {
+         "label": "सुझाव",
+         "urls": [
+          "https://www.barcouncilofindia.org/"
          ]
         }
        ],
@@ -501,6 +468,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. मुद्दा identify करो — public interest में होना चाहिए | 2. Simple petition लिखो (Hindi/English) | 3. High Court: संबंधित state HC में दाखिल करो | 4. SC: Fundamental Rights violation हो तो | 5. Court fee ₹0-50 | 6. Court Notice issue करती है सरकार को | 7. सरकार को जवाब देना होता है | 8. Court investigation का आदेश दे सकती है | 9. Policy बदलवाने तक की ताकत"
+        },
+        {
+         "label": "सुझाव",
+         "text": "PIL दाखिल करने से पहले ये करो:\n• Step 1: संबंधित विभाग/नेता को Legal Notice (Demand for Justice) भेजो — यह Pre-PIL requirement है\n• Step 2: जवाब न मिले / असंतोषजनक जवाब → HC/SC में PIL\n• Article 32: SC में (Fundamental Rights violation)\n• Article 226: HC में (any violation)\n• Court PIL स्वीकार करे → Government को Notice → जवाब न दे → Contempt of Court → जेल\n• वकील नहीं? → Pro-Bono lawyers मिलते हैं जनहित के मुद्दों पर"
         }
        ],
        "badge": "TIER 3 — न्यायिक"
@@ -522,12 +493,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=writ+petition+mandamus+habeas+corpus+india+hindi"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://rps.rajasthan.gov.in/"
-         ]
         }
        ],
        "extra": [
@@ -546,10 +511,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. Mandamus: अधिकारी ने काम नहीं किया → HC में Writ of Mandamus | 2. Habeas Corpus: किसी को गैरकानूनी रोका → तुरंत HC/SC में | 3. Certiorari: निचली court/tribunal का गलत आदेश रद्द करवाना | 4. Quo Warranto: किसी को गैरकानूनी पद से हटाना | 5. Petition draft करो | 6. Affidavit जोड़ो | 7. Court fee भरो | 8. HC/SC में file करो"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — RTI से Service Delay को Penalize करो:\n• हर सरकारी विभाग के बाहर Citizen's Charter का Board अनिवार्य है\n• मूल निवास 15 दिन, राशन कार्ड 30 दिन — timeframe लिखा होता है\n• Deadline miss हुई → RTPS Appellate Authority को Appeal\n• Penalty: संबंधित Clerk/Officer के वेतन से directly कटती है (₹250/दिन तक)\n• यह officer को personally नुकसान देता है — इसलिए सबसे effective pressure\n• 🔗 Rajasthan RTPS:"
         }
        ],
        "badge": "TIER 3 — न्यायिक"
@@ -568,7 +529,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=consumer+court+complaint+kaise+kare+hindi"
+          "https://www.youtube.com/watch?v=G0RlwIfFUvY"
          ]
         }
        ],
@@ -607,14 +568,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=CAT+central+administrative+tribunal+india+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://hrcnet.nic.in/",
-          "https://edaakhil.nic.in/"
+          "https://www.youtube.com/watch?v=CsEGz-M7uWo"
          ]
         }
        ],
@@ -638,10 +592,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. catindia.gov.in पर जाओ | 2. Application form भरो | 3. Administrative dispute का विवरण | 4. Documents attach करो | 5. File करो | 6. CAT government को notice देता है | 7. Hearing होती है | 8. Order pass होता है | 9. HC/SC में appeal का भी option है"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — NHRC की Civil Court जैसी शक्तियां:\n• NHRC सीधे Suo Motu cognizance ले सकता है\n• Civil Court की शक्तियां: गवाहों को Summon कर सकता है, documents मंगा सकता है\n• 🔗 Online complaint: (HRCNet Portal)\n• NHRC compensation का आदेश दे सकता है — directly State/Central Govt को\n• Fake encounter, custodial death → NHRC का सबसे powerful intervention\n• E-Daakhil: consumer rights के लिए घर बैठे Consumer Forum में case दर्ज करो\n• 🔗 E-Daakhil:"
         }
        ],
        "badge": "TIER 3 — न्यायिक"
@@ -660,7 +610,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=civil+suit+land+dispute+india+hindi"
+          "https://www.youtube.com/watch?v=T9N1pIx-f84"
          ]
         }
        ],
@@ -702,7 +652,13 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=NHRC+complaint+national+human+rights+commission+hindi"
+          "https://www.youtube.com/watch?v=fAPjrJ2bFx0"
+         ]
+        },
+        {
+         "label": "सुझाव",
+         "urls": [
+          "https://hrcnet.nic.in/"
          ]
         }
        ],
@@ -722,6 +678,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. nhrc.nic.in पर जाओ | 2. Online complaint form भरो | 3. घटना का विवरण — date, place, officials involved | 4. Medical reports, FIR copy, photos संलग्न करो | 5. Submit करो | 6. NHRC notice जारी करता है | 7. State government को जवाब देना होता है | 8. Compensation का आदेश दे सकता है | 9. Prosecution की सिफारिश भी"
+        },
+        {
+         "label": "सुझाव",
+         "text": "NHRC की Civil Court जैसी शक्तियां:\n• NHRC सीधे Suo Motu cognizance ले सकता है\n• Civil Court की शक्तियां: गवाहों को Summon कर सकता है, documents मंगा सकता है\n• NHRC compensation का आदेश दे सकता है — directly State/Central Govt को\n• Fake encounter, custodial death → NHRC का सबसे powerful intervention\n• E-Daakhil: consumer rights के लिए घर बैठे Consumer Forum में case दर्ज करो"
         }
        ],
        "badge": "TIER 4 — मानवाधिकार"
@@ -778,13 +738,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=NCW+complaint+national+commission+women+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://cvigil.eci.gov.in/"
+          "https://www.youtube.com/watch?v=t_OorqBqQM4"
          ]
         }
        ],
@@ -808,10 +762,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. ncw.nic.in पर जाओ | 2. Online complaint portal खोलो | 3. घटना का विवरण | 4. Medical/police reports | 5. NCW state government/police को notice देती है | 6. Fast-track action | 7. Legal aid भी provide करती है | 8. Media में case उठा सकती है"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — cVIGIL App का सही तरीका:\n• 🔗 Direct: | Play Store: cVIGIL\n• App ऑटोमैटिक GPS location capture करता है — आपको manually नहीं देनी\n• 100 मिनट की SLA: Flying Squad (FST) मौके पर पहुंचेगी और आपको written report देगी\n• Video/Photo — जितना clear हो उतना बेहतर\n• MCC violations: cash distribution, liquor, hate speech, unauthorized rallies\n• चुनाव आयोग का सबसे real-time accountability tool — नेता इससे सबसे ज़्यादा डरते हैं"
         }
        ],
        "badge": "TIER 4 — मानवाधिकार"
@@ -829,7 +779,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=NCPCR+complaint+child+rights+india+hindi"
+          "https://www.youtube.com/watch?v=O7xFAIpjA4s"
          ]
         }
        ],
@@ -867,7 +817,13 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=cVIGIL+app+election+complaint+india+hindi"
+          "https://www.youtube.com/watch?v=PJfZkGd0MWU"
+         ]
+        },
+        {
+         "label": "सुझाव",
+         "urls": [
+          "https://cvigil.eci.gov.in/"
          ]
         }
        ],
@@ -891,6 +847,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. cVIGIL App download करो (Play Store) | 2. चुनाव के दौरान violation देखो | 3. Photo/video खींचो और app से report करो | 4. 100 मिनट में Flying Squad पहुंचती है | 5. ECI website पर: eci.gov.in | 6. NVSP portal पर complaint | 7. Voter helpline 1950 पर call | 8. Sworn complaint भी दे सकते हो"
+        },
+        {
+         "label": "सुझाव",
+         "text": "cVIGIL App का सही तरीका:\n• App ऑटोमैटिक GPS location capture करता है — आपको manually नहीं देनी\n• 100 मिनट की SLA: Flying Squad (FST) मौके पर पहुंचेगी और आपको written report देगी\n• Video/Photo — जितना clear हो उतना बेहतर\n• MCC violations: cash distribution, liquor, hate speech, unauthorized rallies\n• चुनाव आयोग का सबसे real-time accountability tool — नेता इससे सबसे ज़्यादा डरते हैं"
         }
        ],
        "badge": "TIER 4 — मानवाधिकार"
@@ -938,13 +898,12 @@ window.PF_DATA.govt = {
        "links": [
         {
          "label": "Official Website",
-         "urls": [
-         ]
+         "urls": []
         },
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=TRAI+complaint+telecom+india+hindi"
+          "https://www.youtube.com/watch?v=XIhJhkC-YAI"
          ]
         }
        ],
@@ -964,10 +923,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. पहले operator को complaint करो | 2. जवाब न मिले → trai.gov.in/consumers पर | 3. Complaint form भरो | 4. DND violation: 1909 पर call | 5. TRAI operator को notice देती है | 6. Fine लगा सकती है | 7. License revoke तक की ताकत | 8. Telecom Consumer Complaint Redress Forum"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — CPGRAMS Escalation का पूरा चक्र:\n• Grievance दर्ज → 30 दिन → Nodal Officer बंद करे → APPEAL (same portal)\n• Appeal → Secretary Level → 15 दिन → फिर बंद करे → 2nd Appeal\n• हर level पर registration number के साथ track करो\n• CPGRAMS performance data PMO review में जाता है — officers इसे ignore नहीं कर सकते\n• Parallel में Sampark 181 + Lokayukta पर भी complaint → Multiple pressure points"
         }
        ],
        "badge": "TIER 4 — मानवाधिकार"
@@ -985,7 +940,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=RERA+complaint+Rajasthan+builder+hindi"
+          "https://www.youtube.com/watch?v=mh3GeUa_5Kk"
          ]
         }
        ],
@@ -1027,13 +982,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=CPGRAMS+complaint+pgportal+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://sampark.rajasthan.gov.in/"
+          "https://www.youtube.com/watch?v=wwOv_8mavBQ"
          ]
         }
        ],
@@ -1055,8 +1004,8 @@ window.PF_DATA.govt = {
          "text": "1. pgportal.gov.in पर जाओ | 2. Register/Login करो | 3. 'Lodge Grievance' पर click करो | 4. Ministry/Department select करो | 5. शिकायत का विस्तृत विवरण | 6. Documents upload करो | 7. Submit → Registration number मिलेगा | 8. 30 दिन में response अनिवार्य | 9. जवाब से असंतुष्ट हों → Appeal | 10. PMO level पर escalate होती है"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Sampark 181 का Re-Open Power:\n• Local officer ने गलत तरीके से complaint बंद की → Portal पर 'Re-Open' click करो\n• Continuously Re-Open होने वाली complaints → DM की Thursday Jan-Sunwai में Flash होती हैं\n• DM स्तर पर flagging = officer को personally जवाब देना होगा public में\n• Monitoring: Panchayat से CM दफ्तर तक — यह सबसे well-monitored state portal है\n• 🔗 Direct:"
+         "label": "सुझाव",
+         "text": "CPGRAMS का Escalation Matrix:\n• शिकायत दर्ज → Registration Number मिलता है\n• नोडल अधिकारी ने गोलमोल जवाब देकर बंद कर दिया → उसी portal पर 'APPEAL' करो\n• Appeal सीधे Secretary स्तर के उच्चाधिकारी के पास जाती है\n• अधिकारियों पर 30 दिन में निपटाने का भारी Administrative Pressure होता है\n• यह pressure उनकी Annual Performance Review (ACR) को affect करता है"
         }
        ],
        "badge": "TIER 5 — Grievance"
@@ -1076,12 +1025,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=PMO+complaint+prime+minister+office+india+hindi"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://pmgsy.nic.in/"
-         ]
         }
        ],
        "extra": [
@@ -1100,10 +1043,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. pmindia.gov.in पर जाओ | 2. 'Interact with PM' section | 3. Written grievance submit करो | 4. या CPGRAMS से forward होती है | 5. PMO संबंधित मंत्रालय को forward करता है | 6. Tracking number से follow-up | 7. Serious cases में direct intervention | 8. Important: पहले lower levels exhaust करो"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Jan Soochna को Cross-Verification Tool मानो:\n• MLA का दावा: \"100 करोड़ की सड़कें बनाई\" → PMGSY portal से cross-verify करो\n• Data में विसंगति मिले → RTI से specific files माँगो → Lokayukta में complaint\n• MGNREGA: muster rolls check करो — fake entries identify करो\n• OGD Platform: data.gov.in से Raw Data download करो → Excel में analyze करो\n• यह Data-Driven Accountability है — opinion नहीं, numbers बोलते हैं\n• 🔗 PMGSY:"
         }
        ],
        "badge": "TIER 5 — Grievance"
@@ -1124,13 +1063,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Sampark+181+Rajasthan+complaint+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://rps.rajasthan.gov.in/"
+          "https://www.youtube.com/watch?v=SCnQFAuzzhc"
          ]
         }
        ],
@@ -1152,8 +1085,8 @@ window.PF_DATA.govt = {
          "text": "1. 181 पर call करो (24x7, toll free) | 2. sampark.rajasthan.gov.in पर online complaint | 3. विभाग select करो | 4. शिकायत दर्ज करो | 5. Registration number नोट करो | 6. SMS/call से update मिलती है | 7. 21 दिन में resolution target | 8. जवाब से असंतुष्ट → escalate | 9. CM Office तक जा सकती है"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — RTPS + Citizen Charter Combo:\n• विभाग के बाहर Citizen Charter पढ़ो — exact timeframe note करो\n• Deadline miss → RTPS Appeal Authority को written complaint\n• Penalty सीधे officer के वेतन से कटती है — personal financial loss\n• Officer इसे हर हाल में avoid करना चाहता है → जल्दी काम होता है\n• यह Rajasthan का सबसे underutilized लेकिन सबसे effective daily-use weapon है\n• 🔗"
+         "label": "सुझाव",
+         "text": "Sampark 181 का Re-Open Power:\n• Local officer ने गलत तरीके से complaint बंद की → Portal पर 'Re-Open' click करो\n• Continuously Re-Open होने वाली complaints → DM की Thursday Jan-Sunwai में Flash होती हैं\n• DM स्तर पर flagging = officer को personally जवाब देना होगा public में\n• Monitoring: Panchayat से CM दफ्तर तक — यह सबसे well-monitored state portal है"
         }
        ],
        "badge": "TIER 5 — Grievance"
@@ -1171,13 +1104,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Jan+Soochna+Portal+Rajasthan+kaise+use+hindi"
-         ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://nrega.nic.in/"
+          "https://www.youtube.com/watch?v=u8cP43r_pZ0"
          ]
         }
        ],
@@ -1199,8 +1126,8 @@ window.PF_DATA.govt = {
          "text": "1. jansoochna.rajasthan.gov.in खोलो | 2. विभाग / योजना select करो | 3. Beneficiary list, fund allocation, खर्च — सब देखो | 4. MGNREGA, पेंशन, PM Awas — सब यहाँ | 5. Fake beneficiaries identify करो | 6. इस data को RTI, Lokpal complaint में use करो | 7. Social Audit में reference दो | 8. Gram Sabha में present करो"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Social Audit की असली ताकत:\n• ग्राम सभा के 10% members लिखित में Quorum demand कर सकते हैं\n• Sarpanch को Muster Rolls, Bills, Vouchers — सब कुछ खुली बैठक में पढ़ना होगा\n• Fake bill मिले → BDO को Suspension/Recovery का Proposal भेजो\n• BDO → DPC → District Collector — escalation chain है\n• MGNREGA ombudsman: प्रत्येक जिले में appointment अनिवार्य है\n• 🔗 MGNREGA:"
+         "label": "सुझाव",
+         "text": "Jan Soochna को Cross-Verification Tool मानो:\n• MLA का दावा: \"100 करोड़ की सड़कें बनाई\" → PMGSY portal से cross-verify करो\n• Data में विसंगति मिले → RTI से specific files माँगो → Lokayukta में complaint\n• MGNREGA: muster rolls check करो — fake entries identify करो\n• OGD Platform: data.gov.in से Raw Data download करो → Excel में analyze करो\n• यह Data-Driven Accountability है — opinion नहीं, numbers बोलते हैं"
         }
        ],
        "badge": "TIER 5 — Grievance"
@@ -1218,13 +1145,13 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=RTPS+Right+to+Public+Service+Rajasthan+hindi"
+          "https://www.youtube.com/watch?v=aH2hfW9noeU"
          ]
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
+         "label": "सुझाव",
          "urls": [
-          "https://egramswaraj.gov.in/"
+          "https://rps.rajasthan.gov.in/"
          ]
         }
        ],
@@ -1246,8 +1173,8 @@ window.PF_DATA.govt = {
          "text": "1. serviceonline.rajasthan.gov.in पर जाओ | 2. Service select करो | 3. Application दाखिल करो | 4. Time limit track करो | 5. समय पर नहीं मिला → Penalty Application दो | 6. Appellate Authority को complaint | 7. अधिकारी पर ₹250/day तक penalty | 8. Compensation भी मिल सकता है"
         },
         {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Gram Sabha की Constitutional Supremacy:\n• 73वां संशोधन: Gram Sabha सर्वोच्च है — Sarpanch इसके अधीन है, न कि उल्टा\n• 10% members → Written demand for special Gram Sabha\n• Development fund का हिसाब माँगो — यह constitutional right है\n• BDO को Resolution भेजो: \"Sarpanch ने हिसाब नहीं दिया\" → BDO action लेने के लिए bound है\n• e-Gram Swaraj पर अपनी पंचायत का budget online देखो\n• 🔗 e-Gram Swaraj:"
+         "label": "सुझाव",
+         "text": "RTPS + Citizen Charter Combo:\n• विभाग के बाहर Citizen Charter पढ़ो — exact timeframe note करो\n• Deadline miss → RTPS Appeal Authority को written complaint\n• Penalty सीधे officer के वेतन से कटती है — personal financial loss\n• Officer इसे हर हाल में avoid करना चाहता है → जल्दी काम होता है\n• यह Rajasthan का सबसे underutilized लेकिन सबसे effective daily-use weapon है"
         }
        ],
        "badge": "TIER 5 — Grievance"
@@ -1291,6 +1218,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. socialaudit.labour.gov.in पर data check करो | 2. अपने गाँव की MGNREGA muster rolls देखो | 3. Fake names identify करो | 4. Gram Sabha में Social Audit की माँग करो | 5. District Programme Coordinator को लिखो | 6. Vigilance & Monitoring Committee को inform करो | 7. Public Hearing में documents पढ़ो | 8. Irregularities BDO को report करो"
+        },
+        {
+         "label": "सुझाव",
+         "text": "Social Audit की असली ताकत:\n• ग्राम सभा के 10% members लिखित में Quorum demand कर सकते हैं\n• Sarpanch को Muster Rolls, Bills, Vouchers — सब कुछ खुली बैठक में पढ़ना होगा\n• Fake bill मिले → BDO को Suspension/Recovery का Proposal भेजो\n• BDO → DPC → District Collector — escalation chain है\n• MGNREGA ombudsman: प्रत्येक जिले में appointment अनिवार्य है"
         }
        ],
        "badge": "TIER 6 — सामाजिक"
@@ -1308,7 +1239,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Gram+Sabha+rights+powers+india+hindi"
+          "https://www.youtube.com/watch?v=NgZ8tKCQyjc"
          ]
         }
        ],
@@ -1328,6 +1259,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. Gram Sabha की बैठक की माँग करो (10% members sign करें) | 2. BDO को notice दो | 3. बैठक में Development funds का हिसाब माँगो | 4. विकास कार्यों की गुणवत्ता की जांच करवाओ | 5. Gram Sabha में resolution pass करो | 6. Copy BDO/DM को भेजो | 7. Gram Sabha के minutes RTI से निकालो | 8. Irregularities मिले तो Lokayukta को"
+        },
+        {
+         "label": "सुझाव",
+         "text": "Gram Sabha की Constitutional Supremacy:\n• 73वां संशोधन: Gram Sabha सर्वोच्च है — Sarpanch इसके अधीन है, न कि उल्टा\n• 10% members → Written demand for special Gram Sabha\n• Development fund का हिसाब माँगो — यह constitutional right है\n• BDO को Resolution भेजो: \"Sarpanch ने हिसाब नहीं दिया\" → BDO action लेने के लिए bound है\n• e-Gram Swaraj पर अपनी पंचायत का budget online देखो"
         }
        ],
        "badge": "TIER 6 — सामाजिक"
@@ -1345,7 +1280,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Jan+Sunwai+public+hearing+MKSS+Rajasthan+hindi"
+          "https://www.youtube.com/watch?v=5u67-Se2GIo"
          ]
         }
        ],
@@ -1365,10 +1300,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. गाँव/मोहल्ले में Jan Sunwai आयोजित करो | 2. RTI से निकाले records public में पढ़ो | 3. पीड़ितों को बोलने का मौका दो | 4. मीडिया को बुलाओ | 5. सरकारी अधिकारियों को invite करो | 6. Proceedings document करो | 7. Demands का resolution pass करो | 8. MKSS से guidance ले सकते हो"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — MP/MLA को Force करो:\n• Written representation → Registered Post (AD) → Copy अपने पास रखो\n• माँगो: \"Question Hour / Zero Hour / Calling Attention Motion में उठाएं\"\n• MP/MLA का reply नहीं आया → Social Media पर public करो\n• Parliamentary Question का written answer Hansard (official record) में दर्ज होता है\n• Hansard को PIL में cite किया जा सकता है\n• यह नेता को public accountability का डर दिखाता है"
         }
        ],
        "badge": "TIER 6 — सामाजिक"
@@ -1386,7 +1317,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Whistle+Blower+Protection+Act+india+hindi"
+          "https://www.youtube.com/watch?v=9c_AJQeUpXE"
          ]
         }
        ],
@@ -1449,6 +1380,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. अपने MP/MLA का नाम sansad.in से खोजो | 2. विस्तृत written letter लिखो | 3. मुद्दे का विवरण, evidence संलग्न करो | 4. Registered Post से भेजो | 5. Copy अपने पास रखो | 6. Email और phone पर भी follow-up | 7. माँगो कि Question Hour/Zero Hour में उठाएं | 8. अगर न उठाएं — media और public pressure | 9. अगले चुनाव में accountability"
+        },
+        {
+         "label": "सुझाव",
+         "text": "MP/MLA को Force करो:\n• Written representation → Registered Post (AD) → Copy अपने पास रखो\n• माँगो: \"Question Hour / Zero Hour / Calling Attention Motion में उठाएं\"\n• MP/MLA का reply नहीं आया → Social Media पर public करो\n• Parliamentary Question का written answer Hansard (official record) में दर्ज होता है\n• Hansard को PIL में cite किया जा सकता है\n• यह नेता को public accountability का डर दिखाता है"
         }
        ],
        "badge": "TIER 7 — संसदीय"
@@ -1466,7 +1401,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=Parliamentary+committee+india+how+to+approach+hindi"
+          "https://www.youtube.com/watch?v=o15O2o66hSk"
          ]
         }
        ],
@@ -1565,10 +1500,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. presscouncil.nic.in पर जाओ | 2. Complaint form भरो | 3. गलत खबर की cutting संलग्न करो | 4. सही तथ्यों का evidence दो | 5. PCI newspaper को notice देती है | 6. Censure (निंदा) का आदेश दे सकती है | 7. Right of Reply की माँग करो | 8. Paid news की शिकायत ECI को भी करो"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Social Media को Strategic Weapon बनाओ:\n• Tag करो: @PMOIndia @rajCMO @Ministry + DM का handle + CM Office\n• कई IAS/IPS social media पर active हैं — Public Shaming से बचने को तुरंत act करते हैं\n• Photo + Time + Location + Officer का नाम = Maximum impact post\n• RTI reply की photo upload करो — यह irrefutable evidence है\n• Important: हमेशा factual रहो — defamation case से बचो\n• Data-driven posts (CAG report citing, affidavit data) = ज़्यादा credibility"
         }
        ],
        "badge": "TIER 8 — मीडिया"
@@ -1586,7 +1517,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=NBDSA+complaint+TV+channel+news+india+hindi"
+          "https://www.youtube.com/watch?v=9eZu0QDckH0"
          ]
         }
        ],
@@ -1641,6 +1572,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. Twitter/X पर @PMOIndia, @rajCMO, @ministries tag करो | 2. RTI replies की photo upload करो | 3. Evidence-based posts बनाओ | 4. Hashtag campaign: #RTI #Accountability | 5. Local journalists को DM करो | 6. YouTube पर video documentary बनाओ | 7. Facebook groups में share करो | 8. Important: हमेशा factual रहो, defamation से बचो"
+        },
+        {
+         "label": "सुझाव",
+         "text": "Social Media को Strategic Weapon बनाओ:\n• Tag करो: @PMOIndia @rajCMO @Ministry + DM का handle + CM Office\n• कई IAS/IPS social media पर active हैं — Public Shaming से बचने को तुरंत act करते हैं\n• Photo + Time + Location + Officer का नाम = Maximum impact post\n• RTI reply की photo upload करो — यह irrefutable evidence है\n• Important: हमेशा factual रहो — defamation case से बचो\n• Data-driven posts (CAG report citing, affidavit data) = ज़्यादा credibility"
         }
        ],
        "badge": "TIER 8 — मीडिया"
@@ -1740,12 +1675,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=PMLA+money+laundering+complaint+ED+india+hindi"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://pmgsy.nic.in/"
-         ]
         }
        ],
        "extra": [
@@ -1764,10 +1693,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. ED को written complaint भेजो | 2. Suspicious financial transactions का विवरण | 3. Shell companies, benami property की जानकारी | 4. Bank records, property documents attach | 5. ED PMLA under investigation शुरू करती है | 6. Property attachment (provisional) | 7. Special PMLA Court में trial | 8. Conviction पर 3-7 साल की सज़ा + property forfeit"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — Open Data को Cross-Verification Engine बनाओ:\n• data.gov.in: Health, Roads, Education, Budget का Raw Data\n• PMGSY: → Road construction data village-wise\n• Neta का claim vs. actual data = Accountability\n• Anomaly मिले → RTI से specific files → Lokayukta complaint\n• इसे Chart/Graph में convert करो → PIL में exhibit के रूप में attach करो\n• Data journalism approach: numbers से नेता को corner करो"
         }
        ],
        "badge": "TIER 9 — कानूनी"
@@ -1847,6 +1772,10 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. data.gov.in खोलो | 2. Ministry/Department select करो | 3. Dataset download करो | 4. Excel/spreadsheet में analyze करो | 5. Anomalies और irregularities note करो | 6. Graph/chart बनाओ | 7. RTI में specific questions के लिए use करो | 8. PIL में evidence के रूप में cite करो | 9. Media को data-driven story दो"
+        },
+        {
+         "label": "सुझाव",
+         "text": "Open Data को Cross-Verification Engine बनाओ:\n• data.gov.in: Health, Roads, Education, Budget का Raw Data\n• PMGSY: → Road construction data village-wise\n• Neta का claim vs. actual data = Accountability\n• Anomaly मिले → RTI से specific files → Lokayukta complaint\n• इसे Chart/Graph में convert करो → PIL में exhibit के रूप में attach करो\n• Data journalism approach: numbers से नेता को corner करो"
         }
        ],
        "badge": "TIER 10 — Digital"
@@ -1864,7 +1793,7 @@ window.PF_DATA.govt = {
         {
          "label": "YouTube Tutorial",
          "urls": [
-          "https://www.youtube.com/results?search_query=cyber+crime+complaint+india+1930+hindi"
+          "https://www.youtube.com/watch?v=d9dMZ2aga58"
          ]
         }
        ],
@@ -1903,12 +1832,6 @@ window.PF_DATA.govt = {
          "urls": [
           "https://www.youtube.com/results?search_query=PM+Awas+Yojana+complaint+fraud+hindi"
          ]
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "urls": [
-          "https://www.mygov.in/"
-         ]
         }
        ],
        "extra": [
@@ -1927,10 +1850,6 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. pmayg.nic.in/netiay/Grievance.aspx खोलो | 2. Grievance form भरो | 3. Application number (अगर हो) | 4. Fraud का विवरण | 5. Photos, documents upload करो | 6. Ministry response track करो | 7. साथ में CPGRAMS पर भी complaint दो | 8. Local BDO/DM को भी written complaint"
-        },
-        {
-         "label": "🔥 Advanced Strategy & Expert Tips (नई जानकारी)",
-         "text": "⚡ EXPERT STRATEGY — MyGov को Policy Influence Tool बनाओ:\n• Draft Bills पर comment करो — यह official record में जाता है\n• Collective voice: group बनाओ, organized comments ज़्यादा impact करते हैं\n• MyGov + Social Media combo: MyGov पर comment → Screenshot → Twitter पर post\n• 'Open Challenges' में participate करो — winners को direct policy input मिलता है\n• Government consultations पर comments RTI से withdraw नहीं हो सकते — permanent record\n• 🔗"
         }
        ],
        "badge": "TIER 10 — Digital"
@@ -2007,9 +1926,256 @@ window.PF_DATA.govt = {
         {
          "label": "प्रक्रिया (Step-by-Step)",
          "text": "1. mygov.in पर register करो | 2. Active consultations देखो | 3. Draft bills और policies पर comment दो | 4. Surveys complete करो | 5. Ideas submit करो | 6. Open challenges में participate करो | 7. Group बनाओ और collective voice | 8. Your comments government को जाते हैं"
+        },
+        {
+         "label": "सुझाव",
+         "text": "MyGov को Policy Influence Tool बनाओ:\n• Draft Bills पर comment करो — यह official record में जाता है\n• Collective voice: group बनाओ, organized comments ज़्यादा impact करते हैं\n• MyGov + Social Media combo: MyGov पर comment → Screenshot → Twitter पर post\n• 'Open Challenges' में participate करो — winners को direct policy input मिलता है\n• Government consultations पर comments RTI से withdraw नहीं हो सकते — permanent record"
         }
        ],
        "badge": "TIER 10 — Digital"
+      }
+     ]
+    },
+    {
+     "title": "TIER 11 — राज्य",
+     "items": [
+      {
+       "title": "Uttar Pradesh",
+       "desc": "",
+       "links": [
+        {
+         "label": "CM Helpline (Jansunwai)",
+         "urls": [
+          "https://jansunwai.up.nic.in/"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rtionline.up.gov.in/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.up.nic.in/complaint%20form%20english.html"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Maharashtra",
+       "desc": "",
+       "links": [
+        {
+         "label": "Aaple Sarkar Grievance",
+         "urls": [
+          "https://grievances.maharashtra.gov.in/en"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rtionline.maharashtra.gov.in/guidelines.php"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.maharashtra.gov.in/en/how-to-file-complaint/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Bihar",
+       "desc": "",
+       "links": [
+        {
+         "label": "Lok Shikayat Nivaran",
+         "urls": [
+          "https://lokshikayat.bihar.gov.in/DefaultEn.aspx"
+         ]
+        },
+        {
+         "label": "RTI Online (Jaankari)",
+         "urls": [
+          "https://jaankari.bihar.gov.in/frontend-about-page"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.bih.nic.in/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "West Bengal",
+       "desc": "",
+       "links": [
+        {
+         "label": "CMO Grievance Portal",
+         "urls": [
+          "https://cmo.wb.gov.in/SSM_Track_Grievance.aspx"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rtionline.wb.gov.in/aspx/signin.aspx"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Madhya Pradesh",
+       "desc": "",
+       "links": [
+        {
+         "label": "CM Helpline 181",
+         "urls": [
+          "https://cmhelpline.mp.gov.in/About.aspx"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "http://rti.mp.gov.in/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://mplokayukt.nic.in/complaints-filing"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Tamil Nadu",
+       "desc": "",
+       "links": [
+        {
+         "label": "Public Grievances",
+         "urls": [
+          "https://www.tn.gov.in/grievances.php"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rtionline.tn.gov.in/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://tamilnadulokayukta.tn.gov.in/en/home/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Rajasthan",
+       "desc": "",
+       "links": [
+        {
+         "label": "Rajasthan Sampark",
+         "urls": [
+          "https://sampark.rajasthan.gov.in/"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rti.rajasthan.gov.in/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.rajasthan.gov.in/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Karnataka",
+       "desc": "",
+       "links": [
+        {
+         "label": "Janaspandana iPGRS",
+         "urls": [
+          "https://ipgrs.karnataka.gov.in/"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://rtionline.karnataka.gov.in/index.php"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.kar.nic.in/aboutus.php"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Gujarat",
+       "desc": "",
+       "links": [
+        {
+         "label": "SWAGAT Grievance",
+         "urls": [
+          "https://swagat.gujarat.gov.in/"
+         ]
+        },
+        {
+         "label": "RTI Online",
+         "urls": [
+          "https://onlinerti.gujarat.gov.in/rti_portal/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.gujarat.gov.in/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
+      },
+      {
+       "title": "Andhra Pradesh",
+       "desc": "",
+       "links": [
+        {
+         "label": "PGRS Meekosam",
+         "urls": [
+          "https://meekosam.ap.gov.in/"
+         ]
+        },
+        {
+         "label": "Lokayukta",
+         "urls": [
+          "https://lokayukta.ap.gov.in/"
+         ]
+        }
+       ],
+       "badge": "TIER 11 — राज्य"
       }
      ]
     }

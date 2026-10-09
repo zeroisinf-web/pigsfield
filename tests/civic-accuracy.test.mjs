@@ -109,3 +109,38 @@ test("every catalogue warning is styled to be seen in both themes", () => {
   assert.match(css, /\.resource-warning\s*\{/, "missing .resource-warning styling");
   assert.match(css, /\[data-theme="dark"\]\s*\.resource-warning\s*\{/, "warnings need a dark-theme treatment too");
 });
+
+test("every civic tip sits on the card it is about", () => {
+  // The tips were once shifted one card along: Lokpal's sat on Lokayukta, the income-tax
+  // informant scheme on CBI, PIL on Income Tax. A tip's heading names its subject, so each
+  // heading must match its own card's title.
+  const SUBJECTS = [
+    [/^RTI/, /RTI/], [/^CAG/, /CAG/], [/^MyNeta/, /Election Affidavits/], [/^Lokpal/, /^Lokpal/],
+    [/^CVC/, /^CVC/], [/^IT Department/, /^Income Tax/], [/^PIL/, /^PIL/], [/^NHRC/, /^NHRC/],
+    [/^cVIGIL/, /^ECI/], [/^CPGRAMS/, /^CPGRAMS/], [/^Sampark/, /Sampark/], [/^Jan Soochna/, /^Jan Soochna/],
+    [/^RTPS/, /^RTPS/], [/^Social Audit/, /^Social Audit/], [/^Gram Sabha/, /^Gram Sabha/],
+    [/^MP\/MLA/, /सांसद/], [/^Social Media/, /^Social Media/], [/^Open Data/, /^Open Government Data/], [/^MyGov/, /^MyGov/]
+  ];
+  const misplaced = [];
+  let tips = 0;
+  for (const node of everyNode(catalog().govt)) {
+    for (const part of (node.extra || []).filter((extra) => extra.label === "सुझाव")) {
+      tips += 1;
+      const heading = part.text.split("\n")[0];
+      const subject = SUBJECTS.find(([pattern]) => pattern.test(heading));
+      if (!subject || !subject[1].test(node.title)) misplaced.push(`${node.title}: ${heading}`);
+    }
+  }
+  assert.ok(tips >= 19, "the civic tips are missing");
+  assert.deepEqual(misplaced, [], `these tips are on the wrong card:\n${misplaced.join("\n")}`);
+});
+
+test("the Lokpal and informant-reward tips state the law as written", () => {
+  const text = JSON.stringify(catalog().govt);
+  // Lokpal Act s.14(1)(a): the PM is covered, with excluded subjects and a two-thirds full-bench sanction.
+  assert.doesNotMatch(text, /office of profit/, "Lokpal's jurisdiction over the PM is not about 'office of profit'");
+  assert.match(text, /धारा 14\(1\)\(a\)/);
+  // Income Tax Informants Reward Scheme, 2018: a reward needs an Informant Code, so an anonymous tip earns none.
+  assert.doesNotMatch(text, /Anonymous report भी valid/);
+  assert.match(text, /Informant Code/);
+});
