@@ -114,10 +114,13 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     // crawlers can read the UPSC, RAS, SSC and NCERT material, and the 60 KiB data script is
     // gone. Raw bytes rose with the repeated link markup; Brotli, what actually crosses the
     // network, barely moved.
-    ["exams/index.html", 595, 166],
+    // +6 KiB raw (+1.3 KiB Brotli) when the header and footer were written into every page
+    // by tools/build-chrome.mjs, so the navigation is in the served HTML for crawlers.
+    ["exams/index.html", 602, 168],
     // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules, and
     // to 566 for the Liquid Glass layer and the phone tab bar.
-    ["watch/index.html", 566, 205],
+    // +6 KiB raw for the prerendered header and footer (tools/build-chrome.mjs).
+    ["watch/index.html", 572, 207],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],
@@ -204,4 +207,5 @@ test("runtime work is deferred and long collections skip offscreen rendering", (
   assert.match(css, /\.exam-subject\s*\{[^}]*content-visibility:\s*auto/s);
   assert.match(css, /\.syllabus-item\s*\{[^}]*content-visibility:\s*auto/s);
   assert.match(css, /@media\s*\(max-width:\s*52rem\)[\s\S]*?\.site-header[\s\S]*?backdrop-filter:\s*none/, "mobile sticky surfaces must avoid expensive live blur");
+  assert.match(css, /\[data-site-header\]\s*\{[^}]*min-height:\s*var\(--header-h\)/, "the header mount must reserve its height before JavaScript draws it, or every page shifts");
 });

@@ -9,7 +9,12 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*"],
+    // A missing page answers 404 with the branded 404.html (noindex, with links back into
+    // the site) instead of an empty body. The trailing-slash rule is Cloudflare's default,
+    // written down so /learn always redirects to the canonical /learn/.
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
   },
   "ai": {
     "binding": "AI"

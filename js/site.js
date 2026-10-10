@@ -993,6 +993,11 @@
 
   setTheme(initialTheme());
 
+  /* pf:chrome:start — the header and footer markup. tools/build-chrome.mjs evaluates this
+   * block at build time and writes the result into every page, so the navigation is plain
+   * <a href> in the served HTML: crawlers that never run JavaScript (Bing's first pass, AI
+   * answer engines) reach every pillar and every trust page. The functions below only
+   * draw it when a page arrived without it. */
   /* The six pillars, named once.
    *
    * The header called them Learn / PigBang / Exams / Skills / Tools / Rights while the
@@ -1015,11 +1020,8 @@
     return `<a href="${escapeHtml(PF.path(key))}"${pigbang}${current}>${escapeHtml(label)}</a>`;
   }
 
-  function buildHeader() {
-    const mount = qs("[data-site-header]");
-    if (!mount) return;
-    mount.className = "site-header";
-    mount.innerHTML = `
+  function headerMarkup() {
+    return `
       <div class="container header-inner">
         <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}" aria-label="Pigsfield home">
           <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="38" height="38" decoding="async">
@@ -1038,6 +1040,70 @@
           <button class="icon-button menu-toggle" type="button" data-open-menu aria-controls="site-sidebar" aria-haspopup="dialog" aria-label="Open menu">≡</button>
         </div>
       </div>`;
+  }
+
+  function footerMarkup(year) {
+    return `
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}">
+              <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="38" height="38" loading="lazy" decoding="async">
+              <span>Pigsfield</span>
+            </a>
+            <p>Education within reach: learn freely, build practical capability and hold public systems to account. A volunteer-led, free-first discovery platform built for people across India.</p>
+            <nav class="footer-social" aria-labelledby="official-social-title" translate="no">
+              <h2 class="footer-title" id="official-social-title">Our Official Social Media Handles</h2>
+              <ul class="footer-social-list">
+                <li><a href="https://www.facebook.com/61579505132769/" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Facebook"><span class="social-mark facebook-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.6 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.5 1.6-1.5H17V5c-.4-.1-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.8v8h3.3Z"/></svg></span><span>Facebook</span></a></li>
+                <li><a href="https://www.youtube.com/@pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on YouTube"><span class="social-mark youtube-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9.5 7.8 7 4.2-7 4.2V7.8Z"/></svg></span><span>YouTube</span></a></li>
+                <li><a href="https://www.instagram.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Instagram"><span class="social-mark instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4.4"/><circle cx="12" cy="12" r="3.5"/><circle class="social-dot" cx="17.4" cy="6.8" r="1"/></svg></span><span>Instagram</span></a></li>
+                <li><a href="https://x.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on X"><span class="social-mark x-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.24 2.25h3.31l-7.23 8.26 8.51 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z"/></svg></span><span>X</span></a></li>
+                <li><a href="https://in.linkedin.com/in/priyadarshan-meghwal-431656210" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on LinkedIn"><span class="social-mark linkedin-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.4 8.2H3.2V21h3.2V8.2ZM4.8 3a1.9 1.9 0 1 0 0 3.8A1.9 1.9 0 0 0 4.8 3ZM20.8 13.7c0-3.9-2.1-5.8-4.9-5.8-2.3 0-3.3 1.2-3.9 2.1V8.2H8.8V21H12v-6.3c0-1.7.3-3.3 2.4-3.3 2 0 2.1 1.9 2.1 3.4V21h3.2l1.1-7.3Z"/></svg></span><span>LinkedIn</span></a></li>
+              </ul>
+            </nav>
+          </div>
+          <div>
+            <div class="footer-title">Explore</div>
+            <div class="footer-links">
+              ${PILLARS.map((pillar) => navLink(pillar.key, pillar.name)).join("")}
+            </div>
+          </div>
+          <div>
+            <div class="footer-title">Mission</div>
+            <div class="footer-links">
+              ${navLink("about", "Why Pigsfield")}${navLink("submit", "Suggest a resource")}${navLink("ai", "AI Studio")}
+            </div>
+          </div>
+          <div>
+            <div class="footer-title">Trust</div>
+            <div class="footer-links">
+              ${navLink("editorial", "How we choose resources")}${navLink("accessibility", "Accessibility")}${navLink("privacy", "Privacy & terms")}
+              <a href="mailto:zeroisinf@gmail.com?subject=Pigsfield%20correction">Report a problem</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© <span data-year>${year}</span> Pigsfield. Resource ownership remains with original providers.</span>
+          <span>Made for access, dignity and opportunity.</span>
+        </div>
+      </div>`;
+  }
+  /* pf:chrome:end */
+
+  function buildHeader() {
+    const mount = qs("[data-site-header]");
+    if (!mount) return;
+    mount.className = "site-header";
+    if (!mount.firstElementChild) mount.innerHTML = headerMarkup();
+  }
+
+  function buildFooter() {
+    const mount = qs("[data-site-footer]");
+    if (!mount) return;
+    mount.className = "site-footer";
+    if (!mount.firstElementChild) mount.innerHTML = footerMarkup(new Date().getFullYear());
+    else qsa("[data-year]", mount).forEach((year) => { year.textContent = new Date().getFullYear(); });
   }
 
   /**
@@ -1069,57 +1135,6 @@
     };
     sync();
     window.addEventListener("scroll", sync, { passive: true });
-  }
-
-  function buildFooter() {
-    const mount = qs("[data-site-footer]");
-    if (!mount) return;
-    mount.className = "site-footer";
-    mount.innerHTML = `
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <a class="brand-lockup" href="${escapeHtml(PF.path("home"))}">
-              <img src="${escapeHtml(base + "assets/pigsfield-logo-ui.webp?v=5e3e55d40854")}" alt="" width="38" height="38" loading="lazy" decoding="async">
-              <span>Pigsfield</span>
-            </a>
-            <p>Education within reach: learn freely, build practical capability and hold public systems to account. A volunteer-led, free-first discovery platform built for people across India.</p>
-            <nav class="footer-social" aria-labelledby="official-social-title" translate="no">
-              <h2 class="footer-title" id="official-social-title">Our Official Social Media Handles</h2>
-              <ul class="footer-social-list">
-                <li><a href="https://www.facebook.com/61579505132769/" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Facebook"><span class="social-mark facebook-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.6 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.5 1.6-1.5H17V5c-.4-.1-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.8v8h3.3Z"/></svg></span><span>Facebook</span></a></li>
-                <li><a href="https://www.youtube.com/@pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on YouTube"><span class="social-mark youtube-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9.5 7.8 7 4.2-7 4.2V7.8Z"/></svg></span><span>YouTube</span></a></li>
-                <li><a href="https://www.instagram.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on Instagram"><span class="social-mark instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4.4"/><circle cx="12" cy="12" r="3.5"/><circle class="social-dot" cx="17.4" cy="6.8" r="1"/></svg></span><span>Instagram</span></a></li>
-                <li><a href="https://x.com/pigsfield" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on X"><span class="social-mark x-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.24 2.25h3.31l-7.23 8.26 8.51 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z"/></svg></span><span>X</span></a></li>
-                <li><a href="https://in.linkedin.com/in/priyadarshan-meghwal-431656210" target="_blank" rel="noopener noreferrer" aria-label="Pigsfield on LinkedIn"><span class="social-mark linkedin-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.4 8.2H3.2V21h3.2V8.2ZM4.8 3a1.9 1.9 0 1 0 0 3.8A1.9 1.9 0 0 0 4.8 3ZM20.8 13.7c0-3.9-2.1-5.8-4.9-5.8-2.3 0-3.3 1.2-3.9 2.1V8.2H8.8V21H12v-6.3c0-1.7.3-3.3 2.4-3.3 2 0 2.1 1.9 2.1 3.4V21h3.2l1.1-7.3Z"/></svg></span><span>LinkedIn</span></a></li>
-              </ul>
-            </nav>
-          </div>
-          <div>
-            <div class="footer-title">Explore</div>
-            <div class="footer-links">
-              ${PILLARS.map((pillar) => navLink(pillar.key, pillar.name)).join("")}
-            </div>
-          </div>
-          <div>
-            <div class="footer-title">Mission</div>
-            <div class="footer-links">
-              ${navLink("about", "Why Pigsfield")}${navLink("submit", "Suggest a resource")}
-            </div>
-          </div>
-          <div>
-            <div class="footer-title">Trust</div>
-            <div class="footer-links">
-              ${navLink("editorial", "How we choose resources")}${navLink("accessibility", "Accessibility")}${navLink("privacy", "Privacy & terms")}
-              <a href="mailto:zeroisinf@gmail.com?subject=Pigsfield%20correction">Report a problem</a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <span>© ${new Date().getFullYear()} Pigsfield. Resource ownership remains with original providers.</span>
-          <span>Made for access, dignity and opportunity.</span>
-        </div>
-      </div>`;
   }
 
   /** The dock and dialog heads all draw from one 24-grid; this is that tag, written once. */

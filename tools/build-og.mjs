@@ -47,7 +47,7 @@ export function ogCards(data = loadCatalog()) {
       route: `/${destination.dest}/${topic.slug}/`,
       label: destination.parentName,
       title: topic.name,
-      subtitle: topic.h1,
+      subtitle: topic.tagline || topic.h1,
       stat: `${resources} free ${resources === 1 ? "resource" : "resources"}`,
       art: art[destination.dest]
     };

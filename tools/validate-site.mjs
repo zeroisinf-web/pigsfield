@@ -8,6 +8,7 @@ import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
 import { ogCards, ogImageFor } from "./build-og.mjs";
+import { build as buildChrome } from "./build-chrome.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -32,6 +33,11 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
   ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
+// Rich-result types Pigsfield cannot honestly claim: Google retired FAQ and HowTo results,
+// Course markup is for the course's own provider, and nothing here collects ratings.
+const BANNED_SCHEMA_TYPES = ["FAQPage", "HowTo", "Course", "AggregateRating", "Review"];
+// Words too common to show that a heading and a title are about the same thing.
+const STOP_WORDS = new Set(["free", "and", "the", "for", "with", "your", "from", "pigsfield", "india", "more", "resources", "what", "how"]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
 const DATA_MINIMUMS = { school: 171, teach: 23, tools: 32, govt: 40, pigbang: 500 };
 // YouTube *search* pages prove nobody checked a video. Each one replaced by a reviewed video
@@ -644,7 +650,7 @@ function checkBrandContracts() {
     const html = fs.readFileSync(file, "utf8");
     for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
       const src = parseAttributes(match[0]).src || "";
-      if (/pigsfield-logo/i.test(src)) check(/pigsfield-logo-ui\.webp$/i.test(src), file, `visible Pigsfield logo must use the optimized WebP: ${src}`);
+      if (/pigsfield-logo/i.test(src)) check(/pigsfield-logo-ui\.webp(?:\?v=[a-f0-9]{12})?$/i.test(src), file, `visible Pigsfield logo must use the optimized WebP: ${src}`);
       if (/pigbang-logo/i.test(src)) check(/pigbang-logo-(?:nav|display)\.webp$/i.test(src), file, `visible PigBang logo must use an appropriately sized WebP: ${src}`);
     }
   }
@@ -1064,6 +1070,71 @@ function checkYouTubeContract() {
   check(/\.player-frame\s*\{[^}]*min-height:\s*200px/i.test(css), cssFile, "mobile YouTube player must meet the documented 200px minimum height");
 }
 
+/** The contracts that decide whether a page can be found and understood without JavaScript. */
+function checkSearchContracts(files) {
+  const routes = new Map(files.map((file) => [routeFor(file), fs.readFileSync(file, "utf8")]));
+  const topicRoutes = new Set(TOPICS.map((topic) => topic.route));
+  const words = (value) => new Set(normalizedSeoText(value).toLocaleLowerCase("en-IN").split(/[^\p{L}\p{N}]+/u).filter((word) => word.length > 2 && !STOP_WORDS.has(word)));
+
+  for (const [route, html] of routes) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    const description = normalizedSeoText(metaValue(metas(html), "description"));
+    check(description.length >= 70 && description.length <= 160, file, `meta description should be 70-160 characters so it is neither padded nor cut off (${description.length})`);
+
+    for (const node of jsonLdNodes(parseJsonLd(html, file))) {
+      for (const type of schemaTypes(node)) check(!BANNED_SCHEMA_TYPES.includes(type), file, `JSON-LD must not claim ${type}; it earns no honest rich result here`);
+    }
+
+    // A heading that shares no word with the title is a slogan, and Google rewrites the
+    // result's title from headings like that.
+    const h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "").replace(/<[^>]+>/g, " ");
+    const title = (html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "").replace(/\|[^|]*$/, "");
+    if (topicRoutes.has(route) || /^\/(?:learn|skills|tools|exams|watch|rights|ai)\/$/.test(route)) {
+      const heading = words(h1);
+      check([...words(title)].some((word) => heading.has(word)), file, `the h1 "${normalizedSeoText(h1)}" shares no keyword with the title`);
+    }
+
+    if (topicRoutes.has(route)) {
+      check(/<p class="lede">(?!\s*<strong>\s*<\/strong>\s*<\/p>)[\s\S]*?\S[\s\S]*?<\/p>/.test(html), file, "topic page must open with a lede");
+      // Hindi-majority blocks must say so, for search engines and screen readers alike.
+      for (const match of html.matchAll(/<(h3|p|strong)\b([^>]*)>([^<]+)<\/\1>/g)) {
+        const text = match[3];
+        const devanagari = (text.match(/[\u0900-\u097F]/g) || []).length;
+        const latin = (text.match(/[A-Za-z]/g) || []).length;
+        if (devanagari > latin) check(/\blang="hi"/.test(match[2]), file, `Hindi text needs lang="hi": "${text.slice(0, 40)}"`);
+      }
+    }
+  }
+
+  // Every route must be reachable from the homepage through plain links in the served HTML,
+  // and linked from at least two pages, without running any JavaScript.
+  const inbound = new Map([...routes.keys()].map((route) => [route, new Set()]));
+  const outbound = new Map();
+  for (const [route, html] of routes) {
+    const targets = new Set();
+    for (const match of html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)) {
+      const href = match[1];
+      if (/^(?:[a-z]+:|#|\/\/)/i.test(href)) continue;
+      const resolved = new URL(href, `${SITE_ORIGIN}${route}`);
+      const target = resolved.pathname.endsWith("/") ? resolved.pathname : `${resolved.pathname}/`;
+      if (target !== route && routes.has(target)) {
+        targets.add(target);
+        inbound.get(target).add(route);
+      }
+    }
+    outbound.set(route, targets);
+  }
+  const reached = new Set(["/"]);
+  const queue = ["/"];
+  while (queue.length) for (const next of outbound.get(queue.shift()) || []) if (!reached.has(next)) { reached.add(next); queue.push(next); }
+  for (const route of routes.keys()) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    check(reached.has(route), file, `${route} cannot be reached from the homepage through links in the served HTML`);
+    if (route !== "/") check(inbound.get(route).size >= 2, file, `${route} is linked from only ${inbound.get(route).size} page(s) in the served HTML; it needs at least 2`);
+    check(REQUIRED_ROUTES.includes(route), file, `${route} exists on disk but is not in tools/routes.mjs, so it is missing from the sitemap`);
+  }
+}
+
 const htmlFiles = walk(ROOT, (file) => path.basename(file).toLowerCase() === "index.html");
 const discoveredRoutes = new Set(htmlFiles.map(routeFor));
 for (const route of REQUIRED_ROUTES) {
@@ -1072,6 +1143,7 @@ for (const route of REQUIRED_ROUTES) {
 }
 for (const file of htmlFiles) checkHtml(file);
 checkSeoContracts(htmlFiles);
+checkSearchContracts(htmlFiles);
 checkSeoInfrastructure();
 checkNotFoundPage();
 
@@ -1088,6 +1160,10 @@ checkNotFoundPage();
 
 for (const staleRoute of buildTopics({ check: true }).stale) {
   fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
+}
+
+for (const stalePage of buildChrome({ check: true }).stale) {
+  fail(path.join(ROOT, stalePage), 'header or footer is out of date with js/site.js — run "npm run build:chrome"');
 }
 
 const javascriptFiles = walk(ROOT, (file) => file.endsWith(".js"));

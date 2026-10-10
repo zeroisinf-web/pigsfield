@@ -26,6 +26,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { applyChrome } from "./build-chrome.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ORIGIN = "https://pigsfield.com";
@@ -45,13 +46,13 @@ export const DESTINATIONS = [
     parentName: "Nursery to PhD",
     splitBy: "section",
     topics: [
-      { key: "n5", slug: "nursery-to-class-5", name: "Nursery to Class 5", h1: "Early learning that stays playful.", title: "Free Nursery to Class 5 Learning Resources | Pigsfield", description: "Free-first books, videos, phonics, maths practice and activity ideas for children aged 4 to 10, organized for parents and primary teachers in India.", intro: "Resources for children roughly aged 4 to 10, chosen so a parent or a primary teacher can start straight away. Everything opens on the original provider's own site." },
-      { key: "c68", slug: "class-6-to-8", name: "Class 6 to 8", h1: "Middle school, where curiosity needs structure.", title: "Free Class 6 to 8 Study Resources & NCERT | Pigsfield", description: "Free-first NCERT material, science and maths lessons, language practice and reference tools for middle-school students aged 11 to 14 in India.", intro: "Middle school is where subjects stop being one story and start being several. These resources cover NCERT material, science, maths and language practice for ages 11 to 14." },
-      { key: "c912", slug: "class-9-to-12", name: "Class 9 to 12", h1: "Board years, without the coaching bill.", title: "Free Class 9 to 12 Study Material & NCERT | Pigsfield", description: "Free-first NCERT solutions, physics, chemistry, biology and maths lessons, past papers and revision tools for secondary and senior-secondary students in India.", intro: "Secondary and senior-secondary study material for ages 14 to 18, including NCERT-aligned lessons and revision help. Useful alongside board preparation and entrance exams." },
-      { key: "ug", slug: "undergraduate", name: "Undergraduate", h1: "Degree-level learning you can reach for free.", title: "Free Undergraduate Courses & Study Resources | Pigsfield", description: "Free-first university lectures, open courseware, degree-level textbooks and subject resources for undergraduate students across India.", intro: "Open courseware, university lectures and degree-level references. Some providers offer paid certificates on top of free course material, so check the current terms at the source." },
-      { key: "pg", slug: "postgraduate", name: "Postgraduate", h1: "Master's-level depth, openly available.", title: "Free Postgraduate & Master's Study Resources | Pigsfield", description: "Free-first advanced courses, specialist lectures and master's-level academic resources for postgraduate students in India.", intro: "Advanced coursework and specialist material for master's-level study, including open lectures and academic references." },
-      { key: "phd", slug: "phd-and-research", name: "PhD & Research", h1: "Research support that does not sit behind a paywall.", title: "Free PhD & Research Tools, Papers and Support | Pigsfield", description: "Free-first preprint archives, open-access journals, reference managers, academic writing help and research tools for doctoral scholars in India.", intro: "Preprints, open-access journals, reference managers and writing support for doctoral work. Several of these replace tools that departments otherwise pay for." },
-      { key: "tt", slug: "teacher-training", name: "Teacher Training", h1: "Strong teaching helps every stage flourish.", title: "Free Teacher Training Resources & Courses | Pigsfield", description: "Free-first teacher training courses, classroom practice guides, pedagogy resources and professional development material for teachers across India.", intro: "Professional development, pedagogy and classroom practice. Placed after PhD deliberately: teaching is a discipline of its own, not a fallback." }
+      { key: "n5", slug: "nursery-to-class-5", name: "Nursery to Class 5", h1: "Free learning resources for Nursery to Class 5", tagline: "Early learning that stays playful.", title: "Free Nursery to Class 5 Learning Resources | Pigsfield", description: "Free-first books, videos, phonics, maths practice and activity ideas for children aged 4 to 10, organized for parents and primary teachers in India.", intro: "Resources for children roughly aged 4 to 10, chosen so a parent or a primary teacher can start straight away. Everything opens on the original provider's own site." },
+      { key: "c68", slug: "class-6-to-8", name: "Class 6 to 8", h1: "Free NCERT books and lessons for Class 6 to 8", tagline: "Middle school, where curiosity needs structure.", title: "Free Class 6 to 8 Study Resources & NCERT | Pigsfield", description: "Free-first NCERT material, science and maths lessons, language practice and reference tools for middle-school students aged 11 to 14 in India.", intro: "Middle school is where subjects stop being one story and start being several. These resources cover NCERT material, science, maths and language practice for ages 11 to 14." },
+      { key: "c912", slug: "class-9-to-12", name: "Class 9 to 12", h1: "Free NCERT books, lessons and revision for Class 9 to 12", tagline: "Board years, without the coaching bill.", title: "Free Class 9 to 12 Study Material & NCERT | Pigsfield", description: "Free-first NCERT solutions, physics, chemistry, biology and maths lessons, past papers and revision tools for secondary and senior-secondary students in India.", intro: "Secondary and senior-secondary study material for ages 14 to 18, including NCERT-aligned lessons and revision help. Useful alongside board preparation and entrance exams." },
+      { key: "ug", slug: "undergraduate", name: "Undergraduate", h1: "Free undergraduate courses and degree-level study resources", tagline: "Degree-level learning you can reach for free.", title: "Free Undergraduate Courses & Study Resources | Pigsfield", description: "Free-first university lectures, open courseware, degree-level textbooks and subject resources for undergraduate students across India.", intro: "Open courseware, university lectures and degree-level references. Some providers offer paid certificates on top of free course material, so check the current terms at the source." },
+      { key: "pg", slug: "postgraduate", name: "Postgraduate", h1: "Free postgraduate and master's-level study resources", tagline: "Master's-level depth, openly available.", title: "Free Postgraduate & Master's Study Resources | Pigsfield", description: "Free-first advanced courses, specialist lectures and master's-level academic resources for postgraduate students in India.", intro: "Advanced coursework and specialist material for master's-level study, including open lectures and academic references." },
+      { key: "phd", slug: "phd-and-research", name: "PhD & Research", h1: "Free PhD and research tools, papers and writing support", tagline: "Research support that does not sit behind a paywall.", title: "Free PhD & Research Tools, Papers and Support | Pigsfield", description: "Free-first preprint archives, open-access journals, reference managers, academic writing help and research tools for doctoral scholars in India.", intro: "Preprints, open-access journals, reference managers and writing support for doctoral work. Several of these replace tools that departments otherwise pay for." },
+      { key: "tt", slug: "teacher-training", name: "Teacher Training", h1: "Free teacher training courses and classroom resources", tagline: "Strong teaching helps every stage flourish.", title: "Free Teacher Training Resources & Courses | Pigsfield", description: "Free-first teacher training courses, classroom practice guides, pedagogy resources and professional development material for teachers across India.", intro: "Professional development, pedagogy and classroom practice. Placed after PhD deliberately: teaching is a discipline of its own, not a fallback." }
     ]
   },
   {
@@ -60,10 +61,10 @@ export const DESTINATIONS = [
     parentName: "Digital Tools",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "privacy-and-browsers", name: "Privacy & Browsers", h1: "Browse without being the product.", title: "Privacy Tools, Tor & Brave Browser Guide | Pigsfield", description: "Free-first privacy browsers, tracker blockers, breach checkers and web utilities for safer everyday browsing on Indian phones and laptops.", intro: "Browsers and utilities that reduce tracking, plus tools for checking whether your own data has already leaked." },
-      { key: 1, slug: "files-and-remote-access", name: "Files & Remote Access", h1: "Your documents, reachable from anywhere.", title: "DigiLocker, PDF Tools & Remote Desktop | Pigsfield", description: "Free-first tools for Indian document storage, PDF editing, cloud drives, file management and controlling a computer remotely from a phone.", intro: "Government document storage, cloud drives, PDF utilities and remote desktop access — the plumbing that makes study and paperwork portable." },
-      { key: 2, slug: "creative-tools", name: "Photo, Video & Design", h1: "Make things without buying a licence.", title: "Photo, Video & Design Tools | Pigsfield", description: "Free-first video compression, photo editing, background removal and design tools, including VideoCompress AI, Remove.bg, Pixelcut and Freepik.", intro: "Edit photos and videos, remove backgrounds, compress files and create designs. Compare free-first tools with direct tutorials." },
-      { key: 3, slug: "research-tools", name: "Research Tools", h1: "Find the source, not the summary.", title: "Free Research Tools, Books & Analytics | Pigsfield", description: "Free-first research libraries, science explainers, community channels and analytics tools for students and independent researchers in India.", intro: "Places to find books, papers, explanations and data. Availability and legality of individual libraries vary by country — check before you rely on one." }
+      { key: 0, slug: "privacy-and-browsers", name: "Privacy & Browsers", h1: "Privacy browsers, tracker blockers and breach checkers", tagline: "Browse without being the product.", title: "Privacy Tools, Tor & Brave Browser Guide | Pigsfield", description: "Free-first privacy browsers, tracker blockers, breach checkers and web utilities for safer everyday browsing on Indian phones and laptops.", intro: "Browsers and utilities that reduce tracking, plus tools for checking whether your own data has already leaked." },
+      { key: 1, slug: "files-and-remote-access", name: "Files & Remote Access", h1: "DigiLocker, PDF tools, cloud drives and remote desktop", tagline: "Your documents, reachable from anywhere.", title: "DigiLocker, PDF Tools & Remote Desktop | Pigsfield", description: "Free-first tools for Indian document storage, PDF editing, cloud drives, file management and controlling a computer remotely from a phone.", intro: "Government document storage, cloud drives, PDF utilities and remote desktop access — the plumbing that makes study and paperwork portable." },
+      { key: 2, slug: "creative-tools", name: "Photo, Video & Design", h1: "Free photo, video and design tools", tagline: "Make things without buying a licence.", title: "Photo, Video & Design Tools | Pigsfield", description: "Free-first video compression, photo editing, background removal and design tools, including VideoCompress AI, Remove.bg, Pixelcut and Freepik.", intro: "Edit photos and videos, remove backgrounds, compress files and create designs. Compare free-first tools with direct tutorials." },
+      { key: 3, slug: "research-tools", name: "Research Tools", h1: "Free research tools, libraries and data sources", tagline: "Find the source, not the summary.", title: "Free Research Tools, Books & Analytics | Pigsfield", description: "Free-first research libraries, science explainers, community channels and analytics tools for students and independent researchers in India.", intro: "Places to find books, papers, explanations and data. Availability and legality of individual libraries vary by country — check before you rely on one." }
     ],
     extraCards: [
       {
@@ -82,17 +83,17 @@ export const DESTINATIONS = [
     parentName: "Make Govt Accountable",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "information-and-records", name: "Information & Records", h1: "Ask the state what it already knows.", title: "RTI, CAG Reports & Election Affidavits | Pigsfield", description: "How to obtain government information in India using the RTI Act 2005, CAG audit reports and candidate election affidavits, with links to official portals.", intro: "The tools for getting documents, audits and declarations out of the state. Start here before escalating anywhere else — most complaints are stronger with a record attached." },
-      { key: 1, slug: "anti-corruption", name: "Anti-Corruption", h1: "Where to report someone taking a bribe.", title: "Report Corruption: Lokpal, CVC, CBI, ACB | Pigsfield", description: "Official channels for reporting corruption in India — Lokpal, Lokayukta, CVC, CBI, ED, the Anti-Corruption Bureau and Income Tax evasion reporting.", intro: "Each body covers a different level and kind of wrongdoing. Sending a complaint to the wrong one wastes months, so read what each actually handles." },
-      { key: 2, slug: "courts-and-legal-remedies", name: "Courts & Legal Remedies", h1: "When a complaint is not enough.", title: "PIL, Writ Petition & Consumer Court Guide | Pigsfield", description: "Judicial routes for Indian citizens: public interest litigation, the five constitutional writs under Articles 32 and 226, consumer courts, CAT and civil suits.", intro: "The judicial escalation path. General educational information only — for anything with a deadline attached, confirm the current position with a qualified lawyer." },
-      { key: 3, slug: "commissions-and-regulators", name: "Commissions & Regulators", h1: "The body that regulates your problem.", title: "NHRC, NCW, RERA & Ombudsman Complaints | Pigsfield", description: "Indian rights commissions and sector regulators — human rights, women, children, elections, banking ombudsman, telecom and real estate — and how to reach each.", intro: "Rights commissions and sector regulators, each with a defined jurisdiction. Matching your issue to the right one is most of the work." },
-      { key: 4, slug: "grievance-portals", name: "Grievance Portals", h1: "The official complaint box, and how to escalate it.", title: "CPGRAMS, PMO & CM Helpline Grievances | Pigsfield", description: "Government grievance portals for India and Rajasthan — CPGRAMS, the PMO portal, CM Helpline 181, Jan Soochna and the Right to Public Service Act.", intro: "Public grievance systems with defined escalation ladders. A grievance that stalls at one level can usually be pushed to the next." },
-      { key: 5, slug: "social-audit", name: "Social Audit", h1: "Accountability that happens in the village, not the capital.", title: "Social Audit, Gram Sabha & Jan Sunwai | Pigsfield", description: "Community accountability tools in India — MGNREGA social audits, Gram Sabha powers, Jan Sunwai public hearings and whistleblower protection.", intro: "Collective oversight, where a group can achieve what an individual complaint cannot. The Gram Sabha in particular holds powers most people never use." },
-      { key: 6, slug: "parliament-and-representatives", name: "Parliament & Representatives", h1: "Your representative works for you.", title: "Contact Your MP or MLA + NOTA Guide | Pigsfield", description: "How to make written representations to an MP or MLA in India, reach parliamentary and assembly committees, and understand the NOTA option.", intro: "The elected route. A written representation on record is slower than a complaint but carries weight a portal ticket does not." },
-      { key: 7, slug: "media-and-fraud-reporting", name: "Media & Fraud Reporting", h1: "When the story or the money is wrong.", title: "Press Council, NBDSA & Fraud Reporting | Pigsfield", description: "Complain about Indian print and television coverage through the Press Council and NBDSA, run digital accountability campaigns, and report Aadhaar or DBT fraud.", intro: "Holding coverage to account, and reporting benefit fraud. Media complaints have short deadlines, so act while the broadcast is recent." },
-      { key: 8, slug: "criminal-and-financial-law", name: "Criminal & Financial Law", h1: "The heavier instruments.", title: "FIR, PMLA & Benami Act Explained | Pigsfield", description: "Filing an FIR against official wrongdoing in India, plus plain-language explanations of the Prevention of Money Laundering Act and the Benami Transactions Act.", intro: "Criminal and asset-recovery law. General educational information, not legal advice — these routes carry consequences for the person filing too." },
-      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." },
-      { key: 10, slug: "your-state", name: "Your State", lastmod: "2026-10-09", h1: "Your state's complaint and RTI portals.", title: "State RTI, CM Helpline & Lokayukta Portals | Pigsfield", description: "Official CM helpline, RTI and Lokayukta portals for ten large Indian states, gathered in one place." }
+      { key: 0, slug: "information-and-records", name: "Information & Records", h1: "How to file an RTI, and find CAG reports and candidate affidavits", tagline: "Ask the state what it already knows.", title: "RTI, CAG Reports & Election Affidavits | Pigsfield", description: "How to obtain government information in India using the RTI Act 2005, CAG audit reports and candidate election affidavits, with links to official portals.", intro: "The tools for getting documents, audits and declarations out of the state. Start here before escalating anywhere else — most complaints are stronger with a record attached." },
+      { key: 1, slug: "anti-corruption", name: "Anti-Corruption", h1: "Report corruption to Lokpal, Lokayukta, CVC, CBI or the ACB", tagline: "Where to report someone taking a bribe.", title: "Report Corruption: Lokpal, CVC, CBI, ACB | Pigsfield", description: "Official channels for reporting corruption in India — Lokpal, Lokayukta, CVC, CBI, ED, the Anti-Corruption Bureau and Income Tax evasion reporting.", intro: "Each body covers a different level and kind of wrongdoing. Sending a complaint to the wrong one wastes months, so read what each actually handles." },
+      { key: 2, slug: "courts-and-legal-remedies", name: "Courts & Legal Remedies", h1: "PIL, writ petitions and consumer courts: judicial remedies in India", tagline: "When a complaint is not enough.", title: "PIL, Writ Petition & Consumer Court Guide | Pigsfield", description: "Judicial routes for Indian citizens: public interest litigation, the five constitutional writs under Articles 32 and 226, consumer courts, CAT and civil suits.", intro: "The judicial escalation path. General educational information only — for anything with a deadline attached, confirm the current position with a qualified lawyer." },
+      { key: 3, slug: "commissions-and-regulators", name: "Commissions & Regulators", h1: "Complain to NHRC, NCW, RERA, the banking ombudsman and other regulators", tagline: "The body that regulates your problem.", title: "NHRC, NCW, RERA & Ombudsman Complaints | Pigsfield", description: "Indian rights commissions and sector regulators — human rights, women, children, elections, banking ombudsman, telecom and real estate — and how to reach each.", intro: "Rights commissions and sector regulators, each with a defined jurisdiction. Matching your issue to the right one is most of the work." },
+      { key: 4, slug: "grievance-portals", name: "Grievance Portals", h1: "CPGRAMS, PMO portal and CM Helpline 181: file and escalate a complaint", tagline: "The official complaint box, and how to escalate it.", title: "CPGRAMS, PMO & CM Helpline Grievances | Pigsfield", description: "Government grievance portals for India and Rajasthan — CPGRAMS, the PMO portal, CM Helpline 181, Jan Soochna and the Right to Public Service Act.", intro: "Public grievance systems with defined escalation ladders. A grievance that stalls at one level can usually be pushed to the next." },
+      { key: 5, slug: "social-audit", name: "Social Audit", h1: "Social audit, Gram Sabha and Jan Sunwai: community accountability", tagline: "Accountability that happens in the village, not the capital.", title: "Social Audit, Gram Sabha & Jan Sunwai | Pigsfield", description: "Community accountability tools in India — MGNREGA social audits, Gram Sabha powers, Jan Sunwai public hearings and whistleblower protection.", intro: "Collective oversight, where a group can achieve what an individual complaint cannot. The Gram Sabha in particular holds powers most people never use." },
+      { key: 6, slug: "parliament-and-representatives", name: "Parliament & Representatives", h1: "How to write to your MP or MLA, and what NOTA means", tagline: "Your representative works for you.", title: "Contact Your MP or MLA + NOTA Guide | Pigsfield", description: "How to make written representations to an MP or MLA in India, reach parliamentary and assembly committees, and understand the NOTA option.", intro: "The elected route. A written representation on record is slower than a complaint but carries weight a portal ticket does not." },
+      { key: 7, slug: "media-and-fraud-reporting", name: "Media & Fraud Reporting", h1: "Complain to the Press Council or NBDSA, and report Aadhaar or DBT fraud", tagline: "When the story or the money is wrong.", title: "Press Council, NBDSA & Fraud Reporting | Pigsfield", description: "Complain about Indian print and television coverage through the Press Council and NBDSA, run digital accountability campaigns, and report Aadhaar or DBT fraud.", intro: "Holding coverage to account, and reporting benefit fraud. Media complaints have short deadlines, so act while the broadcast is recent." },
+      { key: 8, slug: "criminal-and-financial-law", name: "Criminal & Financial Law", h1: "Filing an FIR against official wrongdoing, and the PMLA and Benami Acts", tagline: "The heavier instruments.", title: "FIR, PMLA & Benami Act Explained | Pigsfield", description: "Filing an FIR against official wrongdoing in India, plus plain-language explanations of the Prevention of Money Laundering Act and the Benami Transactions Act.", intro: "Criminal and asset-recovery law. General educational information, not legal advice — these routes carry consequences for the person filing too." },
+      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Cyber crime portal, e-Courts case status and open government data", tagline: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." },
+      { key: 10, slug: "your-state", name: "Your State", lastmod: "2026-10-09", h1: "State RTI portals, CM helplines and Lokayukta websites", tagline: "Your state's complaint and RTI portals.", title: "State RTI, CM Helpline & Lokayukta Portals | Pigsfield", description: "Official CM helpline, RTI and Lokayukta portals for ten large Indian states, gathered in one place.", intro: "Official CM helpline, RTI and Lokayukta portals for ten large states. Fees, forms and deadlines differ from state to state, so read each portal's own instructions before you file." }
     ]
   },
   {
@@ -101,10 +102,10 @@ export const DESTINATIONS = [
     parentName: "Vocational & Business",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "government-skill-portals", name: "Government Skill Portals", h1: "State-backed training that costs nothing.", title: "Free Govt Skill Courses: NPTEL, SWAYAM | Pigsfield", description: "Free Indian government skill platforms — Skill India, BharatSkills, NPTEL, SWAYAM Plus, Spoken Tutorial, Virtual Labs and AICTE internships.", intro: "Government and IIT-run platforms covering ITI trades, engineering, IT and virtual laboratories. Most issue recognized certificates at no cost." },
-      { key: 1, slug: "corporate-training", name: "Corporate Training", h1: "Industry certificates without the invoice.", title: "Free IBM, Microsoft & Google Certificates | Pigsfield", description: "Free corporate training from Infosys Springboard, IBM SkillsBuild, Microsoft Learn, Google Digital Garage, AWS, TCS iON and Cisco, usable from India.", intro: "Company-run programmes in cloud, AI and workplace skills. Free to learn; confirm whether a given certificate costs anything before you count on it." },
-      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." },
-      { key: 3, slug: "jobs-and-business", name: "Jobs, Business & Trades", lastmod: "2026-10-09", h1: "Find work, start a business, learn a trade.", title: "Free Govt Job, Business & Trade Portals | Pigsfield", description: "Official portals for jobs, apprenticeships, MSME registration, Mudra loans, PMEGP, PM Vishwakarma and ITI trades." }
+      { key: 0, slug: "government-skill-portals", name: "Government Skill Portals", h1: "Free government skill courses with certificates: NPTEL, SWAYAM, Skill India", tagline: "State-backed training that costs nothing.", title: "Free Govt Skill Courses: NPTEL, SWAYAM | Pigsfield", description: "Free Indian government skill platforms — Skill India, BharatSkills, NPTEL, SWAYAM Plus, Spoken Tutorial, Virtual Labs and AICTE internships.", intro: "Government and IIT-run platforms covering ITI trades, engineering, IT and virtual laboratories. Most issue recognized certificates at no cost." },
+      { key: 1, slug: "corporate-training", name: "Corporate Training", h1: "Free corporate training and certificates from IBM, Microsoft and Google", tagline: "Industry certificates without the invoice.", title: "Free IBM, Microsoft & Google Certificates | Pigsfield", description: "Free corporate training from Infosys Springboard, IBM SkillsBuild, Microsoft Learn, Google Digital Garage, AWS, TCS iON and Cisco, usable from India.", intro: "Company-run programmes in cloud, AI and workplace skills. Free to learn; confirm whether a given certificate costs anything before you count on it." },
+      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Free coding courses: CS50, freeCodeCamp, The Odin Project and more", tagline: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." },
+      { key: 3, slug: "jobs-and-business", name: "Jobs, Business & Trades", lastmod: "2026-10-09", h1: "Government job, apprenticeship, business and trade portals", tagline: "Find work, start a business, learn a trade.", title: "Free Govt Job, Business & Trade Portals | Pigsfield", description: "Official portals for jobs, apprenticeships, MSME registration, Mudra loans, PMEGP, PM Vishwakarma and ITI trades.", intro: "Official portals for finding work and apprenticeships, registering a small business, applying for Mudra and PMEGP loans, and learning a trade through ITI or PM Vishwakarma." }
     ]
   }
 ];
@@ -221,6 +222,16 @@ export function digestFor(source) {
   return crypto.createHash("sha256").update(JSON.stringify(topicPayload(source))).digest("hex").slice(0, 16);
 }
 
+/** Most of the civic notes are written in Hindi. Marking a block whose letters are mostly
+ *  Devanagari as lang="hi" tells search engines and screen readers which language they are
+ *  reading; mixed Hinglish with more Latin letters stays in the page's English. */
+export function langAttr(text) {
+  const value = String(text || "");
+  const devanagari = (value.match(/[\u0900-\u097F]/g) || []).length;
+  const latin = (value.match(/[A-Za-z]/g) || []).length;
+  return devanagari > latin ? ' lang="hi"' : "";
+}
+
 function hostOf(url) {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
@@ -294,7 +305,7 @@ function renderSources(item) {
 function renderExtra(extra) {
   if (!extra.length) return "";
   return `<details class="resource-links resource-notes"><summary>Practical guide</summary><div class="link-list extra-list">${extra
-    .map((part) => `<div><strong>${esc(part.label || "More information")}</strong><p>${esc(part.text)}</p></div>`)
+    .map((part) => `<div><strong${langAttr(part.label)}>${esc(part.label || "More information")}</strong><p${langAttr(part.text)}>${esc(part.text)}</p></div>`)
     .join("")}</div></details>`;
 }
 
@@ -319,7 +330,7 @@ function renderResources(source) {
     .map((item) => {
       const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="Share ${esc(item.title)} as an image" title="फ़ोटो कार्ड"></button>` : "";
       const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button></span>`;
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3${langAttr(item.title)}>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p${langAttr(item.desc)}>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note"${langAttr(item.warning)}>${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
     })
     .join("\n        ");
 }
@@ -429,11 +440,15 @@ function renderSiblings(destination, current) {
 }
 
 export function renderTopicPage(destination, topic, source) {
+  return applyChrome(topicPageHtml(destination, topic, source)).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
+}
+
+function topicPageHtml(destination, topic, source) {
   const route = `/${destination.dest}/${topic.slug}/`;
   const canonical = `${ORIGIN}${route}`;
   const items = topicPayload(source);
   const count = items.length;
-  const social = `${topic.name}: ${count} free-first resources on Pigsfield, each linking straight to the original provider.`;
+  const social = `${count} free-first resources. ${topic.description}`;
 
   const graph = [
     {
@@ -462,7 +477,7 @@ export function renderTopicPage(destination, topic, source) {
       "@id": `${canonical}#resources`,
       name: `${topic.name} resources`,
       numberOfItems: count,
-      itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title }))
+      itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title, url: `${canonical}#${item.id}` }))
     }
   ];
 
@@ -487,7 +502,7 @@ export function renderTopicPage(destination, topic, source) {
   <a class="skip-link" href="#main-content">Skip to content</a><header data-site-header></header>
   <main id="main-content">
     <div class="container breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">${esc(destination.parentName)}</a></li><li aria-current="page">${esc(topic.name)}</li></ol></div>
-    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede">${esc(topic.intro)}</p></div></section>
+    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede"><strong>${esc(topic.tagline)}</strong> ${esc(topic.intro)}</p></div></section>
     <section class="section"><div class="container">
       <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}, each opening its original provider.</p>
       <div class="topic-list">
@@ -525,6 +540,9 @@ function buildHomeCounts({ root, check, data }) {
   return { stale: [], written: ["/"] };
 }
 
+/** The footer's year is refreshed in the browser, so a new year alone does not make a page stale. */
+const sameYear = (html) => html.replace(/<span data-year>\d{4}<\/span>/g, "<span data-year></span>");
+
 export function build({ root = ROOT, check = false } = {}) {
   const data = loadCatalog(root);
   const stale = [];
@@ -544,7 +562,7 @@ export function build({ root = ROOT, check = false } = {}) {
       if (check) {
         // Asset versions are stamped separately and verified by build-assets --check.
         const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8").replace(/\?v=[a-f0-9]{12}(?=")/g, "") : "";
-        if (current !== html) stale.push(`/${destination.dest}/${topic.slug}/`);
+        if (sameYear(current) !== sameYear(html)) stale.push(`/${destination.dest}/${topic.slug}/`);
         continue;
       }
       fs.mkdirSync(path.dirname(file), { recursive: true });

@@ -200,7 +200,11 @@ p { color: var(--ink-soft); }
 .icon-button:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 4px 12px rgba(16, 36, 30, 0.08); }
 .icon-button:active { transform: scale(0.95); }
 
-.site-header {
+/* [data-site-header] reserves the bar's height before js/site.js runs, so the page never
+   shifts down when the header is drawn. */
+.site-header,
+[data-site-header] {
+  display: block;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1258,7 +1262,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
   .header-actions .menu-toggle { display: none; }
 }
 @media (display-mode: standalone) {
-  .site-header { padding-top: env(safe-area-inset-top, 0px); }
+  .site-header, [data-site-header] { padding-top: env(safe-area-inset-top, 0px); }
 }
 
 @media (prefers-reduced-transparency: reduce) {

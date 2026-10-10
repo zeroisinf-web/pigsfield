@@ -9,6 +9,13 @@ const ROBOTS_URL = `${PRODUCTION_ORIGIN}/robots.txt`;
 const SITEMAP_URL = `${PRODUCTION_ORIGIN}/sitemap.xml`;
 const TOOLS_URL = `${PRODUCTION_ORIGIN}/tools/`;
 const SERVICE_WORKER_URL = `${PRODUCTION_ORIGIN}/sw.js`;
+// A path that will never exist, to prove a missing page answers 404 with the branded page.
+const MISSING_URL = `${PRODUCTION_ORIGIN}/__pigsfield-missing-probe__/`;
+const MISSING_MARKER = "This address is not on the map";
+const SLASHLESS_URL = `${PRODUCTION_ORIGIN}/learn`;
+// The crawlers whose access decides whether Pigsfield can be found at all. A Cloudflare
+// dashboard setting can rewrite robots.txt without any commit here, so this is checked live.
+const SEARCH_AGENTS = ["*", "googlebot", "bingbot", "oai-searchbot", "perplexitybot", "claude-searchbot"];
 // A real PigBang entry (Hanuman, in the films tab). A YouTube video id is the one poster
 // source that resolves without reading a provider's page at all, so if this cannot be
 // served the endpoint itself is broken rather than a provider having blocked us.
@@ -406,16 +413,64 @@ async function checkPosterEndpoint() {
   console.log(`[pass] ${PRODUCTION_ORIGIN}/api/poster served ${contentType} cover art for a PigBang entry`);
 }
 
+/** A missing page must answer 404 with the branded page, not an empty body or a 200. */
+async function checkNotFoundPage() {
+  const response = await fetchWithRetry(MISSING_URL, { expectedStatuses: new Set([404]) });
+  const body = await readTextLimited(response, 512 * 1024);
+  if (!body.includes(MISSING_MARKER)) {
+    throw new Error(`${MISSING_URL} answered 404 without the branded 404.html; check not_found_handling in wrangler.jsonc`);
+  }
+  console.log(`[pass] a missing page answers HTTP 404 with the branded 404 page`);
+}
+
+/** /learn must redirect to its canonical /learn/ rather than serve a second copy. */
+async function checkTrailingSlashRedirect() {
+  const response = await fetchWithRetry(SLASHLESS_URL, { expectedStatuses: new Set([301, 307, 308]) });
+  const location = new URL(response.headers.get("location") ?? "", SLASHLESS_URL).href;
+  await response.body?.cancel();
+  if (location !== `${SLASHLESS_URL}/`) throw new Error(`${SLASHLESS_URL} must redirect to ${SLASHLESS_URL}/; received ${location}`);
+  console.log(`[pass] ${SLASHLESS_URL} redirects to its trailing-slash canonical`);
+}
+
+/** No group that a search or answer engine reads may disallow the whole site. */
+async function checkRobotsAllowsSearch() {
+  const text = await readTextLimited(await fetchWithRetry(ROBOTS_URL), 512 * 1024);
+  const blocked = [];
+  let agents = [];
+  let inRules = false;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.replace(/#.*/, "").trim();
+    const match = line.match(/^([A-Za-z-]+)\s*:\s*(.*)$/);
+    if (!match) continue;
+    const [, field, value] = match;
+    if (/^user-agent$/i.test(field)) {
+      if (inRules) agents = [];
+      inRules = false;
+      agents.push(value.trim().toLowerCase());
+    } else {
+      inRules = true;
+      if (/^disallow$/i.test(field) && value.trim() === "/") blocked.push(...agents.filter((agent) => SEARCH_AGENTS.includes(agent)));
+    }
+  }
+  if (blocked.length) throw new Error(`${ROBOTS_URL} disallows the whole site for ${[...new Set(blocked)].join(", ")}`);
+  console.log(`[pass] robots.txt lets search and answer engines crawl the site`);
+}
+
 async function main() {
   console.log(`Checking the deployed Pigsfield build and crawl surface at ${PRODUCTION_HOME}`);
 
-  const results = await Promise.allSettled([
+  // The deployed-build check waits out the deploy, so everything that depends on this
+  // commit's configuration (the 404 page, for one) runs after it.
+  const deployed = await Promise.allSettled([checkDeployedBuild()]);
+  const results = deployed.concat(await Promise.allSettled([
     checkCrawlSurface(),
     checkPermanentHttpsRedirect(),
     checkToolsRoute(),
-    checkDeployedBuild(),
     checkPosterEndpoint(),
-  ]);
+    checkNotFoundPage(),
+    checkTrailingSlashRedirect(),
+    checkRobotsAllowsSearch(),
+  ]));
   const failures = results
     .filter((result) => result.status === "rejected")
     .map((result) => result.reason);
