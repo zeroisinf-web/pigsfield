@@ -34,11 +34,22 @@ This static preview does not provide `/api/ai` or `/api/translate`; hosted text 
 After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first: it writes the per-topic pages **and** the index block on each hub, and `npm run build` fails if either is stale. If you changed `js/data/exams.js` or `js/exams-page.js`, run `npm run build:exams`: it writes every exam panel into `exams/index.html` so crawlers can read them, and `npm run build` fails if they are stale.
 
 ```bash
+npm run build:topics   # topic pages, hubs and the /hi/rights/ Hindi pages
+npm run build:exams    # /exams/ and the UPSC, RAS, NCERT and SSC pages
+npm run build:watch    # PigBang's crawlable channel, app and film lists
+npm run build:ai       # the AI Studio markup inside /ai/
+npm run build:chrome   # the header and footer written into every page
 npm run build:assets
+npm run build:sitemap
 npm run build:sw
 npm run build
 npm test
 ```
+
+Every generator has a `--check` mode that `npm run build` runs, so a stale page fails the
+build. Pages carry their navigation, resources and headings in the served HTML: crawlers
+that run no JavaScript see the same site as a visitor. `npm run build:og -- --missing` draws
+the social card for a new page without redrawing the others.
 
 Each hub and topic page has its own 1200×630 social card in `assets/og/`, so a link shared on WhatsApp shows the page's name and resource count. The cards are committed images drawn with Playwright: after a page's name, headline or resource count changes, run `NODE_PATH=$(npm root -g) npm run build:og`, then `npm run build:topics`. `npm run build` fails while a card is missing.
 
