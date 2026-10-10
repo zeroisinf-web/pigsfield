@@ -30,8 +30,12 @@ export function indexNowKey(root = ROOT) {
   return key;
 }
 
+/** loc -> lastmod for each <url>. A page with hreflang alternates carries <xhtml:link>
+ *  lines between the two, so each entry is read as a block rather than as adjacent tags. */
 function entries(xml) {
-  return new Map([...xml.matchAll(/<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)].map((match) => [match[1], match[2]]));
+  return new Map([...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)]
+    .map((match) => [match[1].match(/<loc>([^<]+)<\/loc>/)?.[1], match[1].match(/<lastmod>([^<]+)<\/lastmod>/)?.[1]])
+    .filter(([loc]) => loc));
 }
 
 export function changedUrls(previousXml, currentXml) {
