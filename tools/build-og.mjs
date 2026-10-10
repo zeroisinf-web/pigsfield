@@ -17,6 +17,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { DESTINATIONS, loadCatalog, sourceFor, topicPayload } from "./build-topics.mjs";
 import { EXAM_PAGES } from "./build-exams.mjs";
+import { WATCH_PAGES, watchGroups } from "./build-watch.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const OG_DIRECTORY = "assets/og";
@@ -54,7 +55,8 @@ export function ogCards(data = loadCatalog()) {
     };
   }));
   const exams = EXAM_PAGES.map((page) => ({ route: `/exams/${page.slug}/`, label: "Competitive Exams", title: `${page.name} guide`, subtitle: page.card, stat: "Free courses & books", art: "path-exams.svg" }));
-  return [...hubs, ...topics, ...exams];
+  const lists = WATCH_PAGES.map((page) => ({ route: `/watch/${page.slug}/`, label: "PigBang", title: page.name, subtitle: { channels: "Channels worth following, stage by stage.", apps: "Apps for every stage, free ones first.", films: "Films that teach something." }[page.slug], stat: `${watchGroups(data.pigbang.tabs.find((tab) => tab.id === page.tab)).count} titles`, art: "path-watch.svg" }));
+  return [...hubs, ...topics, ...exams, ...lists];
 }
 
 const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

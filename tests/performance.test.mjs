@@ -125,6 +125,11 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     // to 566 for the Liquid Glass layer and the phone tab bar.
     // +6 KiB raw for the prerendered header and footer (tools/build-chrome.mjs).
     ["watch/index.html", 572, 207],
+    // PigBang's crawlable lists carry every title as markup (tools/build-watch.mjs). They are
+    // long, but they load no catalogue data, no player and no artwork.
+    ["watch/channels/index.html", 484, 161],
+    ["watch/apps/index.html", 635, 172],
+    ["watch/films/index.html", 594, 171],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],

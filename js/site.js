@@ -993,11 +993,7 @@
 
   setTheme(initialTheme());
 
-  /* pf:chrome:start — the header and footer markup. tools/build-chrome.mjs evaluates this
-   * block at build time and writes the result into every page, so the navigation is plain
-   * <a href> in the served HTML: crawlers that never run JavaScript (Bing's first pass, AI
-   * answer engines) reach every pillar and every trust page. The functions below only
-   * draw it when a page arrived without it. */
+  /* pf:chrome:start — also written into every page by tools/build-chrome.mjs */
   /* The six pillars, named once.
    *
    * The header called them Learn / PigBang / Exams / Skills / Tools / Rights while the
@@ -1015,7 +1011,7 @@
   PF.pillars = PILLARS;
 
   function navLink(key, label) {
-    const current = page === key ? ' aria-current="page"' : "";
+    const current = page === key || page.startsWith(`${key}-`) ? ' aria-current="page"' : "";
     const pigbang = key === "watch" ? " data-pigbang-link" : "";
     return `<a href="${escapeHtml(PF.path(key))}"${pigbang}${current}>${escapeHtml(label)}</a>`;
   }

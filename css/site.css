@@ -898,6 +898,9 @@ body[data-page="watch"] {
 .topic-card-highlight .topic-card-count { color: color-mix(in srgb, var(--saffron) 78%, var(--ink)); }
 .topic-leftover { margin-top: 2rem; }
 .topic-leftover h3 { margin-bottom: .8rem; font-size: 1.1rem; }
+.topic-leftover > h2 { margin-bottom: .8rem; font-size: 1.35rem; scroll-margin-top: calc(var(--header-h) + 1rem); }
+.topic-meta { margin: .15rem 0 .35rem; color: var(--ink-soft); font-size: .82rem; }
+.text-link { color: var(--brand-deep); font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
 .topic-count { max-width: 60ch; margin-bottom: 2rem; color: var(--ink-soft); font-size: .95rem; }
 .topic-list { display: grid; gap: 1rem; }
 .topic-item { display: flex; flex-direction: column; padding: 1.3rem 1.4rem 0; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--paper-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .04); content-visibility: auto; contain-intrinsic-size: auto 150px; transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }

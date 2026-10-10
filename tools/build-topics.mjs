@@ -115,7 +115,7 @@ export const TOPICS = DESTINATIONS.flatMap((destination) =>
   destination.topics.map((topic) => ({ ...topic, dest: destination.dest, route: `/${destination.dest}/${topic.slug}/` }))
 );
 
-const esc = (value) =>
+export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -180,7 +180,7 @@ function siteHelpers(root = ROOT) {
 const { classifySource, sourceBrand, sourceMark, isYouTubeSearch, isTutorialSearch, resourceSymbolFor } = siteHelpers();
 
 /** Mirrors PF.slug in js/site.js. tests/catalog-compatibility.test.mjs pins the result. */
-function slug(value) {
+export function slug(value) {
   const result = String(value || "resource")
     .normalize("NFKD")
     .toLowerCase()
@@ -284,7 +284,7 @@ function renderSource(pair, title) {
 
 /** Web, then YouTube, then apps. A lane with nothing in it is left out rather than drawn
  *  as "Not listed": on a phone each lane is its own row, so empty ones only add scrolling. */
-function renderSources(item) {
+export function renderSources(item) {
   const lanes = { web: [], video: [], app: [] };
   for (const pair of item.urls) {
     const url = pair.slice(pair.indexOf("|") + 1);
@@ -311,7 +311,7 @@ function renderExtra(extra) {
 
 /** The symbol a resource is drawn with: its organization's mark where one is known. It is
  *  resolved from the same table js/watch.js uses, so NCERT is the same 📚 everywhere. */
-function resourceSymbol(item) {
+export function resourceSymbol(item) {
   const urls = item.urls.map((pair) => pair.slice(pair.indexOf("|") + 1));
   const types = urls.map(classifySource);
   const type = types.includes("video") ? "video" : types.includes("app") ? "app" : types[0] || "website";

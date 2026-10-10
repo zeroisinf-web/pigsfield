@@ -10,6 +10,7 @@ import { stamp as stampServiceWorker } from "./build-sw.mjs";
 import { ogCards, ogImageFor } from "./build-og.mjs";
 import { build as buildChrome } from "./build-chrome.mjs";
 import { EXAM_ROUTES } from "./build-exams.mjs";
+import { WATCH_ROUTES, build as buildWatch } from "./build-watch.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -33,7 +34,8 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
   ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }]),
-  ...EXAM_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
+  ...EXAM_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...WATCH_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 // Rich-result types Pigsfield cannot honestly claim: Google retired FAQ and HowTo results,
 // Course markup is for the course's own provider, and nothing here collects ratings.
@@ -1164,6 +1166,10 @@ checkNotFoundPage();
 
 for (const staleRoute of buildTopics({ check: true }).stale) {
   fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
+}
+
+for (const stalePage of buildWatch({ check: true }).stale) {
+  fail(path.join(ROOT, stalePage), 'PigBang list page is out of date with js/data/pigbang.js — run "npm run build:watch"');
 }
 
 for (const stalePage of buildChrome({ check: true }).stale) {

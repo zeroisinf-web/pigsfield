@@ -14,7 +14,8 @@
     "check:production": "node tools/check-production.mjs",
     "check:links": "node tools/link-check.mjs",
     "build:og": "node tools/build-og.mjs",
-    "build:chrome": "node tools/build-chrome.mjs"
+    "build:chrome": "node tools/build-chrome.mjs",
+    "build:watch": "node tools/build-watch.mjs"
   },
   "engines": {
     "node": ">=20"
