@@ -3,7 +3,7 @@ import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { DESTINATIONS, TOPICS, build as buildTopics } from "./build-topics.mjs";
+import { DESTINATIONS, HINDI_PAIRS, HINDI_ROUTES, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
@@ -17,7 +17,10 @@ const SKIP_DIRS = new Set([".git", "node_modules"]);
 // Hubs and topic pages carry a social card of their own (tools/build-og.mjs); every other
 // page keeps the site card.
 const OG_ROUTES = new Set(ogCards().map((card) => card.route));
-const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(route) ? ogImageFor(route) : "assets/og.png"}`;
+// A Hindi page shares its English pair's card.
+const cardRoute = (route) => route.replace(/^\/hi\//, "/");
+const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(cardRoute(route)) ? ogImageFor(cardRoute(route)) : "assets/og.png"}`;
+const isHindiRoute = (route) => route.startsWith("/hi/");
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -35,7 +38,8 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
   ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }]),
   ...EXAM_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }]),
-  ...WATCH_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
+  ...WATCH_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...HINDI_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 // Rich-result types Pigsfield cannot honestly claim: Google retired FAQ and HowTo results,
 // Course markup is for the course's own provider, and nothing here collects ratings.
@@ -229,7 +233,7 @@ function checkHtml(file) {
   check(metaValue(metaTags, "og:description").length > 0, file, "missing og:description");
   check(metaValue(metaTags, "og:url") === expectedCanonical, file, `og:url must be ${expectedCanonical}`);
   check(metaValue(metaTags, "og:image") === socialCardFor(route), file, `og:image must be ${socialCardFor(route)}`);
-  if (OG_ROUTES.has(route)) check(fs.existsSync(path.join(ROOT, ogImageFor(route))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
+  if (OG_ROUTES.has(cardRoute(route))) check(fs.existsSync(path.join(ROOT, ogImageFor(cardRoute(route)))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
   check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
   check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must match og:image");
   check(/(?:^|\/)assets\/pigsfield-icon-192\.png$/.test(icon?.href || ""), file, "favicon must use the optimized 192×192 Pigsfield icon");
@@ -286,7 +290,8 @@ function checkSeoContracts(files) {
     }
     check(metaValue(metaTags, "og:type") === "website", file, "og:type must be website");
     check(metaValue(metaTags, "og:site_name") === "Pigsfield", file, "og:site_name must be Pigsfield");
-    check(metaValue(metaTags, "og:locale") === "en_IN", file, "og:locale must be en_IN");
+    check(metaValue(metaTags, "og:locale") === (isHindiRoute(route) ? "hi_IN" : "en_IN"), file, `og:locale must be ${isHindiRoute(route) ? "hi_IN" : "en_IN"}`);
+    check(new RegExp(`<html\\b[^>]*\\blang="${isHindiRoute(route) ? "hi-IN" : "en-IN"}"`).test(html), file, `the document language must be ${isHindiRoute(route) ? "hi-IN" : "en-IN"}`);
     check(metaValue(metaTags, "og:url") === canonical, file, `og:url must match the canonical ${canonical}`);
     check(metaValue(metaTags, "og:image") === socialCardFor(route), file, "og:image must use the canonical social card URL");
     check(metaValue(metaTags, "og:image:width") === "1200" && metaValue(metaTags, "og:image:height") === "630", file, "Open Graph image dimensions must be 1200×630");
@@ -303,7 +308,8 @@ function checkSeoContracts(files) {
     const pageNode = nodes.find((node) => schemaTypes(node).includes(contract.pageType) && schemaUrl(node.url) === canonical);
     check(Boolean(pageNode), file, `JSON-LD must contain a ${contract.pageType} node for ${canonical}`);
     if (pageNode) {
-      check(pageNode.inLanguage === "en-IN", file, `${contract.pageType} JSON-LD must declare inLanguage en-IN`);
+      const language = isHindiRoute(route) ? "hi-IN" : "en-IN";
+      check(pageNode.inLanguage === language, file, `${contract.pageType} JSON-LD must declare inLanguage ${language}`);
       check(schemaUrl(pageNode.isPartOf) === `${SITE_ORIGIN}/#website`, file, `${contract.pageType} JSON-LD must belong to the Pigsfield WebSite entity`);
     }
 
@@ -1110,6 +1116,22 @@ function checkSearchContracts(files) {
         if (devanagari > latin) check(/\blang="hi"/.test(match[2]), file, `Hindi text needs lang="hi": "${text.slice(0, 40)}"`);
       }
     }
+  }
+
+  // A page in two languages names both versions, and each names the other back.
+  const alternatesOf = (html) => new Map([...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)].map((match) => [match[1], match[2]]));
+  const paired = new Set(HINDI_PAIRS.flat());
+  for (const [route, html] of routes) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    const alternates = alternatesOf(html);
+    if (!paired.has(route)) {
+      check(!alternates.size, file, "only pages with a written translation may declare hreflang alternates");
+      continue;
+    }
+    const [english, hindi] = HINDI_PAIRS.find((pair) => pair.includes(route));
+    check(alternates.get("en-IN") === `${SITE_ORIGIN}${english}` && alternates.get("hi-IN") === `${SITE_ORIGIN}${hindi}` && alternates.get("x-default") === `${SITE_ORIGIN}${english}`, file, `hreflang must name ${english} (en-IN, x-default) and ${hindi} (hi-IN)`);
+    const other = routes.get(route === english ? hindi : english);
+    check(Boolean(other) && alternatesOf(other || "").get(route === english ? "en-IN" : "hi-IN") === `${SITE_ORIGIN}${route}`, file, `the other language's page must link back to ${route}`);
   }
 
   // Every route must be reachable from the homepage through plain links in the served HTML,

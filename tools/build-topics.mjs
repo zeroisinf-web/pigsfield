@@ -110,6 +110,48 @@ export const DESTINATIONS = [
   }
 ];
 
+/** Hindi framing for /hi/rights/. The resource notes are already written in Hindi; these are
+ *  the words a Hindi reader and a Hindi search result need around them. Written, not
+ *  machine-translated. Each page carries one Roman-script phrase the way people type it. */
+export const HINDI = {
+  rights: {
+    parentName: "सरकार को जवाबदेह बनाएँ",
+    hub: {
+      title: "सरकार को जवाबदेह बनाएँ: RTI, शिकायत और क़ानूनी सहायता | Pigsfield",
+      description: "RTI, सरकारी शिकायत, भ्रष्टाचार की रिपोर्ट, आयोग और अदालत के रास्ते, हिन्दी में व्यावहारिक गाइड और आधिकारिक पोर्टल के सीधे लिंक के साथ।",
+      h1: "सरकार को जवाबदेह बनाएँ: RTI, शिकायत और क़ानूनी रास्ते",
+      intro: "हर रास्ते का अपना पेज है, जिसमें हिन्दी में व्यावहारिक गाइड और आधिकारिक पोर्टल के सीधे लिंक हैं। यह सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं।"
+    },
+    topics: {
+      "information-and-records": { name: "सूचना और रिकॉर्ड", title: "RTI कैसे लगाएँ, CAG रिपोर्ट और चुनावी हलफ़नामे | Pigsfield", description: "RTI अधिनियम 2005 के तहत सरकारी सूचना कैसे माँगें (RTI kaise lagayein), CAG ऑडिट रिपोर्ट और उम्मीदवारों के चुनावी हलफ़नामे कहाँ देखें।", h1: "RTI कैसे लगाएँ, और CAG रिपोर्ट व उम्मीदवारों के हलफ़नामे कैसे देखें", intro: "सरकार से दस्तावेज़, ऑडिट और घोषणाएँ निकलवाने के औज़ार। किसी भी शिकायत से पहले यहीं से शुरू करें, क्योंकि रिकॉर्ड साथ हो तो ज़्यादातर शिकायतें मज़बूत होती हैं।" },
+      "anti-corruption": { name: "भ्रष्टाचार की शिकायत", title: "भ्रष्टाचार की शिकायत: लोकपाल, लोकायुक्त, CVC, CBI | Pigsfield", description: "भ्रष्टाचार की शिकायत कहाँ करें (bhrashtachar ki shikayat): लोकपाल, लोकायुक्त, CVC, CBI, ED, भ्रष्टाचार निरोधक ब्यूरो और आयकर चोरी की रिपोर्ट।", h1: "रिश्वत या भ्रष्टाचार की शिकायत कहाँ करें: लोकपाल, लोकायुक्त, CVC, CBI और ACB", intro: "हर संस्था एक अलग स्तर और तरह की गड़बड़ी देखती है। ग़लत जगह भेजी गई शिकायत में महीनों बर्बाद होते हैं, इसलिए पहले पढ़ें कि कौन-सी संस्था क्या संभालती है।" },
+      "courts-and-legal-remedies": { name: "अदालत और क़ानूनी उपाय", title: "PIL, रिट याचिका और उपभोक्ता अदालत: क़ानूनी उपाय | Pigsfield", description: "नागरिकों के लिए न्यायिक रास्ते: जनहित याचिका (PIL), अनुच्छेद 32 और 226 के तहत पाँच रिट, उपभोक्ता अदालत, CAT और दीवानी मुक़दमे।", h1: "PIL, रिट याचिका और उपभोक्ता अदालत: जब शिकायत काफ़ी न हो", intro: "न्याय तक पहुँचने का रास्ता। यह केवल सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं; जिस मामले में समय-सीमा हो, उसमें किसी योग्य वकील से मौजूदा स्थिति ज़रूर पूछें।" },
+      "commissions-and-regulators": { name: "आयोग और नियामक", title: "NHRC, NCW, RERA और बैंकिंग लोकपाल में शिकायत | Pigsfield", description: "मानवाधिकार, महिला, बाल अधिकार, चुनाव, बैंकिंग लोकपाल, दूरसंचार और रियल एस्टेट के आयोग और नियामक, और हर एक तक कैसे पहुँचें।", h1: "NHRC, NCW, RERA, बैंकिंग लोकपाल और दूसरे नियामकों में शिकायत कैसे करें", intro: "अधिकार आयोग और क्षेत्रीय नियामक, जिनका अपना तय अधिकार-क्षेत्र है। अपनी समस्या को सही संस्था से मिलाना ही आधा काम है।" },
+      "grievance-portals": { name: "शिकायत पोर्टल", title: "CPGRAMS, PMO पोर्टल और CM हेल्पलाइन 181 पर शिकायत | Pigsfield", description: "केंद्र और राजस्थान के शिकायत पोर्टल (online shikayat kaise kare): CPGRAMS, PMO पोर्टल, CM हेल्पलाइन 181, जन सूचना पोर्टल और लोक सेवा गारंटी क़ानून।", h1: "CPGRAMS, PMO पोर्टल और CM हेल्पलाइन 181: शिकायत दर्ज करें और ऊपर तक ले जाएँ", intro: "सरकारी शिकायत व्यवस्थाएँ, जिनमें शिकायत को ऊपर के स्तर तक ले जाने की तय सीढ़ी है। एक स्तर पर अटकी शिकायत को आम तौर पर अगले स्तर तक ले जाया जा सकता है।" },
+      "social-audit": { name: "सामाजिक अंकेक्षण", title: "सोशल ऑडिट, ग्राम सभा और जन सुनवाई | Pigsfield", description: "सामुदायिक जवाबदेही के औज़ार: मनरेगा सोशल ऑडिट, ग्राम सभा की शक्तियाँ, जन सुनवाई और व्हिसलब्लोअर संरक्षण, आधिकारिक लिंक के साथ।", h1: "सोशल ऑडिट, ग्राम सभा और जन सुनवाई: गाँव से जवाबदेही", intro: "सामूहिक निगरानी, जहाँ एक समूह वह कर सकता है जो अकेली शिकायत नहीं कर पाती। ग्राम सभा के पास ऐसी शक्तियाँ हैं जिनका ज़्यादातर लोग कभी उपयोग नहीं करते।" },
+      "parliament-and-representatives": { name: "संसद और जनप्रतिनिधि", title: "अपने सांसद या विधायक को पत्र कैसे लिखें, और NOTA | Pigsfield", description: "सांसद (MP) या विधायक (MLA) को लिखित प्रतिवेदन कैसे दें, संसदीय और विधानसभा समितियों तक कैसे पहुँचें, और NOTA विकल्प क्या है।", h1: "अपने सांसद या विधायक को कैसे लिखें, और NOTA का मतलब क्या है", intro: "चुने हुए प्रतिनिधि का रास्ता। रिकॉर्ड पर दर्ज लिखित प्रतिवेदन शिकायत से धीमा होता है, पर उसका वज़न पोर्टल टिकट से ज़्यादा होता है।" },
+      "media-and-fraud-reporting": { name: "मीडिया और धोखाधड़ी की रिपोर्ट", title: "प्रेस काउंसिल, NBDSA और आधार-DBT धोखाधड़ी की शिकायत | Pigsfield", description: "प्रिंट और टीवी कवरेज की शिकायत प्रेस काउंसिल और NBDSA में करें, डिजिटल जवाबदेही अभियान चलाएँ, और आधार या DBT धोखाधड़ी की रिपोर्ट करें।", h1: "प्रेस काउंसिल या NBDSA में शिकायत, और आधार या DBT धोखाधड़ी की रिपोर्ट", intro: "कवरेज को जवाबदेह बनाना और सरकारी लाभ में धोखाधड़ी की रिपोर्ट करना। मीडिया शिकायतों की समय-सीमा छोटी होती है, इसलिए प्रसारण ताज़ा रहते ही कार्रवाई करें।" },
+      "criminal-and-financial-law": { name: "आपराधिक और वित्तीय क़ानून", title: "FIR कैसे दर्ज करें, PMLA और बेनामी क़ानून | Pigsfield", description: "सरकारी गड़बड़ी के ख़िलाफ़ FIR कैसे दर्ज करें (FIR kaise darj karein), और धन शोधन निवारण अधिनियम (PMLA) व बेनामी लेनदेन क़ानून की सरल व्याख्या।", h1: "सरकारी गड़बड़ी के ख़िलाफ़ FIR, और PMLA व बेनामी क़ानून", intro: "आपराधिक और संपत्ति-वसूली क़ानून। यह सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं; इन रास्तों के नतीजे शिकायत करने वाले पर भी पड़ते हैं।" },
+      "digital-governance": { name: "डिजिटल शासन", title: "साइबर क्राइम पोर्टल, ई-कोर्ट्स और ओपन डेटा | Pigsfield", description: "डिजिटल शासन सेवाएँ: राष्ट्रीय साइबर क्राइम पोर्टल (cyber crime complaint), ई-कोर्ट केस स्टेटस, ओपन गवर्नमेंट डेटा, PM आवास शिकायत और MyGov।", h1: "साइबर क्राइम की शिकायत, ई-कोर्ट्स केस स्टेटस और सरकारी ओपन डेटा", intro: "साइबर अपराध की रिपोर्ट, अदालती मामले की स्थिति, सार्वजनिक डेटा और नीतिगत परामर्श में हिस्सेदारी की ऑनलाइन सेवाएँ।" },
+      "your-state": { name: "आपका राज्य", title: "राज्य RTI पोर्टल, CM हेल्पलाइन और लोकायुक्त | Pigsfield", description: "दस बड़े राज्यों के आधिकारिक CM हेल्पलाइन, RTI और लोकायुक्त पोर्टल एक जगह। फ़ीस, फ़ॉर्म और समय-सीमा हर राज्य में अलग होती है।", h1: "राज्यों के RTI पोर्टल, CM हेल्पलाइन और लोकायुक्त वेबसाइटें", intro: "दस बड़े राज्यों के आधिकारिक CM हेल्पलाइन, RTI और लोकायुक्त पोर्टल। फ़ीस, फ़ॉर्म और समय-सीमा हर राज्य में अलग होती है, इसलिए आवेदन से पहले उसी पोर्टल के निर्देश पढ़ें।" }
+    }
+  }
+};
+
+/** English route -> Hindi route, for every page that has a Hindi version. */
+export const HINDI_PAIRS = Object.entries(HINDI).flatMap(([dest, hindi]) => [
+  [`/${dest}/`, `/hi/${dest}/`],
+  ...Object.keys(hindi.topics).map((slug) => [`/${dest}/${slug}/`, `/hi/${dest}/${slug}/`])
+]);
+export const HINDI_ROUTES = HINDI_PAIRS.map(([, hindi]) => hindi);
+
+/** The <link rel="alternate"> set for a page that exists in both languages. */
+export function alternateLinks(englishRoute) {
+  const pair = HINDI_PAIRS.find(([english]) => english === englishRoute);
+  if (!pair) return "";
+  return `<link rel="alternate" hreflang="en-IN" href="${ORIGIN}${pair[0]}"><link rel="alternate" hreflang="hi-IN" href="${ORIGIN}${pair[1]}"><link rel="alternate" hreflang="x-default" href="${ORIGIN}${pair[0]}">`;
+}
+
 /** Flat view of every topic with its destination, used by the validator and the sitemap. */
 export const TOPICS = DESTINATIONS.flatMap((destination) =>
   destination.topics.map((topic) => ({ ...topic, dest: destination.dest, route: `/${destination.dest}/${topic.slug}/` }))
@@ -302,9 +344,9 @@ export function renderSources(item) {
 /** The step-by-step notes some resources carry: who to complain to, which form, which
  *  deadline. 47 entries have them, and they are the most practical writing on the site, so
  *  they follow the resource onto its own page rather than staying behind on the hub. */
-function renderExtra(extra) {
+function renderExtra(extra, hindi = false) {
   if (!extra.length) return "";
-  return `<details class="resource-links resource-notes"><summary>Practical guide</summary><div class="link-list extra-list">${extra
+  return `<details class="resource-links resource-notes"><summary>${hindi ? "व्यावहारिक गाइड" : "Practical guide"}</summary><div class="link-list extra-list">${extra
     .map((part) => `<div><strong${langAttr(part.label)}>${esc(part.label || "More information")}</strong><p${langAttr(part.text)}>${esc(part.text)}</p></div>`)
     .join("")}</div></details>`;
 }
@@ -325,12 +367,12 @@ function hasRightsCard(item) {
   return labels.some((label) => /Helpline/i.test(label)) && labels.some((label) => /Step-by-Step/i.test(label));
 }
 
-function renderResources(source) {
+function renderResources(source, hindi = false) {
   return topicPayload(source)
     .map((item) => {
-      const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="Share ${esc(item.title)} as an image" title="फ़ोटो कार्ड"></button>` : "";
-      const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button></span>`;
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3${langAttr(item.title)}>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p${langAttr(item.desc)}>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note"${langAttr(item.warning)}>${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
+      const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="${esc(hindi ? `${item.title} को फ़ोटो कार्ड के रूप में साझा करें` : `Share ${item.title} as an image`)}" title="फ़ोटो कार्ड"></button>` : "";
+      const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="${esc(hindi ? `${item.title} साझा करें` : `Share ${item.title}`)}"></button></span>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3${langAttr(item.title)}>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p${langAttr(item.desc)}>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note"${langAttr(item.warning)}>${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra, hindi)}</article>`;
     })
     .join("\n        ");
 }
@@ -490,7 +532,7 @@ function topicPageHtml(destination, topic, source) {
   <meta name="description" content="${esc(topic.description)}">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="pf-topic-digest" content="${digestFor(source)}">
-  <link rel="canonical" href="${canonical}"><link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
+  <link rel="canonical" href="${canonical}">${alternateLinks(route)}<link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(topic.title)}"><meta property="og:description" content="${esc(social)}"><meta property="og:url" content="${canonical}">
   <meta property="og:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Pigsfield ${esc(topic.name)} resources"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(topic.title)}"><meta name="twitter:description" content="${esc(social)}"><meta name="twitter:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta name="twitter:image:alt" content="Pigsfield ${esc(topic.name)} resources">
   <link rel="preload" href="../../assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -502,7 +544,7 @@ function topicPageHtml(destination, topic, source) {
   <a class="skip-link" href="#main-content">Skip to content</a><header data-site-header></header>
   <main id="main-content">
     <div class="container breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">${esc(destination.parentName)}</a></li><li aria-current="page">${esc(topic.name)}</li></ol></div>
-    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede"><strong>${esc(topic.tagline)}</strong> ${esc(topic.intro)}</p></div></section>
+    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede"><strong>${esc(topic.tagline)}</strong> ${esc(topic.intro)}</p>${alternateLinks(route) ? `<p><a class="text-link" href="../../hi/${destination.dest}/${topic.slug}/" hreflang="hi-IN" lang="hi">यह पेज हिन्दी में पढ़ें</a></p>` : ""}</div></section>
     <section class="section"><div class="container">
       <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}, each opening its original provider.</p>
       <div class="topic-list">
@@ -519,6 +561,102 @@ function topicPageHtml(destination, topic, source) {
 </body>
 </html>
 `;
+}
+
+const HINDI_HEAD = (canonical, englishRoute, page, image, alt) => `<!doctype html>
+<html lang="hi-IN" data-base="${page.base}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#f4f1e8">
+  <title>${esc(page.title)}</title>
+  <meta name="description" content="${esc(page.description)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="${canonical}">${alternateLinks(englishRoute)}<link rel="icon" href="${page.base}assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="${page.base}manifest.json">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="hi_IN"><meta property="og:title" content="${esc(page.title)}"><meta property="og:description" content="${esc(page.description)}"><meta property="og:url" content="${canonical}">
+  <meta property="og:image" content="${image}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(alt)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(page.title)}"><meta name="twitter:description" content="${esc(page.description)}"><meta name="twitter:image" content="${image}"><meta name="twitter:image:alt" content="${esc(alt)}">
+  <link rel="preload" href="${page.base}assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="${page.base}css/site.css">
+  <script defer src="${page.base}js/site.js"></script>
+  <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": page.graph })}</script>
+</head>`;
+
+/** A Hindi topic page: the same resources as its English pair, framed in Hindi. */
+export function renderHindiTopicPage(destination, topic, source) {
+  const hindi = HINDI[destination.dest];
+  const words = hindi.topics[topic.slug];
+  const englishRoute = `/${destination.dest}/${topic.slug}/`;
+  const route = `/hi${englishRoute}`;
+  const canonical = `${ORIGIN}${route}`;
+  const items = topicPayload(source);
+  const graph = [
+    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: words.name, description: words.description, inLanguage: "hi-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` }, mainEntity: { "@id": `${canonical}#resources` } },
+    { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
+      { "@type": "ListItem", position: 2, name: hindi.parentName, item: `${ORIGIN}/hi/${destination.dest}/` },
+      { "@type": "ListItem", position: 3, name: words.name, item: canonical }
+    ] },
+    { "@type": "ItemList", "@id": `${canonical}#resources`, name: `${words.name}: संसाधन`, numberOfItems: items.length, itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title, url: `${canonical}#${item.id}` })) }
+  ];
+  const siblings = destination.topics.filter((other) => other.slug !== topic.slug && hindi.topics[other.slug]).map((other) => `<a class="button ghost" href="../${other.slug}/">${esc(hindi.topics[other.slug].name)}</a>`).join("");
+  const html = `${HINDI_HEAD(canonical, englishRoute, { ...words, base: "../../../", graph }, `${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg`, `Pigsfield: ${words.name}`)}
+<body data-page="${esc(destination.dest)}">
+  <a class="skip-link" href="#main-content">सीधे सामग्री पर जाएँ</a><header data-site-header></header>
+  <main id="main-content">
+    <div class="container breadcrumbs"><ol><li><a href="../../../">होम</a></li><li><a href="../">${esc(hindi.parentName)}</a></li><li aria-current="page">${esc(words.name)}</li></ol></div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(words.name)}</span><h1>${esc(words.h1)}</h1><p class="lede">${esc(words.intro)}</p><p><a class="text-link" href="../../..${englishRoute}" hreflang="en-IN" lang="en">Read this page in English</a></p></div></section>
+    <section class="section"><div class="container">
+      <p class="topic-count"><strong>${items.length}</strong> संसाधन, हर एक अपने मूल स्रोत पर खुलता है।</p>
+      <div class="topic-list">
+        ${renderResources(source, true)}
+      </div>
+    </div></section>
+    <section class="section alt"><div class="container">
+      <h2>${esc(hindi.parentName)}: और विषय</h2>
+      <nav class="topic-siblings" aria-label="जुड़े हुए विषय">${siblings}</nav>
+      <p><a class="button ghost" href="../">सभी विषय देखें</a></p>
+    </div></section>
+  </main>
+  <footer data-site-footer></footer>
+</body>
+</html>
+`;
+  return applyChrome(html).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
+}
+
+/** The Hindi hub: a card per Hindi topic page. */
+export function renderHindiHub(data, destination) {
+  const hindi = HINDI[destination.dest];
+  const englishRoute = `/${destination.dest}/`;
+  const route = `/hi${englishRoute}`;
+  const canonical = `${ORIGIN}${route}`;
+  const graph = [
+    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: hindi.parentName, description: hindi.hub.description, inLanguage: "hi-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` } },
+    { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
+      { "@type": "ListItem", position: 2, name: hindi.parentName, item: canonical }
+    ] }
+  ];
+  const cards = destination.topics.filter((topic) => hindi.topics[topic.slug]).map((topic) => {
+    const words = hindi.topics[topic.slug];
+    const count = topicPayload(sourceFor(data, destination, topic)).length;
+    return `<a class="topic-card" href="${esc(topic.slug)}/"><span class="topic-card-name">${esc(words.name)}</span><span class="topic-card-count">${count} संसाधन</span><span class="topic-card-note">${esc(`${words.intro.split("।")[0]}।`)}</span></a>`;
+  }).join("");
+  const html = `${HINDI_HEAD(canonical, englishRoute, { ...hindi.hub, base: "../../", graph }, `${ORIGIN}/assets/og/${destination.dest}.jpg`, `Pigsfield: ${hindi.parentName}`)}
+<body data-page="${esc(destination.dest)}">
+  <a class="skip-link" href="#main-content">सीधे सामग्री पर जाएँ</a><header data-site-header></header>
+  <main id="main-content">
+    <div class="container breadcrumbs"><ol><li><a href="../../">होम</a></li><li aria-current="page">${esc(hindi.parentName)}</li></ol></div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">जवाबदेही</span><h1>${esc(hindi.hub.h1)}</h1><p class="lede">${esc(hindi.hub.intro)}</p><p><a class="text-link" href="../..${englishRoute}" hreflang="en-IN" lang="en">Read this page in English</a></p></div></section>
+    <section class="section stage-nav-band"><div class="container">
+      <h2 class="stage-nav-title">अपना रास्ता चुनें</h2>
+      <div class="topic-index">${cards}</div>
+    </div></section>
+  </main>
+  <footer data-site-footer></footer>
+</body>
+</html>
+`;
+  return applyChrome(html).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
 }
 
 /** The homepage's pillar cards state how much each pillar holds. They were typed by hand
@@ -568,6 +706,25 @@ export function build({ root = ROOT, check = false } = {}) {
       fs.mkdirSync(path.dirname(file), { recursive: true });
       fs.writeFileSync(file, html, "utf8");
       written.push({ route: `/${destination.dest}/${topic.slug}/`, count });
+    }
+  }
+
+  // Hindi versions, where they exist.
+  for (const destination of DESTINATIONS.filter((candidate) => HINDI[candidate.dest])) {
+    const pages = [[path.join(root, "hi", destination.dest, "index.html"), renderHindiHub(data, destination)]];
+    for (const topic of destination.topics.filter((candidate) => HINDI[destination.dest].topics[candidate.slug])) {
+      pages.push([path.join(root, "hi", destination.dest, topic.slug, "index.html"), renderHindiTopicPage(destination, topic, sourceFor(data, destination, topic))]);
+    }
+    for (const [file, html] of pages) {
+      const route = `/${path.relative(root, path.dirname(file)).split(path.sep).join("/")}/`;
+      const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8").replace(/\?v=[a-f0-9]{12}(?=")/g, "") : "";
+      if (sameYear(current) === sameYear(html)) continue;
+      if (check) stale.push(route);
+      else {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, html, "utf8");
+        written.push({ route, count: 0 });
+      }
     }
   }
 

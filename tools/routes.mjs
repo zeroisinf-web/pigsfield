@@ -6,7 +6,7 @@
 // moves on every deploy is a freshness signal the page has not earned, and SEO-GROWTH.md
 // rules out that kind of trick. Bump a route here only when its content actually changed.
 
-import { TOPICS } from "./build-topics.mjs";
+import { HINDI_PAIRS, TOPICS } from "./build-topics.mjs";
 import { EXAM_ROUTES } from "./build-exams.mjs";
 import { WATCH_ROUTES } from "./build-watch.mjs";
 
@@ -16,7 +16,7 @@ const HUB = "weekly";
 const STATIC = "monthly";
 const RARE = "yearly";
 
-export const ROUTES = [
+const BASE_ROUTES = [
   { path: "/", lastmod: "2026-10-09", changefreq: HUB, priority: "1.0" },
 
   { path: "/learn/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
@@ -45,6 +45,17 @@ export const ROUTES = [
   { path: "/submit/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.5" },
   { path: "/accessibility/", lastmod: "2026-07-15", changefreq: RARE, priority: "0.5" },
   { path: "/privacy/", lastmod: "2026-07-15", changefreq: RARE, priority: "0.4" }
+];
+
+// The Hindi versions follow their English pages, first published on 2026-10-10. Both halves
+// of a pair carry the same alternates, so the sitemap states the pairing from each side.
+const alternatesFor = (english, hindi) => ({ "en-IN": english, "hi-IN": hindi, "x-default": english });
+export const ROUTES = [
+  ...BASE_ROUTES.map((route) => {
+    const pair = HINDI_PAIRS.find(([english]) => english === route.path);
+    return pair ? { ...route, alternates: alternatesFor(...pair) } : route;
+  }),
+  ...HINDI_PAIRS.map(([english, hindi]) => ({ path: hindi, lastmod: "2026-10-10", changefreq: HUB, priority: english === "/rights/" ? "0.8" : "0.7", alternates: alternatesFor(english, hindi) }))
 ];
 
 /** Just the paths, in sitemap order. */

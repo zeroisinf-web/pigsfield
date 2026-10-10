@@ -24,13 +24,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export function renderSitemap() {
   const urls = ROUTES.map(
     (route) => `  <url>
-    <loc>${SITE_ORIGIN}${route.path}</loc>
+    <loc>${SITE_ORIGIN}${route.path}</loc>${Object.entries(route.alternates || {}).map(([language, path]) => `
+    <xhtml:link rel="alternate" hreflang="${language}" href="${SITE_ORIGIN}${path}"/>`).join("")}
     <lastmod>${route.lastmod}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>`
   ).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

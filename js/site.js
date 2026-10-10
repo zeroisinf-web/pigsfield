@@ -4,6 +4,7 @@
   const PF = (window.PF = window.PF || {});
   const root = document.documentElement;
   const base = root.dataset.base || "./";
+  const nativeHindi = root.lang.startsWith("hi");
   const page = document.body.dataset.page || "home";
   const qs = (selector, scope = document) => scope.querySelector(selector);
   const qsa = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
@@ -394,7 +395,7 @@
 
   function setLanguageState(next) {
     language = next === "hi" ? "hi" : "en";
-    root.lang = language === "hi" ? "hi-IN" : "en-IN";
+    root.lang = language === "hi" || nativeHindi ? "hi-IN" : "en-IN";
     root.dataset.lang = language;
     updateLanguageControls();
   }
@@ -438,8 +439,9 @@
 
   function updateLanguageControls() {
     qsa("[data-lang-toggle]").forEach((button) => {
-      const defaultLabel = language === "hi" ? "EN" : "हिन्दी";
-      const defaultTitle = language === "hi"
+      const hi = language === "hi" || nativeHindi;
+      const defaultLabel = hi ? "EN" : "हिन्दी";
+      const defaultTitle = hi
         ? "Restore the original English page"
         : "Translate this page to Hindi";
       const nextLabel = translationBusy && compactLanguageStatus ? compactLanguageStatus : defaultLabel;
@@ -934,6 +936,11 @@
   async function toggleLanguage() {
     if (translationBusy) {
       PF.toast(languageStatus || "Translation is already in progress.");
+      return;
+    }
+    const alternate = language === "en" && qs(`link[hreflang="${nativeHindi ? "en-IN" : "hi-IN"}"]`);
+    if (alternate) {
+      location.pathname = new URL(alternate.href).pathname;
       return;
     }
     if (language === "hi") {
@@ -1938,7 +1945,7 @@
     bindUi();
     initShareButtons();
     setTheme(root.dataset.theme || initialTheme());
-    if (savedLanguage() === "hi") restoreSavedHindi();
+    if (savedLanguage() === "hi" && !nativeHindi) restoreSavedHindi();
     else setLanguageState("en");
     registerServiceWorker();
     document.documentElement.classList.add("js-ready");
