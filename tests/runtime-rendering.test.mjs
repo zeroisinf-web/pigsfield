@@ -38,16 +38,24 @@ test("the whole catalog reaches the DOM without anyone running any JavaScript", 
 
 test("the exam panels reach the DOM without anyone opening them or running JavaScript", () => {
   // The page used to ship an empty #exam-root and build each panel only when a visitor
-  // opened it, so no crawler ever saw the syllabus or a single resource link.
-  const page = text("exams/index.html");
-  assert.match(page, /<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>/);
-  for (const id of ["exam-ncert-roadmap", "exam-mock-tests", "exam-common-subjects", "exam-ias", "exam-ras", "exam-channels"]) {
-    assert.match(page, new RegExp(`<details class="exam-panel" id="${id}"[^>]*><summary>[\\s\\S]*?<div class="exam-panel-body"><p>`), `${id} must ship with its body`);
+  // opened it, so no crawler ever saw the syllabus or a single resource link. UPSC, RAS, the
+  // NCERT roadmap and the SSC subjects now have pages of their own; the rest stay on the hub.
+  const hub = text("exams/index.html");
+  assert.match(hub, /<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>/);
+  for (const id of ["exam-mock-tests", "exam-channels"]) {
+    assert.match(hub, new RegExp(`<details class="exam-panel" id="${id}"[^>]*><summary>[\\s\\S]*?<div class="exam-panel-body"><p>`), `${id} must ship with its body`);
   }
-  assert.match(page, /<table class="data-table">/, "the NCERT roadmap table must be in the markup");
-  assert.ok((page.match(/class="link-button /g) || []).length > 300, "the exam resource links must be in the markup");
-  assert.doesNotMatch(page, /<details\b[^>]*\sopen/, "every panel still starts closed");
-  assert.doesNotMatch(page, /js\/data\/exams\.js\?/, "the page must not download the data it already carries");
+  assert.doesNotMatch(hub, /<details\b[^>]*\sopen/, "every hub panel still starts closed");
+  for (const slug of ["upsc", "ras", "ncert-books-for-upsc-ras-ssc", "ssc"]) assert.match(hub, new RegExp(`href="${slug}/"`), `the hub must link to /exams/${slug}/`);
+
+  const pages = { upsc: "exam-ias", ras: "exam-ras", "ncert-books-for-upsc-ras-ssc": "exam-ncert-roadmap", ssc: "exam-common-subjects" };
+  for (const [slug, id] of Object.entries(pages)) {
+    const page = text(`exams/${slug}/index.html`);
+    assert.match(page, new RegExp(`<details class="exam-panel" id="${id}"[^>]*\\sopen><summary><h2 class="exam-panel-heading">[\\s\\S]*?<div class="exam-panel-body"><p>`), `${id} must ship open, with its body, on /exams/${slug}/`);
+    assert.doesNotMatch(page, /js\/data\/exams\.js\?/, "the page must not download the data it already carries");
+  }
+  assert.match(text("exams/ncert-books-for-upsc-ras-ssc/index.html"), /<table class="data-table">/, "the NCERT roadmap table must be in the markup");
+  assert.ok((text("exams/upsc/index.html").match(/class="link-button /g) || []).length > 100, "the UPSC resource links must be in the markup");
 });
 
 test("a YouTube search link is not dressed up as a playable video", () => {

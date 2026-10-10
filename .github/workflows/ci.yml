@@ -46,6 +46,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          # IndexNow compares sitemap.xml with the commit before this push.
+          fetch-depth: 0
 
       - name: Use Node.js 24
         uses: actions/setup-node@v6
@@ -54,3 +57,10 @@ jobs:
 
       - name: Verify production crawl surface
         run: npm run check:production
+
+      # Announces only the URLs whose lastmod changed in this push, to Bing and the other
+      # IndexNow engines. A failure here never fails the job: the engines simply find the
+      # change on their next crawl.
+      - name: Announce changed pages via IndexNow
+        continue-on-error: true
+        run: node tools/indexnow.mjs ${{ github.event.before }}

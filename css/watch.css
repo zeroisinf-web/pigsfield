@@ -59,7 +59,9 @@ body[data-page="watch"] .ott-hero-info:hover { background: #484e50; }
 @keyframes featured-arrive { from { opacity: 0; } to { opacity: 1; } }
 body[data-page="watch"] .explorer { background: var(--paper); padding: 1.5rem 0 5rem; }
 .watch-section-intro { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 0 0 1.4rem; }
-.watch-section-intro h2 { margin: 0; font-size: 1.65rem; font-weight: 550; letter-spacing: -.04em; }
+.watch-section-intro h2, .watch-section-intro h1 { margin: 0; font-size: 1.65rem; font-weight: 550; letter-spacing: -.04em; }
+.watch-lists { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin: -.6rem 0 1.2rem; color: var(--ink-soft); font-size: .85rem; }
+.watch-lists a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
 .watch-section-intro p { margin: 0; color: var(--ink-soft); font-size: .8rem; }
 .ott-bar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: .8rem 1.5rem; padding: .6rem 0 1rem; border-bottom: 1px solid var(--line); }
 body[data-page="watch"] .watch-filters { margin: 0; padding: 0; gap: .35rem; }
@@ -189,7 +191,7 @@ body[data-page="watch"] :focus-visible { outline: 2px solid #c7d9ff; outline-off
   .ott-billboard-meta { font-size: .65rem; }
   .ott-hero-foot { display: none; }
   .watch-section-intro { display: block; margin-bottom: 1rem; }
-  .watch-section-intro h2 { font-size: 1.45rem; }
+  .watch-section-intro h2, .watch-section-intro h1 { font-size: 1.45rem; }
   .watch-section-intro p { margin-top: .4rem; font-size: .74rem; }
   body[data-page="watch"] #watch-tabs { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; scrollbar-width: thin; padding-bottom: .4rem; }
   .ott-row-track { grid-auto-columns: 44%; gap: .75rem; }
@@ -251,7 +253,7 @@ body[data-page="watch"] :focus-visible { outline: 2px solid #c7d9ff; outline-off
   body[data-page="watch"] .ott-hero-play, body[data-page="watch"] .ott-hero-info { min-height: 2.4rem; padding: .45rem .7rem; font-size: .76rem; }
   .ott-hero-save { width: 2.4rem; height: 2.4rem; flex: 0 0 2.4rem; }
   .ott-carousel-bar { padding-bottom: .6rem; }
-  .watch-section-intro h2 { font-size: 1.2rem; }
+  .watch-section-intro h2, .watch-section-intro h1 { font-size: 1.2rem; }
   .ott-row-head { margin-bottom: .45rem; }
   .ott-row-head h2 { font-size: .95rem; }
   .ott-row-track { grid-auto-columns: calc((100% - .6rem) / 2.15); gap: .6rem; }

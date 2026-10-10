@@ -26,6 +26,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { applyChrome } from "./build-chrome.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ORIGIN = "https://pigsfield.com";
@@ -45,13 +46,13 @@ export const DESTINATIONS = [
     parentName: "Nursery to PhD",
     splitBy: "section",
     topics: [
-      { key: "n5", slug: "nursery-to-class-5", name: "Nursery to Class 5", h1: "Early learning that stays playful.", title: "Free Nursery to Class 5 Learning Resources | Pigsfield", description: "Free-first books, videos, phonics, maths practice and activity ideas for children aged 4 to 10, organized for parents and primary teachers in India.", intro: "Resources for children roughly aged 4 to 10, chosen so a parent or a primary teacher can start straight away. Everything opens on the original provider's own site." },
-      { key: "c68", slug: "class-6-to-8", name: "Class 6 to 8", h1: "Middle school, where curiosity needs structure.", title: "Free Class 6 to 8 Study Resources & NCERT | Pigsfield", description: "Free-first NCERT material, science and maths lessons, language practice and reference tools for middle-school students aged 11 to 14 in India.", intro: "Middle school is where subjects stop being one story and start being several. These resources cover NCERT material, science, maths and language practice for ages 11 to 14." },
-      { key: "c912", slug: "class-9-to-12", name: "Class 9 to 12", h1: "Board years, without the coaching bill.", title: "Free Class 9 to 12 Study Material & NCERT | Pigsfield", description: "Free-first NCERT solutions, physics, chemistry, biology and maths lessons, past papers and revision tools for secondary and senior-secondary students in India.", intro: "Secondary and senior-secondary study material for ages 14 to 18, including NCERT-aligned lessons and revision help. Useful alongside board preparation and entrance exams." },
-      { key: "ug", slug: "undergraduate", name: "Undergraduate", h1: "Degree-level learning you can reach for free.", title: "Free Undergraduate Courses & Study Resources | Pigsfield", description: "Free-first university lectures, open courseware, degree-level textbooks and subject resources for undergraduate students across India.", intro: "Open courseware, university lectures and degree-level references. Some providers offer paid certificates on top of free course material, so check the current terms at the source." },
-      { key: "pg", slug: "postgraduate", name: "Postgraduate", h1: "Master's-level depth, openly available.", title: "Free Postgraduate & Master's Study Resources | Pigsfield", description: "Free-first advanced courses, specialist lectures and master's-level academic resources for postgraduate students in India.", intro: "Advanced coursework and specialist material for master's-level study, including open lectures and academic references." },
-      { key: "phd", slug: "phd-and-research", name: "PhD & Research", h1: "Research support that does not sit behind a paywall.", title: "Free PhD & Research Tools, Papers and Support | Pigsfield", description: "Free-first preprint archives, open-access journals, reference managers, academic writing help and research tools for doctoral scholars in India.", intro: "Preprints, open-access journals, reference managers and writing support for doctoral work. Several of these replace tools that departments otherwise pay for." },
-      { key: "tt", slug: "teacher-training", name: "Teacher Training", h1: "Strong teaching helps every stage flourish.", title: "Free Teacher Training Resources & Courses | Pigsfield", description: "Free-first teacher training courses, classroom practice guides, pedagogy resources and professional development material for teachers across India.", intro: "Professional development, pedagogy and classroom practice. Placed after PhD deliberately: teaching is a discipline of its own, not a fallback." }
+      { key: "n5", slug: "nursery-to-class-5", name: "Nursery to Class 5", h1: "Free learning resources for Nursery to Class 5", tagline: "Early learning that stays playful.", title: "Free Nursery to Class 5 Learning Resources | Pigsfield", description: "Free-first books, videos, phonics, maths practice and activity ideas for children aged 4 to 10, organized for parents and primary teachers in India.", intro: "Resources for children roughly aged 4 to 10, chosen so a parent or a primary teacher can start straight away. Everything opens on the original provider's own site." },
+      { key: "c68", slug: "class-6-to-8", name: "Class 6 to 8", h1: "Free NCERT books and lessons for Class 6 to 8", tagline: "Middle school, where curiosity needs structure.", title: "Free Class 6 to 8 Study Resources & NCERT | Pigsfield", description: "Free-first NCERT material, science and maths lessons, language practice and reference tools for middle-school students aged 11 to 14 in India.", intro: "Middle school is where subjects stop being one story and start being several. These resources cover NCERT material, science, maths and language practice for ages 11 to 14." },
+      { key: "c912", slug: "class-9-to-12", name: "Class 9 to 12", h1: "Free NCERT books, lessons and revision for Class 9 to 12", tagline: "Board years, without the coaching bill.", title: "Free Class 9 to 12 Study Material & NCERT | Pigsfield", description: "Free-first NCERT solutions, physics, chemistry, biology and maths lessons, past papers and revision tools for secondary and senior-secondary students in India.", intro: "Secondary and senior-secondary study material for ages 14 to 18, including NCERT-aligned lessons and revision help. Useful alongside board preparation and entrance exams." },
+      { key: "ug", slug: "undergraduate", name: "Undergraduate", h1: "Free undergraduate courses and degree-level study resources", tagline: "Degree-level learning you can reach for free.", title: "Free Undergraduate Courses & Study Resources | Pigsfield", description: "Free-first university lectures, open courseware, degree-level textbooks and subject resources for undergraduate students across India.", intro: "Open courseware, university lectures and degree-level references. Some providers offer paid certificates on top of free course material, so check the current terms at the source." },
+      { key: "pg", slug: "postgraduate", name: "Postgraduate", h1: "Free postgraduate and master's-level study resources", tagline: "Master's-level depth, openly available.", title: "Free Postgraduate & Master's Study Resources | Pigsfield", description: "Free-first advanced courses, specialist lectures and master's-level academic resources for postgraduate students in India.", intro: "Advanced coursework and specialist material for master's-level study, including open lectures and academic references." },
+      { key: "phd", slug: "phd-and-research", name: "PhD & Research", h1: "Free PhD and research tools, papers and writing support", tagline: "Research support that does not sit behind a paywall.", title: "Free PhD & Research Tools, Papers and Support | Pigsfield", description: "Free-first preprint archives, open-access journals, reference managers, academic writing help and research tools for doctoral scholars in India.", intro: "Preprints, open-access journals, reference managers and writing support for doctoral work. Several of these replace tools that departments otherwise pay for." },
+      { key: "tt", slug: "teacher-training", name: "Teacher Training", h1: "Free teacher training courses and classroom resources", tagline: "Strong teaching helps every stage flourish.", title: "Free Teacher Training Resources & Courses | Pigsfield", description: "Free-first teacher training courses, classroom practice guides, pedagogy resources and professional development material for teachers across India.", intro: "Professional development, pedagogy and classroom practice. Placed after PhD deliberately: teaching is a discipline of its own, not a fallback." }
     ]
   },
   {
@@ -60,10 +61,10 @@ export const DESTINATIONS = [
     parentName: "Digital Tools",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "privacy-and-browsers", name: "Privacy & Browsers", h1: "Browse without being the product.", title: "Privacy Tools, Tor & Brave Browser Guide | Pigsfield", description: "Free-first privacy browsers, tracker blockers, breach checkers and web utilities for safer everyday browsing on Indian phones and laptops.", intro: "Browsers and utilities that reduce tracking, plus tools for checking whether your own data has already leaked." },
-      { key: 1, slug: "files-and-remote-access", name: "Files & Remote Access", h1: "Your documents, reachable from anywhere.", title: "DigiLocker, PDF Tools & Remote Desktop | Pigsfield", description: "Free-first tools for Indian document storage, PDF editing, cloud drives, file management and controlling a computer remotely from a phone.", intro: "Government document storage, cloud drives, PDF utilities and remote desktop access — the plumbing that makes study and paperwork portable." },
-      { key: 2, slug: "creative-tools", name: "Photo, Video & Design", h1: "Make things without buying a licence.", title: "Photo, Video & Design Tools | Pigsfield", description: "Free-first video compression, photo editing, background removal and design tools, including VideoCompress AI, Remove.bg, Pixelcut and Freepik.", intro: "Edit photos and videos, remove backgrounds, compress files and create designs. Compare free-first tools with direct tutorials." },
-      { key: 3, slug: "research-tools", name: "Research Tools", h1: "Find the source, not the summary.", title: "Free Research Tools, Books & Analytics | Pigsfield", description: "Free-first research libraries, science explainers, community channels and analytics tools for students and independent researchers in India.", intro: "Places to find books, papers, explanations and data. Availability and legality of individual libraries vary by country — check before you rely on one." }
+      { key: 0, slug: "privacy-and-browsers", name: "Privacy & Browsers", h1: "Privacy browsers, tracker blockers and breach checkers", tagline: "Browse without being the product.", title: "Privacy Tools, Tor & Brave Browser Guide | Pigsfield", description: "Free-first privacy browsers, tracker blockers, breach checkers and web utilities for safer everyday browsing on Indian phones and laptops.", intro: "Browsers and utilities that reduce tracking, plus tools for checking whether your own data has already leaked." },
+      { key: 1, slug: "files-and-remote-access", name: "Files & Remote Access", h1: "DigiLocker, PDF tools, cloud drives and remote desktop", tagline: "Your documents, reachable from anywhere.", title: "DigiLocker, PDF Tools & Remote Desktop | Pigsfield", description: "Free-first tools for Indian document storage, PDF editing, cloud drives, file management and controlling a computer remotely from a phone.", intro: "Government document storage, cloud drives, PDF utilities and remote desktop access — the plumbing that makes study and paperwork portable." },
+      { key: 2, slug: "creative-tools", name: "Photo, Video & Design", h1: "Free photo, video and design tools", tagline: "Make things without buying a licence.", title: "Photo, Video & Design Tools | Pigsfield", description: "Free-first video compression, photo editing, background removal and design tools, including VideoCompress AI, Remove.bg, Pixelcut and Freepik.", intro: "Edit photos and videos, remove backgrounds, compress files and create designs. Compare free-first tools with direct tutorials." },
+      { key: 3, slug: "research-tools", name: "Research Tools", h1: "Free research tools, libraries and data sources", tagline: "Find the source, not the summary.", title: "Free Research Tools, Books & Analytics | Pigsfield", description: "Free-first research libraries, science explainers, community channels and analytics tools for students and independent researchers in India.", intro: "Places to find books, papers, explanations and data. Availability and legality of individual libraries vary by country — check before you rely on one." }
     ],
     extraCards: [
       {
@@ -82,17 +83,17 @@ export const DESTINATIONS = [
     parentName: "Make Govt Accountable",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "information-and-records", name: "Information & Records", h1: "Ask the state what it already knows.", title: "RTI, CAG Reports & Election Affidavits | Pigsfield", description: "How to obtain government information in India using the RTI Act 2005, CAG audit reports and candidate election affidavits, with links to official portals.", intro: "The tools for getting documents, audits and declarations out of the state. Start here before escalating anywhere else — most complaints are stronger with a record attached." },
-      { key: 1, slug: "anti-corruption", name: "Anti-Corruption", h1: "Where to report someone taking a bribe.", title: "Report Corruption: Lokpal, CVC, CBI, ACB | Pigsfield", description: "Official channels for reporting corruption in India — Lokpal, Lokayukta, CVC, CBI, ED, the Anti-Corruption Bureau and Income Tax evasion reporting.", intro: "Each body covers a different level and kind of wrongdoing. Sending a complaint to the wrong one wastes months, so read what each actually handles." },
-      { key: 2, slug: "courts-and-legal-remedies", name: "Courts & Legal Remedies", h1: "When a complaint is not enough.", title: "PIL, Writ Petition & Consumer Court Guide | Pigsfield", description: "Judicial routes for Indian citizens: public interest litigation, the five constitutional writs under Articles 32 and 226, consumer courts, CAT and civil suits.", intro: "The judicial escalation path. General educational information only — for anything with a deadline attached, confirm the current position with a qualified lawyer." },
-      { key: 3, slug: "commissions-and-regulators", name: "Commissions & Regulators", h1: "The body that regulates your problem.", title: "NHRC, NCW, RERA & Ombudsman Complaints | Pigsfield", description: "Indian rights commissions and sector regulators — human rights, women, children, elections, banking ombudsman, telecom and real estate — and how to reach each.", intro: "Rights commissions and sector regulators, each with a defined jurisdiction. Matching your issue to the right one is most of the work." },
-      { key: 4, slug: "grievance-portals", name: "Grievance Portals", h1: "The official complaint box, and how to escalate it.", title: "CPGRAMS, PMO & CM Helpline Grievances | Pigsfield", description: "Government grievance portals for India and Rajasthan — CPGRAMS, the PMO portal, CM Helpline 181, Jan Soochna and the Right to Public Service Act.", intro: "Public grievance systems with defined escalation ladders. A grievance that stalls at one level can usually be pushed to the next." },
-      { key: 5, slug: "social-audit", name: "Social Audit", h1: "Accountability that happens in the village, not the capital.", title: "Social Audit, Gram Sabha & Jan Sunwai | Pigsfield", description: "Community accountability tools in India — MGNREGA social audits, Gram Sabha powers, Jan Sunwai public hearings and whistleblower protection.", intro: "Collective oversight, where a group can achieve what an individual complaint cannot. The Gram Sabha in particular holds powers most people never use." },
-      { key: 6, slug: "parliament-and-representatives", name: "Parliament & Representatives", h1: "Your representative works for you.", title: "Contact Your MP or MLA + NOTA Guide | Pigsfield", description: "How to make written representations to an MP or MLA in India, reach parliamentary and assembly committees, and understand the NOTA option.", intro: "The elected route. A written representation on record is slower than a complaint but carries weight a portal ticket does not." },
-      { key: 7, slug: "media-and-fraud-reporting", name: "Media & Fraud Reporting", h1: "When the story or the money is wrong.", title: "Press Council, NBDSA & Fraud Reporting | Pigsfield", description: "Complain about Indian print and television coverage through the Press Council and NBDSA, run digital accountability campaigns, and report Aadhaar or DBT fraud.", intro: "Holding coverage to account, and reporting benefit fraud. Media complaints have short deadlines, so act while the broadcast is recent." },
-      { key: 8, slug: "criminal-and-financial-law", name: "Criminal & Financial Law", h1: "The heavier instruments.", title: "FIR, PMLA & Benami Act Explained | Pigsfield", description: "Filing an FIR against official wrongdoing in India, plus plain-language explanations of the Prevention of Money Laundering Act and the Benami Transactions Act.", intro: "Criminal and asset-recovery law. General educational information, not legal advice — these routes carry consequences for the person filing too." },
-      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." },
-      { key: 10, slug: "your-state", name: "Your State", lastmod: "2026-10-09", h1: "Your state's complaint and RTI portals.", title: "State RTI, CM Helpline & Lokayukta Portals | Pigsfield", description: "Official CM helpline, RTI and Lokayukta portals for ten large Indian states, gathered in one place." }
+      { key: 0, slug: "information-and-records", name: "Information & Records", h1: "How to file an RTI, and find CAG reports and candidate affidavits", tagline: "Ask the state what it already knows.", title: "RTI, CAG Reports & Election Affidavits | Pigsfield", description: "How to obtain government information in India using the RTI Act 2005, CAG audit reports and candidate election affidavits, with links to official portals.", intro: "The tools for getting documents, audits and declarations out of the state. Start here before escalating anywhere else — most complaints are stronger with a record attached." },
+      { key: 1, slug: "anti-corruption", name: "Anti-Corruption", h1: "Report corruption to Lokpal, Lokayukta, CVC, CBI or the ACB", tagline: "Where to report someone taking a bribe.", title: "Report Corruption: Lokpal, CVC, CBI, ACB | Pigsfield", description: "Official channels for reporting corruption in India — Lokpal, Lokayukta, CVC, CBI, ED, the Anti-Corruption Bureau and Income Tax evasion reporting.", intro: "Each body covers a different level and kind of wrongdoing. Sending a complaint to the wrong one wastes months, so read what each actually handles." },
+      { key: 2, slug: "courts-and-legal-remedies", name: "Courts & Legal Remedies", h1: "PIL, writ petitions and consumer courts: judicial remedies in India", tagline: "When a complaint is not enough.", title: "PIL, Writ Petition & Consumer Court Guide | Pigsfield", description: "Judicial routes for Indian citizens: public interest litigation, the five constitutional writs under Articles 32 and 226, consumer courts, CAT and civil suits.", intro: "The judicial escalation path. General educational information only — for anything with a deadline attached, confirm the current position with a qualified lawyer." },
+      { key: 3, slug: "commissions-and-regulators", name: "Commissions & Regulators", h1: "Complain to NHRC, NCW, RERA, the banking ombudsman and other regulators", tagline: "The body that regulates your problem.", title: "NHRC, NCW, RERA & Ombudsman Complaints | Pigsfield", description: "Indian rights commissions and sector regulators — human rights, women, children, elections, banking ombudsman, telecom and real estate — and how to reach each.", intro: "Rights commissions and sector regulators, each with a defined jurisdiction. Matching your issue to the right one is most of the work." },
+      { key: 4, slug: "grievance-portals", name: "Grievance Portals", h1: "CPGRAMS, PMO portal and CM Helpline 181: file and escalate a complaint", tagline: "The official complaint box, and how to escalate it.", title: "CPGRAMS, PMO & CM Helpline Grievances | Pigsfield", description: "Government grievance portals for India and Rajasthan — CPGRAMS, the PMO portal, CM Helpline 181, Jan Soochna and the Right to Public Service Act.", intro: "Public grievance systems with defined escalation ladders. A grievance that stalls at one level can usually be pushed to the next." },
+      { key: 5, slug: "social-audit", name: "Social Audit", h1: "Social audit, Gram Sabha and Jan Sunwai: community accountability", tagline: "Accountability that happens in the village, not the capital.", title: "Social Audit, Gram Sabha & Jan Sunwai | Pigsfield", description: "Community accountability tools in India — MGNREGA social audits, Gram Sabha powers, Jan Sunwai public hearings and whistleblower protection.", intro: "Collective oversight, where a group can achieve what an individual complaint cannot. The Gram Sabha in particular holds powers most people never use." },
+      { key: 6, slug: "parliament-and-representatives", name: "Parliament & Representatives", h1: "How to write to your MP or MLA, and what NOTA means", tagline: "Your representative works for you.", title: "Contact Your MP or MLA + NOTA Guide | Pigsfield", description: "How to make written representations to an MP or MLA in India, reach parliamentary and assembly committees, and understand the NOTA option.", intro: "The elected route. A written representation on record is slower than a complaint but carries weight a portal ticket does not." },
+      { key: 7, slug: "media-and-fraud-reporting", name: "Media & Fraud Reporting", h1: "Complain to the Press Council or NBDSA, and report Aadhaar or DBT fraud", tagline: "When the story or the money is wrong.", title: "Press Council, NBDSA & Fraud Reporting | Pigsfield", description: "Complain about Indian print and television coverage through the Press Council and NBDSA, run digital accountability campaigns, and report Aadhaar or DBT fraud.", intro: "Holding coverage to account, and reporting benefit fraud. Media complaints have short deadlines, so act while the broadcast is recent." },
+      { key: 8, slug: "criminal-and-financial-law", name: "Criminal & Financial Law", h1: "Filing an FIR against official wrongdoing, and the PMLA and Benami Acts", tagline: "The heavier instruments.", title: "FIR, PMLA & Benami Act Explained | Pigsfield", description: "Filing an FIR against official wrongdoing in India, plus plain-language explanations of the Prevention of Money Laundering Act and the Benami Transactions Act.", intro: "Criminal and asset-recovery law. General educational information, not legal advice — these routes carry consequences for the person filing too." },
+      { key: 9, slug: "digital-governance", name: "Digital Governance", h1: "Cyber crime portal, e-Courts case status and open government data", tagline: "Government services that never need a queue.", title: "Cyber Crime, e-Courts & Open Data India | Pigsfield", description: "India's digital governance services — the national cyber crime portal, e-Court case status, Open Government Data, PM Awas grievances and MyGov participation.", intro: "Online services for reporting cybercrime, tracking a court case, reading public data and taking part in policy consultations." },
+      { key: 10, slug: "your-state", name: "Your State", lastmod: "2026-10-10", h1: "State RTI portals, CM helplines and Lokayukta websites", tagline: "Your state's complaint and RTI portals.", title: "State RTI, CM Helpline & Lokayukta Portals | Pigsfield", description: "Official CM helpline, RTI and Lokayukta portals for ten large Indian states, gathered in one place.", intro: "Official CM helpline, RTI and Lokayukta portals for ten large states. Fees, forms and deadlines differ from state to state, so read each portal's own instructions before you file." }
     ]
   },
   {
@@ -101,20 +102,62 @@ export const DESTINATIONS = [
     parentName: "Vocational & Business",
     splitBy: "group",
     topics: [
-      { key: 0, slug: "government-skill-portals", name: "Government Skill Portals", h1: "State-backed training that costs nothing.", title: "Free Govt Skill Courses: NPTEL, SWAYAM | Pigsfield", description: "Free Indian government skill platforms — Skill India, BharatSkills, NPTEL, SWAYAM Plus, Spoken Tutorial, Virtual Labs and AICTE internships.", intro: "Government and IIT-run platforms covering ITI trades, engineering, IT and virtual laboratories. Most issue recognized certificates at no cost." },
-      { key: 1, slug: "corporate-training", name: "Corporate Training", h1: "Industry certificates without the invoice.", title: "Free IBM, Microsoft & Google Certificates | Pigsfield", description: "Free corporate training from Infosys Springboard, IBM SkillsBuild, Microsoft Learn, Google Digital Garage, AWS, TCS iON and Cisco, usable from India.", intro: "Company-run programmes in cloud, AI and workplace skills. Free to learn; confirm whether a given certificate costs anything before you count on it." },
-      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." },
-      { key: 3, slug: "jobs-and-business", name: "Jobs, Business & Trades", lastmod: "2026-10-09", h1: "Find work, start a business, learn a trade.", title: "Free Govt Job, Business & Trade Portals | Pigsfield", description: "Official portals for jobs, apprenticeships, MSME registration, Mudra loans, PMEGP, PM Vishwakarma and ITI trades." }
+      { key: 0, slug: "government-skill-portals", name: "Government Skill Portals", h1: "Free government skill courses with certificates: NPTEL, SWAYAM, Skill India", tagline: "State-backed training that costs nothing.", title: "Free Govt Skill Courses: NPTEL, SWAYAM | Pigsfield", description: "Free Indian government skill platforms — Skill India, BharatSkills, NPTEL, SWAYAM Plus, Spoken Tutorial, Virtual Labs and AICTE internships.", intro: "Government and IIT-run platforms covering ITI trades, engineering, IT and virtual laboratories. Most issue recognized certificates at no cost." },
+      { key: 1, slug: "corporate-training", name: "Corporate Training", h1: "Free corporate training and certificates from IBM, Microsoft and Google", tagline: "Industry certificates without the invoice.", title: "Free IBM, Microsoft & Google Certificates | Pigsfield", description: "Free corporate training from Infosys Springboard, IBM SkillsBuild, Microsoft Learn, Google Digital Garage, AWS, TCS iON and Cisco, usable from India.", intro: "Company-run programmes in cloud, AI and workplace skills. Free to learn; confirm whether a given certificate costs anything before you count on it." },
+      { key: 2, slug: "coding-platforms", name: "Coding Platforms", h1: "Free coding courses: CS50, freeCodeCamp, The Odin Project and more", tagline: "Learn to build, project by project.", title: "Free Coding Courses: CS50, freeCodeCamp | Pigsfield", description: "Free project-based programming courses including Harvard CS50, freeCodeCamp, The Odin Project, Kaggle data science and MIT Scratch for beginners.", intro: "Project-first programming courses, from first-ever code to full-stack and data science. All free to work through end to end." },
+      { key: 3, slug: "jobs-and-business", name: "Jobs, Business & Trades", lastmod: "2026-10-10", h1: "Government job, apprenticeship, business and trade portals", tagline: "Find work, start a business, learn a trade.", title: "Free Govt Job, Business & Trade Portals | Pigsfield", description: "Official portals for jobs, apprenticeships, MSME registration, Mudra loans, PMEGP, PM Vishwakarma and ITI trades.", intro: "Official portals for finding work and apprenticeships, registering a small business, applying for Mudra and PMEGP loans, and learning a trade through ITI or PM Vishwakarma." }
     ]
   }
 ];
+
+/** Hindi framing for /hi/rights/. The resource notes are already written in Hindi; these are
+ *  the words a Hindi reader and a Hindi search result need around them. Written, not
+ *  machine-translated. Each page carries one Roman-script phrase the way people type it. */
+export const HINDI = {
+  rights: {
+    parentName: "सरकार को जवाबदेह बनाएँ",
+    hub: {
+      title: "सरकार को जवाबदेह बनाएँ: RTI, शिकायत और क़ानूनी सहायता | Pigsfield",
+      description: "RTI, सरकारी शिकायत, भ्रष्टाचार की रिपोर्ट, आयोग और अदालत के रास्ते, हिन्दी में व्यावहारिक गाइड और आधिकारिक पोर्टल के सीधे लिंक के साथ।",
+      h1: "सरकार को जवाबदेह बनाएँ: RTI, शिकायत और क़ानूनी रास्ते",
+      intro: "हर रास्ते का अपना पेज है, जिसमें हिन्दी में व्यावहारिक गाइड और आधिकारिक पोर्टल के सीधे लिंक हैं। यह सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं।"
+    },
+    topics: {
+      "information-and-records": { name: "सूचना और रिकॉर्ड", title: "RTI कैसे लगाएँ, CAG रिपोर्ट और चुनावी हलफ़नामे | Pigsfield", description: "RTI अधिनियम 2005 के तहत सरकारी सूचना कैसे माँगें (RTI kaise lagayein), CAG ऑडिट रिपोर्ट और उम्मीदवारों के चुनावी हलफ़नामे कहाँ देखें।", h1: "RTI कैसे लगाएँ, और CAG रिपोर्ट व उम्मीदवारों के हलफ़नामे कैसे देखें", intro: "सरकार से दस्तावेज़, ऑडिट और घोषणाएँ निकलवाने के औज़ार। किसी भी शिकायत से पहले यहीं से शुरू करें, क्योंकि रिकॉर्ड साथ हो तो ज़्यादातर शिकायतें मज़बूत होती हैं।" },
+      "anti-corruption": { name: "भ्रष्टाचार की शिकायत", title: "भ्रष्टाचार की शिकायत: लोकपाल, लोकायुक्त, CVC, CBI | Pigsfield", description: "भ्रष्टाचार की शिकायत कहाँ करें (bhrashtachar ki shikayat): लोकपाल, लोकायुक्त, CVC, CBI, ED, भ्रष्टाचार निरोधक ब्यूरो और आयकर चोरी की रिपोर्ट।", h1: "रिश्वत या भ्रष्टाचार की शिकायत कहाँ करें: लोकपाल, लोकायुक्त, CVC, CBI और ACB", intro: "हर संस्था एक अलग स्तर और तरह की गड़बड़ी देखती है। ग़लत जगह भेजी गई शिकायत में महीनों बर्बाद होते हैं, इसलिए पहले पढ़ें कि कौन-सी संस्था क्या संभालती है।" },
+      "courts-and-legal-remedies": { name: "अदालत और क़ानूनी उपाय", title: "PIL, रिट याचिका और उपभोक्ता अदालत: क़ानूनी उपाय | Pigsfield", description: "नागरिकों के लिए न्यायिक रास्ते: जनहित याचिका (PIL), अनुच्छेद 32 और 226 के तहत पाँच रिट, उपभोक्ता अदालत, CAT और दीवानी मुक़दमे।", h1: "PIL, रिट याचिका और उपभोक्ता अदालत: जब शिकायत काफ़ी न हो", intro: "न्याय तक पहुँचने का रास्ता। यह केवल सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं; जिस मामले में समय-सीमा हो, उसमें किसी योग्य वकील से मौजूदा स्थिति ज़रूर पूछें।" },
+      "commissions-and-regulators": { name: "आयोग और नियामक", title: "NHRC, NCW, RERA और बैंकिंग लोकपाल में शिकायत | Pigsfield", description: "मानवाधिकार, महिला, बाल अधिकार, चुनाव, बैंकिंग लोकपाल, दूरसंचार और रियल एस्टेट के आयोग और नियामक, और हर एक तक कैसे पहुँचें।", h1: "NHRC, NCW, RERA, बैंकिंग लोकपाल और दूसरे नियामकों में शिकायत कैसे करें", intro: "अधिकार आयोग और क्षेत्रीय नियामक, जिनका अपना तय अधिकार-क्षेत्र है। अपनी समस्या को सही संस्था से मिलाना ही आधा काम है।" },
+      "grievance-portals": { name: "शिकायत पोर्टल", title: "CPGRAMS, PMO पोर्टल और CM हेल्पलाइन 181 पर शिकायत | Pigsfield", description: "केंद्र और राजस्थान के शिकायत पोर्टल (online shikayat kaise kare): CPGRAMS, PMO पोर्टल, CM हेल्पलाइन 181, जन सूचना पोर्टल और लोक सेवा गारंटी क़ानून।", h1: "CPGRAMS, PMO पोर्टल और CM हेल्पलाइन 181: शिकायत दर्ज करें और ऊपर तक ले जाएँ", intro: "सरकारी शिकायत व्यवस्थाएँ, जिनमें शिकायत को ऊपर के स्तर तक ले जाने की तय सीढ़ी है। एक स्तर पर अटकी शिकायत को आम तौर पर अगले स्तर तक ले जाया जा सकता है।" },
+      "social-audit": { name: "सामाजिक अंकेक्षण", title: "सोशल ऑडिट, ग्राम सभा और जन सुनवाई | Pigsfield", description: "सामुदायिक जवाबदेही के औज़ार: मनरेगा सोशल ऑडिट, ग्राम सभा की शक्तियाँ, जन सुनवाई और व्हिसलब्लोअर संरक्षण, आधिकारिक लिंक के साथ।", h1: "सोशल ऑडिट, ग्राम सभा और जन सुनवाई: गाँव से जवाबदेही", intro: "सामूहिक निगरानी, जहाँ एक समूह वह कर सकता है जो अकेली शिकायत नहीं कर पाती। ग्राम सभा के पास ऐसी शक्तियाँ हैं जिनका ज़्यादातर लोग कभी उपयोग नहीं करते।" },
+      "parliament-and-representatives": { name: "संसद और जनप्रतिनिधि", title: "अपने सांसद या विधायक को पत्र कैसे लिखें, और NOTA | Pigsfield", description: "सांसद (MP) या विधायक (MLA) को लिखित प्रतिवेदन कैसे दें, संसदीय और विधानसभा समितियों तक कैसे पहुँचें, और NOTA विकल्प क्या है।", h1: "अपने सांसद या विधायक को कैसे लिखें, और NOTA का मतलब क्या है", intro: "चुने हुए प्रतिनिधि का रास्ता। रिकॉर्ड पर दर्ज लिखित प्रतिवेदन शिकायत से धीमा होता है, पर उसका वज़न पोर्टल टिकट से ज़्यादा होता है।" },
+      "media-and-fraud-reporting": { name: "मीडिया और धोखाधड़ी की रिपोर्ट", title: "प्रेस काउंसिल, NBDSA और आधार-DBT धोखाधड़ी की शिकायत | Pigsfield", description: "प्रिंट और टीवी कवरेज की शिकायत प्रेस काउंसिल और NBDSA में करें, डिजिटल जवाबदेही अभियान चलाएँ, और आधार या DBT धोखाधड़ी की रिपोर्ट करें।", h1: "प्रेस काउंसिल या NBDSA में शिकायत, और आधार या DBT धोखाधड़ी की रिपोर्ट", intro: "कवरेज को जवाबदेह बनाना और सरकारी लाभ में धोखाधड़ी की रिपोर्ट करना। मीडिया शिकायतों की समय-सीमा छोटी होती है, इसलिए प्रसारण ताज़ा रहते ही कार्रवाई करें।" },
+      "criminal-and-financial-law": { name: "आपराधिक और वित्तीय क़ानून", title: "FIR कैसे दर्ज करें, PMLA और बेनामी क़ानून | Pigsfield", description: "सरकारी गड़बड़ी के ख़िलाफ़ FIR कैसे दर्ज करें (FIR kaise darj karein), और धन शोधन निवारण अधिनियम (PMLA) व बेनामी लेनदेन क़ानून की सरल व्याख्या।", h1: "सरकारी गड़बड़ी के ख़िलाफ़ FIR, और PMLA व बेनामी क़ानून", intro: "आपराधिक और संपत्ति-वसूली क़ानून। यह सामान्य शैक्षिक जानकारी है, क़ानूनी सलाह नहीं; इन रास्तों के नतीजे शिकायत करने वाले पर भी पड़ते हैं।" },
+      "digital-governance": { name: "डिजिटल शासन", title: "साइबर क्राइम पोर्टल, ई-कोर्ट्स और ओपन डेटा | Pigsfield", description: "डिजिटल शासन सेवाएँ: राष्ट्रीय साइबर क्राइम पोर्टल (cyber crime complaint), ई-कोर्ट केस स्टेटस, ओपन गवर्नमेंट डेटा, PM आवास शिकायत और MyGov।", h1: "साइबर क्राइम की शिकायत, ई-कोर्ट्स केस स्टेटस और सरकारी ओपन डेटा", intro: "साइबर अपराध की रिपोर्ट, अदालती मामले की स्थिति, सार्वजनिक डेटा और नीतिगत परामर्श में हिस्सेदारी की ऑनलाइन सेवाएँ।" },
+      "your-state": { name: "आपका राज्य", title: "राज्य RTI पोर्टल, CM हेल्पलाइन और लोकायुक्त | Pigsfield", description: "दस बड़े राज्यों के आधिकारिक CM हेल्पलाइन, RTI और लोकायुक्त पोर्टल एक जगह। फ़ीस, फ़ॉर्म और समय-सीमा हर राज्य में अलग होती है।", h1: "राज्यों के RTI पोर्टल, CM हेल्पलाइन और लोकायुक्त वेबसाइटें", intro: "दस बड़े राज्यों के आधिकारिक CM हेल्पलाइन, RTI और लोकायुक्त पोर्टल। फ़ीस, फ़ॉर्म और समय-सीमा हर राज्य में अलग होती है, इसलिए आवेदन से पहले उसी पोर्टल के निर्देश पढ़ें।" }
+    }
+  }
+};
+
+/** English route -> Hindi route, for every page that has a Hindi version. */
+export const HINDI_PAIRS = Object.entries(HINDI).flatMap(([dest, hindi]) => [
+  [`/${dest}/`, `/hi/${dest}/`],
+  ...Object.keys(hindi.topics).map((slug) => [`/${dest}/${slug}/`, `/hi/${dest}/${slug}/`])
+]);
+export const HINDI_ROUTES = HINDI_PAIRS.map(([, hindi]) => hindi);
+
+/** The <link rel="alternate"> set for a page that exists in both languages. */
+export function alternateLinks(englishRoute) {
+  const pair = HINDI_PAIRS.find(([english]) => english === englishRoute);
+  if (!pair) return "";
+  return `<link rel="alternate" hreflang="en-IN" href="${ORIGIN}${pair[0]}"><link rel="alternate" hreflang="hi-IN" href="${ORIGIN}${pair[1]}"><link rel="alternate" hreflang="x-default" href="${ORIGIN}${pair[0]}">`;
+}
 
 /** Flat view of every topic with its destination, used by the validator and the sitemap. */
 export const TOPICS = DESTINATIONS.flatMap((destination) =>
   destination.topics.map((topic) => ({ ...topic, dest: destination.dest, route: `/${destination.dest}/${topic.slug}/` }))
 );
 
-const esc = (value) =>
+export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -179,7 +222,7 @@ function siteHelpers(root = ROOT) {
 const { classifySource, sourceBrand, sourceMark, isYouTubeSearch, isTutorialSearch, resourceSymbolFor } = siteHelpers();
 
 /** Mirrors PF.slug in js/site.js. tests/catalog-compatibility.test.mjs pins the result. */
-function slug(value) {
+export function slug(value) {
   const result = String(value || "resource")
     .normalize("NFKD")
     .toLowerCase()
@@ -219,6 +262,16 @@ export function topicPayload(source) {
 
 export function digestFor(source) {
   return crypto.createHash("sha256").update(JSON.stringify(topicPayload(source))).digest("hex").slice(0, 16);
+}
+
+/** Most of the civic notes are written in Hindi. Marking a block whose letters are mostly
+ *  Devanagari as lang="hi" tells search engines and screen readers which language they are
+ *  reading; mixed Hinglish with more Latin letters stays in the page's English. */
+export function langAttr(text) {
+  const value = String(text || "");
+  const devanagari = (value.match(/[\u0900-\u097F]/g) || []).length;
+  const latin = (value.match(/[A-Za-z]/g) || []).length;
+  return devanagari > latin ? ' lang="hi"' : "";
 }
 
 function hostOf(url) {
@@ -273,7 +326,7 @@ function renderSource(pair, title) {
 
 /** Web, then YouTube, then apps. A lane with nothing in it is left out rather than drawn
  *  as "Not listed": on a phone each lane is its own row, so empty ones only add scrolling. */
-function renderSources(item) {
+export function renderSources(item) {
   const lanes = { web: [], video: [], app: [] };
   for (const pair of item.urls) {
     const url = pair.slice(pair.indexOf("|") + 1);
@@ -291,16 +344,16 @@ function renderSources(item) {
 /** The step-by-step notes some resources carry: who to complain to, which form, which
  *  deadline. 47 entries have them, and they are the most practical writing on the site, so
  *  they follow the resource onto its own page rather than staying behind on the hub. */
-function renderExtra(extra) {
+function renderExtra(extra, hindi = false) {
   if (!extra.length) return "";
-  return `<details class="resource-links resource-notes"><summary>Practical guide</summary><div class="link-list extra-list">${extra
-    .map((part) => `<div><strong>${esc(part.label || "More information")}</strong><p>${esc(part.text)}</p></div>`)
+  return `<details class="resource-links resource-notes"><summary>${hindi ? "व्यावहारिक गाइड" : "Practical guide"}</summary><div class="link-list extra-list">${extra
+    .map((part) => `<div><strong${langAttr(part.label)}>${esc(part.label || "More information")}</strong><p${langAttr(part.text)}>${esc(part.text)}</p></div>`)
     .join("")}</div></details>`;
 }
 
 /** The symbol a resource is drawn with: its organization's mark where one is known. It is
  *  resolved from the same table js/watch.js uses, so NCERT is the same 📚 everywhere. */
-function resourceSymbol(item) {
+export function resourceSymbol(item) {
   const urls = item.urls.map((pair) => pair.slice(pair.indexOf("|") + 1));
   const types = urls.map(classifySource);
   const type = types.includes("video") ? "video" : types.includes("app") ? "app" : types[0] || "website";
@@ -314,12 +367,12 @@ function hasRightsCard(item) {
   return labels.some((label) => /Helpline/i.test(label)) && labels.some((label) => /Step-by-Step/i.test(label));
 }
 
-function renderResources(source) {
+function renderResources(source, hindi = false) {
   return topicPayload(source)
     .map((item) => {
-      const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="Share ${esc(item.title)} as an image" title="फ़ोटो कार्ड"></button>` : "";
-      const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="Share ${esc(item.title)}"></button></span>`;
-      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note">${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra)}</article>`;
+      const image = hasRightsCard(item) ? `<button class="card-tool card-image" type="button" data-rights-card aria-label="${esc(hindi ? `${item.title} को फ़ोटो कार्ड के रूप में साझा करें` : `Share ${item.title} as an image`)}" title="फ़ोटो कार्ड"></button>` : "";
+      const share = `<span class="card-tools">${image}<button class="card-tool card-share" type="button" data-share="${esc(item.id)}" data-share-title="${esc(item.title)}" aria-label="${esc(hindi ? `${item.title} साझा करें` : `Share ${item.title}`)}"></button></span>`;
+      return `<article class="topic-item" id="${esc(item.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(item)}</span><h3${langAttr(item.title)}>${esc(item.title)}</h3>${share}</div>${item.desc ? `<p${langAttr(item.desc)}>${esc(item.desc)}</p>` : ""}${item.warning ? `<p class="resource-warning" role="note"${langAttr(item.warning)}>${esc(item.warning)}</p>` : ""}${renderSources(item)}${renderExtra(item.extra, hindi)}</article>`;
     })
     .join("\n        ");
 }
@@ -429,11 +482,15 @@ function renderSiblings(destination, current) {
 }
 
 export function renderTopicPage(destination, topic, source) {
+  return applyChrome(topicPageHtml(destination, topic, source)).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
+}
+
+function topicPageHtml(destination, topic, source) {
   const route = `/${destination.dest}/${topic.slug}/`;
   const canonical = `${ORIGIN}${route}`;
   const items = topicPayload(source);
   const count = items.length;
-  const social = `${topic.name}: ${count} free-first resources on Pigsfield, each linking straight to the original provider.`;
+  const social = `${count} free-first resources. ${topic.description}`;
 
   const graph = [
     {
@@ -462,7 +519,7 @@ export function renderTopicPage(destination, topic, source) {
       "@id": `${canonical}#resources`,
       name: `${topic.name} resources`,
       numberOfItems: count,
-      itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title }))
+      itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title, url: `${canonical}#${item.id}` }))
     }
   ];
 
@@ -475,7 +532,7 @@ export function renderTopicPage(destination, topic, source) {
   <meta name="description" content="${esc(topic.description)}">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="pf-topic-digest" content="${digestFor(source)}">
-  <link rel="canonical" href="${canonical}"><link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
+  <link rel="canonical" href="${canonical}">${alternateLinks(route)}<link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(topic.title)}"><meta property="og:description" content="${esc(social)}"><meta property="og:url" content="${canonical}">
   <meta property="og:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Pigsfield ${esc(topic.name)} resources"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(topic.title)}"><meta name="twitter:description" content="${esc(social)}"><meta name="twitter:image" content="${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg"><meta name="twitter:image:alt" content="Pigsfield ${esc(topic.name)} resources">
   <link rel="preload" href="../../assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -487,7 +544,7 @@ export function renderTopicPage(destination, topic, source) {
   <a class="skip-link" href="#main-content">Skip to content</a><header data-site-header></header>
   <main id="main-content">
     <div class="container breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">${esc(destination.parentName)}</a></li><li aria-current="page">${esc(topic.name)}</li></ol></div>
-    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede">${esc(topic.intro)}</p></div></section>
+    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(topic.name)}</span><h1>${esc(topic.h1)}</h1><p class="lede"><strong>${esc(topic.tagline)}</strong> ${esc(topic.intro)}</p>${alternateLinks(route) ? `<p><a class="text-link" href="../../hi/${destination.dest}/${topic.slug}/" hreflang="hi-IN" lang="hi">यह पेज हिन्दी में पढ़ें</a></p>` : ""}</div></section>
     <section class="section"><div class="container">
       <p class="topic-count"><strong>${count}</strong> free-first ${count === 1 ? "resource" : "resources"}, each opening its original provider.</p>
       <div class="topic-list">
@@ -504,6 +561,102 @@ export function renderTopicPage(destination, topic, source) {
 </body>
 </html>
 `;
+}
+
+const HINDI_HEAD = (canonical, englishRoute, page, image, alt) => `<!doctype html>
+<html lang="hi-IN" data-base="${page.base}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#f4f1e8">
+  <title>${esc(page.title)}</title>
+  <meta name="description" content="${esc(page.description)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="${canonical}">${alternateLinks(englishRoute)}<link rel="icon" href="${page.base}assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="${page.base}manifest.json">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="hi_IN"><meta property="og:title" content="${esc(page.title)}"><meta property="og:description" content="${esc(page.description)}"><meta property="og:url" content="${canonical}">
+  <meta property="og:image" content="${image}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(alt)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(page.title)}"><meta name="twitter:description" content="${esc(page.description)}"><meta name="twitter:image" content="${image}"><meta name="twitter:image:alt" content="${esc(alt)}">
+  <link rel="preload" href="${page.base}assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="${page.base}css/site.css">
+  <script defer src="${page.base}js/site.js"></script>
+  <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": page.graph })}</script>
+</head>`;
+
+/** A Hindi topic page: the same resources as its English pair, framed in Hindi. */
+export function renderHindiTopicPage(destination, topic, source) {
+  const hindi = HINDI[destination.dest];
+  const words = hindi.topics[topic.slug];
+  const englishRoute = `/${destination.dest}/${topic.slug}/`;
+  const route = `/hi${englishRoute}`;
+  const canonical = `${ORIGIN}${route}`;
+  const items = topicPayload(source);
+  const graph = [
+    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: words.name, description: words.description, inLanguage: "hi-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` }, mainEntity: { "@id": `${canonical}#resources` } },
+    { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
+      { "@type": "ListItem", position: 2, name: hindi.parentName, item: `${ORIGIN}/hi/${destination.dest}/` },
+      { "@type": "ListItem", position: 3, name: words.name, item: canonical }
+    ] },
+    { "@type": "ItemList", "@id": `${canonical}#resources`, name: `${words.name}: संसाधन`, numberOfItems: items.length, itemListElement: items.slice(0, 100).map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.title, url: `${canonical}#${item.id}` })) }
+  ];
+  const siblings = destination.topics.filter((other) => other.slug !== topic.slug && hindi.topics[other.slug]).map((other) => `<a class="button ghost" href="../${other.slug}/">${esc(hindi.topics[other.slug].name)}</a>`).join("");
+  const html = `${HINDI_HEAD(canonical, englishRoute, { ...words, base: "../../../", graph }, `${ORIGIN}/assets/og/${destination.dest}-${topic.slug}.jpg`, `Pigsfield: ${words.name}`)}
+<body data-page="${esc(destination.dest)}">
+  <a class="skip-link" href="#main-content">सीधे सामग्री पर जाएँ</a><header data-site-header></header>
+  <main id="main-content">
+    <div class="container breadcrumbs"><ol><li><a href="../../../">होम</a></li><li><a href="../">${esc(hindi.parentName)}</a></li><li aria-current="page">${esc(words.name)}</li></ol></div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">${esc(words.name)}</span><h1>${esc(words.h1)}</h1><p class="lede">${esc(words.intro)}</p><p><a class="text-link" href="../../..${englishRoute}" hreflang="en-IN" lang="en">Read this page in English</a></p></div></section>
+    <section class="section"><div class="container">
+      <p class="topic-count"><strong>${items.length}</strong> संसाधन, हर एक अपने मूल स्रोत पर खुलता है।</p>
+      <div class="topic-list">
+        ${renderResources(source, true)}
+      </div>
+    </div></section>
+    <section class="section alt"><div class="container">
+      <h2>${esc(hindi.parentName)}: और विषय</h2>
+      <nav class="topic-siblings" aria-label="जुड़े हुए विषय">${siblings}</nav>
+      <p><a class="button ghost" href="../">सभी विषय देखें</a></p>
+    </div></section>
+  </main>
+  <footer data-site-footer></footer>
+</body>
+</html>
+`;
+  return applyChrome(html).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
+}
+
+/** The Hindi hub: a card per Hindi topic page. */
+export function renderHindiHub(data, destination) {
+  const hindi = HINDI[destination.dest];
+  const englishRoute = `/${destination.dest}/`;
+  const route = `/hi${englishRoute}`;
+  const canonical = `${ORIGIN}${route}`;
+  const graph = [
+    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: hindi.parentName, description: hindi.hub.description, inLanguage: "hi-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` } },
+    { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
+      { "@type": "ListItem", position: 2, name: hindi.parentName, item: canonical }
+    ] }
+  ];
+  const cards = destination.topics.filter((topic) => hindi.topics[topic.slug]).map((topic) => {
+    const words = hindi.topics[topic.slug];
+    const count = topicPayload(sourceFor(data, destination, topic)).length;
+    return `<a class="topic-card" href="${esc(topic.slug)}/"><span class="topic-card-name">${esc(words.name)}</span><span class="topic-card-count">${count} संसाधन</span><span class="topic-card-note">${esc(`${words.intro.split("।")[0]}।`)}</span></a>`;
+  }).join("");
+  const html = `${HINDI_HEAD(canonical, englishRoute, { ...hindi.hub, base: "../../", graph }, `${ORIGIN}/assets/og/${destination.dest}.jpg`, `Pigsfield: ${hindi.parentName}`)}
+<body data-page="${esc(destination.dest)}">
+  <a class="skip-link" href="#main-content">सीधे सामग्री पर जाएँ</a><header data-site-header></header>
+  <main id="main-content">
+    <div class="container breadcrumbs"><ol><li><a href="../../">होम</a></li><li aria-current="page">${esc(hindi.parentName)}</li></ol></div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">जवाबदेही</span><h1>${esc(hindi.hub.h1)}</h1><p class="lede">${esc(hindi.hub.intro)}</p><p><a class="text-link" href="../..${englishRoute}" hreflang="en-IN" lang="en">Read this page in English</a></p></div></section>
+    <section class="section stage-nav-band"><div class="container">
+      <h2 class="stage-nav-title">अपना रास्ता चुनें</h2>
+      <div class="topic-index">${cards}</div>
+    </div></section>
+  </main>
+  <footer data-site-footer></footer>
+</body>
+</html>
+`;
+  return applyChrome(html).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
 }
 
 /** The homepage's pillar cards state how much each pillar holds. They were typed by hand
@@ -525,6 +678,9 @@ function buildHomeCounts({ root, check, data }) {
   return { stale: [], written: ["/"] };
 }
 
+/** The footer's year is refreshed in the browser, so a new year alone does not make a page stale. */
+const sameYear = (html) => html.replace(/<span data-year>\d{4}<\/span>/g, "<span data-year></span>");
+
 export function build({ root = ROOT, check = false } = {}) {
   const data = loadCatalog(root);
   const stale = [];
@@ -544,12 +700,31 @@ export function build({ root = ROOT, check = false } = {}) {
       if (check) {
         // Asset versions are stamped separately and verified by build-assets --check.
         const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8").replace(/\?v=[a-f0-9]{12}(?=")/g, "") : "";
-        if (current !== html) stale.push(`/${destination.dest}/${topic.slug}/`);
+        if (sameYear(current) !== sameYear(html)) stale.push(`/${destination.dest}/${topic.slug}/`);
         continue;
       }
       fs.mkdirSync(path.dirname(file), { recursive: true });
       fs.writeFileSync(file, html, "utf8");
       written.push({ route: `/${destination.dest}/${topic.slug}/`, count });
+    }
+  }
+
+  // Hindi versions, where they exist.
+  for (const destination of DESTINATIONS.filter((candidate) => HINDI[candidate.dest])) {
+    const pages = [[path.join(root, "hi", destination.dest, "index.html"), renderHindiHub(data, destination)]];
+    for (const topic of destination.topics.filter((candidate) => HINDI[destination.dest].topics[candidate.slug])) {
+      pages.push([path.join(root, "hi", destination.dest, topic.slug, "index.html"), renderHindiTopicPage(destination, topic, sourceFor(data, destination, topic))]);
+    }
+    for (const [file, html] of pages) {
+      const route = `/${path.relative(root, path.dirname(file)).split(path.sep).join("/")}/`;
+      const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8").replace(/\?v=[a-f0-9]{12}(?=")/g, "") : "";
+      if (sameYear(current) === sameYear(html)) continue;
+      if (check) stale.push(route);
+      else {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, html, "utf8");
+        written.push({ route, count: 0 });
+      }
     }
   }
 

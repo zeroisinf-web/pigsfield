@@ -200,7 +200,11 @@ p { color: var(--ink-soft); }
 .icon-button:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 4px 12px rgba(16, 36, 30, 0.08); }
 .icon-button:active { transform: scale(0.95); }
 
-.site-header {
+/* [data-site-header] reserves the bar's height before js/site.js runs, so the page never
+   shifts down when the header is drawn. */
+.site-header,
+[data-site-header] {
+  display: block;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -437,6 +441,7 @@ p { color: var(--ink-soft); }
 .faq-item,
 .exam-panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-strong); overflow: clip; }
 .faq-item > summary,
+.exam-panel-heading { margin: 0; font: inherit; letter-spacing: inherit; }
 .exam-panel > summary { display: grid; min-height: 4.5rem; align-items: center; grid-template-columns: 1fr auto; gap: 1rem; padding: 1.15rem 1.3rem; cursor: pointer; font-weight: 800; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 .faq-item > summary::after,
@@ -893,6 +898,9 @@ body[data-page="watch"] {
 .topic-card-highlight .topic-card-count { color: color-mix(in srgb, var(--saffron) 78%, var(--ink)); }
 .topic-leftover { margin-top: 2rem; }
 .topic-leftover h3 { margin-bottom: .8rem; font-size: 1.1rem; }
+.topic-leftover > h2 { margin-bottom: .8rem; font-size: 1.35rem; scroll-margin-top: calc(var(--header-h) + 1rem); }
+.topic-meta { margin: .15rem 0 .35rem; color: var(--ink-soft); font-size: .82rem; }
+.text-link { color: var(--brand-deep); font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
 .topic-count { max-width: 60ch; margin-bottom: 2rem; color: var(--ink-soft); font-size: .95rem; }
 .topic-list { display: grid; gap: 1rem; }
 .topic-item { display: flex; flex-direction: column; padding: 1.3rem 1.4rem 0; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--paper-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .04); content-visibility: auto; contain-intrinsic-size: auto 150px; transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
@@ -1258,7 +1266,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
   .header-actions .menu-toggle { display: none; }
 }
 @media (display-mode: standalone) {
-  .site-header { padding-top: env(safe-area-inset-top, 0px); }
+  .site-header, [data-site-header] { padding-top: env(safe-area-inset-top, 0px); }
 }
 
 @media (prefers-reduced-transparency: reduce) {

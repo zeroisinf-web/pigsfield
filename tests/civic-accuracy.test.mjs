@@ -89,7 +89,7 @@ test("the CIC contact matches the Commission's own published facilitation desk",
 test("catalogue warnings render above the fold of a card, not inside the collapsed guide", () => {
   const source = fs.readFileSync(path.join(ROOT, "tools", "build-topics.mjs"), "utf8");
   // A warning a reader has to open a <details> to find is not a warning.
-  assert.match(source, /item\.warning \? `<p class="resource-warning" role="note">\$\{esc\(item\.warning\)\}<\/p>`/, "warnings must render as their own element on the card");
+  assert.match(source, /item\.warning \? `<p class="resource-warning" role="note"\$\{langAttr\(item\.warning\)\}>\$\{esc\(item\.warning\)\}<\/p>`/, "warnings must render as their own element on the card");
   const card = source.match(/return `<article class="topic-item"[\s\S]*?<\/article>`;/)?.[0] || "";
   assert.ok(card, "the generated card markup was not found");
   const warningAt = card.indexOf("resource-warning");

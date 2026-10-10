@@ -13,6 +13,15 @@ Technical SEO makes Pigsfield crawlable and understandable; it cannot guarantee 
 4. Add the site to [Bing Webmaster Tools](https://www.bing.com/webmasters/about), then submit the same sitemap.
 5. Check the rendered HTML, indexing status and Core Web Vitals after Google has recrawled the release. Fix errors; do not repeatedly request indexing for unchanged pages.
 
+## Off-site steps the code cannot do
+
+1. In Cloudflare, redirect `www` to the apex with a 301, turn on Crawler Hints, and leave AI search and AI training crawlers allowed. `npm run check:production` fails if the live robots.txt disallows the whole site for a search engine.
+2. In Search Console, submit the sitemap again after this release and inspect `/exams/upsc/`, `/watch/channels/` and `/hi/rights/information-and-records/`. In Bing Webmaster Tools, import the site from Search Console and watch its AI Performance report. Bing also receives changed URLs automatically through IndexNow after every deploy (`tools/indexnow.mjs`).
+3. After four to six weeks, check Search Console's page indexing report for "Duplicate, Google chose different canonical" on the `/hi/rights/` pairs. If Google folds them together, give the English pages an English summary of each practical guide so the two versions differ in more than their framing.
+4. Set the GitHub repository's homepage to `https://pigsfield.com/`, make every social profile link back to the site under the same name, and publish `@pigsfield` YouTube playlists that mirror the UPSC, NCERT roadmap and Class 9 to 12 pages, each description linking to its page.
+5. Decide on privacy-respecting measurement (cookieless Cloudflare Web Analytics, or an aggregate-only counter behind `/api/`) before judging which new pages to build next; it needs a privacy-page and CSP update. Once a month, ask ChatGPT, Perplexity, Gemini and Copilot the same twenty questions Pigsfield answers and record whether it is cited.
+6. Watch for DMCA notices in Search Console's Removals report and on Lumen. The films list publishes every PigBang film, including a few uploads on Dailymotion and Internet Archive; remove any entry that receives a valid notice.
+
 ## Build authority without search spam
 
 - Publish original, first-hand guides within Pigsfield's six existing pillars. Each guide should answer one real learner or citizen task completely, name its author or reviewer, explain how sources were checked and link to primary evidence.

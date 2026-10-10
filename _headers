@@ -21,10 +21,9 @@
   X-Frame-Options: DENY
   Cross-Origin-Opener-Policy: same-origin
   Permissions-Policy: accelerometer=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), usb=()
-  # 2 years, preload-eligible. Plain http:// currently answers 200 because the
-  # Worker's redirect at worker/index.mjs:342 only runs for /api/*; this makes a
-  # browser refuse http:// after its first visit. Turn on "Always Use HTTPS" in
-  # the Cloudflare dashboard to cover the very first one. See README.
+  # 2 years, preload-eligible: a browser refuses http:// after its first visit.
+  # The first visit is covered by Cloudflare's http->https redirect, which
+  # tools/check-production.mjs verifies after every deploy.
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   # Report-Only for now so a mistake cannot black out the site. Every origin below
   # is one the code actually contacts: youtube.com for the IFrame API in

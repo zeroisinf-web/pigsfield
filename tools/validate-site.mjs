@@ -3,18 +3,24 @@ import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { DESTINATIONS, TOPICS, build as buildTopics } from "./build-topics.mjs";
+import { DESTINATIONS, HINDI_PAIRS, HINDI_ROUTES, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
 import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
 import { ogCards, ogImageFor } from "./build-og.mjs";
+import { build as buildChrome } from "./build-chrome.mjs";
+import { EXAM_ROUTES } from "./build-exams.mjs";
+import { WATCH_ROUTES, build as buildWatch } from "./build-watch.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
 // Hubs and topic pages carry a social card of their own (tools/build-og.mjs); every other
 // page keeps the site card.
 const OG_ROUTES = new Set(ogCards().map((card) => card.route));
-const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(route) ? ogImageFor(route) : "assets/og.png"}`;
+// A Hindi page shares its English pair's card.
+const cardRoute = (route) => route.replace(/^\/hi\//, "/");
+const socialCardFor = (route) => `${SITE_ORIGIN}/${OG_ROUTES.has(cardRoute(route)) ? ogImageFor(cardRoute(route)) : "assets/og.png"}`;
+const isHindiRoute = (route) => route.startsWith("/hi/");
 const INDEX_ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/", { pageType: "WebPage", extraTypes: ["Organization", "WebSite"], breadcrumb: false }],
@@ -30,8 +36,16 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/submit/", { pageType: "ContactPage", breadcrumb: true }],
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
-  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
+  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...EXAM_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...WATCH_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...HINDI_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
+// Rich-result types Pigsfield cannot honestly claim: Google retired FAQ and HowTo results,
+// Course markup is for the course's own provider, and nothing here collects ratings.
+const BANNED_SCHEMA_TYPES = ["FAQPage", "HowTo", "Course", "AggregateRating", "Review"];
+// Words too common to show that a heading and a title are about the same thing.
+const STOP_WORDS = new Set(["free", "and", "the", "for", "with", "your", "from", "pigsfield", "india", "more", "resources", "what", "how"]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
 const DATA_MINIMUMS = { school: 171, teach: 23, tools: 32, govt: 40, pigbang: 500 };
 // YouTube *search* pages prove nobody checked a video. Each one replaced by a reviewed video
@@ -219,7 +233,7 @@ function checkHtml(file) {
   check(metaValue(metaTags, "og:description").length > 0, file, "missing og:description");
   check(metaValue(metaTags, "og:url") === expectedCanonical, file, `og:url must be ${expectedCanonical}`);
   check(metaValue(metaTags, "og:image") === socialCardFor(route), file, `og:image must be ${socialCardFor(route)}`);
-  if (OG_ROUTES.has(route)) check(fs.existsSync(path.join(ROOT, ogImageFor(route))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
+  if (OG_ROUTES.has(cardRoute(route))) check(fs.existsSync(path.join(ROOT, ogImageFor(cardRoute(route)))), file, `missing social card ${ogImageFor(route)}; run tools/build-og.mjs`);
   check(metaValue(metaTags, "twitter:card") === "summary_large_image", file, "twitter:card must be summary_large_image");
   check(metaValue(metaTags, "twitter:image") === socialCardFor(route), file, "twitter:image must match og:image");
   check(/(?:^|\/)assets\/pigsfield-icon-192\.png$/.test(icon?.href || ""), file, "favicon must use the optimized 192×192 Pigsfield icon");
@@ -276,7 +290,8 @@ function checkSeoContracts(files) {
     }
     check(metaValue(metaTags, "og:type") === "website", file, "og:type must be website");
     check(metaValue(metaTags, "og:site_name") === "Pigsfield", file, "og:site_name must be Pigsfield");
-    check(metaValue(metaTags, "og:locale") === "en_IN", file, "og:locale must be en_IN");
+    check(metaValue(metaTags, "og:locale") === (isHindiRoute(route) ? "hi_IN" : "en_IN"), file, `og:locale must be ${isHindiRoute(route) ? "hi_IN" : "en_IN"}`);
+    check(new RegExp(`<html\\b[^>]*\\blang="${isHindiRoute(route) ? "hi-IN" : "en-IN"}"`).test(html), file, `the document language must be ${isHindiRoute(route) ? "hi-IN" : "en-IN"}`);
     check(metaValue(metaTags, "og:url") === canonical, file, `og:url must match the canonical ${canonical}`);
     check(metaValue(metaTags, "og:image") === socialCardFor(route), file, "og:image must use the canonical social card URL");
     check(metaValue(metaTags, "og:image:width") === "1200" && metaValue(metaTags, "og:image:height") === "630", file, "Open Graph image dimensions must be 1200×630");
@@ -293,7 +308,8 @@ function checkSeoContracts(files) {
     const pageNode = nodes.find((node) => schemaTypes(node).includes(contract.pageType) && schemaUrl(node.url) === canonical);
     check(Boolean(pageNode), file, `JSON-LD must contain a ${contract.pageType} node for ${canonical}`);
     if (pageNode) {
-      check(pageNode.inLanguage === "en-IN", file, `${contract.pageType} JSON-LD must declare inLanguage en-IN`);
+      const language = isHindiRoute(route) ? "hi-IN" : "en-IN";
+      check(pageNode.inLanguage === language, file, `${contract.pageType} JSON-LD must declare inLanguage ${language}`);
       check(schemaUrl(pageNode.isPartOf) === `${SITE_ORIGIN}/#website`, file, `${contract.pageType} JSON-LD must belong to the Pigsfield WebSite entity`);
     }
 
@@ -644,7 +660,7 @@ function checkBrandContracts() {
     const html = fs.readFileSync(file, "utf8");
     for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
       const src = parseAttributes(match[0]).src || "";
-      if (/pigsfield-logo/i.test(src)) check(/pigsfield-logo-ui\.webp$/i.test(src), file, `visible Pigsfield logo must use the optimized WebP: ${src}`);
+      if (/pigsfield-logo/i.test(src)) check(/pigsfield-logo-ui\.webp(?:\?v=[a-f0-9]{12})?$/i.test(src), file, `visible Pigsfield logo must use the optimized WebP: ${src}`);
       if (/pigbang-logo/i.test(src)) check(/pigbang-logo-(?:nav|display)\.webp$/i.test(src), file, `visible PigBang logo must use an appropriately sized WebP: ${src}`);
     }
   }
@@ -870,8 +886,10 @@ function checkExperienceContracts() {
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
   check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
-  const examsPage = fs.readFileSync(path.join(ROOT, "exams", "index.html"), "utf8");
-  check(["exam-ias", "exam-ras", "exam-ncert-roadmap"].every((id) => examsPage.includes(`data-share="${id}"`)), path.join(ROOT, "exams", "index.html"), "each exam panel must offer a link to share it with a study group");
+  for (const [page, id] of [["upsc", "exam-ias"], ["ras", "exam-ras"], ["ncert-books-for-upsc-ras-ssc", "exam-ncert-roadmap"], ["ssc", "exam-common-subjects"]]) {
+    const examFile = path.join(ROOT, "exams", page, "index.html");
+    check(fs.readFileSync(examFile, "utf8").includes(`data-share="${id}"`), examFile, "each exam panel must offer a link to share it with a study group");
+  }
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
   const faqFile = path.join(ROOT, "index.html");
   check(/class=["']faq-list["'][^>]*data-accordion-scope/.test(fs.readFileSync(faqFile, "utf8")), faqFile, "expandable peers need an explicit accordion scope");
@@ -1064,6 +1082,87 @@ function checkYouTubeContract() {
   check(/\.player-frame\s*\{[^}]*min-height:\s*200px/i.test(css), cssFile, "mobile YouTube player must meet the documented 200px minimum height");
 }
 
+/** The contracts that decide whether a page can be found and understood without JavaScript. */
+function checkSearchContracts(files) {
+  const routes = new Map(files.map((file) => [routeFor(file), fs.readFileSync(file, "utf8")]));
+  const topicRoutes = new Set(TOPICS.map((topic) => topic.route));
+  const words = (value) => new Set(normalizedSeoText(value).toLocaleLowerCase("en-IN").split(/[^\p{L}\p{N}]+/u).filter((word) => word.length > 2 && !STOP_WORDS.has(word)));
+
+  for (const [route, html] of routes) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    const description = normalizedSeoText(metaValue(metas(html), "description"));
+    check(description.length >= 70 && description.length <= 160, file, `meta description should be 70-160 characters so it is neither padded nor cut off (${description.length})`);
+
+    for (const node of jsonLdNodes(parseJsonLd(html, file))) {
+      for (const type of schemaTypes(node)) check(!BANNED_SCHEMA_TYPES.includes(type), file, `JSON-LD must not claim ${type}; it earns no honest rich result here`);
+    }
+
+    // A heading that shares no word with the title is a slogan, and Google rewrites the
+    // result's title from headings like that.
+    const h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "").replace(/<[^>]+>/g, " ");
+    const title = (html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "").replace(/\|[^|]*$/, "");
+    if (topicRoutes.has(route) || /^\/(?:learn|skills|tools|exams|watch|rights|ai)\/$/.test(route)) {
+      const heading = words(h1);
+      check([...words(title)].some((word) => heading.has(word)), file, `the h1 "${normalizedSeoText(h1)}" shares no keyword with the title`);
+    }
+
+    if (topicRoutes.has(route)) {
+      check(/<p class="lede">(?!\s*<strong>\s*<\/strong>\s*<\/p>)[\s\S]*?\S[\s\S]*?<\/p>/.test(html), file, "topic page must open with a lede");
+      // Hindi-majority blocks must say so, for search engines and screen readers alike.
+      for (const match of html.matchAll(/<(h3|p|strong)\b([^>]*)>([^<]+)<\/\1>/g)) {
+        const text = match[3];
+        const devanagari = (text.match(/[\u0900-\u097F]/g) || []).length;
+        const latin = (text.match(/[A-Za-z]/g) || []).length;
+        if (devanagari > latin) check(/\blang="hi"/.test(match[2]), file, `Hindi text needs lang="hi": "${text.slice(0, 40)}"`);
+      }
+    }
+  }
+
+  // A page in two languages names both versions, and each names the other back.
+  const alternatesOf = (html) => new Map([...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)].map((match) => [match[1], match[2]]));
+  const paired = new Set(HINDI_PAIRS.flat());
+  for (const [route, html] of routes) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    const alternates = alternatesOf(html);
+    if (!paired.has(route)) {
+      check(!alternates.size, file, "only pages with a written translation may declare hreflang alternates");
+      continue;
+    }
+    const [english, hindi] = HINDI_PAIRS.find((pair) => pair.includes(route));
+    check(alternates.get("en-IN") === `${SITE_ORIGIN}${english}` && alternates.get("hi-IN") === `${SITE_ORIGIN}${hindi}` && alternates.get("x-default") === `${SITE_ORIGIN}${english}`, file, `hreflang must name ${english} (en-IN, x-default) and ${hindi} (hi-IN)`);
+    const other = routes.get(route === english ? hindi : english);
+    check(Boolean(other) && alternatesOf(other || "").get(route === english ? "en-IN" : "hi-IN") === `${SITE_ORIGIN}${route}`, file, `the other language's page must link back to ${route}`);
+  }
+
+  // Every route must be reachable from the homepage through plain links in the served HTML,
+  // and linked from at least two pages, without running any JavaScript.
+  const inbound = new Map([...routes.keys()].map((route) => [route, new Set()]));
+  const outbound = new Map();
+  for (const [route, html] of routes) {
+    const targets = new Set();
+    for (const match of html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)) {
+      const href = match[1];
+      if (/^(?:[a-z]+:|#|\/\/)/i.test(href)) continue;
+      const resolved = new URL(href, `${SITE_ORIGIN}${route}`);
+      const target = resolved.pathname.endsWith("/") ? resolved.pathname : `${resolved.pathname}/`;
+      if (target !== route && routes.has(target)) {
+        targets.add(target);
+        inbound.get(target).add(route);
+      }
+    }
+    outbound.set(route, targets);
+  }
+  const reached = new Set(["/"]);
+  const queue = ["/"];
+  while (queue.length) for (const next of outbound.get(queue.shift()) || []) if (!reached.has(next)) { reached.add(next); queue.push(next); }
+  for (const route of routes.keys()) {
+    const file = route === "/" ? path.join(ROOT, "index.html") : path.join(ROOT, route.slice(1), "index.html");
+    check(reached.has(route), file, `${route} cannot be reached from the homepage through links in the served HTML`);
+    if (route !== "/") check(inbound.get(route).size >= 2, file, `${route} is linked from only ${inbound.get(route).size} page(s) in the served HTML; it needs at least 2`);
+    check(REQUIRED_ROUTES.includes(route), file, `${route} exists on disk but is not in tools/routes.mjs, so it is missing from the sitemap`);
+  }
+}
+
 const htmlFiles = walk(ROOT, (file) => path.basename(file).toLowerCase() === "index.html");
 const discoveredRoutes = new Set(htmlFiles.map(routeFor));
 for (const route of REQUIRED_ROUTES) {
@@ -1072,6 +1171,7 @@ for (const route of REQUIRED_ROUTES) {
 }
 for (const file of htmlFiles) checkHtml(file);
 checkSeoContracts(htmlFiles);
+checkSearchContracts(htmlFiles);
 checkSeoInfrastructure();
 checkNotFoundPage();
 
@@ -1088,6 +1188,14 @@ checkNotFoundPage();
 
 for (const staleRoute of buildTopics({ check: true }).stale) {
   fail(path.join(ROOT, staleRoute.slice(1), "index.html"), `topic page is out of date with js/data/school.js — run "npm run build:topics"`);
+}
+
+for (const stalePage of buildWatch({ check: true }).stale) {
+  fail(path.join(ROOT, stalePage), 'PigBang list page is out of date with js/data/pigbang.js — run "npm run build:watch"');
+}
+
+for (const stalePage of buildChrome({ check: true }).stale) {
+  fail(path.join(ROOT, stalePage), 'header or footer is out of date with js/site.js — run "npm run build:chrome"');
 }
 
 const javascriptFiles = walk(ROOT, (file) => file.endsWith(".js"));

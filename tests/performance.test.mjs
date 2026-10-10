@@ -114,21 +114,38 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     // crawlers can read the UPSC, RAS, SSC and NCERT material, and the 60 KiB data script is
     // gone. Raw bytes rose with the repeated link markup; Brotli, what actually crosses the
     // network, barely moved.
-    ["exams/index.html", 595, 166],
+    // UPSC, RAS, the NCERT roadmap and the SSC subjects moved to their own pages, so the hub
+    // dropped from 595 KiB to the short panels plus a card for each guide.
+    ["exams/index.html", 347, 153],
+    ["exams/upsc/index.html", 402, 157],
+    ["exams/ras/index.html", 413, 157],
+    ["exams/ncert-books-for-upsc-ras-ssc/index.html", 325, 152],
+    ["exams/ssc/index.html", 405, 155],
     // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules, and
     // to 566 for the Liquid Glass layer and the phone tab bar.
-    ["watch/index.html", 566, 205],
+    // +6 KiB raw for the prerendered header and footer (tools/build-chrome.mjs).
+    ["watch/index.html", 572, 207],
+    // PigBang's crawlable lists carry every title as markup (tools/build-watch.mjs). They are
+    // long, but they load no catalogue data, no player and no artwork.
+    ["watch/channels/index.html", 484, 161],
+    ["watch/apps/index.html", 635, 172],
+    ["watch/films/index.html", 594, 171],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],
     ["privacy/index.html", 305, 146],
     ["submit/index.html", 300, 144],
-    ["ai/index.html", 330, 153],
+    // The studio's markup is now in the served HTML (tools/build-ai.mjs), so its tool logos
+    // count as direct references here. The browser fetched the same ~109 KiB of logos before,
+    // once js/ai-studio.js had drawn them; the HTML itself grew by 24 KiB raw, 2 KiB Brotli.
+    ["ai/index.html", 407, 200],
     // The generated topic pages carry the resources themselves, and still land well under
     // what the hub used to cost to list them.
     ["learn/nursery-to-class-5/index.html", 350, 148],
     ["learn/teacher-training/index.html", 352, 148],
-    ["rights/information-and-records/index.html", 317, 147]
+    ["rights/information-and-records/index.html", 317, 147],
+    // The Hindi pair carries the same resources with Hindi framing (tools/build-topics.mjs).
+    ["hi/rights/information-and-records/index.html", 320, 148]
   ];
 
   for (const [htmlFile, rawBudgetKiB, brotliBudgetKiB] of routes) {
@@ -194,7 +211,9 @@ test("runtime work is deferred and long collections skip offscreen rendering", (
   assert.match(site, /requestIdleCallback\(register,\s*\{\s*timeout:\s*4000\s*\}\)/, "service-worker installation must wait for idle time");
   assert.doesNotMatch(site.match(/function\s+init\(\)\s*\{([\s\S]*?)\n  \}/)?.[1] || "", /startTranslationObserver\(/, "English browsing must not run the translation observer");
   assert.match(site, /setLanguageState\("hi"\);\s*rememberLanguage\("hi"\);\s*startTranslationObserver\(\)/, "translation observation should start only after Hindi is chosen and remembered");
-  assert.match(site, /savedLanguage\(\)\s*===\s*"hi"\)\s*restoreSavedHindi\(\)/, "saved Hindi should restore without changing the page URL");
+  // A page already written in Hindi needs no machine translation; everywhere else the saved
+  // choice is restored in place, never by navigating.
+  assert.match(site, /savedLanguage\(\)\s*===\s*"hi"\s*&&\s*!nativeHindi\)\s*restoreSavedHindi\(\)/, "saved Hindi should restore without changing the page URL");
   assert.doesNotMatch(site, /Translator\.availability\(/, "native translator creation must remain in the user-activation path");
   assert.match(site, /SERVER_TRANSLATION_MAX_ITEMS\s*=\s*48[\s\S]{0,100}SERVER_TRANSLATION_MAX_CHARACTERS\s*=\s*10000/, "server translation batches must stay bounded");
   const summaryPinning = site.match(/function\s+pinActivatedSummary\([^)]*\)\s*\{([\s\S]*?)\n  \}\n\n  function setDetailsOpen/)?.[1] || "";
@@ -204,4 +223,5 @@ test("runtime work is deferred and long collections skip offscreen rendering", (
   assert.match(css, /\.exam-subject\s*\{[^}]*content-visibility:\s*auto/s);
   assert.match(css, /\.syllabus-item\s*\{[^}]*content-visibility:\s*auto/s);
   assert.match(css, /@media\s*\(max-width:\s*52rem\)[\s\S]*?\.site-header[\s\S]*?backdrop-filter:\s*none/, "mobile sticky surfaces must avoid expensive live blur");
+  assert.match(css, /\[data-site-header\]\s*\{[^}]*min-height:\s*var\(--header-h\)/, "the header mount must reserve its height before JavaScript draws it, or every page shifts");
 });
