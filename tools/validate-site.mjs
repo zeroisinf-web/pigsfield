@@ -9,6 +9,7 @@ import { renderSitemap } from "./build-sitemap.mjs";
 import { stamp as stampServiceWorker } from "./build-sw.mjs";
 import { ogCards, ogImageFor } from "./build-og.mjs";
 import { build as buildChrome } from "./build-chrome.mjs";
+import { EXAM_ROUTES } from "./build-exams.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -31,7 +32,8 @@ const ROUTE_SCHEMA_CONTRACT = new Map([
   ["/submit/", { pageType: "ContactPage", breadcrumb: true }],
   ["/accessibility/", { pageType: "WebPage", breadcrumb: true }],
   ["/privacy/", { pageType: "WebPage", breadcrumb: true }],
-  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }])
+  ...TOPICS.map((topic) => [topic.route, { pageType: "CollectionPage", breadcrumb: true }]),
+  ...EXAM_ROUTES.map((route) => [route, { pageType: "CollectionPage", breadcrumb: true }])
 ]);
 // Rich-result types Pigsfield cannot honestly claim: Google retired FAQ and HowTo results,
 // Course markup is for the course's own provider, and nothing here collects ratings.
@@ -876,8 +878,10 @@ function checkExperienceContracts() {
   const exams = fs.readFileSync(examsFile, "utf8");
   check(/class=["']exam-stack["'][^>]*data-accordion-scope/.test(exams), examsFile, "exam panels need a shared accordion scope");
   check(/UPSC\/ IAS Complete Foundation Course/.test(exams) && /RAS Complete Foundation Course/.test(exams), examsFile, "UPSC and RAS foundation-course labels are missing");
-  const examsPage = fs.readFileSync(path.join(ROOT, "exams", "index.html"), "utf8");
-  check(["exam-ias", "exam-ras", "exam-ncert-roadmap"].every((id) => examsPage.includes(`data-share="${id}"`)), path.join(ROOT, "exams", "index.html"), "each exam panel must offer a link to share it with a study group");
+  for (const [page, id] of [["upsc", "exam-ias"], ["ras", "exam-ras"], ["ncert-books-for-upsc-ras-ssc", "exam-ncert-roadmap"], ["ssc", "exam-common-subjects"]]) {
+    const examFile = path.join(ROOT, "exams", page, "index.html");
+    check(fs.readFileSync(examFile, "utf8").includes(`data-share="${id}"`), examFile, "each exam panel must offer a link to share it with a study group");
+  }
   check(!/(?:Expand all|Collapse all|data-expand-exams|<details\b[^>]*\sopen(?:\s|=|>))/i.test(exams), examsFile, "exam panels must all start closed and remain one-open");
   const faqFile = path.join(ROOT, "index.html");
   check(/class=["']faq-list["'][^>]*data-accordion-scope/.test(fs.readFileSync(faqFile, "utf8")), faqFile, "expandable peers need an explicit accordion scope");

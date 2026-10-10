@@ -114,9 +114,13 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     // crawlers can read the UPSC, RAS, SSC and NCERT material, and the 60 KiB data script is
     // gone. Raw bytes rose with the repeated link markup; Brotli, what actually crosses the
     // network, barely moved.
-    // +6 KiB raw (+1.3 KiB Brotli) when the header and footer were written into every page
-    // by tools/build-chrome.mjs, so the navigation is in the served HTML for crawlers.
-    ["exams/index.html", 602, 168],
+    // UPSC, RAS, the NCERT roadmap and the SSC subjects moved to their own pages, so the hub
+    // dropped from 595 KiB to the short panels plus a card for each guide.
+    ["exams/index.html", 347, 153],
+    ["exams/upsc/index.html", 402, 157],
+    ["exams/ras/index.html", 413, 157],
+    ["exams/ncert-books-for-upsc-ras-ssc/index.html", 325, 152],
+    ["exams/ssc/index.html", 405, 155],
     // Raised from 550 when the compact phone layout added ~9 KiB of phone-only rules, and
     // to 566 for the Liquid Glass layer and the phone tab bar.
     // +6 KiB raw for the prerendered header and footer (tools/build-chrome.mjs).

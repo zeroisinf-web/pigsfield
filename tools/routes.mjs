@@ -7,6 +7,7 @@
 // rules out that kind of trick. Bump a route here only when its content actually changed.
 
 import { TOPICS } from "./build-topics.mjs";
+import { EXAM_ROUTES } from "./build-exams.mjs";
 
 export const SITE_ORIGIN = "https://pigsfield.com";
 
@@ -21,7 +22,7 @@ export const ROUTES = [
   { path: "/rights/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.9" },
   { path: "/skills/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
   { path: "/tools/", lastmod: "2026-10-05", changefreq: HUB, priority: "0.8" },
-  { path: "/exams/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
+  { path: "/exams/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
   { path: "/watch/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
 
   // Generated topic pages. Slugs come from tools/build-topics.mjs, so a new topic reaches
@@ -30,6 +31,9 @@ export const ROUTES = [
   // searches, and they carry the actual resources.
   // Rights pages changed on 2026-10-09: civic tips moved to the right cards, two legal errors fixed.
   ...TOPICS.map((topic) => ({ path: topic.route, lastmod: topic.lastmod || (topic.dest === "rights" ? "2026-10-09" : topic.dest === "tools" ? "2026-10-05" : "2026-09-05"), changefreq: HUB, priority: "0.7" })),
+
+  // The exam guides split out of /exams/ on 2026-10-10.
+  ...EXAM_ROUTES.map((path) => ({ path, lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" })),
 
   { path: "/ai/", lastmod: "2026-10-05", changefreq: STATIC, priority: "0.7" },
   { path: "/about/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },

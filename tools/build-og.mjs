@@ -16,6 +16,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { DESTINATIONS, loadCatalog, sourceFor, topicPayload } from "./build-topics.mjs";
+import { EXAM_PAGES } from "./build-exams.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const OG_DIRECTORY = "assets/og";
@@ -52,7 +53,8 @@ export function ogCards(data = loadCatalog()) {
       art: art[destination.dest]
     };
   }));
-  return [...hubs, ...topics];
+  const exams = EXAM_PAGES.map((page) => ({ route: `/exams/${page.slug}/`, label: "Competitive Exams", title: `${page.name} guide`, subtitle: page.card, stat: "Free courses & books", art: "path-exams.svg" }));
+  return [...hubs, ...topics, ...exams];
 }
 
 const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -99,7 +101,9 @@ async function main() {
     console.error("Playwright is needed to draw the cards. Run with NODE_PATH pointing at a Playwright install.");
     process.exit(1);
   }
-  const cards = ogCards();
+  // --missing draws only cards that do not exist yet, so adding a page does not rewrite
+  // every other card's bytes.
+  const cards = ogCards().filter((card) => !process.argv.includes("--missing") || !fs.existsSync(path.join(ROOT, ogImageFor(card.route))));
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "pigsfield-og-"));
   fs.mkdirSync(path.join(ROOT, OG_DIRECTORY), { recursive: true });
   const browser = await chromium.launch();

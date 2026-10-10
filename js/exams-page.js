@@ -2,12 +2,14 @@
   "use strict";
 
   // Panel order, ids and titles. The ids are deep-link targets, so they must not change.
+  // A panel with a `page` has its own URL under /exams/ (written by tools/build-exams.mjs);
+  // the rest stay on the hub.
   const PANELS = [
-    { key: "roadmap", id: "exam-ncert-roadmap", title: "NCERT comparison roadmap", share: "Which NCERT books each exam needs, class by class." },
+    { key: "roadmap", id: "exam-ncert-roadmap", page: "ncert-books-for-upsc-ras-ssc", title: "NCERT comparison roadmap", share: "Which NCERT books each exam needs, class by class." },
     { key: "tests", id: "exam-mock-tests", title: "Mock tests and previous papers", share: "Free mock tests and previous papers in one list." },
-    { key: "common", id: "exam-common-subjects", title: "Common competitive-exam subjects", share: "Free courses and books for every common exam subject." },
-    { key: "ias", id: "exam-ias", title: "UPSC/ IAS Complete Foundation Course", share: "The whole UPSC syllabus with free courses, marathons and books for each paper." },
-    { key: "ras", id: "exam-ras", title: "RAS Complete Foundation Course", share: "The whole RAS syllabus with free courses, marathons and books for each paper." },
+    { key: "common", id: "exam-common-subjects", page: "ssc", title: "Common competitive-exam subjects", share: "Free courses and books for every common exam subject." },
+    { key: "ias", id: "exam-ias", page: "upsc", title: "UPSC/ IAS Complete Foundation Course", share: "The whole UPSC syllabus with free courses, marathons and books for each paper." },
+    { key: "ras", id: "exam-ras", page: "ras", title: "RAS Complete Foundation Course", share: "The whole RAS syllabus with free courses, marathons and books for each paper." },
     { key: "jee", id: "exam-jee", title: "JEE Main", share: "Free JEE Main preparation: official syllabus, past papers, free mock tests and courses.", optional: true },
     { key: "neet", id: "exam-neet", title: "NEET-UG", share: "Free NEET-UG preparation: official syllabus, past papers, free mock tests and courses.", optional: true },
     { key: "cuet", id: "exam-cuet", title: "CUET-UG", share: "Free CUET-UG preparation: official syllabus, past papers and free mock tests.", optional: true },
@@ -116,8 +118,8 @@
       return `<p>${escapeHtml(description)}</p>${body}`;
     }
 
-    function panelShell(definition, body) {
-      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"><summary><span>${escapeHtml(definition.title)}</span></summary><button class="card-tool card-share exam-share" type="button" data-share="${escapeHtml(definition.id)}" data-share-title="${escapeHtml(definition.title)}" data-share-text="${escapeHtml(definition.share)}" aria-label="Send ${escapeHtml(definition.title)} to your study group"></button><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
+    function panelShell(definition, body, open) {
+      return `<details class="exam-panel" id="${escapeHtml(definition.id)}" data-exam-panel="${escapeHtml(definition.key)}"${open ? " open" : ""}><summary><h2 class="exam-panel-heading">${escapeHtml(definition.title)}</h2></summary><button class="card-tool card-share exam-share" type="button" data-share="${escapeHtml(definition.id)}" data-share-title="${escapeHtml(definition.title)}" data-share-text="${escapeHtml(definition.share)}" aria-label="Send ${escapeHtml(definition.title)} to your study group"></button><div class="exam-panel-body">${typeof body === "string" ? body : ""}</div></details>`;
     }
 
     function renderRoadmap() {
@@ -254,15 +256,31 @@
     return {
       panelDefinitions,
       panelShell,
-      // Every panel with its body, all closed: what exams/index.html ships.
-      prerendered: () => `<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>${panelDefinitions.map((definition) => panelShell(definition, definition.render())).join("")}</div>`
+      // The panels with their bodies: closed on the hub, the one panel open on its own page.
+      prerendered: (keys, open) => `<div class="exam-stack" id="exam-sections" data-accordion-scope data-prerendered>${panelDefinitions.filter((definition) => !keys || keys.includes(definition.key)).map((definition) => panelShell(definition, definition.render(), open)).join("")}</div>`
     };
   }
 
   window.PF = window.PF || {};
   window.PF.examMarkup = createExamMarkup;
+  window.PF.examPanels = PANELS;
+
+  /* A link shared before UPSC, RAS, the NCERT roadmap and the SSC subjects moved to their own
+     pages still names the old anchor on /exams/. Send it to the page that holds it now. */
+  function relocatePanelHash() {
+    const root = document.getElementById("exam-root");
+    if (!root || root.dataset.examPage || !location.hash) return false;
+    let id;
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return false; }
+    const key = id.startsWith("ncert-") ? "roadmap" : id.startsWith("subject-") ? "common" : (PANELS.find((panel) => panel.id === id) || {}).key;
+    const panel = PANELS.find((candidate) => candidate.key === key && candidate.page);
+    if (!panel) return false;
+    location.replace(`${panel.page}/${location.hash}`);
+    return true;
+  }
 
   function initExamPage() {
+    if (relocatePanelHash()) return;
     const PF = window.PF;
     const data = window.PF_DATA && window.PF_DATA.exams;
     const root = document.getElementById("exam-root");
@@ -327,7 +345,7 @@
       requestAnimationFrame(() => target.scrollIntoView({ block: "center" }));
     }
 
-    window.addEventListener("hashchange", revealHashTarget);
+    window.addEventListener("hashchange", () => { if (!relocatePanelHash()) revealHashTarget(); });
     revealHashTarget();
   }
 

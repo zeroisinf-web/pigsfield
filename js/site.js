@@ -1453,11 +1453,11 @@
     const entries = [];
     (data.roadmap && data.roadmap.rows || []).forEach((row) => {
       const id = `ncert-${PF.slug(row.subject)}`;
-      entries.push({ title: `${row.subject} NCERT roadmap`, description: row.books || "UPSC, RAS and SSC reading path", section: "Competitive Exams", url: `${PF.path("exams")}#${id}`, haystack: JSON.stringify(row).toLowerCase() });
+      entries.push({ title: `${row.subject} NCERT roadmap`, description: row.books || "UPSC, RAS and SSC reading path", section: "Competitive Exams", url: `${PF.path("exams")}ncert-books-for-upsc-ras-ssc/#${id}`, haystack: JSON.stringify(row).toLowerCase() });
     });
     (data.common && data.common.subjects || []).forEach((subject) => {
       const id = `subject-${PF.slug(subject.subject)}`;
-      entries.push({ title: subject.subject, description: `${subject.exam || "Competitive Exams"} courses, marathons and books`, section: "Competitive Exams", url: `${PF.path("exams")}#${id}`, haystack: JSON.stringify(subject).toLowerCase() });
+      entries.push({ title: subject.subject, description: `${subject.exam || "Competitive Exams"} courses, marathons and books`, section: "Competitive Exams", url: `${PF.path("exams")}ssc/#${id}`, haystack: JSON.stringify(subject).toLowerCase() });
     });
     return entries;
   }

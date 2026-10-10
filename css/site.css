@@ -441,6 +441,7 @@ p { color: var(--ink-soft); }
 .faq-item,
 .exam-panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-strong); overflow: clip; }
 .faq-item > summary,
+.exam-panel-heading { margin: 0; font: inherit; letter-spacing: inherit; }
 .exam-panel > summary { display: grid; min-height: 4.5rem; align-items: center; grid-template-columns: 1fr auto; gap: 1rem; padding: 1.15rem 1.3rem; cursor: pointer; font-weight: 800; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 .faq-item > summary::after,
