@@ -1409,7 +1409,7 @@
   }
 
   function warmAIStudio() {
-    return loadScript("js/ai-studio.js?v=de6655b612fa");
+    return loadScript("js/ai-studio.js?v=d94e4b9a7dc0");
   }
 
   function openAIStudio(event) {

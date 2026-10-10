@@ -135,7 +135,10 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     ["accessibility/index.html", 300, 144],
     ["privacy/index.html", 305, 146],
     ["submit/index.html", 300, 144],
-    ["ai/index.html", 330, 153],
+    // The studio's markup is now in the served HTML (tools/build-ai.mjs), so its tool logos
+    // count as direct references here. The browser fetched the same ~109 KiB of logos before,
+    // once js/ai-studio.js had drawn them; the HTML itself grew by 24 KiB raw, 2 KiB Brotli.
+    ["ai/index.html", 407, 200],
     // The generated topic pages carry the resources themselves, and still land well under
     // what the hub used to cost to list them.
     ["learn/nursery-to-class-5/index.html", 350, 148],

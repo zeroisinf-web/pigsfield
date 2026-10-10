@@ -462,6 +462,8 @@
   PF.initAIStudio = init;
   PF.mountAIStudio = mountAIStudio;
   PF.aiStudio = { mount: mountAIStudio, close: closeAIStudio };
+  // tools/build-ai.mjs writes this into /ai/ so the tool directory is in the served HTML.
+  PF.aiStudioMarkup = STUDIO_MARKUP;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start, { once: true });
