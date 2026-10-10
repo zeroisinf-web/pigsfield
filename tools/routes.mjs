@@ -19,7 +19,7 @@ export const ROUTES = [
 
   { path: "/learn/", lastmod: "2026-09-05", changefreq: HUB, priority: "0.9" },
   { path: "/rights/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.9" },
-  { path: "/skills/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
+  { path: "/skills/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
   { path: "/tools/", lastmod: "2026-10-05", changefreq: HUB, priority: "0.8" },
   { path: "/exams/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
   { path: "/watch/", lastmod: "2026-10-09", changefreq: HUB, priority: "0.8" },
