@@ -974,13 +974,6 @@ body[data-page="watch"] {
 .hero-guide-mark { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 50%; background: var(--on-brand); color: var(--brand); }
 .hero-guide-mark::after { content: ""; position: absolute; inset: -.3rem; border: 2px solid color-mix(in srgb, var(--on-brand) 45%, transparent); border-radius: 50%; animation: guide-pulse 2.4s ease-out infinite; }
 .hero-guide-mark svg { width: 1.45rem; height: 1.45rem; margin-left: .15rem; fill: currentColor; }
-.hero-highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin: 0; padding: 0; list-style: none; }
-.hero-highlight { display: inline-flex; align-items: center; gap: .65rem; padding: .45rem 1.1rem .45rem .45rem; border: 1px solid var(--glass-rim-strong); border-radius: var(--radius-pill); background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-edge); color: var(--ink); font-size: .95rem; font-weight: 700; line-height: 1.2; text-align: left; text-decoration: none; transition: transform .18s ease, background .18s ease; }
-.hero-highlight:hover { transform: translateY(-2px); background: var(--glass-fill-strong); }
-.hero-highlight:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
-.hero-highlight-mark { display: grid; flex: 0 0 auto; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--paper); font-size: 1.15rem; }
-.hero-highlight-text { display: grid; gap: .1rem; }
-.hero-highlight small { color: var(--green); font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 @keyframes guide-pulse { from { opacity: 1; transform: scale(.9); } to { opacity: 0; transform: scale(1.25); } }
 .section { padding: clamp(3rem, 5.5vw, 5rem) 0; }
 .section.band { padding-top: 2rem; }
