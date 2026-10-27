@@ -254,7 +254,13 @@ export function topicPayload(source) {
         desc: item.desc || "",
         warning: item.warning || "",
         extra: (item.extra || []).filter((part) => part && part.text && part.text.replace(/[|\s]/g, "")),
-        urls: (item.links || []).flatMap((link) => (link.urls || []).map((url) => `${link.label || ""}|${url}`))
+        urls: (item.links || []).flatMap((link) => (link.urls || []).map((url) => `${link.label || ""}|${url}`)),
+        // A card that gathers several providers names each link and tags what it is for;
+        // cards with one provider carry no names, so their payload (and digest) is unchanged.
+        ...((item.links || []).some((link) => link.name)
+          ? { names: (item.links || []).flatMap((link) => (link.urls || []).map(() => (link.name ? { name: link.name, tag: link.tag || "" } : null))) }
+          : {}),
+        ...(item.symbol ? { symbol: item.symbol } : {})
       };
     })
   );
@@ -299,8 +305,9 @@ function sourceType(url, label) {
 
 const GENERIC_LABELS = new Set(["Web", "Website", "Official Website", "Official Step-by-Step Guide", "Resource Name", "YouTube", "YouTube Tutorial", "Tutorial", "App", "Apps", "सुझाव"]);
 
-/** Rectangular provider controls retain a visible label beside their mark. */
-function renderSource(pair, title) {
+/** Rectangular provider controls retain a visible label beside their mark. A named link
+ *  shows its provider's name, with a small tag saying what that provider is for. */
+function renderSource(pair, title, named) {
   const split = pair.indexOf("|");
   const label = pair.slice(0, split);
   const url = pair.slice(split + 1);
@@ -311,6 +318,14 @@ function renderSource(pair, title) {
   const attributes = `href="${esc(url)}" target="_blank" rel="noopener noreferrer"`;
   if (isTutorialSearch(url, label)) {
     return `<a class="link-button source-tutorial source-brand-youtube" ${attributes} aria-label="${esc(`Search YouTube for ${title} tutorials`)}" title="${esc(host)}">${sourceMark(url, "video")}<span class="source-label">Tutorial</span></a>`;
+  }
+  const tag = named && named.tag ? `<small class="source-tag">${esc(named.tag)}</small>` : "";
+  if (named && (type === "video" || type === "app")) {
+    const where = brand === "app" ? "the provider’s app page" : BRAND_NAMES[brand] || host;
+    return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} aria-label="${esc(`${type === "video" ? "Watch" : "Get"} ${named.name} on ${where}`)}" title="${esc(host)}">${mark}<span class="source-label">${esc(named.name)}${tag}</span></a>`;
+  }
+  if (named) {
+    return `<a class="link-button source-${type} source-brand-${brand}" ${attributes} title="${esc(host)}">${mark}<span class="source-label">${esc(named.name)}${tag}</span></a>`;
   }
   if (type === "video" || type === "app") {
     const where = brand === "app" ? "the provider’s app page" : BRAND_NAMES[brand] || host;
@@ -328,12 +343,12 @@ function renderSource(pair, title) {
  *  as "Not listed": on a phone each lane is its own row, so empty ones only add scrolling. */
 export function renderSources(item) {
   const lanes = { web: [], video: [], app: [] };
-  for (const pair of item.urls) {
+  item.urls.forEach((pair, index) => {
     const url = pair.slice(pair.indexOf("|") + 1);
     const type = sourceType(url, pair.slice(0, pair.indexOf("|")));
     const lane = isYouTubeSearch(url) ? "video" : type === "video" || type === "app" ? type : "web";
-    lanes[lane].push(renderSource(pair, item.title));
-  }
+    lanes[lane].push(renderSource(pair, item.title, item.names && item.names[index]));
+  });
   const filled = ["web", "video", "app"].filter((lane) => lanes[lane].length);
   if (!filled.length) return "";
   return `<div class="topic-sources lanes-${filled.length}">${filled
@@ -354,6 +369,7 @@ function renderExtra(extra, hindi = false) {
 /** The symbol a resource is drawn with: its organization's mark where one is known. It is
  *  resolved from the same table js/watch.js uses, so NCERT is the same 📚 everywhere. */
 export function resourceSymbol(item) {
+  if (item.symbol) return item.symbol;
   const urls = item.urls.map((pair) => pair.slice(pair.indexOf("|") + 1));
   const types = urls.map(classifySource);
   const type = types.includes("video") ? "video" : types.includes("app") ? "app" : types[0] || "website";

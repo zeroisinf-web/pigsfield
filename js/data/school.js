@@ -185,51 +185,22 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "Tic Tac Learn Hindi",
-       "desc": "Primary Kids - YouTube channel with fun Hindi lessons and activities for primary kids",
+       "title": "Tic Tac Learn Hindi & Khan Academy Hindi",
+       "desc": "Free Hindi YouTube lessons for primary kids - Tic Tac Learn Hindi: fun Hindi language lessons and activities | Khan Academy Hindi: NCERT-aligned lessons for Class 1–5",
        "resourceId": "tic-tac-learn-hindi-1-1-12",
        "links": [
         {
          "label": "YouTube",
+         "name": "Tic Tac Learn Hindi",
+         "tag": "Hindi language",
          "urls": [
           "https://youtube.com/@tictaclearnhindi"
          ]
-        }
-       ]
-      },
-      {
-       "title": "Pathyacharya",
-       "desc": "Study with AI (Class 1–5) - AI-powered study app aligned with NCERT curriculum for Class 1–5",
-       "resourceId": "pathyacharya-1-1-13",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.schooglink.curriculum.pathcharya"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Tiwari Academy",
-       "desc": "Free PDFs + Worksheets Nursery–Class 5 - Free NCERT solutions, worksheets and PDFs for Nursery to Class 5",
-       "resourceId": "tiwari-academy-1-1-14",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://www.tiwariacademy.com/ncert-solutions/nursery/"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Khan Academy Hindi",
-       "desc": "Class 1–5 NCERT Aligned - Khan Academy's free Hindi YouTube channel with NCERT lessons for Class 1–5",
-       "resourceId": "khan-academy-hindi-1-1-15",
-       "links": [
+        },
         {
          "label": "YouTube",
+         "name": "Khan Academy Hindi",
+         "tag": "NCERT lessons · Class 1–5",
          "urls": [
           "https://www.youtube.com/@khanacademyhindi"
          ]
@@ -237,25 +208,45 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "It's AumSum Time",
-       "desc": "Animated Science Class 3–5 - Animated science explanation videos for Class 3–5 on YouTube",
-       "resourceId": "it-s-aumsum-time-1-1-16",
+       "title": "Pathyacharya & Tiwari Academy",
+       "desc": "NCERT study help for Nursery–Class 5 - Pathyacharya: AI-powered study app aligned with NCERT for Class 1–5 | Tiwari Academy: free NCERT solutions, worksheets and PDFs",
+       "resourceId": "pathyacharya-1-1-13",
        "links": [
         {
-         "label": "YouTube",
+         "label": "Web",
+         "name": "Tiwari Academy",
+         "tag": "Worksheets & PDFs · Nursery–5",
          "urls": [
-          "https://www.youtube.com/@AumSum/playlists"
+          "https://www.tiwariacademy.com/ncert-solutions/nursery/"
+         ]
+        },
+        {
+         "label": "App",
+         "name": "Pathyacharya",
+         "tag": "AI study app · Class 1–5",
+         "urls": [
+          "https://play.google.com/store/apps/details?id=com.schooglink.curriculum.pathcharya"
          ]
         }
        ]
       },
       {
-       "title": "Peekaboo Kidz (Dr. Binocs)",
-       "desc": "Science & GK Animated - Dr. Binocs YouTube channel — fun animated science and GK for school students",
-       "resourceId": "peekaboo-kidz-dr-binocs-1-1-17",
+       "title": "It's AumSum Time & Peekaboo Kidz (Dr. Binocs)",
+       "desc": "Animated science videos - AumSum: science explained for Class 3–5 | Dr. Binocs (Peekaboo Kidz): fun science and GK",
+       "resourceId": "it-s-aumsum-time-1-1-16",
        "links": [
         {
          "label": "YouTube",
+         "name": "AumSum",
+         "tag": "Science · Class 3–5",
+         "urls": [
+          "https://www.youtube.com/@AumSum/playlists"
+         ]
+        },
+        {
+         "label": "YouTube",
+         "name": "Dr. Binocs",
+         "tag": "Science & GK",
          "urls": [
           "https://youtube.com/@peekaboo_kidz"
          ]
@@ -263,98 +254,73 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "Kutuki Kids Learning",
-       "desc": "Indian Content, Hindi - Indian learning app for young kids with Hindi content and activities",
+       "title": "Learning Apps, Games & Coding for Kids",
+       "desc": "Kutuki (pre-school, Hindi) · LogicLike (logic puzzles) · Duolingo ABC (English phonics & reading) · Math Buddy (maths, Class 1–5) · e-Learning for Kids (free browser games: maths, science, EVS) · Scratch (block coding, age 8+) · ScratchJr (coding for age 5–7, no reading needed)",
        "resourceId": "kutuki-kids-learning-1-1-18",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.soniqmantra.kutuki"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "LogicLike",
-       "desc": "Fun Learning Games - Learning games app that builds thinking and problem-solving skills in kids",
-       "resourceId": "logiclike-1-1-19",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.logicappkids"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Duolingo ABC",
-       "desc": "Phonics & Reading (English) - Fun phonics and reading practice app for early English learners",
-       "resourceId": "duolingo-abc-1-1-20",
-       "links": [
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.duolingo.literacy"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "Scratch MIT",
-       "desc": "Visual Block Coding (Age 8+) - MIT's free visual block coding platform — learn coding by making games and stories",
-       "resourceId": "scratch-mit-1-1-21",
+       "symbol": "🧩",
        "links": [
         {
          "label": "Web",
+         "name": "e-Learning for Kids",
+         "tag": "Maths · Science · EVS",
+         "urls": [
+          "https://www.e-learningforkids.org/"
+         ]
+        },
+        {
+         "label": "Web",
+         "name": "Scratch",
+         "tag": "Coding · Age 8+",
          "urls": [
           "https://scratch.mit.edu/"
          ]
-        }
-       ]
-      },
-      {
-       "title": "ScratchJr",
-       "desc": "Coding for Age 5–7 (Nursery/KG, No Reading Needed) - Web version of ScratchJr for teaching basic coding to young children",
-       "resourceId": "scratchjr-1-1-22",
-       "links": [
+        },
         {
          "label": "Web",
+         "name": "ScratchJr",
+         "tag": "Coding · Age 5–7",
          "urls": [
           "https://www.scratchjr.org/"
          ]
         },
         {
          "label": "App",
+         "name": "Kutuki",
+         "tag": "Pre-school · Hindi",
          "urls": [
-          "https://play.google.com/store/apps/details?id=org.scratchjr.android"
+          "https://play.google.com/store/apps/details?id=com.soniqmantra.kutuki"
          ]
-        }
-       ]
-      },
-      {
-       "title": "Math Buddy",
-       "desc": "Maths for Kids (Class 1–5) - Math practice app with games and activities for Class 1–5 students",
-       "resourceId": "math-buddy-1-1-23",
-       "links": [
+        },
         {
          "label": "App",
+         "name": "LogicLike",
+         "tag": "Logic & puzzles",
+         "urls": [
+          "https://play.google.com/store/apps/details?id=com.logicappkids"
+         ]
+        },
+        {
+         "label": "App",
+         "name": "Duolingo ABC",
+         "tag": "English phonics",
+         "urls": [
+          "https://play.google.com/store/apps/details?id=com.duolingo.literacy"
+         ]
+        },
+        {
+         "label": "App",
+         "name": "Math Buddy",
+         "tag": "Maths · Class 1–5",
          "urls": [
           "https://play.google.com/store/apps/details?id=com.mathbuddyai"
          ]
-        }
-       ]
-      },
-      {
-       "title": "e-Learning for Kids",
-       "desc": "Browser Games: Math, Science, EVS - Free browser-based learning games for Math, Science and EVS",
-       "resourceId": "e-learning-for-kids-1-1-24",
-       "links": [
+        },
         {
-         "label": "Web",
+         "label": "App",
+         "name": "ScratchJr",
+         "tag": "Coding · Age 5–7",
          "urls": [
-          "https://www.e-learningforkids.org/"
+          "https://play.google.com/store/apps/details?id=org.scratchjr.android"
          ]
         }
        ]
@@ -382,51 +348,39 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "Pebbles Hindi",
-       "desc": "Rhymes & Stories - YouTube channel with Hindi rhymes, poems and bedtime stories for kids",
+       "title": "Pebbles Hindi, Bodhaguru, ChuChu TV Hindi & ABC Tube TV",
+       "desc": "Rhymes, stories and first lessons on YouTube - Pebbles Hindi: Hindi rhymes, poems and bedtime stories | Bodhaguru: animated stories, GK and values in Hindi + English | ChuChu TV Hindi: nursery rhymes and songs | ABC Tube TV: alphabets, numbers and rhymes for tiny kids",
        "resourceId": "pebbles-hindi-1-1-26",
+       "symbol": "🎵",
        "links": [
         {
          "label": "YouTube",
+         "name": "Pebbles Hindi",
+         "tag": "Hindi rhymes & stories",
          "urls": [
           "https://youtube.com/@pebbleshindi"
          ]
-        }
-       ]
-      },
-      {
-       "title": "Bodhaguru",
-       "desc": "Stories, GK, Values (Hindi + English Animated) - Animated YouTube channel with stories, GK and value education in Hindi and English",
-       "resourceId": "bodhaguru-1-1-27",
-       "links": [
+        },
         {
          "label": "YouTube",
+         "name": "Bodhaguru",
+         "tag": "Stories, GK & values",
          "urls": [
           "https://youtube.com/@bodhaguru"
          ]
-        }
-       ]
-      },
-      {
-       "title": "ChuChu TV Hindi",
-       "desc": "Nursery Rhymes - Popular nursery rhyme and songs YouTube channel in Hindi for small kids",
-       "resourceId": "chuchu-tv-hindi-1-1-28",
-       "links": [
+        },
         {
          "label": "YouTube",
+         "name": "ChuChu TV Hindi",
+         "tag": "Nursery rhymes",
          "urls": [
           "https://youtube.com/@chuchutvhindi"
          ]
-        }
-       ]
-      },
-      {
-       "title": "ABC Tube TV",
-       "desc": "ABC, Numbers, Rhymes (Nursery) - YouTube channel with alphabets, numbers and nursery rhymes for tiny kids",
-       "resourceId": "abc-tube-tv-1-1-29",
-       "links": [
+        },
         {
          "label": "YouTube",
+         "name": "ABC Tube TV",
+         "tag": "ABC & numbers",
          "urls": [
           "https://youtube.com/@abctubetv"
          ]
