@@ -10,15 +10,16 @@ window.PF_DATA.school = {
      "title": "",
      "items": [
       {
-       "title": "NCERT Textbooks, Videos & Apps",
-       "desc": "Select Class → Subject → Download",
+       "title": "NCERT & RSCERT Textbooks, Videos & e-Jaadui Pitara",
+       "desc": "Select Class → Subject → Download | Rajasthan state board books & teachers' guides | e-Jaadui Pitara: play-based learning with toys, puzzles, flashcards, stories and AI bots (Katha Sakhi, Parent Tara, Teacher Tara) in 13 Indian languages",
+       "resourceId": "ncert-textbooks-videos-apps-1-1-1",
        "links": [
         {
          "label": "Web",
          "urls": [
           "https://ncert.nic.in/textbook.php",
-          "https://epathshala.nic.in/epathshala.php?ln=en",
-          "https://ncert.nic.in/"
+          "https://rajshaladarpan.rajasthan.gov.in/ShalaSamvad/Home/FreeTextBooks.aspx",
+          "https://ejaaduipitara.ncert.gov.in/"
          ]
         },
         {
@@ -26,37 +27,14 @@ window.PF_DATA.school = {
          "urls": [
           "https://www.youtube.com/@ncertofficial/playlists"
          ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://epathshala.nic.in/pages.php?id=download-app&ln=en"
-         ]
-        }
-       ]
-      },
-      {
-       "title": "RSCERT Textbooks",
-       "desc": "State board books, teachers' guides, Rajasthan curriculum",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://rajshaladarpan.rajasthan.gov.in/ShalaSamvad/Home/FreeTextBooks.aspx"
-         ]
         }
        ]
       },
       {
        "title": "Sampark Foundation",
        "desc": "Class 1–8 (Activity-Based) - Sampark Foundation YouTube channel with activity-based teaching for Class 1–8",
+       "resourceId": "sampark-foundation-1-1-3",
        "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://samparkfoundation.org/"
-         ]
-        },
         {
          "label": "YouTube",
          "urls": [
@@ -74,6 +52,7 @@ window.PF_DATA.school = {
       {
        "title": "Magnet Brains",
        "desc": "Free website with full video courses and NCERT solutions for Class 1–5\nFree Hindi YouTube channel with full video lessons from KG to Class 5\nFree app with full video courses from KG to Class 12 in Hindi medium",
+       "resourceId": "magnet-brains-1-1-4",
        "links": [
         {
          "label": "Web",
@@ -86,18 +65,13 @@ window.PF_DATA.school = {
          "urls": [
           "https://youtube.com/@magnetbrainseducation"
          ]
-        },
-        {
-         "label": "App",
-         "urls": [
-          "https://play.google.com/store/apps/details?id=com.magnet.magnetbrains"
-         ]
         }
        ]
       },
       {
        "title": "Ekaksha by Mission Gyan",
        "desc": "Highly recommended free YouTube channel with Class 1–5 video lessons",
+       "resourceId": "ekaksha-by-mission-gyan-1-1-5",
        "links": [
         {
          "label": "Web",
@@ -122,6 +96,7 @@ window.PF_DATA.school = {
       {
        "title": "Sesame Workshop India / Sesame Street",
        "desc": "Educational entertainment for young children from the makers of Sesame Street",
+       "resourceId": "sesame-workshop-india-sesame-street-1-1-6",
        "links": [
         {
          "label": "Web",
@@ -145,12 +120,15 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "Read Along by Google",
-       "desc": "AI Reading Buddy, Hindi + English - Google's AI-powered reading practice app available in Hindi and English",
+       "title": "StoryWeaver, Room to Read & Read Along",
+       "desc": "Free story books and reading practice in Hindi, English and other Indian languages - StoryWeaver (Pratham Books): 38,000+ stories in 300+ languages | Literacy Cloud (Room to Read): free online children's library | Read Along by Google: AI reading buddy",
+       "resourceId": "read-along-by-google-1-1-7",
        "links": [
         {
          "label": "Web",
          "urls": [
+          "https://storyweaver.org.in/",
+          "https://literacycloud.org/",
           "https://readalong.google.com/"
          ]
         },
@@ -165,6 +143,7 @@ window.PF_DATA.school = {
       {
        "title": "Arvind Gupta Toys",
        "desc": "DIY Science from Daily Objects (18 Languages) - DIY science videos using everyday objects in 18 Indian languages — YouTube channel",
+       "resourceId": "arvind-gupta-toys-1-1-8",
        "links": [
         {
          "label": "Web",
@@ -182,20 +161,9 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "StoryWeaver by Pratham",
-       "desc": "38,000+ Stories, 300+ Languages - Free download, Hindi, Rajasthani, all Indian languages",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://storyweaver.org.in/"
-         ]
-        }
-       ]
-      },
-      {
        "title": "Pratham",
        "desc": "FLN, Teacher Training Programmes (India-wide), PLP Teacher Learning Platform - Foundational Literacy & Numeracy implementation, Free teacher training courses, activity-based resources",
+       "resourceId": "pratham-1-1-10",
        "links": [
         {
          "label": "Web",
@@ -217,20 +185,9 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "e-Jaadui Pitara",
-       "desc": "Play-based learning: toys, puzzles, flashcards, stories | AI Bots: Katha Sakhi, Parent Tara, Teacher Tara — 13 Indian languages",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://ejaaduipitara.ncert.gov.in/"
-         ]
-        }
-       ]
-      },
-      {
        "title": "Tic Tac Learn Hindi",
        "desc": "Primary Kids - YouTube channel with fun Hindi lessons and activities for primary kids",
+       "resourceId": "tic-tac-learn-hindi-1-1-12",
        "links": [
         {
          "label": "YouTube",
@@ -243,6 +200,7 @@ window.PF_DATA.school = {
       {
        "title": "Pathyacharya",
        "desc": "Study with AI (Class 1–5) - AI-powered study app aligned with NCERT curriculum for Class 1–5",
+       "resourceId": "pathyacharya-1-1-13",
        "links": [
         {
          "label": "App",
@@ -255,6 +213,7 @@ window.PF_DATA.school = {
       {
        "title": "Tiwari Academy",
        "desc": "Free PDFs + Worksheets Nursery–Class 5 - Free NCERT solutions, worksheets and PDFs for Nursery to Class 5",
+       "resourceId": "tiwari-academy-1-1-14",
        "links": [
         {
          "label": "Web",
@@ -267,6 +226,7 @@ window.PF_DATA.school = {
       {
        "title": "Khan Academy Hindi",
        "desc": "Class 1–5 NCERT Aligned - Khan Academy's free Hindi YouTube channel with NCERT lessons for Class 1–5",
+       "resourceId": "khan-academy-hindi-1-1-15",
        "links": [
         {
          "label": "YouTube",
@@ -279,6 +239,7 @@ window.PF_DATA.school = {
       {
        "title": "It's AumSum Time",
        "desc": "Animated Science Class 3–5 - Animated science explanation videos for Class 3–5 on YouTube",
+       "resourceId": "it-s-aumsum-time-1-1-16",
        "links": [
         {
          "label": "YouTube",
@@ -291,6 +252,7 @@ window.PF_DATA.school = {
       {
        "title": "Peekaboo Kidz (Dr. Binocs)",
        "desc": "Science & GK Animated - Dr. Binocs YouTube channel — fun animated science and GK for school students",
+       "resourceId": "peekaboo-kidz-dr-binocs-1-1-17",
        "links": [
         {
          "label": "YouTube",
@@ -303,6 +265,7 @@ window.PF_DATA.school = {
       {
        "title": "Kutuki Kids Learning",
        "desc": "Indian Content, Hindi - Indian learning app for young kids with Hindi content and activities",
+       "resourceId": "kutuki-kids-learning-1-1-18",
        "links": [
         {
          "label": "App",
@@ -315,6 +278,7 @@ window.PF_DATA.school = {
       {
        "title": "LogicLike",
        "desc": "Fun Learning Games - Learning games app that builds thinking and problem-solving skills in kids",
+       "resourceId": "logiclike-1-1-19",
        "links": [
         {
          "label": "App",
@@ -327,6 +291,7 @@ window.PF_DATA.school = {
       {
        "title": "Duolingo ABC",
        "desc": "Phonics & Reading (English) - Fun phonics and reading practice app for early English learners",
+       "resourceId": "duolingo-abc-1-1-20",
        "links": [
         {
          "label": "App",
@@ -339,6 +304,7 @@ window.PF_DATA.school = {
       {
        "title": "Scratch MIT",
        "desc": "Visual Block Coding (Age 8+) - MIT's free visual block coding platform — learn coding by making games and stories",
+       "resourceId": "scratch-mit-1-1-21",
        "links": [
         {
          "label": "Web",
@@ -351,6 +317,7 @@ window.PF_DATA.school = {
       {
        "title": "ScratchJr",
        "desc": "Coding for Age 5–7 (Nursery/KG, No Reading Needed) - Web version of ScratchJr for teaching basic coding to young children",
+       "resourceId": "scratchjr-1-1-22",
        "links": [
         {
          "label": "Web",
@@ -369,6 +336,7 @@ window.PF_DATA.school = {
       {
        "title": "Math Buddy",
        "desc": "Maths for Kids (Class 1–5) - Math practice app with games and activities for Class 1–5 students",
+       "resourceId": "math-buddy-1-1-23",
        "links": [
         {
          "label": "App",
@@ -381,6 +349,7 @@ window.PF_DATA.school = {
       {
        "title": "e-Learning for Kids",
        "desc": "Browser Games: Math, Science, EVS - Free browser-based learning games for Math, Science and EVS",
+       "resourceId": "e-learning-for-kids-1-1-24",
        "links": [
         {
          "label": "Web",
@@ -393,6 +362,7 @@ window.PF_DATA.school = {
       {
        "title": "PM eVIDYA",
        "desc": "DTH + Digital Learning Class 1–5 - Free 24x7 educational channels, chapter-wise videos",
+       "resourceId": "pm-evidya-1-1-25",
        "links": [
         {
          "label": "Web",
@@ -414,6 +384,7 @@ window.PF_DATA.school = {
       {
        "title": "Pebbles Hindi",
        "desc": "Rhymes & Stories - YouTube channel with Hindi rhymes, poems and bedtime stories for kids",
+       "resourceId": "pebbles-hindi-1-1-26",
        "links": [
         {
          "label": "YouTube",
@@ -426,6 +397,7 @@ window.PF_DATA.school = {
       {
        "title": "Bodhaguru",
        "desc": "Stories, GK, Values (Hindi + English Animated) - Animated YouTube channel with stories, GK and value education in Hindi and English",
+       "resourceId": "bodhaguru-1-1-27",
        "links": [
         {
          "label": "YouTube",
@@ -438,6 +410,7 @@ window.PF_DATA.school = {
       {
        "title": "ChuChu TV Hindi",
        "desc": "Nursery Rhymes - Popular nursery rhyme and songs YouTube channel in Hindi for small kids",
+       "resourceId": "chuchu-tv-hindi-1-1-28",
        "links": [
         {
          "label": "YouTube",
@@ -450,6 +423,7 @@ window.PF_DATA.school = {
       {
        "title": "ABC Tube TV",
        "desc": "ABC, Numbers, Rhymes (Nursery) - YouTube channel with alphabets, numbers and nursery rhymes for tiny kids",
+       "resourceId": "abc-tube-tv-1-1-29",
        "links": [
         {
          "label": "YouTube",
@@ -462,6 +436,7 @@ window.PF_DATA.school = {
       {
        "title": "Parag (Tata Trusts)",
        "desc": "Early Childhood Literacy & Reading - Tata Trusts' YouTube channel for early childhood reading and literacy",
+       "resourceId": "parag-tata-trusts-1-1-30",
        "links": [
         {
          "label": "YouTube",
@@ -473,20 +448,9 @@ window.PF_DATA.school = {
        ]
       },
       {
-       "title": "Literacy Cloud (Room to Read)",
-       "desc": "Children's Books - Free online library with children's books in Hindi and other Indian languages",
-       "links": [
-        {
-         "label": "Web",
-         "urls": [
-          "https://literacycloud.org/"
-         ]
-        }
-       ]
-      },
-      {
        "title": "DIKSHA",
        "desc": "All subjects, Hindi & English, downloadable offline",
+       "resourceId": "diksha-1-1-32",
        "links": [
         {
          "label": "Web",

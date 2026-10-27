@@ -58,7 +58,7 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
 
   assert.equal(teacherTraining.resourceIdSection, 1);
   assert.equal(vocational.resourceIdSection, 2);
-  assert.ok(groupedItemCount(data.school) >= 171);
+  assert.ok(groupedItemCount(data.school) >= 167);
   // 23 since the misfiled duplicate of Rajasthan Sampark was merged into /rights/.
   assert.ok(groupedItemCount(data.teach) >= 23);
 
@@ -74,7 +74,9 @@ test("moved catalogs preserve their original resource ID section numbers", () =>
   }
   // 18 entries moved to AI Studio or were removed; four creative tools returned.
   // 2026-10-09: +10 state portal cards (/rights/your-state/) and +9 job and business portals (/skills/jobs-and-business/).
-  assert.equal(checked, 292, "every resource that has a page of its own must keep its id");
+  // 2026-10-27: Nursery to Class 5 merged RSCERT and e-Jaadui Pitara into the NCERT card, and
+  // StoryWeaver and Literacy Cloud into Read Along's card (-4); the rest keep their old ids.
+  assert.equal(checked, 288, "every resource that has a page of its own must keep its id");
 });
 
 test("every topic card shares a link to its own anchor", () => {
