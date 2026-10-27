@@ -35,7 +35,7 @@
   };
 
   const dataScripts = {
-    school: "js/data/school.js?v=a47e6021a411",
+    school: "js/data/school.js?v=aa75617b1d53",
     teach: "js/data/teach.js?v=95cc00147d76",
     tools: "js/data/tools.js?v=78e7d4748c46",
     exams: "js/data/exams.js?v=114c9f2cfdd8",
