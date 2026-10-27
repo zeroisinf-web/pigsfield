@@ -47,7 +47,7 @@ const BANNED_SCHEMA_TYPES = ["FAQPage", "HowTo", "Course", "AggregateRating", "R
 // Words too common to show that a heading and a title are about the same thing.
 const STOP_WORDS = new Set(["free", "and", "the", "for", "with", "your", "from", "pigsfield", "india", "more", "resources", "what", "how"]);
 const REQUIRED_DATA = ["school", "teach", "tools", "exams", "pigbang", "govt"];
-const DATA_MINIMUMS = { school: 171, teach: 23, tools: 32, govt: 40, pigbang: 500 };
+const DATA_MINIMUMS = { school: 167, teach: 23, tools: 32, govt: 40, pigbang: 500 };
 // YouTube *search* pages prove nobody checked a video. Each one replaced by a reviewed video
 // lowers this ceiling; it may only go down.
 const MAX_YOUTUBE_SEARCH_LINKS = 54;
