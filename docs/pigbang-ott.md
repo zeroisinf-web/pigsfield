@@ -10,15 +10,17 @@ Search composes with class, subject and free/paid filters. URLs preserve filters
 
 The source gives no prices for apps. These remain “Check provider.” Classes describe curriculum relevance, not age ratings. Search-result destinations are labeled “Find on provider,” never full-film playback. Providers may restrict availability by region or subscription.
 
+The user-requested Netflix addition **Nukkad Naatak (2026)** is stored separately in `js/data/pigbang-additions.json`, so reimporting the workbook preserves it. The live catalog therefore has 2,176 entries (1,698 films/shows). It appears in the home and movie spotlights, under Education, Economics: Poverty & Inequality, and Social Work: Child Rights & Protection. Higher education and teacher-training labels are editorial relevance judgments; the provider’s U/A 16+ rating is shown separately. Title/year/rating/availability were checked against [Netflix](https://www.netflix.com/in/title/82790150), with the [official Netflix India trailer](https://www.youtube.com/watch?v=2TdqzOU_YE0).
+
 ## Media coverage
 
-`js/data/pigbang-media.json` is the separately reviewed enrichment layer. It records promotional media sources, publishers, verification dates, a TED-Ed link correction, 11 verified trailer/preview URLs and local artwork for 24 titles/platforms/channels. Local images are optimized WebP files. The existing bounded, cached `/api/poster?u=` Worker retrieves real provider artwork for the rest of the catalog when cards enter view. If a provider blocks metadata access or publishes no image, the card keeps a readable title fallback.
+`js/data/pigbang-media.json` is the separately reviewed enrichment layer. It records promotional media sources, publishers, verification dates, a TED-Ed link correction, 12 verified trailer/preview URLs and local artwork for 25 titles/platforms/channels. Local images are optimized WebP files. The existing bounded, cached `/api/poster?u=` Worker retrieves real provider artwork for the rest of the catalog when cards enter view. If a provider blocks metadata access or publishes no image, the card keeps a readable title fallback.
 
 The workbook omits watch links for 537 films. Three of those have reviewed direct trailers in the enrichment layer. The other 534 provide explicitly labeled YouTube trailer searches. Those search links are discovery fallbacks and are not claimed to be verified trailers or full films. The remaining supplied provider links are preserved as catalog data; this change does not verify every provider's current regional availability.
 
 ## SEO
 
-All 2,175 titles and descriptions appear in crawlable category HTML, including without JavaScript. The landing page links to the complete category directories instead of repeating the full catalog. Each route has distinct titles/descriptions, canonical URLs, Open Graph/Twitter previews, CollectionPage/ItemList and breadcrumb structured data. The sitemap records the actual update date. No invented ratings, ownership claims or ranking guarantees are added.
+All 2,176 titles and descriptions appear in crawlable category HTML, including without JavaScript. The landing page links to the complete category directories instead of repeating the full catalog. Each route has distinct titles/descriptions, canonical URLs, Open Graph/Twitter previews, CollectionPage/ItemList and breadcrumb structured data. The sitemap records the actual update date. No invented ratings, ownership claims or ranking guarantees are added.
 
 ## Maintaining the catalog
 

@@ -33,6 +33,7 @@ const count = (module) => (module.sections || []).reduce((total, section) =>
 /** What each card says. Hubs are listed by hand; every topic page gets one from its data. */
 export function ogCards(data = loadCatalog()) {
   const pigbangCatalog = JSON.parse(fs.readFileSync(path.join(ROOT,"js/data/pigbang-catalog.json"),"utf8")).items;
+  pigbangCatalog.push(...JSON.parse(fs.readFileSync(path.join(ROOT,"js/data/pigbang-additions.json"),"utf8")).items);
   const pigbang = pigbangCatalog.length;
   const hubs = [
     { route: "/learn/", label: "Learning", title: "Nursery to PhD", subtitle: "From first letters to original research.", stat: `${count(data.school)} free resources`, art: "path-learn.svg" },

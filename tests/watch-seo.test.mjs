@@ -4,7 +4,7 @@ import test from 'node:test';
 import {categories, esc} from '../js/pigbang-core.mjs';
 
 const read = file => fs.readFileSync(new URL('../'+file,import.meta.url),'utf8');
-const rows = JSON.parse(read('js/data/pigbang-catalog.json')).items;
+const rows = [...JSON.parse(read('js/data/pigbang-catalog.json')).items,...JSON.parse(read('js/data/pigbang-additions.json')).items];
 
 test('every workbook title has a crawlable category anchor, description and original-source action', () => {
   for(const category of categories){
@@ -39,5 +39,15 @@ test('all browse pages have canonical collection metadata and mutually reachable
     assert.match(html,/<select[^>]* id="access"/);
     assert.match(html,/<option value="unknown">Check provider<\/option>/);
     assert.ok((html.match(/class="title-card"/g)||[]).length<=36,'first paint should not render thousands of poster cards');
+  }
+});
+
+test('Nukkad Naatak is the home and movie spotlight with official Netflix access', () => {
+  for(const route of ['watch/index.html','watch/films/index.html']){
+    const html=read(route);
+    const hero=html.match(/<section class="hero"[\s\S]*?<\/section>/)[0];
+    assert.match(hero,/<h1 id="hero-title">[\s\S]*?Nukkad Naatak<\/h1>/);
+    assert.ok(hero.includes('https://www.netflix.com/in/title/82790150'));
+    assert.ok(hero.includes('/assets/pigbang/nukkad-naatak.webp'));
   }
 });

@@ -108,3 +108,18 @@ test('the full workbook catalog retains all rows and source provenance', () => {
     assert.ok(Array.isArray(row.classes) && Array.isArray(row.subjects),row.title);
   }
 });
+
+test('user-added Netflix title keeps separate provenance, paid access and adult learning stages', () => {
+  const added=JSON.parse(fs.readFileSync(new URL('../js/data/pigbang-additions.json',import.meta.url),'utf8')).items;
+  const movie=added.find(x=>x.id==='movies-netflix-82790150');
+  assert.ok(movie);
+  assert.equal(movie.title,'Nukkad Naatak');
+  assert.equal(movie.watchUrl,'https://www.netflix.com/in/title/82790150');
+  assert.equal(movie.source.kind,'editorial');
+  assert.equal(movie.contentRating,'U/A 16+');
+  assert.equal(movie.access,'paid');
+  const rows=enrich(added);
+  assert.equal(filterItems(rows,{class:'Teacher Training',subject:'Education',access:'paid'})[0].id,movie.id);
+  assert.equal(filterItems(rows,{class:'0-5'}).length,0);
+  assert.equal(filterItems(rows,{access:'free'}).length,0);
+});

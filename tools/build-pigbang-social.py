@@ -2,7 +2,7 @@ from pathlib import Path
 from PIL import Image,ImageDraw,ImageFont,ImageEnhance
 ROOT=Path(__file__).resolve().parents[1]
 def font(size,bold=False):return ImageFont.truetype('C:/Windows/Fonts/arialbd.ttf' if bold else 'C:/Windows/Fonts/arial.ttf',size)
-for slug,title,count,art in [('watch','Learning, worth watching.','2,175 discoveries','our-planet'),('watch-films','Movies & shows','1,697 titles','planet-earth-ii'),('watch-apps','Games & apps','269 platforms','scratch'),('watch-channels','Channels','209 creators','ted-ed')]:
+for slug,title,count,art in [('watch','Learning, worth watching.','2,176 discoveries','nukkad-naatak'),('watch-films','Movies & shows','1,698 titles','nukkad-naatak'),('watch-apps','Games & apps','269 platforms','scratch'),('watch-channels','Channels','209 creators','ted-ed')]:
     im=Image.new('RGB',(1200,630),'#101112')
     picture=Image.open(ROOT/f'assets/pigbang/{art}.webp').convert('RGB')
     ratio=max(1200/picture.width,630/picture.height)

@@ -220,5 +220,16 @@
     "publisher": "Veritasium",
     "verifiedAt": "2026-10-28",
     "mediaKind": "Official publisher introduction thumbnail"
+  },
+  "Nukkad Naatak": {
+    "trailerUrl": "https://www.youtube.com/watch?v=2TdqzOU_YE0",
+    "trailerLabel": "Watch trailer",
+    "image": "/assets/pigbang/nukkad-naatak.webp",
+    "backdrop": "/assets/pigbang/nukkad-naatak.webp",
+    "sourceUrl": "https://www.youtube.com/watch?v=2TdqzOU_YE0",
+    "thumbnailUrl": "https://i.ytimg.com/vi/2TdqzOU_YE0/maxresdefault.jpg",
+    "publisher": "Netflix India",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail"
   }
 }
