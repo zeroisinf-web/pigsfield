@@ -1,19 +1,17 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
-import {levels,enrich} from '../js/pigbang-core.mjs';
+import {enrich} from '../js/pigbang-core.mjs';
 import {SPOTLIGHT_PICKS,spotlightEntries,createSpotlightRotation} from '../js/pigbang-spotlight.mjs';
 const read=name=>JSON.parse(fs.readFileSync(new URL('../js/data/'+name,import.meta.url),'utf8'));
 
-test('at least ten distinct catalog spotlights cover every learning stage with real artwork',()=>{
+test('the exact twelve requested spotlights retain their order, source stages and real artwork',()=>{
  const items=enrich([...read('pigbang-catalog.json').items,...read('pigbang-additions.json').items],read('pigbang-media.json'));
  const selected=spotlightEntries(items);
- assert.ok(selected.length>=10);
+ assert.deepEqual(selected.map(item=>item.title),["Nukkad Naatak","Cosmos: A Spacetime Odyssey","The Thinking Game","Dr. Stone","Breaking Bad","Scam 1992: The Harshad Mehta Story","Malgudi Days","Dr. Babasaheb Ambedkar","The Social Dilemma","Saattai","The Man Who Knew Infinity","Ship of Theseus"]);
  assert.equal(selected.length,SPOTLIGHT_PICKS.length);
  assert.equal(new Set(selected.map(x=>x.id)).size,selected.length);
  assert.equal(selected[0].title,'Nukkad Naatak');
- const represented=new Set(selected.flatMap(x=>x.spotlightClasses));
- for(const level of levels)assert.ok(represented.has(level),level+' needs a representative');
  for(const item of selected){
   assert.equal(item.category,'movies');
   assert.ok(item.spotlightClasses.length,item.title);

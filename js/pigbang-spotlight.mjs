@@ -1,18 +1,83 @@
-// Editorial spotlight picks use the catalog's existing learning-stage labels.
+// User-selected spotlight picks use the catalog's existing learning-stage labels.
 // A title can represent more than one stage without changing its source classification.
 export const SPOTLIGHT_PICKS = [
-  { title: 'Nukkad Naatak', forClasses: ['PG', 'Teacher Training'] },
-  { title: 'Our Planet', forClasses: ['0-5'] },
-  { title: 'Planet Earth II', forClasses: ['6-8'] },
-  { title: 'Cosmos: A Spacetime Odyssey', forClasses: ['Graduation (UG)'] },
-  { title: 'Hidden Figures', forClasses: ['9-12'] },
-  { title: 'The Biggest Little Farm', forClasses: ['Vocational & Skills'] },
-  { title: '13th', forClasses: ['PhD'] },
-  { title: 'The Social Dilemma', forClasses: ['9-12'] },
-  { title: 'Life on Our Planet', forClasses: ['6-8'] },
-  { title: 'David Attenborough: A Life on Our Planet', forClasses: ['9-12'] },
-  { title: 'Honeyland', forClasses: ['Graduation (UG)'] },
-  { title: 'Fantastic Fungi', forClasses: ['9-12'] }
+  {
+    "title": "Nukkad Naatak",
+    "forClasses": [
+      "PG",
+      "Teacher Training"
+    ]
+  },
+  {
+    "title": "Cosmos: A Spacetime Odyssey",
+    "forClasses": [
+      "Graduation (UG)"
+    ]
+  },
+  {
+    "title": "The Thinking Game",
+    "forClasses": [
+      "Graduation (UG)"
+    ]
+  },
+  {
+    "title": "Dr. Stone",
+    "forClasses": [
+      "6-8"
+    ]
+  },
+  {
+    "title": "Breaking Bad",
+    "forClasses": [
+      "PG",
+      "PhD"
+    ]
+  },
+  {
+    "title": "Scam 1992: The Harshad Mehta Story",
+    "forClasses": [
+      "Graduation (UG)",
+      "PG"
+    ]
+  },
+  {
+    "title": "Malgudi Days",
+    "forClasses": [
+      "0-5",
+      "6-8"
+    ]
+  },
+  {
+    "title": "Dr. Babasaheb Ambedkar",
+    "forClasses": [
+      "9-12",
+      "Graduation (UG)"
+    ]
+  },
+  {
+    "title": "The Social Dilemma",
+    "forClasses": [
+      "9-12"
+    ]
+  },
+  {
+    "title": "Saattai",
+    "forClasses": [
+      "Teacher Training"
+    ]
+  },
+  {
+    "title": "The Man Who Knew Infinity",
+    "forClasses": [
+      "Graduation (UG)"
+    ]
+  },
+  {
+    "title": "Ship of Theseus",
+    "forClasses": [
+      "PG"
+    ]
+  }
 ];
 
 export function spotlightEntries(items) {

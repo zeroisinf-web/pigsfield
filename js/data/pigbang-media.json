@@ -242,5 +242,102 @@
     "verificationUrl": "https://about.netflix.com/en/news/free-educational-documentaries",
     "mediaKind": "Official full-feature thumbnail",
     "verificationNote": "YouTube oEmbed confirms the title 13TH | FULL FEATURE | Netflix and author Netflix; Netflix news lists 13th among its educational films made available on its YouTube channel."
+  },
+  "The Thinking Game": {
+    "image": "/assets/pigbang/the-thinking-game.webp",
+    "backdrop": "/assets/pigbang/the-thinking-game.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=1Jld_rBomp0",
+    "thumbnailUrl": "https://i.ytimg.com/vi/1Jld_rBomp0/maxresdefault.jpg",
+    "publisher": "Google DeepMind",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail",
+    "trailerUrl": "https://www.youtube.com/watch?v=1Jld_rBomp0",
+    "trailerLabel": "Watch trailer",
+    "verificationUrl": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/the-thinking-game/"
+  },
+  "Dr. Stone": {
+    "image": "/assets/pigbang/dr-stone.webp",
+    "backdrop": "/assets/pigbang/dr-stone.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=2ei4KpfCOAI",
+    "thumbnailUrl": "https://i.ytimg.com/vi/2ei4KpfCOAI/maxresdefault.jpg",
+    "publisher": "TOHO animation",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail",
+    "trailerUrl": "https://www.youtube.com/watch?v=2ei4KpfCOAI",
+    "trailerLabel": "Watch trailer",
+    "verificationUrl": "https://www.viu.com/ott/id/articles/sinopsis-dr-stone/"
+  },
+  "Breaking Bad": {
+    "image": "/assets/pigbang/breaking-bad.webp",
+    "backdrop": "/assets/pigbang/breaking-bad.webp",
+    "artworkSourceUrl": "https://www.sonypictures.com/tv/breakingbad",
+    "thumbnailUrl": "https://www.sonypictures.com/sites/default/files/banner-images/2023-12/breakingbad_banner_2572x1100.jpg",
+    "publisher": "Sony Pictures Television",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official publisher series banner"
+  },
+  "Scam 1992: The Harshad Mehta Story": {
+    "trailerUrl": "https://www.youtube.com/watch?v=ISORfez27og",
+    "trailerLabel": "Watch trailer",
+    "image": "/assets/pigbang/scam-1992.webp",
+    "backdrop": "/assets/pigbang/scam-1992.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=ISORfez27og",
+    "thumbnailUrl": "https://i.ytimg.com/vi/ISORfez27og/maxresdefault.jpg",
+    "publisher": "Sony LIV",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail"
+  },
+  "Saattai": {
+    "trailerUrl": "https://www.youtube.com/watch?v=uE93hDgpsHQ",
+    "trailerLabel": "Watch trailer",
+    "image": "/assets/pigbang/saattai.webp",
+    "backdrop": "/assets/pigbang/saattai.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=uE93hDgpsHQ",
+    "thumbnailUrl": "https://i.ytimg.com/vi/uE93hDgpsHQ/maxresdefault.jpg",
+    "publisher": "AP International",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail"
+  },
+  "The Man Who Knew Infinity": {
+    "trailerUrl": "https://www.youtube.com/watch?v=Jji1zSwxstU",
+    "trailerLabel": "Watch trailer",
+    "image": "/assets/pigbang/the-man-who-knew-infinity.webp",
+    "backdrop": "/assets/pigbang/the-man-who-knew-infinity.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=Jji1zSwxstU",
+    "thumbnailUrl": "https://i.ytimg.com/vi/Jji1zSwxstU/maxresdefault.jpg",
+    "publisher": "Independent Film Company",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail"
+  },
+  "Ship of Theseus": {
+    "trailerUrl": "https://www.youtube.com/watch?v=p5xt0cKasDw",
+    "trailerLabel": "Watch trailer",
+    "image": "/assets/pigbang/ship-of-theseus.webp",
+    "backdrop": "/assets/pigbang/ship-of-theseus.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=p5xt0cKasDw",
+    "thumbnailUrl": "https://i.ytimg.com/vi/p5xt0cKasDw/hqdefault.jpg",
+    "publisher": "UTV Motion Pictures",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Official promotional trailer thumbnail"
+  },
+  "Malgudi Days": {
+    "image": "/assets/pigbang/malgudi-days.webp",
+    "backdrop": "/assets/pigbang/malgudi-days.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=_90d3_F91Ig",
+    "thumbnailUrl": "https://i.ytimg.com/vi/_90d3_F91Ig/maxresdefault.jpg",
+    "publisher": "MalgudiDays",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Catalog episode thumbnail verified with publisher metadata",
+    "verificationNote": "Title and verified publisher checked on the YouTube episode page; oEmbed was unavailable during verification."
+  },
+  "Dr. Babasaheb Ambedkar": {
+    "image": "/assets/pigbang/dr-babasaheb-ambedkar.webp",
+    "backdrop": "/assets/pigbang/dr-babasaheb-ambedkar.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=DStZBBfmPmE",
+    "thumbnailUrl": "https://i.ytimg.com/vi/DStZBBfmPmE/hqdefault.jpg",
+    "publisher": "Ultra Marathi",
+    "verifiedAt": "2026-10-28",
+    "mediaKind": "Distributor archival trailer thumbnail",
+    "verificationNote": "Indexed distributor trailer description names Mammootty, Mohan Gokhale, Sonali Kulkarni and director Jabbar Patel, identifying the 2000 feature film. Thumbnail fetched successfully; video playback currently cannot be verified (oEmbed returned 401), so no direct trailer action is claimed."
   }
 }
