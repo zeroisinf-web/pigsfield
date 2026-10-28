@@ -127,10 +127,11 @@ test("each route keeps its directly referenced payload within a mobile-safe ceil
     ["watch/index.html", 572, 207],
     // PigBang now contains 1,697 films (up from the smaller legacy catalog).
     // Their full crawlable descriptions stay in HTML; only visible artwork is eager.
+    // +2 KiB compressed allows the class-dependent selector and 12-title spotlight controls.
     // Other section budgets remain below their old ceilings.
     ["watch/channels/index.html", 484, 161],
     ["watch/apps/index.html", 635, 172],
-    ["watch/films/index.html", 1150, 310],
+    ["watch/films/index.html", 1150, 312],
     ["about/index.html", 303, 145],
     ["editorial/index.html", 300, 144],
     ["accessibility/index.html", 300, 144],

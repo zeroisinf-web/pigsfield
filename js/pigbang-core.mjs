@@ -36,6 +36,17 @@ export function filterItems(items, state) {
     (!state.subject || x.subjects.includes(state.subject) || x.disciplines.includes(state.subject)) && (!state.access || x.access === state.access) &&
     (!state.saved || state.savedIds?.has(x.id)) && terms.every(t => x.haystack.includes(t)));
 }
+export function availableSubjects(items, state = {}) {
+  const matching = items.filter(item =>
+    (!state.category || item.category === state.category) &&
+    (!state.class || item.classes.includes(state.class))
+  );
+  const disciplines = [...new Set(matching.flatMap(item => item.disciplines))].sort();
+  const broad = new Set(disciplines);
+  const topics = [...new Set(matching.flatMap(item => item.subjects))]
+    .filter(subject => !broad.has(subject)).sort();
+  return { disciplines, topics };
+}
 export const accessLabel = item => item.access === 'free' ? 'Free' : item.access === 'paid' ? 'Paid' : 'Check provider';
 export function action(item) {
   if (item.watchUrl) return {url:item.watchUrl, label:isSearch(item.watchUrl) ? 'Find on provider' : item.category === 'apps' ? 'Open app' : item.category === 'channels' ? 'Visit channel' : videoId(item.watchUrl) ? 'Watch now' : 'Watch on provider', kind:!isSearch(item.watchUrl) && videoId(item.watchUrl) ? 'video' : 'external'};
