@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { DESTINATIONS, HINDI_PAIRS, HINDI_ROUTES, TOPICS, build as buildTopics } from "./build-topics.mjs";
 import { REQUIRED_ROUTES, SITEMAP_LASTMOD, SITE_ORIGIN } from "./routes.mjs";
@@ -11,6 +12,7 @@ import { ogCards, ogImageFor } from "./build-og.mjs";
 import { build as buildChrome } from "./build-chrome.mjs";
 import { EXAM_ROUTES } from "./build-exams.mjs";
 import { WATCH_ROUTES, build as buildWatch } from "./build-watch.mjs";
+import { posterTarget } from "../worker/poster.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
@@ -183,6 +185,15 @@ function checkLocalReference(file, rawValue) {
   const value = decodeAttribute(rawValue.trim());
   if (!value || value.startsWith("#") || value.startsWith("//")) return;
   if (/^(?:https?:|mailto:|tel:|sms:|upi:|data:|blob:|javascript:)/i.test(value)) return;
+
+  // Cover images are served by the bounded same-origin Worker, not a disk file.
+  // Only its exact route and a valid public source URL qualify for this exemption.
+  if (value.startsWith("/api/poster?")) {
+    const request = new URL(value, SITE_ORIGIN);
+    check(request.pathname === "/api/poster" && [...request.searchParams.keys()].length === 1 && Boolean(posterTarget(request.searchParams.get("u"))), file, `invalid poster reference: ${rawValue}`);
+    localReferenceCount += 1;
+    return;
+  }
 
   const withoutFragment = value.split("#", 1)[0].split("?", 1)[0];
   if (!withoutFragment) return;
@@ -406,7 +417,10 @@ function parseJavaScript(files) {
   for (const file of files) {
     const source = fs.readFileSync(file, "utf8");
     try {
-      new vm.Script(source, { filename: relative(file) });
+      if (file === path.join(ROOT, "js", "watch.js")) {
+        const parsed = spawnSync(process.execPath, ["--input-type=module", "--check"], { input: source, encoding: "utf8" });
+        if (parsed.status !== 0) throw new Error(parsed.stderr || "Module could not be parsed");
+      } else new vm.Script(source, { filename: relative(file) });
     } catch (error) {
       fail(file, `JavaScript syntax error: ${error.message}`);
     }
@@ -794,9 +808,9 @@ function checkExperienceContracts() {
 
   const watchPageFile = path.join(ROOT, "watch", "index.html");
   const watchPage = fs.readFileSync(watchPageFile, "utf8");
-  check(/id=["']watch-count["'][^>]*role=["']status["'][^>]*aria-live=["']polite["']/.test(watchPage), watchPageFile, "PigBang result count must announce filter changes");
+  check(/id=["']result-count["'][^>]*role=["']status["'][^>]*aria-live=["']polite["']/.test(watchPage), watchPageFile, "PigBang result count must announce filter changes");
 
-  for (const name of ["watch.js", "exams-page.js"]) {
+  for (const name of ["exams-page.js"]) {
     const file = path.join(ROOT, "js", name);
     const source = fs.readFileSync(file, "utf8");
     const providerAnchors = [...source.matchAll(/<a\b[^>]*class=["'][^"']*\blink-button\b[^"']*["'][^>]*>/g)].map((match) => match[0]);
@@ -810,14 +824,6 @@ function checkExperienceContracts() {
     check(/a\[data-youtube-play\]/.test(source), file, "supported YouTube anchors must retain optional in-site playback");
     check(/event\.button\s*!==\s*0/.test(source) && /event\.ctrlKey/.test(source) && /event\.metaKey/.test(source) && /event\.shiftKey/.test(source) && /event\.altKey/.test(source), file, "modified and non-primary link activation must remain browser-native");
     check(/event\.preventDefault\(\)[\s\S]{0,160}PF\.YouTube\.play\(anchor\.href/.test(source), file, "only plain YouTube activation should open the in-site player");
-    if (name !== "exams-page.js") {
-      const symbolRenderer = source.match(/function\s+watchSymbol\(entry\)\s*\{([\s\S]*?)\n  \}/)?.[1] || "";
-      check(/PF\.resourceSymbolFor\s*\(/.test(symbolRenderer), file, "card renderer must use the shared deterministic resource symbol resolver");
-      check(/\btitle\s*:/.test(symbolRenderer) && /\burls\s*:/.test(symbolRenderer) && /\btype\s*:|\btype\s*\n/.test(symbolRenderer), file, "shared symbol resolver needs canonical title, original URLs and resource type");
-      check(!/(?:entry\.id|itemIndex|sectionIndex|groupIndex)/.test(symbolRenderer), file, "card indexes must never seed resource symbols");
-      check(!/(?:installResourceEmojiPicker|function\s+resourceEmoji)/.test(source), file, "page modules must not duplicate the shared symbol mapping");
-      check((source.match(/resource-emoji-card/g) || []).length === 1, file, "each card renderer must emit exactly one content symbol");
-    }
     check(!/(?:\bsource-action\b|\bresource-scene\b|\bwatch-scene\b|\bwatch-initials\b|\bresource-emoji-inline\b)/.test(source), file, "provider controls and cards must not emit duplicate symbols");
   }
 
@@ -869,9 +875,12 @@ function checkExperienceContracts() {
 
   const watchFile = path.join(ROOT, "watch", "index.html");
   const watchSource = fs.readFileSync(watchFile, "utf8");
-  check(/id=["']watch-billboard["']/.test(watchSource) && /id=["']watch-rows["']/.test(watchSource), watchFile, "PigBang needs its billboard and its shelves");
+  check(/class=["']hero["']/.test(watchSource) && /id=["']browse-shelves["']/.test(watchSource), watchFile, "PigBang needs its featured title and its shelves in the served HTML");
   const watchRuntime = fs.readFileSync(path.join(ROOT, "js", "watch.js"), "utf8");
-  check(/function shelves\(/.test(watchRuntime) && /IntersectionObserver/.test(watchRuntime), path.join(ROOT, "js", "watch.js"), "PigBang shelves must exist and fill lazily");
+  const watchCore = fs.readFileSync(path.join(ROOT, "js", "pigbang-core.mjs"), "utf8");
+  check(/loading=["']\$\{eager\?/.test(watchCore) && /loading=["']lazy["']/.test(watchSource), watchFile, "PigBang shelf artwork must load lazily");
+  check(/filterItems/.test(watchRuntime) && /pigbang-core\.mjs/.test(watchRuntime), path.join(ROOT, "js", "watch.js"), "PigBang runtime must use the tested shared filter and card logic");
+  for (const id of ["class", "subject", "access"]) check(new RegExp(`<select[^>]*id="${id}"`).test(watchSource), watchFile, `PigBang needs a labelled ${id} filter`);
 
   const laneBuilder = fs.readFileSync(path.join(ROOT, "tools", "build-topics.mjs"), "utf8");
   check(/topic-lane-\$\{lane\}/.test(laneBuilder) && /\["web", "video", "app"\]/.test(laneBuilder), path.join(ROOT, "tools", "build-topics.mjs"), "provider links must be laid out as web, video and app lanes");

@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "id": "movies-netflix-82790150",
+      "slug": "nukkad-naatak-movies-netflix-82790150",
+      "title": "Nukkad Naatak",
+      "year": "2026",
+      "format": "Film",
+      "category": "movies",
+      "origin": "India",
+      "subjects": [
+        "Education",
+        "Economics: Poverty & Inequality",
+        "Social Work: Child Rights & Protection"
+      ],
+      "disciplines": [
+        "Education",
+        "Economics",
+        "Social Work"
+      ],
+      "classes": [
+        "Graduation (UG)",
+        "PG",
+        "Teacher Training"
+      ],
+      "description": "Two college friends help children living in poverty enter school, prompting discussion about education access, inequality and social responsibility.",
+      "topics": [
+        "Access to schooling",
+        "Educational inequality",
+        "Social responsibility"
+      ],
+      "contentRating": "U/A 16+",
+      "rating": null,
+      "inclusionReason": "User-requested addition; educational relevance and learning stages are editorial classifications.",
+      "sourceUrl": "https://www.netflix.com/in/title/82790150",
+      "watchUrl": "https://www.netflix.com/in/title/82790150",
+      "watchLinkKind": "provider",
+      "access": "paid",
+      "accessLabel": "Paid",
+      "thumbnail": null,
+      "trailerUrl": null,
+      "source": {
+        "kind": "editorial",
+        "url": "https://www.netflix.com/in/title/82790150",
+        "addedAt": "2026-10-28",
+        "requestedBy": "user"
+      }
+    }
+  ]
+}

@@ -333,3 +333,7 @@ Stamping runs to a fixed point: versioning `js/ai-studio.js` changes its own con
 `js/site.js` refers to, which every page refers to. Adding a new reference needs nothing but
 the bare path — the build stamps it, and `tools/validate-site.mjs` reports any that is
 missing or stale.
+
+## PigBang educational OTT rebuild
+
+The workbook-based OTT implementation, media coverage, and import/build instructions are documented in [docs/pigbang-ott.md](docs/pigbang-ott.md).

@@ -102,19 +102,10 @@ test("card indexes and legacy seeds cannot affect resource identity", () => {
   assert.equal(PF.resourceEmoji("Mathematics practice", "resource-1", "video"), PF.resourceEmoji("Mathematics practice", "resource-999", "video"));
 });
 
-test("PigBang uses the shared resolver and emits one main content symbol", () => {
-  const renderers = [
-    ["watch.js", "watchSymbol"]
-  ];
-
-  for (const [fileName, functionName] of renderers) {
-    const source = readSource("js", fileName);
-    const body = source.match(new RegExp(`function\\s+${functionName}\\(entry\\)\\s*\\{([\\s\\S]*?)\\n  \\}`))?.[1] || "";
-    assert.match(body, /PF\.resourceSymbolFor\s*\(/, `${fileName} must use the shared resolver`);
-    assert.match(body, /\btitle\s*:/, `${fileName} must provide a canonical title`);
-    assert.match(body, /\burls\s*:/, `${fileName} must provide original URLs`);
-    assert.doesNotMatch(body, /entry\.id|itemIndex|sectionIndex|groupIndex/, `${fileName} must not seed symbols with card position`);
-    assert.equal((source.match(/resource-emoji-card/g) || []).length, 1, `${fileName} must emit one main content symbol`);
-    assert.doesNotMatch(source, /installResourceEmojiPicker|function\s+resourceEmoji/, `${fileName} must not duplicate the shared mapping`);
-  }
+test("PigBang artwork keeps a readable title fallback rather than inventing cover symbols", () => {
+  const source = readSource("js", "pigbang-core.mjs");
+  assert.match(source, /cover-fallback/);
+  assert.match(source, /esc\(item\.title\)/);
+  assert.doesNotMatch(source, /resource-emoji|installResourceEmojiPicker|function\s+resourceEmoji/);
+  assert.match(source, /api\/poster\?u=/, 'unbundled artwork must use the bounded same-origin poster endpoint');
 });

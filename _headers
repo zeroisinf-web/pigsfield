@@ -73,8 +73,15 @@
 # 10 minutes; the service worker refreshes them on the next navigation anyway.
 /css/*
   Cache-Control: public, max-age=600, stale-while-revalidate=86400
-/js/*
+/js/*.js
   Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+# OTT module and workbook JSON use stable URLs, so revalidate together on each visit.
+# These extensions do not overlap the versioned .js rule above.
+/js/*.mjs
+  Cache-Control: public, max-age=0, must-revalidate
+/js/data/*.json
+  Cache-Control: public, max-age=0, must-revalidate
 
 # The service worker itself must never be cached, or a deploy cannot land.
 /sw.js

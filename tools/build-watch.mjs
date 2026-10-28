@@ -1,199 +1,53 @@
-#!/usr/bin/env node
-// PigBang list pages
-//
-// PigBang's 589 titles were drawn by js/watch.js in the browser and reachable only through
-// buttons and #fragments, so no search engine or answer engine could see a single one of
-// them. This writes one crawlable page per shelf type — films, channels, apps — with every
-// title in the served HTML, grouped by learning stage, free ones first. /watch/ stays the
-// interactive player and links to all three. There is deliberately no page per title: a
-// fifteen-word description is not a page.
-//
-//   node tools/build-watch.mjs           write the pages
-//   node tools/build-watch.mjs --check   exit 1 if any page is stale
-
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { applyChrome } from "./build-chrome.mjs";
-import { esc, langAttr, loadCatalog, renderSources, resourceSymbol, slug } from "./build-topics.mjs";
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const ORIGIN = "https://pigsfield.com";
-
-// Mirrors LEVEL_SHELVES in js/watch.js: curriculum order, not alphabetical.
-const LEVELS = [
-  ["N-5", "Nursery to Class 5"],
-  ["6-8", "Class 6 to 8"],
-  ["9-12", "Class 9 to 12"],
-  ["UG", "Undergraduate"],
-  ["PG", "Postgraduate"],
-  ["PhD", "PhD & research"],
-  ["Vocational & Business", "Vocational & business"],
-  ["Teacher Training", "Teacher training"]
-];
-
-export const WATCH_PAGES = [
-  {
-    tab: "channels",
-    slug: "channels",
-    name: "Channels & playlists",
-    title: "Best Educational YouTube Channels & Playlists | Pigsfield",
-    h1: "Educational YouTube channels and playlists, by learning stage",
-    description: (count) => `${count} educational YouTube channels and playlists for science, maths, history, coding and more, sorted by learning stage from Nursery to PhD.`,
-    intro: [
-      "These are the YouTube channels and playlists PigBang recommends for learning, grouped by the stage they suit best, from picture-book science for young children to university lectures and research talks. Almost all of them are free to watch. Each entry says who it is for, what subject it covers and where it opens.",
-      "A channel suitable for several stages is listed under the earliest one, so older learners should look further up the page as well as at their own stage. Playlists can play inside PigBang with YouTube's privacy-enhanced player, or open on YouTube itself.",
-      "A good way to use this list is to pick one channel per subject and follow it for a term rather than sampling dozens. Pigsfield owns none of these channels; if one has gone stale or changed character, the feedback button on every page tells us."
-    ]
-  },
-  {
-    tab: "apps",
-    slug: "apps",
-    name: "Learning apps",
-    title: "Learning Apps for Kids, Students & Adults | Pigsfield",
-    h1: "Learning apps for every stage, from Nursery to PhD",
-    description: (count) => `${count} learning apps for Android, iPhone and the web, from phonics and maths to coding and languages, sorted by learning stage, free ones first.`,
-    intro: [
-      "Learning apps for phones, tablets and the web, grouped by the stage they suit best. Free apps come first in each group, followed by those that need a subscription or a purchase. The price label on each entry says which, but check the store before you pay, because prices and free tiers change.",
-      "The list covers early reading and phonics, maths practice, science simulations, languages, coding, exam practice and tools for teachers. Where an app is on both Google Play and the App Store, both links are given. An app suitable for several stages is listed under the earliest one.",
-      "For young children, use apps alongside a parent or teacher rather than instead of them, and read the app's privacy policy before creating an account. Every link opens the app's own store page or website."
-    ]
-  },
-  {
-    tab: "movies",
-    slug: "films",
-    name: "Films & shows",
-    title: "Educational Films, Documentaries & Shows | Pigsfield",
-    h1: "Educational films, documentaries and shows worth watching",
-    description: (count) => `${count} educational films, documentaries and series, free ones first, with where each one streams: YouTube, Netflix, Prime Video, Hotstar and more.`,
-    intro: [
-      "Films, documentaries and series that teach something, grouped by the stage they suit best: nature and science documentaries, history and biography, economics and business, social issues and Indian cinema with something to say.",
-      "Free titles come first in each group. The rest need a subscription to Netflix, Prime Video, Hotstar or another service, and each entry shows where it streams. What a paid service carries changes by region and over time, so check before you plan a class around a title. A title suitable for several stages is listed under the earliest one.",
-      "A short discussion afterwards turns a film into a lesson; many of these fit a classroom period or a family evening. Pigsfield hosts none of these films."
-    ]
-  }
-];
-export const WATCH_ROUTES = WATCH_PAGES.map((page) => `/watch/${page.slug}/`);
-
-/** One tab's entries, with the ids js/watch.js gives them, duplicates dropped, grouped by
- *  the earliest stage each suits and ordered free first, then by name. */
-export function watchGroups(tab) {
-  const seen = new Set();
-  const entries = (tab.items || []).map((item, index) => ({
-    item,
-    id: slug(`${item.name}-${tab.id}-${index + 1}`),
-    free: /^free$/i.test(String(item.price || "")),
-    level: LEVELS.findIndex(([level]) => (item.classes || []).includes(level))
-  })).filter((entry) => {
-    const key = String(entry.item.name || "").trim().toLowerCase();
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  const order = (a, b) => (b.free - a.free) || String(a.item.name).localeCompare(String(b.item.name), "en");
-  const groups = LEVELS.map(([, label], index) => ({ label, id: `stage-${slug(label)}`, entries: entries.filter((entry) => entry.level === index).sort(order) }));
-  groups.push({ label: "For every stage", id: "stage-every", entries: entries.filter((entry) => entry.level < 0).sort(order) });
-  return { groups: groups.filter((group) => group.entries.length), count: entries.length };
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {categories,levels,classLabel,esc,enrich,card,action,accessLabel,titleHref} from '../js/pigbang-core.mjs';
+const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const ORIGIN='https://pigsfield.com';
+export const WATCH_PAGES=categories.map(c=>({tab:c.id,slug:c.slug,name:c.label}));
+export const WATCH_ROUTES=WATCH_PAGES.map(p=>`/watch/${p.slug}/`);
+export function watchGroups(tab){const groups=levels.map(level=>({label:classLabel(level),id:level,entries:(tab.items||[]).filter(i=>i.classes.includes(level)).map(item=>({item}))}));return {count:tab.items.length,groups:groups.filter(g=>g.entries.length)};}
+function load(root){const catalog=JSON.parse(fs.readFileSync(path.join(root,'js/data/pigbang-catalog.json'),'utf8'));const additions=JSON.parse(fs.readFileSync(path.join(root,'js/data/pigbang-additions.json'),'utf8'));const file=path.join(root,'js/data/pigbang-media.json');return enrich([...catalog.items,...additions.items],fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{});}
+const descriptions={home:count=>`Discover educational movies, shows, games, apps and channels on PigBang. Explore ${count} resources by class, subject and free or paid access.`,movies:count=>`Explore ${count} educational movies and shows on PigBang. Filter by class, subject and price, with original watch links and trailer discovery.`,apps:count=>`Find ${count} educational games, apps and learning platforms on PigBang. Explore by class and subject, then open the original provider.`,channels:count=>`Discover ${count} educational channels on PigBang, from science and history to coding. Browse by class, subject and free or paid access.`};
+const featured={movies:['Nukkad Naatak','Our Planet','Planet Earth II','Cosmos: A Spacetime Odyssey','Hidden Figures','The Social Dilemma','Life on Our Planet','David Attenborough: A Life on Our Planet','Honeyland','The Biggest Little Farm','Fantastic Fungi','WALL·E'],apps:['Scratch','Khan Academy','Khan Academy Kids','Duolingo','GeoGebra'],channels:['TED-Ed','Kurzgesagt – In a Nutshell','Veritasium','3Blue1Brown','CrashCourse']};
+function ordered(items,category){return [...items].sort((a,b)=>{const aa=featured[category].indexOf(a.title),bb=featured[category].indexOf(b.title);return (aa<0?999:aa)-(bb<0?999:bb)});}
+const icon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>';
+export function renderWatchPage(page, supplied, root=ROOT){
+ const items=Array.isArray(supplied)?supplied:load(root), category=page?.tab || '', home=!category;
+ const own=category?items.filter(i=>i.category===category):items;
+ const base=home?'../':'../../', route=home?'/watch/':`/watch/${page.slug}/`, canonical=ORIGIN+route;
+ const name=home?'Educational OTT':page.name, title=home?'PigBang Educational OTT | Watch, Play & Discover':`${name} | PigBang Educational OTT`;
+ const description=descriptions[category||'home'](own.length.toLocaleString('en')), og=ORIGIN+`/assets/og/watch${home?'':'-'+page.slug}.jpg`;
+ const hero=ordered(items.filter(x=>x.category===(category||'movies')),category||'movies')[0];
+ const heroAction=action(hero);
+ const subjectSet=[...new Set(own.flatMap(x=>x.disciplines))].sort();
+ const options=(values,label)=>values.map(v=>`<option value="${esc(v)}">${esc(label?label(v):v)}</option>`).join('');
+ const shelves=home?categories.map(c=>({label:c.label,category:c.id,items:ordered(items.filter(x=>x.category===c.id),c.id).slice(0,12),href:`/watch/${c.slug}/`})):[{label:category==='movies'?'Stories that stay with you':category==='apps'?'Make curiosity hands-on':'A new perspective, every day',category,items:ordered(own,category).slice(0,12),href:'#catalog'},{label:'Explore something new',category,items:own.filter(x=>!featured[category].includes(x.title)).slice(0,12),href:'#catalog'}];
+ const graph={'@context':'https://schema.org','@graph':[{'@type':'CollectionPage','@id':canonical+'#webpage',url:canonical,name:title,description,inLanguage:'en-IN',isPartOf:{'@id':ORIGIN+'/#website'},breadcrumb:{'@id':canonical+'#breadcrumb'},mainEntity:{'@id':canonical+'#collection'}},{'@type':'BreadcrumbList','@id':canonical+'#breadcrumb',itemListElement:[{name:'Pigsfield',item:ORIGIN+'/'},...(home?[]:[{name:'PigBang',item:ORIGIN+'/watch/'}]),{name,item:canonical}].map((x,i)=>({'@type':'ListItem',position:i+1,...x}))},{'@type':'ItemList','@id':canonical+'#collection',name,numberOfItems:own.length,itemListElement:own.slice(0,100).map((x,i)=>({'@type':'ListItem',position:i+1,name:x.title,url:ORIGIN+titleHref(x)}))}]};
+ return `<!doctype html>
+<html lang="en-IN" data-base="${base}"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#101112">
+<title>${esc(title)}</title><meta name="description" content="${esc(description)}"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"><link rel="canonical" href="${canonical}">
+<link rel="icon" href="${base}assets/pigsfield-icon-192.png" sizes="192x192" type="image/png"><link rel="manifest" href="${base}manifest.json">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PigBang ${esc(name)}">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><meta name="twitter:image" content="${og}"><meta name="twitter:image:alt" content="PigBang ${esc(name)}">
+<link rel="preload" href="${base}assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="${base}css/watch.css"><script type="module" src="${base}js/watch.js"></script>
+<script type="application/ld+json">${JSON.stringify(graph).replace(/</g,'\\u003c')}</script></head>
+<body data-page="pigbang" data-category="${category}"><a class="skip-link" href="#main-content">Skip to content</a>
+<header class="topbar"><a class="brand" href="/watch/" aria-label="PigBang home"><img src="${base}assets/pigbang-logo-display.webp" width="33" height="25" alt=""><span>PIGBANG<small>EDUCATIONAL</small></span></a><nav aria-label="Main navigation">${categories.map(c=>`<a href="/watch/${c.slug}/" ${c.id===category?'aria-current="page"':''}>${c.label}</a>`).join('')}</nav><div class="top-actions"><a class="search-shortcut" href="#catalog" aria-label="Search the collection">${icon}</a><button class="list-toggle" type="button" aria-pressed="false">＋ <span>My list</span><span class="list-count">0</span></button><a class="parent-link" href="/">Pigsfield ↗</a></div></header>
+<main id="main-content"><section class="hero" aria-labelledby="hero-title"><div class="hero-art">${hero.backdrop?`<img src="${esc(hero.backdrop)}" alt="" width="1280" height="720" fetchpriority="high">`:''}</div><div class="hero-body"><p class="eyebrow"><span class="red-line"></span> ${home?'THE HOME OF CURIOSITY':esc(name.toUpperCase())}</p><p class="hero-pretitle">${category==='apps'?'Small steps. Big discoveries.':category==='channels'?'Follow your curiosity.':'Extraordinary stories. A world to discover.'}</p><h1 id="hero-title">${hero.title==='Nukkad Naatak'?`<span class="sr-only">${home?'PigBang educational OTT':esc(name)}: </span>Nukkad Naatak`:home?'<span class="sr-only">PigBang educational OTT: </span>Learning, worth<br>watching.':esc(name)}</h1><p class="hero-description">${hero.title==='Nukkad Naatak'?esc(hero.description):home?'Big ideas meet unforgettable stories. Discover films, games and creators that make the world a little more interesting.':category==='movies'?'From the wonders of our planet to the people who change it. Find your next great watch—and your next big idea.':category==='apps'?'Build, experiment and learn by doing. Discover playful tools for every stage of your learning journey.':'Meet the creators who make complex ideas click. Explore a world of knowledge, one channel at a time.'}</p><div class="hero-buttons"><a class="button primary" href="${esc(heroAction.url)}" ${heroAction.kind==='video'||heroAction.kind==='trailer'?`data-hero-play="${hero.id}"`:'target="_blank" rel="noopener noreferrer"'}>▶ ${esc(heroAction.label)}</a><a class="button secondary" href="${titleHref(hero)}" data-detail="${hero.id}">ⓘ Explore title</a></div><p class="hero-featured"><span>IN THE SPOTLIGHT</span> ${esc(hero.title)} <span>· ${esc(hero.disciplines[0])}</span></p></div><div class="hero-caption"><span class="live-dot"></span> WATCH. PLAY. WONDER.</div></section>
+<section class="catalog-shell" id="catalog" aria-labelledby="catalog-title"><div class="catalog-heading"><div><p class="eyebrow">A LITTLE CURIOSITY GOES A LONG WAY</p><h2 id="catalog-title">${home?'Find your next discovery':`Explore ${esc(name.toLowerCase())}`}</h2></div><span class="catalog-total">${own.length.toLocaleString('en')} discoveries. Endless possibilities.</span></div>
+<form class="filter-bar" role="search"><label class="search-box">${icon}<span class="sr-only">Search titles, subjects and topics</span><input type="search" name="q" id="search" placeholder="Titles, subjects, a little curiosity…" autocomplete="off"></label><label class="select-box"><span>Class</span><select aria-label="Class" id="class" name="class"><option value="">All classes</option>${options(levels,classLabel)}</select></label><label class="select-box"><span>Subject</span><select aria-label="Subject" id="subject" name="subject"><option value="">All subjects</option>${options(subjectSet)}<optgroup label="Specific topics">${options([...new Set(own.flatMap(x=>x.subjects))].filter(s=>!subjectSet.includes(s)).sort())}</optgroup></select></label><label class="select-box price-select"><span>Access</span><select aria-label="Access" id="access" name="access"><option value="">Free & paid</option><option value="free">Free</option><option value="paid">Paid</option><option value="unknown">Check provider</option></select></label><button class="reset" type="reset" aria-label="Clear all filters">Reset</button></form>
+<div class="subject-pills" aria-label="Popular subjects">${['All','Biology','Physics','History','Mathematics','Computer Science','Arts'].filter(s=>s==='All'||subjectSet.includes(s)).map((s,i)=>`<button type="button" data-subject="${i?esc(s):''}" aria-pressed="${!i}">${s==='All'?'✦ For you':esc(s)}</button>`).join('')}<span class="loading-note" role="status">Loading filters…</span></div>
+<div id="browse-shelves">${shelves.map(s=>`<section class="shelf"><div class="shelf-heading"><h2>${esc(s.label)} <span>${s.category==='movies'?'01':s.category==='apps'?'02':'03'}</span></h2><a href="${s.href}" ${home?'':`data-browse="true"`}>View all <span aria-hidden="true">↗</span></a></div><div class="rail">${s.items.map(x=>card(x)).join('')}</div></section>`).join('')}</div>
+<section id="results" hidden aria-labelledby="result-heading"><div class="shelf-heading"><h2 id="result-heading">Your discoveries</h2><p id="result-count" role="status" aria-live="polite"></p></div><div id="result-grid" class="result-grid"></div><button class="button secondary load-more" id="load-more" type="button">Load more</button></section>
+<div class="learning-note"><span>✦</span><div><h2>Entertainment that opens up your world.</h2><p>Choose a class. Follow a subject. Discover something you didn't know you loved.</p></div><a href="/watch/${home?'films':categories.find(c=>c.id!==category).slug}/">Keep exploring ↗</a></div>
+<details class="directory"><summary>Browse the complete ${home?'PigBang':esc(name.toLowerCase())} directory · ${own.length.toLocaleString('en')} titles</summary><p>Every title is available below, including when JavaScript is disabled. Class labels describe curriculum relevance, not age ratings.</p>${home?categories.map(c=>`<p><a href="/watch/${c.slug}/">Browse all ${esc(c.label.toLowerCase())} →</a></p>`).join(''):''}<div class="directory-grid">${(home?[]:own).map(x=>{const a=action(x);return `<article id="${esc(x.slug)}"><h3><a href="${titleHref(x)}" data-detail="${x.id}">${esc(x.title)}</a></h3><p>${esc(x.description)}</p><small>${esc(x.subjects.join(' · '))} | ${esc(x.classes.map(classLabel).join(', '))} | ${accessLabel(x)}${x.contentRating?' | '+esc(x.contentRating):''}</small><a class="directory-action" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.label)} ↗</a></article>`}).join('')}</div></details>
+<noscript><p>Use the complete directory above to browse every title and open original providers. Search, filters and My list require JavaScript.</p></noscript></section></main>
+<footer><a class="footer-brand" href="/watch/">PIGBANG<span>Curiosity has a home.</span></a><div><nav aria-label="Footer navigation"><a href="/watch/films/">Movies & shows</a><a href="/watch/apps/">Games & apps</a><a href="/watch/channels/">Channels</a><a href="/privacy/">Privacy</a><a href="/accessibility/">Accessibility</a></nav><p>A discovery experience by <a href="/">Pigsfield</a>. Content belongs to its respective creators. Provider availability and pricing may change.</p><p>Free and paid labels come from the supplied catalog. “Check provider” means pricing wasn't specified. Videos play only after you choose.</p></div></footer>
+<dialog id="detail-dialog" aria-labelledby="detail-title"><button class="close-dialog" aria-label="Close title details" type="button">×</button><div id="detail-content"></div></dialog><p class="toast" role="status" hidden></p>
+</body></html>`;
 }
-
-function renderEntry(entry) {
-  const item = entry.item;
-  const name = item.name || "Untitled";
-  const resource = { title: name, urls: (item.urls || []).map((url) => `|${url}`) };
-  const levels = LEVELS.filter(([level]) => (item.classes || []).includes(level)).map(([, label]) => label);
-  const meta = [item.price || "", levels.join(", "), item.subject || ""].filter(Boolean).map(esc).join(" · ");
-  const share = `<span class="card-tools"><button class="card-tool card-share" type="button" data-share="${esc(entry.id)}" data-share-title="${esc(name)}" aria-label="Share ${esc(name)}"></button></span>`;
-  return `<article class="topic-item" id="${esc(entry.id)}"><div class="topic-item-head"><span class="topic-symbol" aria-hidden="true">${resourceSymbol(resource)}</span><h3${langAttr(name)}>${esc(name)}</h3>${share}</div><p class="topic-meta">${meta}</p>${item.desc ? `<p${langAttr(item.desc)}>${esc(item.desc)}</p>` : ""}${renderSources(resource)}<p><a class="text-link" href="../#${esc(entry.id)}">Open in PigBang</a></p></article>`;
-}
-
-export function renderWatchPage(page, data = loadCatalog()) {
-  const tab = (data.pigbang.tabs || []).find((candidate) => candidate.id === page.tab);
-  if (!tab) throw new Error(`js/data/pigbang.js has no "${page.tab}" tab`);
-  const { groups, count } = watchGroups(tab);
-  const route = `/watch/${page.slug}/`;
-  const canonical = `${ORIGIN}${route}`;
-  const description = page.description(count);
-  const all = groups.flatMap((group) => group.entries);
-  const graph = [
-    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: page.h1, description, inLanguage: "en-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` }, mainEntity: { "@id": `${canonical}#titles` } },
-    { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
-      { "@type": "ListItem", position: 2, name: "PigBang", item: `${ORIGIN}/watch/` },
-      { "@type": "ListItem", position: 3, name: page.name, item: canonical }
-    ] },
-    { "@type": "ItemList", "@id": `${canonical}#titles`, name: page.name, numberOfItems: count, itemListElement: all.slice(0, 100).map((entry, index) => ({ "@type": "ListItem", position: index + 1, name: entry.item.name, url: `${canonical}#${entry.id}` })) }
-  ];
-  const image = `${ORIGIN}/assets/og/watch-${page.slug}.jpg`;
-  const jump = groups.map((group) => `<a class="button ghost" href="#${group.id}">${esc(group.label)} <small>${group.entries.length}</small></a>`).join("");
-  const siblings = WATCH_PAGES.filter((other) => other !== page).map((other) => `<a class="button ghost" href="../${other.slug}/">${esc(other.name)}</a>`).join("");
-  // data-page "watch-list" keeps PigBang current in the navigation (js/site.js matches the
-  // "watch-" prefix) without the player page's dark theme.
-  const html = `<!doctype html>
-<html lang="en-IN" data-base="../../">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#f4f1e8">
-  <title>${esc(page.title)}</title>
-  <meta name="description" content="${esc(description)}">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <link rel="canonical" href="${canonical}"><link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
-  <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(page.title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}">
-  <meta property="og:image" content="${image}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PigBang ${esc(page.name.toLowerCase())}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(page.title)}"><meta name="twitter:description" content="${esc(description)}"><meta name="twitter:image" content="${image}"><meta name="twitter:image:alt" content="PigBang ${esc(page.name.toLowerCase())}">
-  <link rel="preload" href="../../assets/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../css/site.css">
-  <script defer src="../../js/site.js"></script>
-  <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>
-</head>
-<body data-page="watch-list">
-  <a class="skip-link" href="#main-content">Skip to content</a><header data-site-header></header>
-  <main id="main-content">
-    <div class="container breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">PigBang</a></li><li aria-current="page">${esc(page.name)}</li></ol></div>
-    <section class="page-hero"><div class="container"><span class="eyebrow">PigBang · ${esc(page.name)}</span><h1>${esc(page.h1)}</h1>${page.intro.map((paragraph) => `<p class="lede">${esc(paragraph)}</p>`).join("")}<p><a class="button brand" href="../">Browse and play in PigBang</a></p></div></section>
-    <section class="section"><div class="container">
-      <p class="topic-count"><strong>${count}</strong> titles, each opening its original source.</p>
-      <nav class="topic-siblings" aria-label="Jump to a learning stage">${jump}</nav>
-      ${groups.map((group) => `<section class="topic-leftover" id="${group.id}"><h2>${esc(group.label)}</h2><div class="topic-list">
-        ${group.entries.map(renderEntry).join("\n        ")}
-      </div></section>`).join("\n      ")}
-    </div></section>
-    <section class="section alt"><div class="container">
-      <h2>More in PigBang</h2>
-      <nav class="topic-siblings" aria-label="Other PigBang lists">${siblings}</nav>
-    </div></section>
-  </main>
-  <footer data-site-footer></footer>
-</body>
-</html>
-`;
-  return applyChrome(html).replace(/\?v=[a-f0-9]{12}(?=")/g, "");
-}
-
-const comparable = (html) => html.replace(/<span data-year>\d{4}<\/span>/g, "<span data-year></span>").replace(/\?v=[a-f0-9]{12}(?=")/g, "");
-
-export function build({ root = ROOT, check = false } = {}) {
-  const data = loadCatalog(root);
-  const stale = [];
-  for (const page of WATCH_PAGES) {
-    const file = path.join(root, "watch", page.slug, "index.html");
-    const html = renderWatchPage(page, data);
-    const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
-    if (comparable(current) === comparable(html)) continue;
-    if (check) stale.push(path.relative(root, file));
-    else {
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, html, "utf8");
-    }
-  }
-  return { stale };
-}
-
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const check = process.argv.includes("--check");
-  const { stale } = build({ check });
-  if (check && stale.length) {
-    console.error(`PigBang list pages are stale: ${stale.join(", ")}\nRun: npm run build:watch`);
-    process.exitCode = 1;
-  } else {
-    console.log(check ? `All ${WATCH_PAGES.length} PigBang list pages match js/data/pigbang.js.` : `Wrote ${WATCH_PAGES.length} PigBang list pages.`);
-  }
-}
+const comparable=html=>html.replace(/\?v=[a-f0-9]{12}(?=["'])/g,'');
+export function build({root=ROOT,check=false}={}){const items=load(root),stale=[];for(const page of [null,...WATCH_PAGES]){const file=path.join(root,'watch',page?.slug||'','index.html'),html=renderWatchPage(page,items,root),old=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';if(comparable(old)===comparable(html))continue;if(check)stale.push(path.relative(root,file));else{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,html)}}return {stale};}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const {stale}=build({check:process.argv.includes('--check')});if(stale.length){console.error('Stale PigBang pages:',stale);process.exitCode=1}else console.log('PigBang: 4 catalog pages current.');}

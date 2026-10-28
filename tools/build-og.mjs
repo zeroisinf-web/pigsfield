@@ -32,7 +32,9 @@ const count = (module) => (module.sections || []).reduce((total, section) =>
 
 /** What each card says. Hubs are listed by hand; every topic page gets one from its data. */
 export function ogCards(data = loadCatalog()) {
-  const pigbang = (data.pigbang.tabs || []).reduce((sum, tab) => sum + (tab.items || []).length, 0);
+  const pigbangCatalog = JSON.parse(fs.readFileSync(path.join(ROOT,"js/data/pigbang-catalog.json"),"utf8")).items;
+  pigbangCatalog.push(...JSON.parse(fs.readFileSync(path.join(ROOT,"js/data/pigbang-additions.json"),"utf8")).items);
+  const pigbang = pigbangCatalog.length;
   const hubs = [
     { route: "/learn/", label: "Learning", title: "Nursery to PhD", subtitle: "From first letters to original research.", stat: `${count(data.school)} free resources`, art: "path-learn.svg" },
     { route: "/watch/", label: "Educational OTT", title: "PigBang", subtitle: "Films, channels and apps for curious minds.", stat: `${pigbang} titles to watch`, art: "path-watch.svg" },
@@ -55,7 +57,7 @@ export function ogCards(data = loadCatalog()) {
     };
   }));
   const exams = EXAM_PAGES.map((page) => ({ route: `/exams/${page.slug}/`, label: "Competitive Exams", title: `${page.name} guide`, subtitle: page.card, stat: "Free courses & books", art: "path-exams.svg" }));
-  const lists = WATCH_PAGES.map((page) => ({ route: `/watch/${page.slug}/`, label: "PigBang", title: page.name, subtitle: { channels: "Channels worth following, stage by stage.", apps: "Apps for every stage, free ones first.", films: "Films that teach something." }[page.slug], stat: `${watchGroups(data.pigbang.tabs.find((tab) => tab.id === page.tab)).count} titles`, art: "path-watch.svg" }));
+  const lists = WATCH_PAGES.map((page) => ({ route: `/watch/${page.slug}/`, label: "PigBang", title: page.name, subtitle: { channels: "Channels worth following, stage by stage.", apps: "Play, build and learn by doing.", films: "Films that teach something." }[page.slug], stat: `${pigbangCatalog.filter(item => item.category === page.tab).length} titles`, art: "path-watch.svg" }));
   return [...hubs, ...topics, ...exams, ...lists];
 }
 
