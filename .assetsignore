@@ -18,3 +18,7 @@ README.md
 SEO-GROWTH.md
 package.json
 wrangler.jsonc
+
+# Import and editorial source notes are not public site routes.
+tools/*.py
+docs/

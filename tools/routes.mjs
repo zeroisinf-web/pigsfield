@@ -24,7 +24,7 @@ const BASE_ROUTES = [
   { path: "/skills/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
   { path: "/tools/", lastmod: "2026-10-05", changefreq: HUB, priority: "0.8" },
   { path: "/exams/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
-  { path: "/watch/", lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" },
+  { path: "/watch/", lastmod: "2026-10-28", changefreq: HUB, priority: "0.8" },
 
   // Generated topic pages. Slugs come from tools/build-topics.mjs, so a new topic reaches
   // the sitemap and the validator at the same moment it reaches the filesystem.
@@ -37,7 +37,7 @@ const BASE_ROUTES = [
   ...EXAM_ROUTES.map((path) => ({ path, lastmod: "2026-10-10", changefreq: HUB, priority: "0.8" })),
 
   // PigBang's crawlable lists, first published on 2026-10-10.
-  ...WATCH_ROUTES.map((path) => ({ path, lastmod: "2026-10-10", changefreq: HUB, priority: "0.7" })),
+  ...WATCH_ROUTES.map((path) => ({ path, lastmod: "2026-10-28", changefreq: HUB, priority: "0.7" })),
 
   { path: "/ai/", lastmod: "2026-10-05", changefreq: STATIC, priority: "0.7" },
   { path: "/about/", lastmod: "2026-07-15", changefreq: STATIC, priority: "0.7" },

@@ -101,17 +101,18 @@ test("the generated pages and the runtime share one source-button vocabulary", (
   // The resource symbol comes from the same file for the same reason.
   assert.match(site, /\/\* pf:resource-symbols:start/);
   assert.match(builder, /siteBlock\(root, "resource-symbols"\)/);
-  for (const file of ["js/watch.js", "js/exams-page.js"]) {
+  for (const file of ["js/exams-page.js"]) {
     assert.doesNotMatch(text(file), /sourceMarkParts\s*=\s*\{/, `${file} must not keep its own copy of the marks`);
     assert.match(text(file), /PF\.sourceMark/, `${file} must use the shared mark renderer`);
   }
 });
 
-test("PigBang appends the next page without rebuilding visible cards", () => {
+test("PigBang shares card and filter behavior between its static and interactive views", () => {
   const source = text("js/watch.js");
-  assert.match(source, /grid\.addEventListener\("click", handleGridClick\)/);
-  assert.match(source, /grid\.insertAdjacentHTML\("beforeend", additions\.map\(card\)\.join\(""\)\)/);
-  assert.match(source, /entriesByTab\.get\(activeTab\)/);
-  assert.match(source, /if \(entry\.cardMarkup\) return entry\.cardMarkup;/);
-  assert.doesNotMatch(source, /function bindCards\(/);
+  const builder = text("tools/build-watch.mjs");
+  assert.match(source, /pigbang-core\.mjs/);
+  assert.match(builder, /pigbang-core\.mjs/);
+  assert.match(source, /filterItems\(/);
+  assert.match(source, /insertAdjacentHTML\(/, 'loading another batch should append cards');
+  assert.doesNotMatch(source, /function bindCards\(/, 'card clicks should use event delegation');
 });

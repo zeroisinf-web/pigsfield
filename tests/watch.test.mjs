@@ -1,164 +1,110 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import vm from 'node:vm';
 import test from 'node:test';
+import { action, accessLabel, card, enrich, filterItems, isSearch, safeUrl, titleHref, videoId } from '../js/pigbang-core.mjs';
 
-const read = (file) => fs.readFileSync(new URL('../' + file, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const item = (overrides = {}) => ({
+  id: 'movies-2', slug: 'our-planet', title: 'Our Planet', year: 2019,
+  category: 'movies', format: 'Series', description: 'Explore wildlife and our living planet.',
+  classes: ['6-8','9-12'], subjects: ['Science: Biology'], disciplines: ['Science'],
+  topics: ['Nature'], access: 'free', sourceUrl: 'https://example.org/our-planet',
+  watchUrl: 'https://www.youtube.com/watch?v=GfO-3Oir-qM', ...overrides
+});
+const fixtures = () => enrich([
+  item(),
+  item({id:'movies-3',slug:'space',title:'Space',access:'paid',classes:['9-12'],subjects:['Science: Physics'],description:'A voyage into the universe.'}),
+  item({id:'apps-2',slug:'biology-lab',title:'Biology Lab',category:'apps',access:'unknown',classes:['6-8'],watchUrl:'https://example.org/lab'}),
+  item({id:'channels-2',slug:'wildlife-classroom',title:'Wildlife Classroom',category:'channels',access:'free',watchUrl:'https://www.youtube.com/@classroom'})
+]);
 
-// Run the real catalog, player URL parser and watch logic. Only the DOM boundary is
-// stubbed; browser QA additionally covers painting, focus and native dialog behavior.
-function harness() {
-  class Element {
-    value = ''; innerHTML = ''; textContent = ''; hidden = false; children = [];
-    dataset = {}; listeners = {}; attributes = {}; open = false;
-    classList = { add() {}, remove() {}, toggle() {} };
-    addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
-    setAttribute(name, value) { this.attributes[name] = value; }
-    querySelector() { return new Element(); }
-    querySelectorAll() { return []; }
-    scrollIntoView() {}
-    showModal() { this.open = true; }
-    close() { this.open = false; }
-    focus() {}
+test('category, class, subject, access and multiword search compose without including unknown prices', () => {
+  const rows = fixtures();
+  assert.deepEqual(filterItems(rows,{category:'movies',class:'6-8',subject:'Science: Biology',access:'free',q:'planet WILDLIFE'}).map(x=>x.id),['movies-2']);
+  assert.equal(filterItems(rows,{class:'6-8',subject:'Science'}).length,3);
+  assert.equal(filterItems(rows,{access:'paid'}).length,1);
+  assert.equal(filterItems(rows,{access:'free'}).length,2);
+  assert.equal(filterItems(rows,{access:'unknown'})[0].id,'apps-2');
+  assert.equal(filterItems(rows,{q:'wildlife missingword'}).length,0);
+  assert.equal(filterItems(rows,{}).length,rows.length);
+});
+
+test('saved filters intersect the current page and search; an empty saved set stays empty', () => {
+  const rows = fixtures();
+  assert.deepEqual(filterItems(rows,{saved:true,savedIds:new Set(['apps-2','movies-2']),category:'apps'}).map(x=>x.id),['apps-2']);
+  assert.equal(filterItems(rows,{saved:true,savedIds:new Set()}).length,0);
+  assert.equal(filterItems(rows,{saved:true}).length,0);
+});
+
+test('a provider, verified trailer and unverified trailer search have distinct action labels', () => {
+  const [direct, trailer, search, providerSearch] = enrich([
+    item(), item({watchUrl:'',trailerUrl:'https://www.youtube.com/watch?v=GfO-3Oir-qM'}),
+    item({watchUrl:''}), item({watchUrl:'https://www.youtube.com/results?search_query=Our+Planet'})
+  ]);
+  assert.deepEqual(action(direct),{url:direct.watchUrl,label:'Watch now',kind:'video'});
+  assert.equal(action(trailer).kind,'trailer');
+  assert.equal(action(trailer).label,'Watch trailer');
+  assert.equal(action(search).kind,'search');
+  assert.equal(action(search).label,'Find trailer on YouTube');
+  assert.ok(action(search).url.includes('Our%20Planet'));
+  assert.equal(action(providerSearch).kind,'external');
+  assert.equal(action(providerSearch).label,'Find on provider');
+  assert.equal(action(fixtures()[2]).label,'Open app');
+  assert.equal(action(fixtures()[3]).label,'Visit channel');
+});
+
+test('missing prices stay unknown and rating or ownership claims are not fabricated', () => {
+  const unknown = enrich([item({access:'unknown',watchUrl:''})])[0];
+  assert.equal(accessLabel(unknown),'Check provider');
+  assert.doesNotMatch(card(unknown),/PIGBANG ORIGINAL|AggregateRating|100% free|>Free</i);
+  assert.equal(accessLabel({access:'paid'}),'Paid');
+});
+
+test('unsafe outbound URLs are dropped and card content is HTML escaped', () => {
+  for (const bad of ['javascript:alert(1)','data:text/html,hello','https://user:secret@example.org','not a URL']) assert.equal(safeUrl(bad),'');
+  const entry = enrich([item({title:'<img src=x onerror=alert(1)>',id:'evil" onclick="x',watchUrl:'javascript:alert(1)',sourceUrl:'data:text/html,no'})],{'<img src=x onerror=alert(1)>':{image:'/assets/pigbang/test.webp'}})[0];
+  const html = card(entry);
+  assert.equal(entry.watchUrl,'');
+  assert.equal(entry.sourceUrl,'');
+  assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'));
+  assert.doesNotMatch(html,/<img src=x|data-detail="evil" onclick/);
+  assert.ok(html.includes('loading="lazy"'));
+  assert.ok(card(entry,true).includes('loading="eager"'));
+});
+
+test('real media artwork is same-origin and never invented from a title', () => {
+  const [entry] = enrich([item()],{'Our Planet':{image:'/assets/pigbang/our-planet.webp',trailerUrl:'https://www.youtube.com/watch?v=GfO-3Oir-qM'}});
+  assert.equal(entry.image,'/assets/pigbang/our-planet.webp');
+  const [without] = enrich([item()],{'Our Planet':{image:'https://untrusted.example/image.jpg'}});
+  const request = new URL(without.image,'https://pigsfield.com');
+  assert.equal(request.pathname,'/api/poster');
+  assert.equal(request.searchParams.get('u'),without.watchUrl);
+  const [search] = enrich([item({watchUrl:'https://www.youtube.com/results?search_query=test'})]);
+  assert.equal(new URL(search.image,'https://pigsfield.com').searchParams.get('u'),search.sourceUrl);
+});
+
+test('YouTube parsing rejects search pages, spoofed hosts and malformed IDs', () => {
+  const id='GfO-3Oir-qM';
+  for(const url of [`https://www.youtube.com/watch?v=${id}`,`https://youtu.be/${id}`,`https://www.youtube.com/shorts/${id}`,`https://www.youtube-nocookie.com/embed/${id}`]) assert.equal(videoId(url),id);
+  for(const url of [`https://youtube.com.evil.org/watch?v=${id}`,'https://www.youtube.com/results?search_query=trailer','https://youtu.be/short',`https://www.youtube.com/@channel?v=${id}`,`ftp://www.youtube.com/watch?v=${id}`]) assert.equal(videoId(url),'');
+  assert.ok(isSearch('https://www.netflix.com/search?q=planet'));
+});
+
+test('every category shares stable title links to the correct browse page', () => {
+  assert.equal(titleHref(item()),'/watch/films/#our-planet');
+  assert.equal(titleHref(item({category:'apps'})),'/watch/apps/#our-planet');
+  assert.equal(titleHref(item({category:'channels'})),'/watch/channels/#our-planet');
+});
+
+test('the full workbook catalog retains all rows and source provenance', () => {
+  const catalog = JSON.parse(fs.readFileSync(new URL('../js/data/pigbang-catalog.json',import.meta.url),'utf8'));
+  const rows = catalog.items;
+  assert.equal(rows.length,2175);
+  assert.deepEqual(Object.fromEntries(['movies','apps','channels'].map(c=>[c,rows.filter(x=>x.category===c).length])),{movies:1697,apps:269,channels:209});
+  assert.equal(new Set(rows.map(x=>x.id)).size,rows.length);
+  assert.equal(new Set(rows.map(x=>x.slug)).size,rows.length);
+  for(const row of rows){
+    assert.ok(row.source.sheet && Number.isInteger(row.source.row) && row.source.row>=2,row.title);
+    assert.ok(['free','paid','unknown'].includes(row.access),row.title);
+    assert.ok(Array.isArray(row.classes) && Array.isArray(row.subjects),row.title);
   }
-  const nodes = new Map();
-  const document = {
-    querySelector(selector) {
-      if (!nodes.has(selector)) nodes.set(selector, new Element());
-      return nodes.get(selector);
-    },
-    querySelectorAll() { return []; },
-    createElement() { return new Element(); },
-    body: { appendChild(element) { document.dialog = element; } }
-  };
-  const PF = {
-    slug: (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-    escapeHtml: (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
-    isYouTubeSearch: (value) => { const url = new URL(value); return /(?:^|\.)youtube\.com$/.test(url.hostname) && url.pathname === '/results'; },
-    resourceSymbolFor: () => '◇', classifySource: () => 'website', sourceBrand: () => 'website', sourceMark: () => '<svg></svg>'
-  };
-  const window = { PF, matchMedia: () => ({ matches: true }) };
-  const sandbox = vm.createContext({ window, document, URL, location: { href: 'https://pigsfield.com/watch/', hash: '' }, clearTimeout() {}, requestAnimationFrame(fn) { fn(); } });
-  vm.runInContext(read('js/data/pigbang.js'), sandbox);
-  vm.runInContext(read('js/player.js'), sandbox);
-  const source = read('js/watch.js');
-  const boot = source.indexOf('  document.querySelector("#watch-reset")?.addEventListener');
-  assert.ok(boot > 0);
-  vm.runInContext(source.slice(0, boot) + 'PF.watchTest = { entries, shelves, matches, applyShelfFilter, resetFilters, tile, card, openDetail, revealHash, render, createRotation, featuredEntries }; })();', sandbox);
-  return { api: PF.watchTest, nodes, document, sandbox };
-}
-
-test('shelf View all switches to the filtered grid', () => {
-  const { api, nodes } = harness();
-  const shelf = api.shelves().find((s) => s.id === 'free');
-  api.applyShelfFilter(shelf);
-  assert.ok(api.matches().length > 0);
-  assert.ok(api.matches().every((e) => e.price === 'free'));
-  assert.equal(nodes.get('#watch-billboard').hidden, true);
-  assert.equal(api.shelves().some((s) => s.id === 'my-list'), false, 'the saved watchlist was replaced by sharing');
-});
-
-test('level, type, price and multiword search compose and reset together', () => {
-  const { api, nodes } = harness();
-  api.applyShelfFilter({ filter: { tab: 'movies', price: 'free', level: '6-8' } });
-  nodes.get('#watch-search').value = 'planet wildlife';
-  const matches = api.matches();
-  assert.ok(matches.length > 0);
-  assert.ok(matches.every((e) => e.tab === 'movies' && e.price === 'free' && e.classes.includes('6-8') && e.haystack.includes('planet') && e.haystack.includes('wildlife')));
-  api.resetFilters();
-  assert.equal(api.matches().length, api.entries.length);
-  assert.equal(nodes.get('#watch-billboard').hidden, false);
-});
-
-test('empty search results offer a recovery action', () => {
-  const { api, nodes } = harness();
-  nodes.get('#watch-search').value = 'no-match-23903940';
-  api.render();
-  assert.match(nodes.get('#watch-grid').innerHTML, /No titles found/);
-  assert.match(nodes.get('#watch-grid').innerHTML, /data-reset/);
-  assert.equal(nodes.get('#watch-more').hidden, true);
-});
-
-test('all catalog titles preserve their source anchors without invented ownership or quality claims', () => {
-  const { api } = harness();
-  assert.equal(api.entries.length, 589);
-  for (const entry of api.entries) {
-    const card = api.card(entry);
-    assert.doesNotMatch(card, /topic-sources|topic-lane|source-lane-label|Not listed/);
-    assert.match(card, entry.item.urls?.length ? /ott-source-actions/ : /ott-source-status/);
-    for (const raw of entry.item.urls || []) {
-      const url = new URL(raw);
-      for (const name of [...url.searchParams.keys()]) if (/^utm_/i.test(name)) url.searchParams.delete(name);
-      const escaped = url.href.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-      assert.ok(card.includes(`href="${escaped}"`), entry.item.name + ' retains ' + url.hostname);
-    }
-    assert.doesNotMatch(api.tile(entry), /PIGBANG ORIGINAL|>HD<|#1 Featured/);
-  }
-});
-
-test('related titles are native keyboard buttons and clicking one replaces the dialog', () => {
-  const { api, document } = harness();
-  api.openDetail(api.entries.find((e) => e.item.name === 'Our Planet'));
-  const dialog = document.dialog;
-  assert.equal(dialog.attributes['aria-labelledby'], 'watch-detail-title');
-  assert.match(dialog.innerHTML, /ott-source-actions/);
-  assert.doesNotMatch(dialog.innerHTML, /topic-sources|topic-lane|source-lane-label|Not listed/);
-  const related = dialog.innerHTML.match(/<button class="ott-similar-card" type="button" data-detail="([^"]+)"/);
-  assert.ok(related);
-  const target = { closest: (selector) => selector === '[data-detail]' ? { dataset: { detail: related[1] } } : null };
-  for (const callback of dialog.listeners.click) callback({ target });
-  const entry = api.entries.find((e) => e.id === related[1]);
-  assert.ok(dialog.innerHTML.includes(`id="watch-detail-title">${entry.item.name}</h2>`));
-  assert.equal(dialog.open, true);
-});
-
-test('cards and tiles share a link to their own title instead of saving it', () => {
-  const { api } = harness();
-  const entry = api.entries.find((e) => e.item.name === 'Our Planet');
-  for (const markup of [api.card(entry), api.tile(entry)]) {
-    assert.ok(markup.includes(`data-share="${entry.id}" data-share-title="Our Planet"`));
-    assert.doesNotMatch(markup, /data-save|♡|♥/);
-  }
-});
-
-test('malformed shared URL fragments do not crash browsing', () => {
-  const { api, sandbox } = harness();
-  sandbox.location.hash = '#%E0%A4%A';
-  assert.doesNotThrow(() => api.revealHash());
-});
-
-
-test('featured collection resolves exactly seven distinct catalog titles with sources', () => {
-  const { api } = harness();
-  assert.equal(api.featuredEntries.length, 7);
-  assert.equal(new Set(api.featuredEntries.map(e => e.id)).size, 7);
-  assert.ok(api.featuredEntries.every(e => e.item.urls.length && e.item.desc));
-});
-
-test('featured rotation advances every six seconds, wraps, pauses and respects interaction', () => {
-  const { api } = harness();
-  let tick, interval, blocked = false, cancelled;
-  const shown = [];
-  const rotation = api.createRotation({ count: 7, show: i => shown.push(i), blocked: () => blocked,
-    schedule(fn, ms) { tick = fn; interval = ms; return 42; }, cancel(id) { cancelled = id; } });
-  assert.equal(interval, 6000);
-  for (let i = 0; i < 7; i++) tick();
-  assert.deepEqual(shown, [1, 2, 3, 4, 5, 6, 0]);
-  blocked = true; tick(); assert.equal(shown.length, 7);
-  blocked = false; rotation.pause(true); tick(); assert.equal(shown.length, 7);
-  assert.equal(rotation.isPaused(), true);
-  rotation.pause(false); tick(); assert.equal(shown.at(-1), 1);
-  rotation.move(-1); rotation.move(-1); assert.equal(shown.at(-1), 6);
-  rotation.destroy(); assert.equal(cancelled, 42);
-});
-
-test('reduced-motion rotation starts paused but permits manual navigation', () => {
-  const { api } = harness();
-  let tick;
-  const shown = [];
-  const rotation = api.createRotation({ count: 7, paused: true, show: i => shown.push(i), blocked: () => false,
-    schedule(fn) { tick = fn; }, cancel() {} });
-  tick(); assert.equal(shown.length, 0);
-  rotation.move(1); assert.deepEqual(shown, [1]);
-  rotation.pause(false); tick(); assert.deepEqual(shown, [1, 2]);
 });
