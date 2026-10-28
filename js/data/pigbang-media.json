@@ -231,5 +231,16 @@
     "publisher": "Netflix India",
     "verifiedAt": "2026-10-28",
     "mediaKind": "Official promotional trailer thumbnail"
+  },
+  "13th": {
+    "image": "/assets/pigbang/13th.webp",
+    "backdrop": "/assets/pigbang/13th.webp",
+    "artworkSourceUrl": "https://www.youtube.com/watch?v=krfcq5pF8u8",
+    "thumbnailUrl": "https://i.ytimg.com/vi/krfcq5pF8u8/maxresdefault.jpg",
+    "publisher": "Netflix",
+    "verifiedAt": "2026-10-28",
+    "verificationUrl": "https://about.netflix.com/en/news/free-educational-documentaries",
+    "mediaKind": "Official full-feature thumbnail",
+    "verificationNote": "YouTube oEmbed confirms the title 13TH | FULL FEATURE | Netflix and author Netflix; Netflix news lists 13th among its educational films made available on its YouTube channel."
   }
 }

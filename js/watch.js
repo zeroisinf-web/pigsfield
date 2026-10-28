@@ -1,19 +1,77 @@
-import {categories,levels,classLabel,esc,enrich,filterItems,card,action,accessLabel,videoId,titleHref} from './pigbang-core.mjs';
+import {categories,levels,classLabel,esc,enrich,filterItems,availableSubjects,card,action,accessLabel,videoId,titleHref} from './pigbang-core.mjs';
+import { spotlightEntries, createSpotlightRotation } from './pigbang-spotlight.mjs';
 const $=s=>document.querySelector(s), category=document.body.dataset.category;
 const form=$('.filter-bar'),dialog=$('#detail-dialog'),content=$('#detail-content');
 let items=[],visible=24,forcedBrowse=false,activeItem=null,returnFocus=null,noticeTimer;
 let savedIds=new Set();
 try{const stored=JSON.parse(localStorage.getItem('pigbang-list-v1')||'[]');if(Array.isArray(stored))savedIds=new Set(stored.filter(x=>typeof x==='string'));}catch{}
 const state={category,q:'',class:'',subject:'',access:'',saved:false,savedIds};
+let subjectScope='',subjectValues=new Set();
+function syncSubjects(){
+  const scope=`${items.length}:${category}:${state.class}`;
+  const select=form.elements.namedItem('subject');
+  if(scope!==subjectScope){
+    const {disciplines,topics}=availableSubjects(items,state);
+    subjectValues=new Set([...disciplines,...topics]);
+    const options=values=>values.map(value=>`<option value="${esc(value)}">${esc(value)}</option>`).join('');
+    select.innerHTML='<option value="">All subjects</option>'+options(disciplines)+(topics.length?'<optgroup label="Specific topics">'+options(topics)+'</optgroup>':'');
+    document.querySelectorAll('[data-subject]').forEach(button=>{button.hidden=Boolean(button.dataset.subject)&&!subjectValues.has(button.dataset.subject);});
+    subjectScope=scope;
+  }
+  if(state.subject&&!subjectValues.has(state.subject))state.subject='';
+  select.value=state.subject;
+}
 function toast(message){const t=$('.toast');t.textContent=message;t.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>t.hidden=true,3000);}
 function updateSaved(){document.querySelectorAll('.list-count').forEach(n=>n.textContent=savedIds.size);$('.list-toggle').setAttribute('aria-pressed',String(state.saved));}
 function imageErrors(root=document){root.querySelectorAll('img').forEach(img=>{img.addEventListener('error',()=>{img.hidden=true;},{once:true});if(img.complete&&!img.naturalWidth)img.hidden=true;});}
 function controlsToState(){for(const key of ['q','class','subject','access'])state[key]=form.elements.namedItem(key).value;}
-function stateToControls(){for(const key of ['q','class','subject','access']){const input=form.elements.namedItem(key);input.value=state[key]||'';if(input.value!==state[key])state[key]='';}}
+function stateToControls(){for(const key of ['q','class','access']){const input=form.elements.namedItem(key);input.value=state[key]||'';if(input.value!==state[key])state[key]='';}syncSubjects();}
+
+function initSpotlights(){
+  const hero=document.querySelector('[data-spotlight]');
+  if(!hero)return;
+  const slides=spotlightEntries(items);
+  if(slides.length<2)return;
+  const art=hero.querySelector('.hero-art'),body=hero.querySelector('.hero-body');
+  const pauseButton=$('#spotlight-pause'),position=$('#spotlight-position');
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const prefetched=new Set();
+  let pointerInside=false;
+  function show(index){
+    const item=slides[index],primary=action(item);
+    hero.dataset.spotlightId=item.id;
+    art.innerHTML=item.backdrop?`<img src="${esc(item.backdrop)}" alt="" width="1280" height="720">` : '';
+    body.querySelector('#hero-title').innerHTML=`<span class="sr-only">${category?'Movies &amp; shows':'PigBang educational OTT'}: </span>${esc(item.title)}`;
+    body.querySelector('#hero-title').classList.toggle('long-title',item.title.length>26);
+    body.querySelector('.hero-description').textContent=item.description;
+    body.querySelector('.hero-buttons').innerHTML=`<a class="button primary" href="${esc(primary.url)}" ${primary.kind==='video'||primary.kind==='trailer'?`data-hero-play="${item.id}"`:'target="_blank" rel="noopener noreferrer"'}>▶ ${esc(primary.label)}</a><a class="button secondary" href="${titleHref(item)}" data-detail="${item.id}">ⓘ Explore title</a>`;
+    $('#spotlight-featured').innerHTML=`<span>IN THE SPOTLIGHT</span> ${esc(item.title)} <span>· ${esc(item.disciplines[0])}</span>`;
+    $('#spotlight-stages').textContent='For '+item.spotlightClasses.map(classLabel).join(' · ');
+    position.textContent=`${index+1} / ${slides.length}`;
+    imageErrors(art);
+    // Warm only the following image; the entire collection is never eager-loaded.
+    const next=slides[(index+1)%slides.length].backdrop;
+    if(next&&!prefetched.has(next)){const image=new Image();image.src=next;prefetched.add(next);}
+  }
+  const rotation=createSpotlightRotation({count:slides.length,show,paused:reduced.matches,
+    blocked:()=>document.hidden||dialog.open||pointerInside||hero.contains(document.activeElement)||form.contains(document.activeElement)});
+  function updatePause(){pauseButton.textContent=rotation.paused?'Resume':'Pause';pauseButton.setAttribute('aria-pressed',String(rotation.paused));pauseButton.setAttribute('aria-label',rotation.paused?'Resume spotlight rotation':'Pause spotlight rotation');}
+  $('#spotlight-prev').addEventListener('click',()=>rotation.previous());
+  $('#spotlight-next').addEventListener('click',()=>rotation.next());
+  pauseButton.addEventListener('click',()=>{rotation.setPaused(!rotation.paused);updatePause();});
+  hero.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen')pointerInside=true;});
+  hero.addEventListener('pointerleave',()=>{pointerInside=false;});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)rotation.stop();else rotation.start();});
+  window.addEventListener('pagehide',()=>rotation.stop());
+  window.addEventListener('pageshow',()=>rotation.start());
+  reduced.addEventListener('change',event=>{if(event.matches){rotation.setPaused(true);updatePause();}});
+  rotation.goTo(0);updatePause();rotation.start();
+}
+
 function readUrl(){const params=new URL(location.href).searchParams;for(const key of ['q','class','subject','access'])state[key]=params.get(key)||'';state.saved=params.get('saved')==='1';forcedBrowse=params.get('browse')==='1';stateToControls();updateSaved();}
 function writeUrl(){const url=new URL(location.href);for(const key of ['q','class','subject','access']){state[key]?url.searchParams.set(key,state[key]):url.searchParams.delete(key);}state.saved?url.searchParams.set('saved','1'):url.searchParams.delete('saved');forcedBrowse?url.searchParams.set('browse','1'):url.searchParams.delete('browse');history.replaceState({},'',url);}
 function render(append=false){const filtered=forcedBrowse||state.q||state.class||state.subject||state.access||state.saved;$('#browse-shelves').hidden=Boolean(filtered);$('#results').hidden=!filtered;document.querySelectorAll('[data-subject]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.subject===state.subject)));updateSaved();if(!filtered)return;const results=filterItems(items,state);$('#result-heading').textContent=state.saved?'My list':'Your discoveries';$('#result-count').textContent=`${results.length.toLocaleString()} ${results.length===1?'title':'titles'}`;const markup=results.length?results.slice(append?visible-24:0,visible).map(x=>card(x)).join(''):`<div class="empty"><h3>${state.saved?'Your list is waiting for a little curiosity.':'No discoveries just yet.'}</h3><p>${state.saved?'Open any title and choose Add to my list. Your list is saved in this browser.':'Try another subject, a wider class range, or a different title.'}</p><button class="button secondary" data-reset type="button">${state.saved?'Browse the collection':'Clear filters'}</button></div>`;if(append&&results.length)$('#result-grid').insertAdjacentHTML('beforeend',markup);else $('#result-grid').innerHTML=markup;$('#load-more').hidden=results.length<=visible;imageErrors($('#result-grid'));}
-function change(){visible=24;controlsToState();writeUrl();render();}
+function change(){visible=24;controlsToState();syncSubjects();writeUrl();render();}
 function reset(){state.q=state.class=state.subject=state.access='';state.saved=false;forcedBrowse=false;stateToControls();visible=24;writeUrl();render();}
 function persistSaved(){try{localStorage.setItem('pigbang-list-v1',JSON.stringify([...savedIds]));return true;}catch{toast('Your browser could not save the list. It will last for this visit.');return false;}}
 function external(url,label,primary=false){return `<a class="button ${primary?'primary':'secondary'}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`;}
@@ -38,6 +96,6 @@ $('.close-dialog').addEventListener('click',()=>dialog.close());dialog.addEventL
  if(target.dataset.save){const id=target.dataset.save;savedIds.has(id)?savedIds.delete(id):savedIds.add(id);const persisted=persistSaved();target.textContent=savedIds.has(id)?'✓ In my list':'＋ Add to my list';target.setAttribute('aria-pressed',String(savedIds.has(id)));render();if(persisted)toast(savedIds.has(id)?'Added to your list':'Removed from your list');return;}
  if(target.hasAttribute('data-share')&&activeItem){const url=new URL(titleHref(activeItem),location.origin).href;try{await navigator.clipboard.writeText(url);toast('Link copied');}catch{toast('Copy this title’s address from your browser to share.');}}
  });
-window.addEventListener('popstate',()=>{readUrl();render();revealHash();});window.addEventListener('hashchange',revealHash);
+window.addEventListener('popstate',()=>{readUrl();writeUrl();render();revealHash();});window.addEventListener('hashchange',revealHash);
 imageErrors();updateSaved();
-try{const [catalog,media,additions]=await Promise.all([fetch(new URL('./data/pigbang-catalog.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('catalog');return r.json();}),fetch(new URL('./data/pigbang-media.json',import.meta.url)).then(r=>r.ok?r.json():{}).catch(()=>({})),fetch(new URL('./data/pigbang-additions.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('additions');return r.json();})]);items=enrich([...catalog.items,...additions.items],media);$('.loading-note').textContent='Find your kind of fascinating';readUrl();render();revealHash();}catch{$('.loading-note').textContent='Filters unavailable. Browse the complete directory below.';form.querySelectorAll('input,select,button').forEach(el=>el.disabled=true);$('.list-toggle').disabled=true;document.querySelector('.directory').open=true;}
+try{const [catalog,media,additions]=await Promise.all([fetch(new URL('./data/pigbang-catalog.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('catalog');return r.json();}),fetch(new URL('./data/pigbang-media.json',import.meta.url)).then(r=>r.ok?r.json():{}).catch(()=>({})),fetch(new URL('./data/pigbang-additions.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('additions');return r.json();})]);items=enrich([...catalog.items,...additions.items],media);initSpotlights();$('.loading-note').textContent='Find your kind of fascinating';readUrl();writeUrl();render();revealHash();}catch{$('.loading-note').textContent='Filters unavailable. Browse the complete directory below.';form.querySelectorAll('input,select,button').forEach(el=>el.disabled=true);$('.list-toggle').disabled=true;document.querySelector('.directory').open=true;}

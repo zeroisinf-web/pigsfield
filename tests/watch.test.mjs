@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
-import { action, accessLabel, card, enrich, filterItems, isSearch, safeUrl, titleHref, videoId } from '../js/pigbang-core.mjs';
+import { action, accessLabel, availableSubjects, card, enrich, filterItems, isSearch, safeUrl, titleHref, videoId } from '../js/pigbang-core.mjs';
 
 const item = (overrides = {}) => ({
   id: 'movies-2', slug: 'our-planet', title: 'Our Planet', year: 2019,
@@ -33,6 +33,63 @@ test('saved filters intersect the current page and search; an empty saved set st
   assert.deepEqual(filterItems(rows,{saved:true,savedIds:new Set(['apps-2','movies-2']),category:'apps'}).map(x=>x.id),['apps-2']);
   assert.equal(filterItems(rows,{saved:true,savedIds:new Set()}).length,0);
   assert.equal(filterItems(rows,{saved:true}).length,0);
+});
+
+const subjectFixtures = () => [
+  item({id:'biology',classes:['6-8'],disciplines:['Science','Science'],subjects:['Science','Science: Biology','Science: Biology']}),
+  item({id:'physics',classes:['9-12'],disciplines:['Physics'],subjects:['Physics: Mechanics']}),
+  item({id:'coding',category:'apps',classes:['6-8'],disciplines:['Technology'],subjects:['Technology: Coding']}),
+  item({id:'art',classes:['6-8'],disciplines:['Science','Arts'],subjects:['Science: Biology','Arts: Drawing']})
+];
+
+test('subject choices include only the selected class and current category, sorted without duplicates', () => {
+  assert.deepEqual(availableSubjects(subjectFixtures(),{category:'movies',class:'6-8'}),{
+    disciplines:['Arts','Science'],
+    topics:['Arts: Drawing','Science: Biology']
+  });
+  assert.deepEqual(availableSubjects(subjectFixtures(),{category:'apps',class:'6-8'}),{
+    disciplines:['Technology'],topics:['Technology: Coding']
+  });
+  assert.deepEqual(availableSubjects(subjectFixtures(),{category:'movies',class:'no-matching-class'}),{
+    disciplines:[],topics:[]
+  });
+});
+
+test('All classes restores the category subject choices without adding another category’s subjects', () => {
+  const rows=subjectFixtures();
+  assert.deepEqual(availableSubjects(rows,{category:'movies',class:''}),{
+    disciplines:['Arts','Physics','Science'],
+    topics:['Arts: Drawing','Physics: Mechanics','Science: Biology']
+  });
+  assert.deepEqual(availableSubjects(rows,{class:'6-8'}),{
+    disciplines:['Arts','Science','Technology'],
+    topics:['Arts: Drawing','Science: Biology','Technology: Coding']
+  });
+});
+
+test('an old subject, search, access or saved-list selection cannot hide otherwise available class subjects', () => {
+  const scope={category:'movies',class:'6-8'};
+  assert.deepEqual(availableSubjects(subjectFixtures(),{
+    ...scope,subject:'Physics: Mechanics',q:'no results',access:'paid',saved:true,savedIds:new Set()
+  }),availableSubjects(subjectFixtures(),scope));
+});
+
+test('every subject offered for a real catalog class has a matching title in that page category', () => {
+  const readItems=file=>JSON.parse(fs.readFileSync(new URL('../js/data/'+file,import.meta.url),'utf8')).items;
+  const rows=[...readItems('pigbang-catalog.json'),...readItems('pigbang-additions.json')];
+  for(const category of ['movies','apps','channels']){
+    for(const level of ['0-5','PG','Teacher Training']){
+      const scope={category,class:level};
+      const matching=rows.filter(row=>row.category===category&&row.classes.includes(level));
+      const {disciplines,topics}=availableSubjects(rows,scope);
+      const choices=[...disciplines,...topics];
+      assert.equal(new Set(choices).size,choices.length,`${category}/${level} has duplicate subjects`);
+      for(const choice of choices)assert.ok(matching.some(row=>row.disciplines.includes(choice)||row.subjects.includes(choice)),`${category}/${level}: ${choice}`);
+      for(const row of matching){
+        for(const subject of [...row.disciplines,...row.subjects])assert.ok(choices.includes(subject),`${row.title}: missing ${subject}`);
+      }
+    }
+  }
 });
 
 test('a provider, verified trailer and unverified trailer search have distinct action labels', () => {
