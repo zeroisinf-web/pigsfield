@@ -8,7 +8,7 @@ The source contains 2,175 records: 1,697 movies/shows, 269 apps/platforms and 20
 
 Search composes with class, subject and free/paid filters. Subjects and popular subject chips are limited to the current class and category. A subject that no longer applies is cleared, including from shared filter URLs. URLs preserve filters. My list is stored only in the current browser, without login. Detail dialogs have direct share links, original provider actions, related titles, keyboard focus handling and click-to-play privacy-enhanced YouTube embeds. Modified link clicks keep native browser behavior. No video loads before a play action.
 
-The home and Movies & Shows spotlights rotate through 12 curated films and shows every five seconds, with representatives for every learning stage. Previous/next and pause controls remain available. Rotation pauses during interaction, hidden tabs and title dialogs; reduced-motion preferences start it paused.
+The home and Movies & Shows spotlights rotate through the exact 12 user-selected films and shows every five seconds, in the requested order. The catalog’s source learning-stage labels are preserved. The lineup is Nukkad Naatak; Cosmos: A Spacetime Odyssey; The Thinking Game; Dr. Stone; Breaking Bad; Scam 1992: The Harshad Mehta Story; Malgudi Days; Dr. Babasaheb Ambedkar (2000); The Social Dilemma; Saattai; The Man Who Knew Infinity; Ship of Theseus. Previous/next and pause controls remain available. Rotation pauses during interaction, hidden tabs and title dialogs; reduced-motion preferences start it paused.
 
 The source gives no prices for apps. These remain “Check provider.” Classes describe curriculum relevance, not age ratings. Search-result destinations are labeled “Find on provider,” never full-film playback. Providers may restrict availability by region or subscription.
 
@@ -16,9 +16,9 @@ The user-requested Netflix addition **Nukkad Naatak (2026)** is stored separatel
 
 ## Media coverage
 
-`js/data/pigbang-media.json` is the separately reviewed enrichment layer. It records promotional media sources, publishers, verification dates, a TED-Ed link correction, 12 verified trailer/preview URLs and local artwork for 26 titles/platforms/channels. Local images are optimized WebP files. The existing bounded, cached `/api/poster?u=` Worker retrieves real provider artwork for the rest of the catalog when cards enter view. If a provider blocks metadata access or publishes no image, the card keeps a readable title fallback.
+`js/data/pigbang-media.json` is the separately reviewed enrichment layer. It records promotional media sources, publishers, verification dates, a TED-Ed link correction, 18 verified trailer/preview URLs and local artwork for 35 titles/platforms/channels. Local images are optimized WebP files. The existing bounded, cached `/api/poster?u=` Worker retrieves real provider artwork for the rest of the catalog when cards enter view. If a provider blocks metadata access or publishes no image, the card keeps a readable title fallback.
 
-The workbook omits watch links for 537 films. Three of those have reviewed direct trailers in the enrichment layer. The other 534 provide explicitly labeled YouTube trailer searches. Those search links are discovery fallbacks and are not claimed to be verified trailers or full films. The remaining supplied provider links are preserved as catalog data; this change does not verify every provider's current regional availability.
+The workbook omits watch links for 537 films. 4 of those have reviewed direct trailers in the enrichment layer. The other 533 provide explicitly labeled YouTube trailer searches. Those search links are discovery fallbacks and are not claimed to be verified trailers or full films. The remaining supplied provider links are preserved as catalog data; this change does not verify every provider's current regional availability.
 
 ## SEO
 
