@@ -215,7 +215,8 @@
 .ai-studio-v2 .ai-refresh-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ai-border-strong); }
 .ai-studio-v2 .ai-refresh-btn:disabled { opacity: .55; cursor: progress; }
 .ai-refresh-btn .ai-icon { width: .95rem; height: .95rem; }
-.ai-rankings.is-loading .ai-refresh-btn .ai-icon { animation: aiSpin 1s linear infinite; }
+.ai-rankings.is-loading .ai-refresh-btn .ai-icon { animation: ai-spin .85s linear infinite; }
+@keyframes ai-spin { to { transform: rotate(360deg); } }
 
 .ai-rankings-scroll { width: 100%; min-width: 0; }
 .ai-rankings-table {
@@ -552,7 +553,7 @@
 
 /* --- AI Studio Page Layout & Close Button ---------------------------------- */
 .ai-page-hero {
-  padding: 2.2rem 0 1.25rem;
+  padding: 1.75rem 0 1.1rem;
   border-bottom: 1px solid var(--line);
   background: var(--paper-strong);
 }

@@ -300,7 +300,6 @@
       if (!definition || !body) return;
       body.innerHTML = definition.render();
       details.dataset.rendered = "true";
-      if (PF.applyLanguageTo) PF.applyLanguageTo(body);
     }
 
     function panelKeyForHash(id) {
@@ -312,7 +311,6 @@
 
     if (prerendered) root.querySelectorAll("details.exam-panel").forEach((details) => { details.dataset.rendered = "true"; });
     else root.innerHTML = `<div class="exam-stack" id="exam-sections" data-accordion-scope>${panelDefinitions.map(panelShell).join("")}</div>`;
-    if (PF.applyLanguageTo) PF.applyLanguageTo(root);
 
     root.addEventListener("click", (event) => {
       const summary = event.target.closest && event.target.closest("summary");

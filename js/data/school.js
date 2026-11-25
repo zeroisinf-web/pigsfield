@@ -799,7 +799,7 @@ window.PF_DATA.school = {
       },
       {
        "title": "Magnet Brains",
-       "desc": "Free website with full video courses and NCERT solutions for Class 1–5",
+       "desc": "Free website with full video courses and NCERT solutions for Class 1–12",
        "links": [
         {
          "label": "Web",

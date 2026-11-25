@@ -29,7 +29,7 @@ python -m http.server 8741
 
 Then open `http://localhost:8741`.
 
-This static preview does not provide `/api/ai` or `/api/translate`; hosted text generation and fallback Hindi translation need the deployed Cloudflare Worker and its `AI` binding.
+This static preview does not provide `/api/ai`; hosted text generation needs the deployed Cloudflare Worker and its `AI` binding.
 
 After editing assets or page content, refresh the asset versions and offline shell before running checks. If you changed catalog data, run `npm run build:topics` first: it writes the per-topic pages **and** the index block on each hub, and `npm run build` fails if either is stale. If you changed `js/data/exams.js` or `js/exams-page.js`, run `npm run build:exams`: it writes every exam panel into `exams/index.html` so crawlers can read them, and `npm run build` fails if they are stale.
 
@@ -59,7 +59,7 @@ Each hub and topic page has its own 1200×630 social card in `assets/og/`, so a 
 2. Connect the repository to a Cloudflare Workers Builds project and use the included `wrangler.jsonc` configuration.
 3. Deploy the repository root. Cloudflare publishes the static assets and runs `worker/index.mjs` before `/api/*` requests.
 4. Turn on **Always Use HTTPS** in the Cloudflare dashboard (SSL/TLS → Edge Certificates). `worker/index.mjs` contains an http→https redirect, but `run_worker_first` in `wrangler.jsonc` is scoped to `/api/*`, so the Worker never runs for a page request and that redirect cannot fire for ordinary traffic. The `Strict-Transport-Security` header in `_headers` protects every visit after the first one; only the dashboard setting covers the first.
-5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `TRANSLATION_RATE_LIMITER`, `TRANSLATION_IP_RATE_LIMITER`, `VISITOR_RATE_LIMITER` and `POSTER_IP_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/translate`, `/api/poster` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
+5. Keep the AI binding named `AI`, the visitor Durable Object binding named `VISITOR_COUNTER`, and the rate-limit bindings named `AI_RATE_LIMITER`, `AI_IP_RATE_LIMITER`, `VISITOR_RATE_LIMITER` and `POSTER_IP_RATE_LIMITER`. The browser-facing endpoints are the same-origin `/api/ai`, `/api/model-rankings`, `/api/poster` and `/api/visitors` routes. The declarative `exports` block provisions the SQLite-backed visitor counter on deployment.
 6. The three text models use the native Workers AI binding. Ensure the Cloudflare account has sufficient Workers AI allocation; visitors still need no account or additional provider key.
 
 ## Optional accounts (dormant)

@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseRankings, handleModelRankings, selectModels, MAX_MODELS, MAX_PER_COMPANY, MAX_SECONDS } from '../worker/model-rankings.mjs';
+import { parseRankings, handleModelRankings, selectModels, MAX_MODELS, MAX_PER_COMPANY, MAX_SECONDS, MAX_MINUTES } from '../worker/model-rankings.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const html = rows => `<table><tr>${['Model','Creator','Artificial Analysis Intelligence Index','Cost per TaskUSD','TotalResponse (s)'].map(c => `<th>${c}</th>`).join('')}</tr>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const liveHtml = rows => `<table><tr>${['Model','Artificial Analysis Intelligence Index','Cost per Task USD','Time per Task Minutes'].map(c => `<th>${c}</th>`).join('')}</tr>${rows.map(([model, creator, intel, cost, min]) => `<tr><td><div><img alt="${creator}" src="/img/logos/${creator.toLowerCase()}.svg"/>${model}</div></td><td>${intel}</td><td>${cost}</td><td>${min}</td></tr>`).join('')}</table>`;
 test('filters total response, preserves zero cost, allows a second entry per company and breaks ties', () => {
   const data = parseRankings(html([
-    ['Slow','OpenAI',99,1,45.01], ['Missing','Meta',95,1,'--'], ['Provisional','Google','90*',1,10],
+    ['Slow','OpenAI',99,1,MAX_SECONDS + 0.01], ['Missing','Meta',95,1,'--'], ['Provisional','Google','90*',1,10],
     ['A','OpenAI',80,2,45], ['B','OpenAI',80,0,44], ['C','Anthropic',81,3,40],
     ['D','xAI',79,1,30], ['E','SpaceXAI',78,1,29]
   ]));
@@ -18,9 +19,23 @@ test('filters total response, preserves zero cost, allows a second entry per com
   assert.deepEqual(data.models.map(m => m.name), ['C','B','A','D','E']);
   assert.equal(data.models[1].cost, 0);
 });
-test('caps the table at ten entries and any company at two, and accepts exactly 45 seconds', () => {
+test('parses current Artificial Analysis schema with img alt creator and Time per Task Minutes', () => {
+  const data = parseRankings(liveHtml([
+    ['Claude Fable 5.2 Max, Default Fallback', 'Anthropic', '65', '$26.54', '40.5'],
+    ['GPT-6.2 Astra Max', 'OpenAI', '62', '$4.00', '14.2'],
+    ['Gemini 4 Hydrogen Xhigh', 'Google', '54', '$3.16', String(MAX_MINUTES)],
+    ['Too Slow Variant', 'Google', '66', '$1.00', String(MAX_MINUTES + 0.1)],
+    ['Tencent Hy4', 'Tencent', '35', '$1.03', '13.4']
+  ]));
+  assert.deepEqual(data.models.map(m => m.name), ['GPT-6.2 Astra Max', 'Gemini 4 Hydrogen Xhigh', 'Tencent Hy4']);
+  assert.equal(data.models[0].company, 'OpenAI');
+  assert.equal(data.models[0].seconds, 852);
+  assert.equal(data.models[1].seconds, MAX_SECONDS);
+  assert.equal(data.models[2].website, 'https://yuanbao.tencent.com/');
+});
+test('caps the table at ten entries and any company at two, and accepts exactly MAX_MINUTES', () => {
   const creators = ['OpenAI','OpenAI','OpenAI','Anthropic','Anthropic','Anthropic','Google','New Lab','Z AI','DeepSeek','Kimi','xAI','Mistral'];
-  const data = parseRankings(html(creators.map((c,i) => [`Model ${i}`,c,90-i,1,45])));
+  const data = parseRankings(html(creators.map((c,i) => [`Model ${i}`,c,90-i,1,MAX_SECONDS])));
   assert.equal(data.models.length, MAX_MODELS);
   const perCompany = data.models.reduce((counts, m) => counts.set(m.company, (counts.get(m.company) || 0) + 1), new Map());
   assert.ok([...perCompany.values()].every(count => count <= MAX_PER_COMPANY), 'no company may exceed its allowance');
@@ -56,13 +71,15 @@ test('fails closed when source markup or metrics disappear', () => {
   assert.throws(() => parseRankings(html([['A','OpenAI',50,'--',20]])));
   assert.throws(() => parseRankings(html([]).replace('TotalResponse (s)','Latency')));
 });
-test('route serves fresh cache, refreshes expired data, then preserves snapshot on source failure', async () => {
+test('route serves fresh cache, honors explicit refresh=1, refreshes expired data, then preserves snapshot on source failure', async () => {
   const request = new Request('https://pigsfield.com/api/model-rankings');
-  let saved = parseRankings(html([['Cached','OpenAI',50,1,20]]));
+  let saved = parseRankings(html([['Cached','OpenAI',50,1,20]]), new Date(Date.now() - 60000));
   const cache = { match: async () => new Response(JSON.stringify(saved)), put: async (_, r) => { saved = await r.json(); } };
   const env = { ASSETS: { fetch: async () => new Response(JSON.stringify(saved)) } };
   let result = await handleModelRankings(request, env, cache, () => { throw Error('must not fetch'); });
   assert.equal((await result.json()).stale, false);
+  result = await handleModelRankings(new Request('https://pigsfield.com/api/model-rankings?refresh=1'), env, cache, async () => new Response(liveHtml([['Refreshed','Google',70,'$2.00','10.0']])));
+  assert.equal((await result.json()).models[0].name, 'Refreshed');
   saved.updatedAt = '2020-01-01T00:00:00.000Z';
   result = await handleModelRankings(request, env, cache, async () => new Response(html([['New','Google',60,1,10]])));
   assert.equal((await result.json()).models[0].name, 'New');

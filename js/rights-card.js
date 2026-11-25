@@ -152,7 +152,6 @@
     const download = dialog.querySelector("[data-rights-card-download]");
     download.href = objectUrl;
     download.download = name;
-    if (PF.applyLanguageTo) PF.applyLanguageTo(dialog);
     PF.showDialog(dialog);
   }
 

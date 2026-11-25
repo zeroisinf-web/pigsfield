@@ -33,13 +33,12 @@ export const EXAM_PAGES = [
     slug: "upsc",
     card: "Prelims, CSAT and Mains, paper by paper.",
     name: "UPSC",
+    hi: "यूपीएससी सिलेबस प्रीलिम्स मेन्स एनसीईआरटी मुफ़्त तैयारी",
     title: "Free UPSC Syllabus Guide: Prelims & Mains Resources | Pigsfield",
     h1: "UPSC syllabus with free courses, marathons and books for every paper",
     description: "The UPSC Civil Services syllabus paper by paper, with free courses, revision marathons, books and official previous papers for each topic.",
     intro: [
-      "The Civil Services Examination has three stages: Prelims (General Studies Paper I and the qualifying CSAT paper), Mains (nine descriptive papers, seven of which count towards merit) and the interview. This page follows that structure paper by paper.",
-      "Under each topic you will find the official syllabus wording, then a free full course for learning it, a revision marathon for the last weeks, and books for focused practice. Start with the NCERT foundation, because much of Prelims General Studies is built on the Class 6 to 12 textbooks, then move to one standard book per subject and practise with official previous papers.",
-      "Everything links to its original provider; Pigsfield hosts none of it. UPSC sets the syllabus and pattern and can change them with each notification, so confirm them on upsc.gov.in before you plan your year."
+      "Paper-by-paper UPSC CSE guide: NCERT foundations, free full courses, revision marathons, books and official UPSC previous papers. Confirm current notifications on upsc.gov.in."
     ]
   },
   {
@@ -47,13 +46,12 @@ export const EXAM_PAGES = [
     slug: "ras",
     card: "Prelims and Mains, with Rajasthan GK.",
     name: "RAS",
+    hi: "आरएएस सिलेबस आरपीएससी प्रीलिम्स मेन्स राजस्थान जीके तैयारी",
     title: "RAS Syllabus Guide: Free RPSC Prelims & Mains Prep | Pigsfield",
     h1: "RAS syllabus with free courses, marathons and books for Prelims and Mains",
     description: "The RPSC RAS syllabus for Prelims and Mains, with free courses, revision marathons, books and RPSC and RSSB previous papers for each topic.",
     intro: [
-      "The Rajasthan Administrative Services exam, conducted by the Rajasthan Public Service Commission as the RAS/RTS Combined Competitive Examination, has a single objective Prelims paper, four descriptive Mains papers and an interview.",
-      "Rajasthan's history, art and culture, geography and economy carry real weight at every stage, alongside the national General Studies syllabus it shares with UPSC. This page sets out the syllabus paper by paper, with a free course, a revision marathon and books under each topic. A practical order is NCERT books first, then Rajasthan-specific material, then previous papers to see how questions are actually framed.",
-      "All links open their original provider. Check the current notification on rpsc.rajasthan.gov.in, because the pattern and syllabus can change."
+      "RPSC RAS Prelims and Mains syllabus paper by paper, pairing NCERT foundations and Rajasthan GK with free courses, marathons, books and previous papers. Verify updates on rpsc.rajasthan.gov.in."
     ]
   },
   {
@@ -61,13 +59,12 @@ export const EXAM_PAGES = [
     slug: "ncert-books-for-upsc-ras-ssc",
     card: "Which class, which book, for which exam.",
     name: "NCERT roadmap",
+    hi: "एनसीईआरटी किताबें यूपीएससी आरएएस एसएससी कक्षावार रोडमैप",
     title: "NCERT Books for UPSC, RAS & SSC: Class-wise Roadmap | Pigsfield",
     h1: "Which NCERT books to read for UPSC, RAS and SSC, class by class",
     description: "Which NCERT classes and books UPSC, RAS and SSC expect for history, geography, polity, economy, science and more, compared subject by subject.",
     intro: [
-      "Most general studies questions in UPSC, RAS and SSC rest on the same school textbooks. The difference is how far up each exam goes. The table compares, subject by subject, which NCERT classes each exam expects and which titles or chapters to read first: history, geography, polity, economy, general science, environment, art and culture, and society.",
-      "A sensible order is to read the Class 6 to 10 books quickly for vocabulary and basics, then the Class 11 and 12 books slowly, making short notes you can revise. NCERT textbooks are free to read and download from the official NCERT site, linked above the table.",
-      "Treat this as a reading plan rather than a syllabus: each exam's official notification remains the final word."
+      "Subject-by-subject comparison of required NCERT textbooks (Class 6 to 12) for UPSC, RAS and SSC. Read official notifications for exact exam scope."
     ]
   },
   {
@@ -75,13 +72,12 @@ export const EXAM_PAGES = [
     slug: "ssc",
     card: "Maths, reasoning, English and GK.",
     name: "SSC",
+    hi: "एसएससी सीजीएल सीएचएसएल गणित रीजनिंग जीके मुफ़्त तैयारी",
     title: "Free SSC Preparation: Maths, Reasoning, English & GK | Pigsfield",
     h1: "Free SSC courses for maths, reasoning, English, GK and current affairs",
     description: "Free courses, revision marathons and books for SSC CGL and CHSL subjects: quantitative aptitude, reasoning, English, general awareness and computers.",
     intro: [
-      "SSC CGL, CHSL and most other recruitment exams test the same core subjects: quantitative aptitude, reasoning, English, general awareness and computer awareness. This page gathers free courses, revision marathons and books for each, with banking-specific options where they differ, plus Hindi, general science, polity, geography, environment, economy, static GK and current affairs.",
-      "The history section adds world and Indian history classes that also serve UPSC and state exams. A workable routine is a daily slot for maths and reasoning, where marks come from practice rather than reading, and a weekly cycle through the general awareness subjects.",
-      "Every link opens its original provider. Check the current notification on ssc.gov.in for the exact pattern of the exam you are taking."
+      "Free courses, revision marathons and books for SSC CGL/CHSL, banking and state exams across maths, reasoning, English and GK. Verify notices on ssc.gov.in."
     ]
   }
 ];
@@ -142,8 +138,9 @@ export function renderExamPage(page) {
   const markup = examMarkup();
   const route = `/exams/${page.slug}/`;
   const canonical = `${ORIGIN}${route}`;
+  const keywords = `${page.name}, ${page.hi || ""}, free exam preparation India, Pigsfield`.replace(/\s+,/g, ",");
   const graph = [
-    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: page.h1, description: page.description, inLanguage: "en-IN", isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` } },
+    { "@type": "CollectionPage", "@id": `${canonical}#webpage`, url: canonical, name: page.h1, ...(page.hi ? { alternateName: page.hi } : {}), keywords, description: page.description, inLanguage: "en-IN", audience: { "@type": "EducationalAudience", educationalRole: "student" }, isPartOf: { "@id": `${ORIGIN}/#website` }, publisher: { "@id": `${ORIGIN}/#organization` }, breadcrumb: { "@id": `${canonical}#breadcrumb` } },
     { "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumb`, itemListElement: [
       { "@type": "ListItem", position: 1, name: "Pigsfield", item: `${ORIGIN}/` },
       { "@type": "ListItem", position: 2, name: "Competitive Exams", item: `${ORIGIN}/exams/` },
@@ -159,6 +156,7 @@ export function renderExamPage(page) {
   <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#f4f1e8">
   <title>${esc(page.title)}</title>
   <meta name="description" content="${esc(page.description)}">
+  <meta name="keywords" content="${esc(keywords)}">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="${canonical}"><link rel="icon" href="../../assets/pigsfield-icon-192.png" type="image/png" sizes="192x192"><link rel="manifest" href="../../manifest.json">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Pigsfield"><meta property="og:locale" content="en_IN"><meta property="og:title" content="${esc(page.title)}"><meta property="og:description" content="${esc(page.description)}"><meta property="og:url" content="${canonical}">

@@ -727,34 +727,8 @@ function checkExperienceContracts() {
   const site = fs.readFileSync(siteFile, "utf8");
   check(/data-open-ai[\s\S]{0,800}data-open-support/.test(site) && /id="support-dialog"[\s\S]{0,1500}data-open-donate[\s\S]{0,600}data-open-feedback/.test(site), siteFile, "AI Studio must stay beside one Donate-or-Feedback button whose chooser offers both");
   check(/loadScript\(["']js\/ai-studio\.js(?:\?v=[a-f0-9]+)?["']\)/.test(site), siteFile, "global AI Studio must lazy-load from every page");
-  check(/function\s+createNativeTranslatorFromClick[\s\S]{0,500}window\.Translator\.create\(\{[\s\S]{0,500}downloadprogress/.test(site), siteFile, "Hindi control must create and monitor the browser's language model directly from the click path");
-  check(!/Translator\.availability\(/.test(site), siteFile, "native Translator creation must not lose user activation by awaiting availability first");
-  check(/translatorInstance\.translate\(/.test(site), siteFile, "visible content must be translated in place by the browser model");
-  check(/sourceLanguage:\s*["']en["'][\s\S]{0,80}targetLanguage:\s*["']hi["']/.test(site), siteFile, "browser translation must request English to Hindi");
-  check(/TRANSLATION_ENDPOINT\s*=\s*["']\/api\/translate["']/.test(site) && /fetch\(TRANSLATION_ENDPOINT,[\s\S]{0,300}credentials:\s*["']same-origin["']/.test(site), siteFile, "mobile fallback must use only the same-origin translation endpoint");
-  check(/referrerPolicy:\s*["']no-referrer["']/.test(site), siteFile, "translation fallback must not disclose the current page URL as a referrer");
-  check(/SERVER_TRANSLATION_TIMEOUT_MS\s*=\s*22000/.test(site) && /new AbortController\(\)/.test(site) && /window\.setTimeout\(\(\)\s*=>\s*controller\.abort\(\),\s*SERVER_TRANSLATION_TIMEOUT_MS\)/.test(site) && /signal:\s*controller\.signal/.test(site) && /finally\s*\{\s*window\.clearTimeout\(timeoutId\)/.test(site), siteFile, "every server translation batch needs a cleared AbortController timeout");
-  check(/SERVER_TRANSLATION_MAX_ITEMS\s*=\s*48/.test(site) && /SERVER_TRANSLATION_MAX_CHARACTERS\s*=\s*10000/.test(site), siteFile, "server translation must batch visible strings within bounded request limits");
-  check(/JSON\.stringify\(\{\s*text:\s*texts\s*\}\)/.test(site), siteFile, "server translation must send only the visible text batch");
-  check(/LANGUAGE_STORAGE_KEY\s*=\s*["']pf-language["']/.test(site) && /savedLanguage\(\)\s*===\s*["']hi["'][\s\S]{0,80}restoreSavedHindi\(\)/.test(site), siteFile, "Hindi preference must survive same-site page loads");
-  check(/catch\s*\([^)]*\)\s*\{[\s\S]{0,180}translationProvider\s*=\s*["']server["']/.test(site), siteFile, "native creation or translation failure must switch to the server fallback");
-  check(/new MutationObserver\(/.test(site) && /PF\.applyLanguageTo\s*=/.test(site), siteFile, "dynamic content must join in-page translation");
-  check(/function\s+translationIsCurrent\(generation\)[\s\S]{0,120}language\s*===\s*["']hi["'][\s\S]{0,100}generation\s*===\s*translationGeneration/.test(site), siteFile, "translation work needs a generation and language guard");
-  check(/function\s+requestServerTranslations\(texts,\s*generation\)[\s\S]{0,120}!translationIsCurrent\(generation\)[\s\S]{0,1000}if\s*\(!translationIsCurrent\(generation\)\)\s*return\s+null/.test(site), siteFile, "stale translation requests must stop before fetch and response use");
-  check(/for\s*\(const batch of batches\)[\s\S]{0,180}!translationIsCurrent\(generation\)[\s\S]{0,220}requestServerTranslations\(batch,\s*generation\)[\s\S]{0,180}!translationIsCurrent\(generation\)[\s\S]{0,160}translationCache\.set/.test(site), siteFile, "stale server jobs must stop before every batch, request and cache write");
-  check(/const handled\s*=\s*job\.catch\([\s\S]{0,180}translationIsCurrent\(generation\)[\s\S]{0,100}handleTranslationFailure\(error\)/.test(site) && /return handled\.finally\([\s\S]{0,260}queuedTranslationJobs\s*=\s*Math\.max[\s\S]{0,500}refreshTranslationBusy\(\)/.test(site), siteFile, "server failures and timeouts must restore English and unlock the language control");
-  check(/\\u0900-\\u097F/.test(site), siteFile, "existing Hindi text must not be sent back through the English-to-Hindi translator");
-  check(/function\s+destroyNativeTranslator[\s\S]{0,260}translatorInstance\.destroy\(\)[\s\S]{0,120}translatorInstance\s*=\s*null/.test(site), siteFile, "a failed browser translator must be discarded before server fallback");
-  check(/Android\|Mobile[\s\S]{0,900}open the browser menu \(⋮ or …\)/.test(site), siteFile, "mobile Chrome needs browser-menu translation guidance");
-  check(/id=["']translation-help-dialog["']/.test(site) && /Neither this browser's on-device translator nor Pigsfield's same-origin Hindi service/.test(site) && /A website cannot press or open privileged browser-toolbar controls/.test(site), siteFile, "browser-menu guidance must honestly follow failure of both built-in translation paths");
-  check(!/translate\.google\.|Google Translate|location\.(?:assign|replace)\([^)]*translat/i.test(site), siteFile, "language control must not open an external translation website");
+  check(!/data-lang-toggle|translation-help-dialog|\/api\/translate/.test(site), siteFile, "retired header Hindi toggle and client translator must stay removed");
   check(!/const\s+HI(?:_|\s*=)/.test(site), siteFile, "hand-maintained translation dictionaries should not remain in runtime code");
-  for (const documentName of ["README.md", "privacy/index.html", "accessibility/index.html"]) {
-    const documentFile = path.join(ROOT, documentName);
-    const documentText = fs.readFileSync(documentFile, "utf8");
-    check(/loaded translatable[\s\S]{0,180}(?:labels|accessible labels)[\s\S]{0,120}(?:titles|placeholders)/i.test(documentText), documentFile, "translation disclosure must cover loaded interface labels, titles and placeholders");
-    check(/text typed by the visitor[\s\S]{0,40}never/i.test(documentText), documentFile, "translation disclosure must state that visitor-typed text is never included");
-  }
   check(/Make Govt Accountable/.test(site), siteFile, "government-accountability destination label is missing");
   check(/Nursery to PhD[\s\S]{0,160}PigBang[\s\S]{0,160}Competitive Exams[\s\S]{0,160}Vocational & Business[\s\S]{0,160}Digital Tools[\s\S]{0,160}Make Govt Accountable/.test(site), siteFile, "primary destinations must keep the requested names and order");
   check(/key\s*===\s*["']watch["']\s*\?\s*["'] data-pigbang-link/.test(site), siteFile, "shared PigBang navigation links must stay highlighted");
@@ -1006,12 +980,7 @@ function checkExperienceContracts() {
     check(/DEFAULT_MODEL\s*=\s*"gemma-4-26b-a4b-it"/.test(worker), workerFile, "the cheapest model must stay the documented default");
     check(!/(?:gpt-5\.4-mini|openai\/gpt-5\.4-mini|thirdParty|cloudflare-ai-gateway|Unified Billing)/i.test(worker), workerFile, "stale third-party model and billing paths must stay removed");
     check(/url\.pathname\s*===\s*["']\/api\/ai["']/.test(worker), workerFile, "Worker must own the /api/ai route");
-    check(/url\.pathname\s*===\s*["']\/api\/translate["']/.test(worker), workerFile, "Worker must own the same-origin /api/translate route");
-    check(/TRANSLATION_MODEL\s*=\s*["']@cf\/ai4bharat\/indictrans2-en-indic-1B["']/.test(worker), workerFile, "Hindi fallback must use the exact Cloudflare AI4Bharat model");
-    check(/env\.AI\.run\(TRANSLATION_MODEL,\s*\{\s*text:\s*texts,\s*target_language:\s*["']hin_Deva["']/.test(worker), workerFile, "Hindi fallback must use the exact aligned array input contract");
-    check(/result\s*&&\s*result\.translations[\s\S]{0,260}Array\.isArray\(translations\)[\s\S]{0,160}translations\.length\s*===\s*texts\.length/.test(worker), workerFile, "Hindi fallback must reject unaligned model output");
-    check(/translations\.every\([\s\S]{0,180}value\.trim\(\)[\s\S]{0,180}MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS/.test(worker) && /outputCharacters\s*>\s*MAX_TRANSLATION_OUTPUT_CHARACTERS/.test(worker), workerFile, "Hindi fallback must reject blank and oversized model output");
-    check(/MAX_TRANSLATION_ITEMS\s*=\s*48/.test(worker) && /MAX_TRANSLATION_CHARACTERS\s*=\s*10_000/.test(worker), workerFile, "Hindi translation request arrays need explicit count and size bounds");
+    check(!/\/api\/translate\b|handleTranslate/.test(worker), workerFile, "retired /api/translate route must stay removed");
     check(/request\.body\.getReader\(\)[\s\S]{0,500}bytes\s*>\s*MAX_BODY_BYTES/.test(worker), workerFile, "AI request bodies must be bounded while streaming, including when Content-Length is missing");
     check(/url\.pathname\s*===\s*["']\/api\/visitors["']/.test(worker), workerFile, "Worker must own the /api/visitors route");
     check(/class\s+MonthlyVisitorCounter\b/.test(worker), workerFile, "monthly visitor total needs strongly coordinated Durable Object storage");
@@ -1035,10 +1004,6 @@ function checkExperienceContracts() {
     check(/\[["']tutor["'],\s*["']document["']\]\.includes/.test(worker) && !/["']video["']/.test(worker.match(/const task\s*=[\s\S]{0,160}/)?.[0] || ""), workerFile, "Worker must accept only Tutor and Document text tasks");
     check(/env\.AI_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must apply the per-visitor rate limit");
     check(/env\.AI_IP_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "AI endpoint must also rate-limit by the trusted Cloudflare edge address");
-    check(/env\.TRANSLATION_RATE_LIMITER\.limit\(\{\s*key:\s*clientKey\(request\)\s*\}\)/.test(worker), workerFile, "translation endpoint must apply its separate per-client rate limit");
-    check(/env\.TRANSLATION_IP_RATE_LIMITER\.limit\(\{\s*key:\s*edgeKey\(request\)\s*\}\)/.test(worker), workerFile, "translation endpoint must apply its separate trusted-address rate limit");
-    const translateHandler = worker.match(/async function handleTranslate[\s\S]*?\n\}/)?.[0] || "";
-    check(/applyTranslationRateLimits\(request,\s*env\)/.test(translateHandler) && !/applyAIRateLimits\(/.test(translateHandler), workerFile, "translation must not consume AI Studio's lower rate-limit budget");
     check(/env\.AI\.run\(model\.id,/.test(worker), workerFile, "selected models must run through the Workers AI binding");
     check(/return env\.ASSETS\.fetch\(request\)/.test(worker), workerFile, "non-API requests must fall back to static assets");
   }
@@ -1054,8 +1019,6 @@ function checkExperienceContracts() {
     check(/["']MonthlyVisitorCounter["']\s*:\s*\{[\s\S]{0,100}["']type["']\s*:\s*["']durable-object["'][\s\S]{0,100}["']storage["']\s*:\s*["']sqlite["']/.test(wrangler), wranglerFile, "visitor Durable Object must use declarative SQLite storage");
     check(/["']name["']\s*:\s*["']AI_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*8[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the short per-client AI rate limit");
     check(/["']name["']\s*:\s*["']AI_IP_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*24[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the trusted edge-address AI rate limit");
-    check(/["']name["']\s*:\s*["']TRANSLATION_RATE_LIMITER["'][\s\S]{0,220}["']namespace_id["']\s*:\s*["']2026080601["'][\s\S]{0,120}["']limit["']\s*:\s*32[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the separate per-client translation rate limit");
-    check(/["']name["']\s*:\s*["']TRANSLATION_IP_RATE_LIMITER["'][\s\S]{0,220}["']namespace_id["']\s*:\s*["']2026080602["'][\s\S]{0,120}["']limit["']\s*:\s*96[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the separate translation network rate limit");
     const limiterNamespaces = [...wrangler.matchAll(/["']namespace_id["']\s*:\s*["']([^"']+)["']/g)].map((match) => match[1]);
     check(new Set(limiterNamespaces).size === limiterNamespaces.length, wranglerFile, "every rate-limit binding must use a unique namespace ID");
     check(/["']name["']\s*:\s*["']VISITOR_RATE_LIMITER["'][\s\S]{0,220}["']limit["']\s*:\s*60[\s\S]{0,100}["']period["']\s*:\s*60/.test(wrangler), wranglerFile, "Wrangler must configure the visitor counter abuse limit");

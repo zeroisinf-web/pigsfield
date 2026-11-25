@@ -211,13 +211,7 @@ test("runtime work is deferred and long collections skip offscreen rendering", (
   const site = text("js/site.js");
   const css = text("css/site.css");
   assert.match(site, /requestIdleCallback\(register,\s*\{\s*timeout:\s*4000\s*\}\)/, "service-worker installation must wait for idle time");
-  assert.doesNotMatch(site.match(/function\s+init\(\)\s*\{([\s\S]*?)\n  \}/)?.[1] || "", /startTranslationObserver\(/, "English browsing must not run the translation observer");
-  assert.match(site, /setLanguageState\("hi"\);\s*rememberLanguage\("hi"\);\s*startTranslationObserver\(\)/, "translation observation should start only after Hindi is chosen and remembered");
-  // A page already written in Hindi needs no machine translation; everywhere else the saved
-  // choice is restored in place, never by navigating.
-  assert.match(site, /savedLanguage\(\)\s*===\s*"hi"\s*&&\s*!nativeHindi\)\s*restoreSavedHindi\(\)/, "saved Hindi should restore without changing the page URL");
-  assert.doesNotMatch(site, /Translator\.availability\(/, "native translator creation must remain in the user-activation path");
-  assert.match(site, /SERVER_TRANSLATION_MAX_ITEMS\s*=\s*48[\s\S]{0,100}SERVER_TRANSLATION_MAX_CHARACTERS\s*=\s*10000/, "server translation batches must stay bounded");
+  assert.doesNotMatch(site, /data-lang-toggle|startTranslationObserver|Translator\.create/, "browsers handle page translation natively; removed translation engine must not return");
   const summaryPinning = site.match(/function\s+pinActivatedSummary\([^)]*\)\s*\{([\s\S]*?)\n  \}\n\n  function setDetailsOpen/)?.[1] || "";
   assert.match(summaryPinning, /setTimeout\(/, "accordion position correction should run once after motion settles");
   assert.doesNotMatch(summaryPinning, /requestAnimationFrame|remainingFrames|maintainPosition/, "accordion pinning must not force layout on every animation frame");

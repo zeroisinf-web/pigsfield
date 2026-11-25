@@ -4,7 +4,6 @@
   const PF = (window.PF = window.PF || {});
   const root = document.documentElement;
   const base = root.dataset.base || "./";
-  const nativeHindi = root.lang.startsWith("hi");
   const page = document.body.dataset.page || "home";
   const qs = (selector, scope = document) => scope.querySelector(selector);
   const qsa = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
@@ -35,7 +34,7 @@
   };
 
   const dataScripts = {
-    school: "js/data/school.js?v=aa75617b1d53",
+    school: "js/data/school.js?v=d3ae0687e84c",
     teach: "js/data/teach.js?v=95cc00147d76",
     tools: "js/data/tools.js?v=78e7d4748c46",
     exams: "js/data/exams.js?v=114c9f2cfdd8",
@@ -68,42 +67,6 @@
     pigbang: "PigBang",
     govt: "Make Govt Accountable"
   };
-
-  let language = "en";
-  const TRANSLATOR_OPTIONS = { sourceLanguage: "en", targetLanguage: "hi" };
-  const LANGUAGE_STORAGE_KEY = "pf-language";
-  const TRANSLATION_ENDPOINT = "/api/translate";
-  const SERVER_TRANSLATION_MAX_ITEMS = 48;
-  const SERVER_TRANSLATION_MAX_CHARACTERS = 10000;
-  const SERVER_TRANSLATION_TIMEOUT_MS = 22000;
-  const TRANSLATABLE_ATTRIBUTES = ["placeholder", "title", "aria-label"];
-  const TRANSLATION_SKIP_SELECTOR = [
-    "script", "style", "noscript", "template", "pre", "code", "kbd", "samp",
-    "[translate='no']", "[contenteditable]:not([contenteditable='false'])",
-    "[aria-hidden='true']", ".brand-lockup", "#site-toast",
-    "#translation-help-dialog"
-  ].join(",");
-
-  const originalText = new Map();
-  const originalAttributes = new Map();
-  const translationCache = new Map();
-  const expectedTextMutations = new WeakMap();
-  const expectedAttributeMutations = new WeakMap();
-  const pendingTranslationRoots = new Set();
-  let translatorInstance = null;
-  let translationProvider = "";
-  let translationObserver = null;
-  let translationQueue = Promise.resolve();
-  let translationGeneration = 0;
-  let queuedTranslationJobs = 0;
-  let preparingTranslation = false;
-  let translationBusy = false;
-  let mutationFlushScheduled = false;
-  let languageStatus = "";
-  let compactLanguageStatus = "";
-
-  PF.t = function (value) { return value; };
-  PF.language = function () { return language; };
 
   function escapeHtml(value) {
     return String(value == null ? "" : value)
@@ -378,8 +341,11 @@
   };
   /* pf:resource-symbols:end */
 
-  // Clear pf-recent-v2: a log of opened resources that nothing read back. See git log.
-  try { localStorage.removeItem("pf-recent-v2"); } catch (_) {}
+  // Clear pf-recent-v2 and deprecated pf-language client keys.
+  try {
+    localStorage.removeItem("pf-recent-v2");
+    localStorage.removeItem("pf-language");
+  } catch (_) {}
 
   function setTheme(theme) {
     root.dataset.theme = theme;
@@ -392,603 +358,6 @@
       button.title = dark ? "Use light theme" : "Use dark theme";
     });
   }
-
-  function setLanguageState(next) {
-    language = next === "hi" ? "hi" : "en";
-    root.lang = language === "hi" || nativeHindi ? "hi-IN" : "en-IN";
-    root.dataset.lang = language;
-    updateLanguageControls();
-  }
-
-  function savedLanguage() {
-    try { return localStorage.getItem(LANGUAGE_STORAGE_KEY) === "hi" ? "hi" : "en"; } catch (_) { return "en"; }
-  }
-
-  function rememberLanguage(next) {
-    try {
-      if (next === "hi") localStorage.setItem(LANGUAGE_STORAGE_KEY, "hi");
-      else localStorage.removeItem(LANGUAGE_STORAGE_KEY);
-    } catch (_) {}
-  }
-
-  function translationClientId() {
-    try {
-      const key = "pigsfield-ai-client-v1";
-      let value = localStorage.getItem(key) || "";
-      if (!/^[a-z0-9-]{12,80}$/i.test(value)) {
-        if (!window.crypto || typeof window.crypto.randomUUID !== "function") return "anonymous";
-        value = window.crypto.randomUUID();
-        localStorage.setItem(key, value);
-      }
-      return value;
-    } catch (_) {
-      return "anonymous";
-    }
-  }
-
-  function refreshTranslationBusy() {
-    translationBusy = preparingTranslation || queuedTranslationJobs > 0;
-    updateLanguageControls();
-  }
-
-  function setLanguageProgress(message = "", compact = "") {
-    languageStatus = message;
-    compactLanguageStatus = compact;
-    updateLanguageControls();
-  }
-
-  function updateLanguageControls() {
-    qsa("[data-lang-toggle]").forEach((button) => {
-      const hi = language === "hi" || nativeHindi;
-      const defaultLabel = hi ? "EN" : "हिन्दी";
-      const defaultTitle = hi
-        ? "Restore the original English page"
-        : "Translate this page to Hindi";
-      const nextLabel = translationBusy && compactLanguageStatus ? compactLanguageStatus : defaultLabel;
-      if (button.textContent !== nextLabel) button.textContent = nextLabel;
-      button.disabled = translationBusy;
-      button.setAttribute("aria-busy", String(translationBusy));
-      button.setAttribute("aria-label", translationBusy && languageStatus ? languageStatus : defaultTitle);
-      button.title = translationBusy && languageStatus ? languageStatus : defaultTitle;
-    });
-    const live = qs("#translation-live-status");
-    if (live) live.textContent = languageStatus;
-  }
-
-  function isTechnicalValue(value) {
-    const text = String(value || "").trim();
-    if (!text || !/[A-Za-z]/.test(text)) return true;
-    if (/[\u0900-\u097F]/.test(text)) return true;
-    if (/^(?:https?:|mailto:|tel:|upi:|www\.)/i.test(text)) return true;
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return true;
-    if (/^(?:[\w-]+\.)+[a-z]{2,}(?:[/:?#]\S*)?$/i.test(text)) return true;
-    return false;
-  }
-
-  function isSkippedElement(element, textNode = false) {
-    if (!element || !(element instanceof Element)) return true;
-    if (element.closest(TRANSLATION_SKIP_SELECTOR)) return true;
-    if (textNode && element.closest("textarea")) return true;
-    return false;
-  }
-
-  function shouldTranslateText(node, source) {
-    return node && node.nodeType === Node.TEXT_NODE &&
-      !isSkippedElement(node.parentElement, true) && !isTechnicalValue(source);
-  }
-
-  function shouldTranslateAttribute(element, source) {
-    return element && !isSkippedElement(element, false) && !isTechnicalValue(source);
-  }
-
-  function collectTranslationTargets(scope) {
-    const targets = [];
-    let rootNode = scope || document.body;
-    if (rootNode === document) rootNode = document.body;
-    if (!rootNode) return targets;
-
-    if (rootNode.nodeType === Node.TEXT_NODE) {
-      const source = originalText.has(rootNode) ? originalText.get(rootNode) : rootNode.nodeValue;
-      if (shouldTranslateText(rootNode, source)) targets.push({ kind: "text", node: rootNode });
-      return targets;
-    }
-    if (!(rootNode instanceof Element)) return targets;
-
-    if (!isSkippedElement(rootNode, true)) {
-      const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, {
-        acceptNode(node) {
-          const source = originalText.has(node) ? originalText.get(node) : node.nodeValue;
-          return shouldTranslateText(node, source) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-        }
-      });
-      let textNode;
-      while ((textNode = walker.nextNode())) targets.push({ kind: "text", node: textNode });
-    }
-
-    const attributeElements = [rootNode, ...qsa("[placeholder], [title], [aria-label]", rootNode)];
-    attributeElements.forEach((element) => {
-      TRANSLATABLE_ATTRIBUTES.forEach((name) => {
-        if (!element.hasAttribute(name)) return;
-        const stored = originalAttributes.get(element);
-        const source = stored && stored.has(name) ? stored.get(name) : element.getAttribute(name);
-        if (shouldTranslateAttribute(element, source)) targets.push({ kind: "attribute", element, name });
-      });
-    });
-    return targets;
-  }
-
-  function splitWhitespace(value) {
-    const match = String(value || "").match(/^(\s*)([\s\S]*?)(\s*)$/);
-    return { leading: match ? match[1] : "", core: match ? match[2] : String(value || ""), trailing: match ? match[3] : "" };
-  }
-
-  function translatedValue(source) {
-    const parts = splitWhitespace(source);
-    if (!parts.core) return source;
-    return `${parts.leading}${translationCache.get(parts.core) || parts.core}${parts.trailing}`;
-  }
-
-  function translationBatches(values) {
-    const batches = [];
-    let batch = [];
-    let characters = 0;
-    values.forEach((value) => {
-      if (value.length > SERVER_TRANSLATION_MAX_CHARACTERS) {
-        const error = new Error("A visible page string is too long to translate safely.");
-        error.code = "server-translation-input-too-large";
-        throw error;
-      }
-      if (batch.length && (batch.length >= SERVER_TRANSLATION_MAX_ITEMS || characters + value.length > SERVER_TRANSLATION_MAX_CHARACTERS)) {
-        batches.push(batch);
-        batch = [];
-        characters = 0;
-      }
-      batch.push(value);
-      characters += value.length;
-    });
-    if (batch.length) batches.push(batch);
-    return batches;
-  }
-
-  function translationIsCurrent(generation) {
-    return language === "hi" && generation === translationGeneration;
-  }
-
-  async function requestServerTranslations(texts, generation) {
-    if (!translationIsCurrent(generation)) return null;
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), SERVER_TRANSLATION_TIMEOUT_MS);
-    try {
-      const response = await fetch(TRANSLATION_ENDPOINT, {
-        method: "POST",
-        credentials: "same-origin",
-        referrerPolicy: "no-referrer",
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          "X-Pigsfield-Client": translationClientId()
-        },
-        body: JSON.stringify({ text: texts })
-      });
-      if (!translationIsCurrent(generation)) return null;
-      let payload = null;
-      try { payload = await response.json(); } catch (_) {}
-      if (!translationIsCurrent(generation)) return null;
-      if (!response.ok) {
-        const error = new Error(payload && payload.error || "Pigsfield's Hindi translation service is unavailable.");
-        error.code = "server-translation-unavailable";
-        error.status = response.status;
-        throw error;
-      }
-      const translations = payload && payload.translations;
-      if (!Array.isArray(translations) || translations.length !== texts.length || translations.some((value) => typeof value !== "string" || !value.trim())) {
-        const error = new Error("Pigsfield's Hindi translation service returned an incomplete result.");
-        error.code = "server-translation-invalid-result";
-        throw error;
-      }
-      return translations;
-    } catch (error) {
-      if (!translationIsCurrent(generation)) return null;
-      if (error && /^server-translation-/.test(error.code || "")) throw error;
-      const failed = new Error(error && error.name === "AbortError"
-        ? "Pigsfield's Hindi translation request timed out."
-        : "Pigsfield's Hindi translation service could not be reached.");
-      failed.code = error && error.name === "AbortError" ? "server-translation-timeout" : "server-translation-network-error";
-      failed.status = 503;
-      throw failed;
-    } finally {
-      window.clearTimeout(timeoutId);
-    }
-  }
-
-  async function translateValuesOnServer(values, announceProgress, generation, alreadyCompleted = 0, total = values.length) {
-    if (!translationIsCurrent(generation)) return;
-    const missing = values.filter((value) => !translationCache.has(value));
-    if (!missing.length) return;
-    translationProvider = "server";
-    const batches = translationBatches(missing);
-    let completed = alreadyCompleted;
-    for (const batch of batches) {
-      if (!translationIsCurrent(generation)) return;
-      const results = await requestServerTranslations(batch, generation);
-      if (!translationIsCurrent(generation) || !results) return;
-      batch.forEach((source, index) => translationCache.set(source, results[index] || source));
-      completed += batch.length;
-      if (announceProgress) {
-        const percent = Math.min(100, Math.round((completed / Math.max(1, total)) * 100));
-        setLanguageProgress(`Translating this page through Pigsfield's Cloudflare Hindi service: ${percent}%`, `HI ${percent}%`);
-      }
-    }
-  }
-
-  function destroyNativeTranslator() {
-    if (!translatorInstance) return;
-    try {
-      if (typeof translatorInstance.destroy === "function") translatorInstance.destroy();
-    } catch (_) {}
-    translatorInstance = null;
-  }
-
-  async function prepareTranslations(values, announceProgress, generation) {
-    if (!translationIsCurrent(generation)) return;
-    const missing = [...new Set(values)].filter((value) => value && !translationCache.has(value));
-    if (!missing.length) return;
-    if (translationProvider !== "native" || !translatorInstance) {
-      await translateValuesOnServer(missing, announceProgress, generation, 0, missing.length);
-      return;
-    }
-
-    for (let index = 0; index < missing.length; index += 1) {
-      if (!translationIsCurrent(generation)) return;
-      const source = missing[index];
-      try {
-        const result = await translatorInstance.translate(source);
-        if (!translationIsCurrent(generation)) return;
-        translationCache.set(source, String(result || source));
-        if (announceProgress) {
-          const percent = Math.round(((index + 1) / missing.length) * 100);
-          setLanguageProgress(`Translating this page to Hindi on your device: ${percent}%`, `HI ${percent}%`);
-        }
-      } catch (_) {
-        if (!translationIsCurrent(generation)) return;
-        destroyNativeTranslator();
-        const remaining = missing.slice(index).filter((value) => !translationCache.has(value));
-        await translateValuesOnServer(remaining, announceProgress, generation, index, missing.length);
-        return;
-      }
-    }
-  }
-
-  function writeTranslatedText(node, value) {
-    if (node.nodeValue === value) return;
-    expectedTextMutations.set(node, value);
-    node.nodeValue = value;
-  }
-
-  function writeTranslatedAttribute(element, name, value) {
-    if (element.getAttribute(name) === value) return;
-    let expected = expectedAttributeMutations.get(element);
-    if (!expected) {
-      expected = new Map();
-      expectedAttributeMutations.set(element, expected);
-    }
-    expected.set(name, value);
-    element.setAttribute(name, value);
-  }
-
-  async function translateScope(scope, generation, announceProgress) {
-    if (!translationIsCurrent(generation)) return;
-    const targets = collectTranslationTargets(scope);
-    if (!targets.length) return;
-    const preparedTargets = [];
-    const sourceValues = [];
-    targets.forEach((target) => {
-      if (target.kind === "text") {
-        if (!target.node.isConnected) return;
-        if (!originalText.has(target.node)) originalText.set(target.node, target.node.nodeValue);
-        const source = originalText.get(target.node);
-        if (!shouldTranslateText(target.node, source)) return;
-        const parts = splitWhitespace(source);
-        preparedTargets.push({ ...target, source });
-        if (parts.core) sourceValues.push(parts.core);
-      } else {
-        if (!target.element.isConnected || !target.element.hasAttribute(target.name)) return;
-        let stored = originalAttributes.get(target.element);
-        if (!stored) {
-          stored = new Map();
-          originalAttributes.set(target.element, stored);
-        }
-        if (!stored.has(target.name)) stored.set(target.name, target.element.getAttribute(target.name));
-        const source = stored.get(target.name);
-        if (!shouldTranslateAttribute(target.element, source)) return;
-        const parts = splitWhitespace(source);
-        preparedTargets.push({ ...target, source });
-        if (parts.core) sourceValues.push(parts.core);
-      }
-    });
-
-    await prepareTranslations(sourceValues, announceProgress, generation);
-    if (language !== "hi" || generation !== translationGeneration) return;
-    preparedTargets.forEach((target) => {
-      if (target.kind === "text") {
-        if (target.node.isConnected) writeTranslatedText(target.node, translatedValue(target.source));
-      } else if (target.element.isConnected && target.element.hasAttribute(target.name)) {
-        writeTranslatedAttribute(target.element, target.name, translatedValue(target.source));
-      }
-    });
-  }
-
-  function browserTranslationGuidance() {
-    const ua = navigator.userAgent;
-    const mobile = /(?:Android|Mobile|CriOS|EdgA|EdgiOS)/.test(ua);
-    if (/Edg(?:A|iOS)?\//.test(ua)) {
-      return mobile
-        ? "In Edge, open the browser menu, choose Translate, and select Hindi."
-        : "In Edge, select the Translate icon in the address bar, choose Hindi, then select Translate.";
-    }
-    if (/Firefox\//.test(ua)) return "In Firefox, open the browser menu and choose Translate page, or use the translation icon in the toolbar, then choose Hindi.";
-    if (/Safari\//.test(ua) && !/(?:Chrome|Chromium|CriOS)\//.test(ua)) return "In Safari, open the Page menu in the address bar and choose Translate Website, then choose Hindi if it is offered.";
-    if (/(?:Chrome|Chromium|CriOS)\//.test(ua)) {
-      return mobile
-        ? "In Chrome, open the browser menu (⋮ or …), choose Translate, and select Hindi."
-        : "In Chrome, right-click the page and choose Translate to…, or select the Translate icon in the address bar, then choose Hindi.";
-    }
-    return "Open your browser's page menu or address-bar translation control, choose Translate page, and select Hindi.";
-  }
-
-  function translationFailureReason(error) {
-    if (error && error.status === 429) return "Pigsfield's shared Hindi translation capacity is busy, and this browser could not translate on-device. Please wait one minute and try again.";
-    if (error && error.status === 503) return "Pigsfield's Hindi translation service is temporarily unavailable, and this browser could not translate on-device.";
-    return "Neither this browser's on-device translator nor Pigsfield's same-origin Hindi service is available right now.";
-  }
-
-  function showTranslationHelp(error) {
-    const reason = qs("#translation-help-reason");
-    const guidance = qs("#translation-browser-guidance");
-    if (reason) reason.textContent = translationFailureReason(error);
-    if (guidance) guidance.textContent = browserTranslationGuidance();
-    showDialog(qs("#translation-help-dialog"));
-  }
-
-  function createNativeTranslatorFromClick() {
-    if (translatorInstance) return Promise.resolve(translatorInstance);
-    if (!("Translator" in window) || typeof window.Translator.create !== "function") {
-      const error = new Error("Translator API unavailable");
-      error.code = "translator-api-missing";
-      return Promise.reject(error);
-    }
-    let creation;
-    try {
-      creation = window.Translator.create({
-        ...TRANSLATOR_OPTIONS,
-        monitor(monitor) {
-          monitor.addEventListener("downloadprogress", (event) => {
-            const percent = Math.max(0, Math.min(100, Math.round(Number(event.loaded || 0) * 100)));
-            setLanguageProgress(`Downloading the browser's Hindi language pack: ${percent}%`, `HI ${percent}%`);
-          });
-        }
-      });
-    } catch (error) {
-      return Promise.reject(error);
-    }
-    return Promise.resolve(creation).then((instance) => {
-      translatorInstance = instance;
-      return instance;
-    });
-  }
-
-  function restoreOriginalEnglish() {
-    translationGeneration += 1;
-    stopTranslationObserver();
-    destroyNativeTranslator();
-    translationProvider = "";
-    rememberLanguage("en");
-    setLanguageState("en");
-    originalText.forEach((value, node) => {
-      if (node.isConnected) node.nodeValue = value;
-    });
-    originalAttributes.forEach((attributes, element) => {
-      if (!element.isConnected) return;
-      attributes.forEach((value, name) => {
-        if (value == null) element.removeAttribute(name);
-        else element.setAttribute(name, value);
-      });
-    });
-    originalText.clear();
-    originalAttributes.clear();
-    pendingTranslationRoots.clear();
-    setLanguageProgress("Original English restored.", "");
-    PF.toast("Original English restored.");
-    setTimeout(() => {
-      if (!translationBusy && language === "en") setLanguageProgress("", "");
-    }, 1200);
-  }
-
-  function handleTranslationFailure(error) {
-    destroyNativeTranslator();
-    translationProvider = "";
-    rememberLanguage("en");
-    if (language === "hi") {
-      translationGeneration += 1;
-      stopTranslationObserver();
-      setLanguageState("en");
-      originalText.forEach((value, node) => { if (node.isConnected) node.nodeValue = value; });
-      originalAttributes.forEach((attributes, element) => {
-        if (!element.isConnected) return;
-        attributes.forEach((value, name) => {
-          if (value == null) element.removeAttribute(name);
-          else element.setAttribute(name, value);
-        });
-      });
-      originalText.clear();
-      originalAttributes.clear();
-      pendingTranslationRoots.clear();
-    }
-    setLanguageProgress("Hindi translation is unavailable right now.", "");
-    showTranslationHelp(error);
-  }
-
-  function enqueueTranslation(scope, announceProgress = false) {
-    if (language !== "hi") return Promise.resolve();
-    const generation = translationGeneration;
-    queuedTranslationJobs += 1;
-    if (queuedTranslationJobs === 1) {
-      const destination = translationProvider === "native"
-        ? "on your device"
-        : "through Pigsfield's Cloudflare Hindi service";
-      setLanguageProgress(`${announceProgress ? "Translating this page" : "Translating newly added content"} to Hindi ${destination}…`, "HI …");
-    }
-    refreshTranslationBusy();
-    const job = translationQueue.then(() => translateScope(scope, generation, announceProgress));
-    const handled = job.catch((error) => {
-      if (translationIsCurrent(generation)) handleTranslationFailure(error);
-    });
-    translationQueue = handled;
-    return handled.finally(() => {
-      queuedTranslationJobs = Math.max(0, queuedTranslationJobs - 1);
-      if (!queuedTranslationJobs) {
-        const ready = translationProvider === "native"
-          ? "Hindi translation is ready on this device."
-          : "Hindi translation is ready through Pigsfield's Cloudflare service.";
-        setLanguageProgress(language === "hi" ? ready : languageStatus, "");
-      }
-      refreshTranslationBusy();
-    });
-  }
-
-  function flushPendingTranslationRoots() {
-    mutationFlushScheduled = false;
-    if (language !== "hi") {
-      pendingTranslationRoots.clear();
-      return;
-    }
-    const roots = Array.from(pendingTranslationRoots).filter((node) => node && node.isConnected);
-    pendingTranslationRoots.clear();
-    const outermost = roots.filter((node, index) => !roots.some((other, otherIndex) => {
-      if (index === otherIndex || !(other instanceof Element)) return false;
-      return other.contains(node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
-    }));
-    outermost.forEach((node) => enqueueTranslation(node, false));
-  }
-
-  function queueTranslationRoot(scope) {
-    if (language !== "hi" || !scope) return;
-    pendingTranslationRoots.add(scope);
-    if (mutationFlushScheduled) return;
-    mutationFlushScheduled = true;
-    queueMicrotask(flushPendingTranslationRoots);
-  }
-
-  function startTranslationObserver() {
-    if (translationObserver || !("MutationObserver" in window)) return;
-    translationObserver = new MutationObserver((mutations) => {
-      if (language !== "hi") return;
-      mutations.forEach((mutation) => {
-        if (mutation.type === "characterData") {
-          if (isSkippedElement(mutation.target.parentElement, true)) return;
-          const expected = expectedTextMutations.get(mutation.target);
-          if (expected === mutation.target.nodeValue) {
-            expectedTextMutations.delete(mutation.target);
-            return;
-          }
-          originalText.set(mutation.target, mutation.target.nodeValue);
-          queueTranslationRoot(mutation.target);
-          return;
-        }
-        if (mutation.type === "attributes") {
-          if (isSkippedElement(mutation.target, false)) return;
-          const expected = expectedAttributeMutations.get(mutation.target);
-          if (expected && expected.get(mutation.attributeName) === mutation.target.getAttribute(mutation.attributeName)) {
-            expected.delete(mutation.attributeName);
-            if (!expected.size) expectedAttributeMutations.delete(mutation.target);
-            return;
-          }
-          let stored = originalAttributes.get(mutation.target);
-          if (!stored) {
-            stored = new Map();
-            originalAttributes.set(mutation.target, stored);
-          }
-          stored.set(mutation.attributeName, mutation.target.getAttribute(mutation.attributeName));
-          queueTranslationRoot(mutation.target);
-          return;
-        }
-        if (isSkippedElement(mutation.target, false)) return;
-        mutation.addedNodes.forEach((node) => queueTranslationRoot(node));
-      });
-    });
-    translationObserver.observe(document.body, {
-      subtree: true,
-      childList: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: TRANSLATABLE_ATTRIBUTES
-    });
-  }
-
-  function stopTranslationObserver() {
-    if (!translationObserver) return;
-    translationObserver.disconnect();
-    translationObserver = null;
-    pendingTranslationRoots.clear();
-    mutationFlushScheduled = false;
-  }
-
-  async function toggleLanguage() {
-    if (translationBusy) {
-      PF.toast(languageStatus || "Translation is already in progress.");
-      return;
-    }
-    const alternate = language === "en" && qs(`link[hreflang="${nativeHindi ? "en-IN" : "hi-IN"}"]`);
-    if (alternate) {
-      location.pathname = new URL(alternate.href).pathname;
-      return;
-    }
-    if (language === "hi") {
-      restoreOriginalEnglish();
-      return;
-    }
-
-    // Translator.create() must run directly in the click activation path.
-    const nativeCreation = createNativeTranslatorFromClick();
-    preparingTranslation = true;
-    setLanguageProgress("Preparing Hindi translation…", "HI …");
-    refreshTranslationBusy();
-    try {
-      try {
-        await nativeCreation;
-        translationProvider = "native";
-      } catch (_) {
-        destroyNativeTranslator();
-        translationProvider = "server";
-      }
-      translationGeneration += 1;
-      setLanguageState("hi");
-      rememberLanguage("hi");
-      startTranslationObserver();
-      preparingTranslation = false;
-      refreshTranslationBusy();
-      PF.toast("Translating this page to Hindi…");
-      await enqueueTranslation(document.body, true);
-      if (language === "hi") PF.toast("Hindi translation is ready. Use EN to restore the original instantly.");
-    } catch (error) {
-      preparingTranslation = false;
-      refreshTranslationBusy();
-      handleTranslationFailure(error);
-    }
-  }
-
-  function restoreSavedHindi() {
-    translationProvider = "server";
-    translationGeneration += 1;
-    setLanguageState("hi");
-    startTranslationObserver();
-    setLanguageProgress("Restoring Hindi through Pigsfield's Cloudflare service…", "HI …");
-    enqueueTranslation(document.body, true);
-  }
-
-  PF.applyLanguageTo = function (scope) {
-    queueTranslationRoot(scope || document.body);
-  };
 
   function initialTheme() {
     try {
@@ -1037,8 +406,6 @@
           <button class="search-trigger" type="button" data-open-search aria-label="Search all Pigsfield resources">
             <b aria-hidden="true">⌕</b><span>Search</span><kbd>Ctrl K</kbd>
           </button>
-          <button class="icon-button lang-toggle" type="button" data-lang-toggle translate="no" aria-label="Translate this page to Hindi" title="Translate this page to Hindi">हिन्दी</button>
-          <span class="sr-only" id="translation-live-status" role="status" aria-live="polite" translate="no"></span>
           <button class="icon-button" type="button" data-theme-toggle aria-label="Change theme">☾</button>
           <button class="icon-button menu-toggle" type="button" data-open-menu aria-controls="site-sidebar" aria-haspopup="dialog" aria-label="Open menu">≡</button>
         </div>
@@ -1210,16 +577,6 @@
         </div>
       </dialog>
 
-      <dialog class="site-dialog" id="translation-help-dialog" aria-labelledby="translation-help-title" translate="no">
-        <div class="dialog-head"><h2 id="translation-help-title">Hindi translation needs browser help</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close translation help">×</button></div>
-        <div class="dialog-body">
-          <p id="translation-help-reason">Neither Pigsfield's same-origin Hindi service nor this browser's on-device translator is available right now.</p>
-          <p><strong id="translation-browser-guidance">Open your browser's page menu, choose Translate page, and select Hindi.</strong></p>
-          <p>A website cannot press or open privileged browser-toolbar controls for you. This guide stays on Pigsfield and never sends you to a translation website.</p>
-          <button class="button small" type="button" data-close-dialog>Got it</button>
-        </div>
-      </dialog>
-
       <dialog class="site-dialog" id="support-dialog" aria-labelledby="support-title">
         <div class="dialog-head"><h2 id="support-title">You are why Pigsfield stays free</h2><button class="icon-button" type="button" data-close-dialog aria-label="Close">×</button></div>
         <div class="dialog-body">
@@ -1377,7 +734,7 @@
     // The know-your-rights image card is drawn by js/rights-card.js, fetched on first use.
     document.addEventListener("click", (event) => {
       const button = event.target.closest && event.target.closest("[data-rights-card]");
-      if (button) loadScript("js/rights-card.js?v=ed2ce02ff39d").then(() => PF.rightsCard(button.closest("article")), () => PF.toast("The image card could not load. Please try again."));
+      if (button) loadScript("js/rights-card.js?v=e77ff5802575").then(() => PF.rightsCard(button.closest("article")), () => PF.toast("The image card could not load. Please try again."));
     });
   }
 
@@ -1409,7 +766,7 @@
   }
 
   function warmAIStudio() {
-    return loadScript("js/ai-studio.js?v=d94e4b9a7dc0");
+    return loadScript("js/ai-studio.js?v=803c60935574");
   }
 
   function openAIStudio(event) {
@@ -1526,8 +883,6 @@
     if (!results.length) {
       status.textContent = `No close matches for “${query}”. Try a broader stage, subject, exam or tool.`;
       target.innerHTML = `<div class="empty-state"><strong>No dead end</strong><p>Suggest the missing resource and help the next learner find it.</p><a class="button ghost small" href="${escapeHtml(PF.path("submit"))}">Suggest a resource</a></div>`;
-      PF.applyLanguageTo(status);
-      PF.applyLanguageTo(target);
       return;
     }
     status.textContent = `${results.length} best matches. Results open the exact collection and resource.`;
@@ -1537,8 +892,6 @@
         <span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.description)}</small></span>
         <em>${escapeHtml(item.section)}</em>
       </a>`).join("");
-    PF.applyLanguageTo(status);
-    PF.applyLanguageTo(target);
   }
 
   async function performGlobalSearch(query) {
@@ -1547,20 +900,16 @@
     if (!query.trim()) {
       status.textContent = "Search 880+ curated entries across every Pigsfield path.";
       target.innerHTML = "";
-      PF.applyLanguageTo(status);
       return;
     }
     status.textContent = "Opening the full Pigsfield map…";
     target.innerHTML = `<div class="empty-state"><strong>Searching every path</strong><p>The catalog loads only when you need it, keeping the rest of the site fast.</p></div>`;
-    PF.applyLanguageTo(status);
-    PF.applyLanguageTo(target);
     try {
       const entries = await ensureSearchIndex();
       renderSearchResults(searchEntries(query, entries), query);
     } catch (_) {
       status.textContent = "The catalog could not load. Check your connection and try again.";
       target.innerHTML = "";
-      PF.applyLanguageTo(status);
     }
   }
 
@@ -1866,7 +1215,6 @@
   function bindUi() {
     document.addEventListener("click", handleSummaryActivation);
     qsa("[data-theme-toggle]").forEach((button) => button.addEventListener("click", () => setTheme(root.dataset.theme === "dark" ? "light" : "dark")));
-    qsa("[data-lang-toggle]").forEach((button) => button.addEventListener("click", toggleLanguage));
 
     // The three-line button opens the sidebar. It is a <dialog>, so Escape, the backdrop
     // click, the focus trap and returning focus to the button are the platform's job
@@ -1945,8 +1293,6 @@
     bindUi();
     initShareButtons();
     setTheme(root.dataset.theme || initialTheme());
-    if (savedLanguage() === "hi" && !nativeHindi) restoreSavedHindi();
-    else setLanguageState("en");
     registerServiceWorker();
     document.documentElement.classList.add("js-ready");
   }

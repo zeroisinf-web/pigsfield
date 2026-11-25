@@ -1,11 +1,11 @@
 // Read the public leaderboard's displayed metrics, not undocumented API fields.
 export const SOURCE = 'https://artificialanalysis.ai/leaderboards/models';
-// The MAX_MODELS most intelligent models that finish end to end inside MAX_SECONDS, with at
-// most MAX_PER_COMPANY of them from any one company. A leaderboard's top is usually three
-// labs listing six configurations of the same two models, which told a visitor nothing about
-// who else is worth opening; a cap of two keeps a lab's genuine second entry — a cheaper or
-// faster configuration is a real choice — without letting one lab fill the table.
-export const MAX_SECONDS = 45;
+// The MAX_MODELS most intelligent models that finish the suite within MAX_MINUTES
+// (MAX_SECONDS = 1500), with at most MAX_PER_COMPANY of them from any one company. A cap
+// of two keeps a lab's genuine second entry — a cheaper or faster configuration is a real
+// choice — without letting one lab fill the table.
+export const MAX_MINUTES = 25;
+export const MAX_SECONDS = MAX_MINUTES * 60;
 export const MAX_MODELS = 10;
 export const MAX_PER_COMPANY = 2;
 const COMPANIES = {
@@ -28,13 +28,32 @@ const COMPANIES = {
   amazon: ['Amazon', 'https://nova.amazon.com/'],
   nvidia: ['NVIDIA', 'https://build.nvidia.com/'],
   cohere: ['Cohere', 'https://cohere.com/'],
-  perplexity: ['Perplexity', 'https://www.perplexity.ai/']
+  perplexity: ['Perplexity', 'https://www.perplexity.ai/'],
+  tencent: ['Tencent', 'https://yuanbao.tencent.com/'],
+  minimax: ['MiniMax', 'https://chat.minimax.io/'],
+  sarvam: ['Sarvam', 'https://indus.sarvam.ai/'],
+  stepfun: ['StepFun', 'https://www.stepfun.com/'],
+  bytedanceseed: ['ByteDance Seed', 'https://www.doubao.com/'],
+  xiaomi: ['Xiaomi', 'https://www.mi.com/'],
+  ibm: ['IBM', 'https://www.ibm.com/granite'],
+  upstage: ['Upstage', 'https://console.upstage.ai/'],
+  ai21labs: ['AI21 Labs', 'https://www.ai21.com/'],
+  baidu: ['Baidu', 'https://yiyan.baidu.com/']
 };
 function text(html) {
   return html.replace(/<[^>]*>/g, '').replace(/&#(x[\da-f]+|\d+);/gi, (_, n) => {
     const code = n[0].toLowerCase() === 'x' ? parseInt(n.slice(1), 16) : Number(n);
     return code <= 0x10ffff ? String.fromCodePoint(code) : '';
-  }).replace(/&(amp|quot|apos|lt|gt|nbsp);/g, (_, n) => ({amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' '})[n]).trim();
+  }).replace(/&(amp|quot|apos|lt|gt|nbsp);/g, (_, n) => ({amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' '})[n]).replace(/\s+/g, ' ').trim();
+}
+function cleanModelName(value) {
+  return value.replace(/,\s*Default Fallback\b/gi, '').replace(/\s+/g, ' ').trim();
+}
+function creatorFromCell(cellHtml) {
+  const alt = cellHtml.match(/<img\b[^>]*\balt=["']([^"']+)["']/i);
+  if (alt) return text(alt[1]);
+  const logo = cellHtml.match(/\/img\/logos\/([a-z0-9-]+)\./i);
+  return logo ? logo[1] : '';
 }
 const key = value => value.toLowerCase().replace(/[^a-z0-9]/g, '');
 function number(value) {
@@ -82,17 +101,33 @@ export function parseRankings(html, now = new Date()) {
   let found = false;
   for (const table of html.matchAll(/<table\b[^>]*>([\s\S]*?)<\/table>/gi)) {
     let columns;
+    let timeScale = 60;
     for (const row of table[1].matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
-      const cells = [...row[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(c => text(c[1]));
+      const rawCells = [...row[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(c => c[1]);
+      const cells = rawCells.map(text);
       const headers = cells.map(key);
       if (headers.includes('artificialanalysisintelligenceindex')) {
-        columns = ['model', 'creator', 'artificialanalysisintelligenceindex', 'costpertaskusd', 'totalresponses'].map(h => headers.indexOf(h));
-        if (columns.some(i => i < 0)) throw new Error('Leaderboard columns changed');
+        const modelIdx = headers.indexOf('model');
+        const creatorIdx = headers.indexOf('creator');
+        const indexIdx = headers.indexOf('artificialanalysisintelligenceindex');
+        const costIdx = headers.indexOf('costpertaskusd');
+        const minIdx = headers.indexOf('timepertaskminutes');
+        const secIdx = headers.indexOf('totalresponses');
+        const timeIdx = minIdx >= 0 ? minIdx : secIdx;
+        if (modelIdx < 0 || indexIdx < 0 || costIdx < 0 || timeIdx < 0) throw new Error('Leaderboard columns changed');
+        columns = [modelIdx, creatorIdx, indexIdx, costIdx, timeIdx];
+        timeScale = minIdx >= 0 ? 60 : 1;
         found = true;
         continue;
       }
       if (!columns) continue;
-      const [name, creator, intelligenceText, costText, secondsText] = columns.map(i => cells[i] || '');
+      const [modelIdx, creatorIdx, indexIdx, costIdx, timeIdx] = columns;
+      const name = cleanModelName(cells[modelIdx] || '');
+      const creator = creatorIdx >= 0 ? (cells[creatorIdx] || '') : creatorFromCell(rawCells[modelIdx] || '');
+      const intelligenceText = cells[indexIdx] || '';
+      const costText = cells[costIdx] || '';
+      const durationValue = number(cells[timeIdx] || '');
+      const seconds = durationValue === null ? null : Math.round(durationValue * timeScale * 100) / 100;
       const company = COMPANIES[key(creator)] || (creator ? [creator, SOURCE] : null);
       if (!company || !name) continue;
       candidates.push({
@@ -101,7 +136,7 @@ export function parseRankings(html, now = new Date()) {
         website: company[1],
         intelligence: number(intelligenceText),
         cost: number(costText),
-        seconds: number(secondsText)
+        seconds
       });
     }
   }
@@ -120,24 +155,34 @@ export async function handleModelRankings(request, env, cache = globalThis.cache
   // through the current one rather than served as they were stored.
   const reselect = data => data && { ...data, models: selectModels(data.models) };
   if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
-  const cacheKey = new Request(new URL('/api/model-rankings?selection=capped-v5', request.url));
+  const forceRefresh = new URL(request.url).searchParams.get('refresh') === '1';
+  const cacheKey = new Request(new URL('/api/model-rankings?selection=capped-v6', request.url));
   let previous;
   try { previous = reselect(await (await cache?.match(cacheKey))?.json()); } catch (_) { /* recover via source */ }
-  if (previous?.models?.length && Date.now() - Date.parse(previous.updatedAt) < 3600000) return json({ ...previous, stale: false });
+  const age = previous?.updatedAt ? Date.now() - Date.parse(previous.updatedAt) : Infinity;
+  if (previous?.models?.length && age < (forceRefresh ? 15000 : 3600000)) return json({ ...previous, stale: false });
   try {
-    if (Date.now() < retryAfter) throw new Error('Source retry cooldown');
+    if (!forceRefresh && Date.now() < retryAfter) throw new Error('Source retry cooldown');
     if (!pending) {
       pending = (async () => {
-        const response = await fetcher(SOURCE, { signal: AbortSignal.timeout(20000), headers: { Accept: 'text/html' } });
+        const response = await fetcher(SOURCE, {
+          signal: AbortSignal.timeout(20000),
+          headers: {
+            Accept: 'text/html,application/xhtml+xml',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'User-Agent': 'Mozilla/5.0 (compatible; PigsfieldRankings/1.0; +https://pigsfield.com/ai/)'
+          }
+        });
         if (!response.ok) throw new Error('Leaderboard unavailable');
         const data = parseRankings(await response.text());
+        retryAfter = 0;
         try { await cache?.put(cacheKey, new Response(JSON.stringify(data), { headers: { ...headers, 'Cache-Control': 'public, max-age=604800' } })); } catch (_) { /* data still usable */ }
         return data;
       })().finally(() => { pending = null; });
     }
     return json({ ...await pending, stale: false });
   } catch (_) {
-    retryAfter = Date.now() + 60000;
+    retryAfter = Date.now() + 30000;
     if (!previous?.models?.length) {
       try {
         const fallback = await env.ASSETS.fetch(new Request(new URL('/assets/model-rankings.json', request.url)));

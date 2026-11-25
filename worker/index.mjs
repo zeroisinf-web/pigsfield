@@ -49,11 +49,6 @@ const MAX_PROMPT_LENGTH = 1800;
 const DAILY_AI_CALL_BUDGET = 1500;
 const MAX_BODY_BYTES = 12 * 1024;
 const MAX_OUTPUT_CHARACTERS = 24_000;
-const TRANSLATION_MODEL = "@cf/ai4bharat/indictrans2-en-indic-1B";
-const MAX_TRANSLATION_ITEMS = 48;
-const MAX_TRANSLATION_CHARACTERS = 10_000;
-const MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS = 12_000;
-const MAX_TRANSLATION_OUTPUT_CHARACTERS = 20_000;
 // One check-in per browser per India day. It used to be per calendar month, which cannot
 // produce a rolling window: everyone would be counted on the 1st and the last 30 days would
 // be a cliff rather than a curve.
@@ -128,18 +123,6 @@ async function applyAIRateLimits(request, env) {
   if (env.AI_IP_RATE_LIMITER && typeof env.AI_IP_RATE_LIMITER.limit === "function") {
     const limit = await env.AI_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
     if (!limit.success) return json({ error: "The shared network limit is busy. Wait one minute and try again." }, 429);
-  }
-  return null;
-}
-
-async function applyTranslationRateLimits(request, env) {
-  if (env.TRANSLATION_RATE_LIMITER && typeof env.TRANSLATION_RATE_LIMITER.limit === "function") {
-    const limit = await env.TRANSLATION_RATE_LIMITER.limit({ key: clientKey(request) });
-    if (!limit.success) return json({ error: "The shared Hindi translation limit is busy. Wait one minute and try again." }, 429);
-  }
-  if (env.TRANSLATION_IP_RATE_LIMITER && typeof env.TRANSLATION_IP_RATE_LIMITER.limit === "function") {
-    const limit = await env.TRANSLATION_IP_RATE_LIMITER.limit({ key: edgeKey(request) });
-    if (!limit.success) return json({ error: "The shared Hindi network limit is busy. Wait one minute and try again." }, 429);
   }
   return null;
 }
@@ -634,49 +617,6 @@ async function handleAI(request, env) {
   }
 }
 
-async function handleTranslate(request, env) {
-  if (request.method !== "POST") return json({ error: "Use POST for translation requests." }, 405);
-  if (!sameOriginRequest(request)) return json({ error: "This endpoint accepts same-origin Pigsfield requests only." }, 403);
-
-  const limited = await applyTranslationRateLimits(request, env);
-  if (limited) return limited;
-  const parsed = await boundedJsonBody(request);
-  if (parsed.response) return parsed.response;
-  const texts = parsed.body && parsed.body.text;
-  if (!Array.isArray(texts)) return json({ error: "Send text as an array of English strings." }, 400);
-  if (!texts.length || texts.length > MAX_TRANSLATION_ITEMS) {
-    return json({ error: `Send between 1 and ${MAX_TRANSLATION_ITEMS} text items.` }, 400);
-  }
-  if (texts.some((value) => typeof value !== "string" || !value.trim())) {
-    return json({ error: "Every translation item must be a non-empty string." }, 400);
-  }
-  const totalCharacters = texts.reduce((sum, value) => sum + value.length, 0);
-  if (texts.some((value) => value.length > MAX_TRANSLATION_CHARACTERS) || totalCharacters > MAX_TRANSLATION_CHARACTERS) {
-    return json({ error: `Keep each translation batch to ${MAX_TRANSLATION_CHARACTERS.toLocaleString("en-US")} characters or fewer.` }, 413);
-  }
-
-  if (!env.AI || typeof env.AI.run !== "function") return json({ error: "Hindi translation capacity is not configured." }, 503);
-
-  try {
-    const result = await env.AI.run(TRANSLATION_MODEL, {
-      text: texts,
-      target_language: "hin_Deva"
-    }, {
-      gateway: { id: "default", collectLog: false }
-    });
-    const translations = result && result.translations;
-    const validStrings = Array.isArray(translations) && translations.length === texts.length &&
-      translations.every((value) => typeof value === "string" && value.trim() && value.length <= MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS);
-    const outputCharacters = validStrings ? translations.reduce((sum, value) => sum + value.length, 0) : 0;
-    if (!validStrings || outputCharacters > MAX_TRANSLATION_OUTPUT_CHARACTERS) {
-      return json({ error: "The translation model returned an incomplete result." }, 502);
-    }
-    return json({ translations, model: TRANSLATION_MODEL, engine: "cloudflare-workers-ai" });
-  } catch (_) {
-    return json({ error: "Hindi translation is temporarily unavailable. Please try again shortly." }, 503);
-  }
-}
-
 // Workers AI is billed per token, /api/ai is reachable by anything that can set an Origin
 // header, and the rate limiters are per-address — so N addresses cost N times as much with
 // no ceiling at all. This is that ceiling: a single counter, reset each India-calendar day,
@@ -734,7 +674,6 @@ export default {
     }
     if (url.pathname === "/api/model-rankings") return handleModelRankings(request, env);
     if (url.pathname === "/api/ai") return handleAI(request, env);
-    if (url.pathname === "/api/translate") return handleTranslate(request, env);
     if (url.pathname === "/api/visitors") return handleVisitors(request, env);
     // Same-origin cover art for the catalog. See worker/poster.mjs for why it exists.
     if (url.pathname === "/api/poster") return handlePoster(request, env, url);
@@ -759,17 +698,11 @@ export {
   recentIndiaDays,
   handlePoster,
   modelInput,
-  MAX_TRANSLATION_CHARACTERS,
-  MAX_TRANSLATION_ITEMS,
-  MAX_TRANSLATION_OUTPUT_CHARACTERS,
-  MAX_TRANSLATION_OUTPUT_ITEM_CHARACTERS,
   MODELS,
   DailyAIBudget,
   MonthlyVisitorCounter,
-  TRANSLATION_MODEL,
   automatedRequest,
   handleAI,
-  handleTranslate,
   handleVisitors,
   indiaDay,
   indiaMonth,

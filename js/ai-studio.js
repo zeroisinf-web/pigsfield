@@ -14,7 +14,7 @@
   if (!document.querySelector('link[href*="ai-studio.css"]')) {
     const studioStyle = document.createElement("link");
     studioStyle.rel = "stylesheet";
-    studioStyle.href = assetUrl("css/ai-studio.css?v=81a9e6c4f247");
+    studioStyle.href = assetUrl("css/ai-studio.css?v=3a931e57b181");
     document.head.append(studioStyle);
   }
 
@@ -231,13 +231,13 @@
         </div>
         <div class="ai-rankings-scroll">
           <table class="ai-rankings-table" role="table">
-            <caption class="sr-only">The ten most intelligent models that answer end to end within 45 seconds, with at most two from any one company</caption>
+            <caption class="sr-only">The ten most intelligent models that answer within 25 minutes per benchmark suite, with at most two from any one company</caption>
             <thead role="rowgroup"><tr role="row"><th scope="col">Company &amp; model</th><th scope="col">Intelligence</th><th scope="col">USD / task</th><th scope="col">Total time</th></tr></thead>
             <tbody data-rankings-body role="rowgroup"></tbody>
           </table>
         </div>
         <p data-rankings-status role="status">Loading verified rankings…</p>
-        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. The ten most intelligent models that answer end to end within 45 seconds, with at most two from any one company so a single lab cannot fill the table; ties use lower cost, then faster response. Cost is USD per benchmark task; timing is not a guarantee of chat website speed. Linked apps may not offer the exact model. Unlisted chat destinations link to the benchmark source.</p></details>
+        <details class="ai-methodology"><summary>Source &amp; ranking method</summary><p>Data from <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener noreferrer">Artificial Analysis</a>, checked hourly while in use. Lists the ten most intelligent models that finish a task suite within 25 minutes, capped at two per company; ties break on lower cost, then faster time. Linked sites may not offer the exact benchmark configuration.</p></details>
       </section>
 
       <section class="ai-panel ai-updates" aria-labelledby="ai-updates-title">
@@ -300,18 +300,20 @@
     const refresh = root.querySelector("[data-refresh-rankings]");
     if (!body || !status || !refresh) return;
     let loading = false;
-    async function load() {
+    async function load(force = false) {
       if (loading) return;
       loading = true;
       refresh.disabled = true;
       root.querySelector(".ai-rankings")?.classList.add("is-loading");
+      if (force) status.textContent = "Refreshing verified rankings…";
       try {
         let response;
         try {
-          response = await fetch("/api/model-rankings", { signal: AbortSignal.timeout(25000), cache: "no-store" });
+          const endpoint = force ? "/api/model-rankings?refresh=1" : "/api/model-rankings";
+          response = await fetch(endpoint, { signal: AbortSignal.timeout(25000), cache: "no-store" });
           if (!response.ok) throw new Error("Unavailable");
         } catch (apiErr) {
-          response = await fetch(assetUrl("assets/model-rankings.json"), { signal: AbortSignal.timeout(10000) });
+          response = await fetch(assetUrl("assets/model-rankings.json"), { signal: AbortSignal.timeout(10000), cache: "no-store" });
           if (!response.ok) throw apiErr;
         }
         const data = await response.json();
@@ -355,7 +357,7 @@
             company,
             metricCell("Intelligence", model.intelligence, model.intelligence / leader),
             metricCell("USD / task", "$" + model.cost.toFixed(2)),
-            metricCell("Total time", model.seconds.toFixed(2) + " s")
+            metricCell("Total time", model.seconds >= 60 ? (model.seconds / 60).toFixed(1) + " min" : model.seconds.toFixed(2) + " s")
           );
           return row;
         });
@@ -371,7 +373,7 @@
         root.querySelector(".ai-rankings")?.classList.remove("is-loading");
       }
     }
-    refresh.addEventListener("click", load);
+    refresh.addEventListener("click", () => load(true));
     load();
     // Refresh a long-running open studio without making background requests in hidden tabs.
     window.setInterval(() => { if (document.visibilityState === "visible" && root.getClientRects().length) load(); }, 3600000);
